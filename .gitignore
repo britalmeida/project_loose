@@ -1,0 +1,14 @@
+# Playdate Output
+builds/*
+*.pdx
+
+# Dev environment (to be reviewed)
+*.code-workspace
+.sentry-native
+Build and Run*
+build_and_run.sh
+
+# OS Specific
+.DS_Store
+*.kra~
+*.png~
