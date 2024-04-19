@@ -1,12 +1,11 @@
 {
-    "version": "1.0.0",
+    "version": "0.2.0",
     "configurations": [
-      {
-        "request": "launch",
-        "type": "playdate",
-        "name": "Run app in Playdate simulator",
-        "source": "${workspaceRoot}/source",
-        "output": "${workspaceRoot}/builds/output.pdx",
-      }
-    ]
-  }
+        {
+            "type": "playdate",
+            "request": "launch",
+            "name": "Playdate: Debug",
+            "preLaunchTask": "${defaultBuildTask}"
+        }
+  ]
+}
