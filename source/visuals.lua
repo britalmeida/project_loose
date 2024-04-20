@@ -91,7 +91,7 @@ end
 function draw_debug()
     gfx.pushContext()
         gfx.setColor(gfx.kColorBlack)
-        gfx.drawCircleAtPoint(200, 120, 30)
+        gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
         gfx.drawText("Looooose", 10, 50)
     gfx.popContext()
 end

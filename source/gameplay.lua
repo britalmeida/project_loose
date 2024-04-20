@@ -1,9 +1,22 @@
+GYRO_X, GYRO_Y = 200, 120
+
+
+
+-- Utility Functions
+
+local function clamp(value, min, max)
+    return math.max(math.min(value, max), min)
+end
+
+
 
 -- Resource Management
 
 
 function init_gameplay()
     -- Done only once on start of the game, to load and setup const resources.
+
+    playdate.startAccelerometer()
 end
 
 
@@ -22,6 +35,10 @@ end
 -- Update Loop
 
 function handle_input()
+    local gravityX, gravityY, _gravityZ = playdate.readAccelerometer()
+    GYRO_X = clamp(GYRO_X + gravityX * 10, 0, 400)
+    GYRO_Y = clamp(GYRO_Y + gravityY * 10, 0, 240)
+
     if playdate.buttonIsPressed( playdate.kButtonA ) then
         if not SOUND.cat_meow:isPlaying() then
             SOUND.cat_meow:play()
