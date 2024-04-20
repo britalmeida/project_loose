@@ -33,10 +33,12 @@ end
 function Reset_gameplay()
     -- Done on every (re)start of the play.
 
+    -- Reset available ingredients.
     for _, ingredient in ipairs(INGREDIENTS) do
         ingredient:remove()
     end
-    INGREDIENTS = {}
+    Init_ingredients()
+
     local sum = 0
     for a = 1, 5, 1 do
         GAMEPLAY_STATE.element_target_ratio[a] = math.random(100)
@@ -63,7 +65,12 @@ function Handle_input(timeDelta)
         if not SOUND.cat_meow:isPlaying() then
             SOUND.cat_meow:play()
         end
-        print("Hello!")
+
+        INGREDIENTS[1].is_going_in_the_pot = true
+        -- Start a timer to despawn the ingredient visuals.
+         playdate.timer.new(0.8*1000, function()
+            INGREDIENTS[1]:setVisible(false)
+        end)
     end
 
     local angleDelta, _ = playdate.getCrankChange()
