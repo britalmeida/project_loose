@@ -66,17 +66,20 @@ end
 -- Draw passes
 
 local function draw_poly_shape( x_min, y_min, width, height, params, alpha, color)
+    if params == nil then
+        return
+    end
     gfx.setColor(color)
     local n = #params
     local x1 = x_min + width / 2
     local y1 = y_min + (1 - params[1]) * height / 2
     for a = 0, n-1, 1 do
         local phi = (a+1)/n * 2 * math.pi
-        local r = params[(a+1<n and a+1 or 0) + 1]
+        local r = math.sqrt(params[(a+1<n and a+1 or 0) + 1])
         local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
         local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
         gfx.pushContext()
-            gfx.setDitherPattern(alpha, gfxi.kDitherTypeBayer8x8)
+            gfx.setDitherPattern(alpha, gfxi.kDitherTypeScreen)
             gfx.fillTriangle(x1, y1, x2, y2, x_min + width / 2, y_min + height / 2)
         gfx.popContext()
         gfx.drawLine( x1, y1, x2, y2)
@@ -87,11 +90,24 @@ end
 
 local function draw_parameter_diagram( x_min, y_min, width, height )
     
-    local PARAMS = {0.6, 0.8, 0.5}
-    local TARGET_PARAMS = {0.2, 0.6, 0.5}
+    local params = GAMEPLAY_STATE.element_count
+    local sum = 0
+    for a = 1, #params, 1 do
+        sum = sum + params[a]
+    end
+    if sum ~= 0 then
+        for a = 1, #params, 1 do
+            params[a] = params[a] / sum
+        end
+    end
+
+    local target_params = GAMEPLAY_STATE.element_target_ratio
+
+    print(#params)
+    print(#target_params)
 
     gfx.pushContext()
-        local n = #PARAMS
+        local n = #params
 
         local x_min = 170
         local y_min = 20
@@ -100,14 +116,14 @@ local function draw_parameter_diagram( x_min, y_min, width, height )
 
         -- Draw outline polygon
         local par_lim = {}
-        for a = 1, #PARAMS, 1 do
+        for a = 1, #params, 1 do
             par_lim[a] = 1
         end
         draw_poly_shape(x_min, y_min, width, height, par_lim, 0.25, gfx.kColorBlack)
         -- Draw graph        
-        draw_poly_shape(x_min, y_min, width, height, PARAMS, 0.75, gfx.kColorWhite)
+        draw_poly_shape(x_min, y_min, width, height, params, 0.75, gfx.kColorWhite)
         -- Draw graph        
-        draw_poly_shape(x_min, y_min, width, height, TARGET_PARAMS, 1.00, gfx.kColorBlack)
+        draw_poly_shape(x_min, y_min, width, height, target_params, 1.00, gfx.kColorBlack)
 
     gfx.popContext()
 end
@@ -192,6 +208,6 @@ function Init_visuals()
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     Set_draw_pass(10, draw_hud)
-    --Set_draw_pass(20, draw_debug)
+    Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
 end

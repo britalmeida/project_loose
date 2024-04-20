@@ -6,7 +6,9 @@ GAMEPLAY_STATE = {
     -- Potion mix?
     potion_color = 0.5,
     potion_bubbliness = 0.0,
-    -- TODO: elements ratio
+
+    element_target_ratio = {},
+    element_count = {},
 }
 
 -- Stir meter goes from 0 to 100
@@ -43,8 +45,18 @@ function Reset_gameplay()
         ingredient:remove()
     end
     INGREDIENTS = {}
+    local sum = 0
+    for a = 1, 5, 1 do
+        GAMEPLAY_STATE.element_target_ratio[a] = math.random(100)
+        sum = sum + GAMEPLAY_STATE.element_target_ratio[a]
+    end
+    for a = 1, #GAMEPLAY_STATE.element_target_ratio, 1 do
+        GAMEPLAY_STATE.element_target_ratio[a] = GAMEPLAY_STATE.element_target_ratio[a] / sum
+    end
+    for a = 1, #GAMEPLAY_STATE.element_target_ratio, 1 do
+        GAMEPLAY_STATE.element_count[a] = 0
+    end
 end
-
 
 
 -- Update Loop
