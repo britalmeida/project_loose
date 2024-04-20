@@ -77,13 +77,15 @@ end
 
 local function draw_hud()
     gfx.pushContext()
-        -- Top left corner: Score!
+        -- Flame ammount indication.
+        local x = 60
+        local y = 210
         gfx.setColor(gfx.kColorBlack)
-        gfx.fillRoundRect(7, 6, 78, 22, 3)
+        gfx.fillRoundRect(x-3, y-3, 75, 22, 3)
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
         gfx.setColor(gfx.kColorWhite)
         gfx.setFont(TEXTURES.font)
-        gfx.drawText("99", 10, 10)
+        gfx.drawText("flame " .. string.format("%02d", GAMEPLAY_STATE.flame_amount*100), x, y)
     gfx.popContext()
 end
 
@@ -92,7 +94,6 @@ local function draw_debug()
     gfx.pushContext()
         gfx.setColor(gfx.kColorBlack)
         gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
-        gfx.drawText("Looooose", 10, 50)
     gfx.popContext()
 end
 

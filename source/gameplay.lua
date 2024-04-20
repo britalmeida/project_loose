@@ -1,5 +1,13 @@
 GYRO_X, GYRO_Y = 200, 120
 
+GAMEPLAY_STATE = {
+    flame_amount = 0.0,
+    water_amount = 0.0,
+    -- Potion mix?
+    potion_color = 0.5,
+    potion_bubbliness = 0.0,
+    -- TODO: elements ratio
+}
 
 
 -- Utility Functions
