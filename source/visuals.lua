@@ -103,9 +103,6 @@ local function draw_parameter_diagram( x_min, y_min, width, height )
 
     local target_params = GAMEPLAY_STATE.element_target_ratio
 
-    print(#params)
-    print(#target_params)
-
     gfx.pushContext()
         local n = #params
 
