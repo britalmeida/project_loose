@@ -9,6 +9,8 @@ GAMEPLAY_STATE = {
     -- TODO: elements ratio
 }
 
+-- Stir meter goes from 0 to 100
+STIR_METER = 0
 
 -- Utility Functions
 
@@ -46,8 +48,9 @@ end
 
 
 -- Update Loop
-
-function Handle_input()
+--- `timeDelta` is the time in seconds since the last update.
+---@param timeDelta number
+function Handle_input(timeDelta)
     local gravityX, gravityY, _gravityZ = playdate.readAccelerometer()
     GYRO_X = clamp(GYRO_X + gravityX * 10, 0, 400)
     GYRO_Y = clamp(GYRO_Y + gravityY * 10, 0, 240)
@@ -58,6 +61,13 @@ function Handle_input()
         end
         print("Hello!")
     end
+
+    local angleDelta, _ = playdate.getCrankChange()
+    local revolutionsPerSecond = math.abs(angleDelta) / 360 / timeDelta
+    local decaySpeed = 5
+    STIR_METER += revolutionsPerSecond * 3 - decaySpeed
+    STIR_METER = math.max(STIR_METER, 0)
+    STIR_METER = math.min(STIR_METER, 100)
 end
 
 

@@ -25,6 +25,9 @@ local function initialize()
     Init_gameplay()
     Init_visuals()
     Init_menus()
+
+    -- Reset time delta
+    playdate.resetElapsedTime()
 end
 
 initialize()
@@ -35,6 +38,7 @@ Enter_gameplay()
 
 function playdate.update()
     -- Called before every frame is drawn.
+    local timeDelta = playdate.getElapsedTime()
 
     if MENU_STATE.screen ~= MENU_SCREEN.gameplay then
         -- In Menu system.
@@ -43,7 +47,7 @@ function playdate.update()
     -- Intentionally check again (no else), the menu might have just started gameplay
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
         -- In gameplay.
-        Handle_input()
+        Handle_input(timeDelta)
         Tick_gameplay()
     end
 
@@ -51,4 +55,6 @@ function playdate.update()
     gfx.clear()
     gfx.sprite.update()
     playdate.timer.updateTimers()
+
+    playdate.resetElapsedTime()
 end
