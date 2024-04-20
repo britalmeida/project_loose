@@ -76,17 +76,34 @@ end
 
 
 local function draw_hud()
-    gfx.pushContext()
+    do
+        gfx.pushContext()
         -- Flame ammount indication.
         local x = 60
         local y = 210
         gfx.setColor(gfx.kColorBlack)
-        gfx.fillRoundRect(x-3, y-3, 75, 22, 3)
+        gfx.fillRoundRect(x - 3, y - 3, 75, 22, 3)
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
         gfx.setColor(gfx.kColorWhite)
         gfx.setFont(TEXTURES.font)
-        gfx.drawText("flame " .. string.format("%02d", GAMEPLAY_STATE.flame_amount*100), x, y)
-    gfx.popContext()
+        gfx.drawText("flame " .. string.format("%02d", GAMEPLAY_STATE.flame_amount * 100), x, y)
+        gfx.popContext()
+    end
+    do
+        gfx.pushContext()
+        -- Crank speed indication.
+        local x = 10
+        local y = 10
+        local border = 3
+        local width = 22
+        local height = 150
+        local meter = (STIR_METER / 100) * (height - border * 2)
+        gfx.setColor(gfx.kColorBlack)
+        gfx.fillRoundRect(x, y, width, height, border)
+        gfx.setColor(gfx.kColorWhite)
+        gfx.fillRoundRect(x + border, y + height - meter - border, width - border * 2, meter, 3)
+        gfx.popContext()
+    end
 end
 
 
