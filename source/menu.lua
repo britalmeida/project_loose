@@ -86,7 +86,7 @@ local function draw_ui()
     if MENU_STATE.screen == MENU_SCREEN.start then
         gfx.pushContext()
             gfx.setColor(gfx.kColorWhite)
-            gfx.fillCircleAtPoint(73, 110 + 27*MENU_STATE.focused_option, 7)
+            gfx.fillCircleAtPoint(50, 94 + 42*MENU_STATE.focused_option, 7)
         gfx.popContext()
 
     -- Draw gameover screen dynamic elements.
