@@ -1,8 +1,3 @@
-import "CoreLibs/object"
-import "CoreLibs/graphics"
-import "CoreLibs/sprites"
-import "CoreLibs/timer"
-
 
 function init_gameplay()
     -- Done only once on start of the game, to load and setup const resources.
@@ -15,8 +10,10 @@ end
 
 
 function handle_input()
-    -- Left/Right button switches the active arm.
     if playdate.buttonIsPressed( playdate.kButtonA ) then
+        if not SOUND.cat_meow:isPlaying() then
+            SOUND.cat_meow:play()
+        end
         print("Hello!")
     end
 end

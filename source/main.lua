@@ -5,6 +5,7 @@ import "CoreLibs/timer"
 
 import "gameplay"
 import "visuals"
+import "sound"
 
 local gfx <const> = playdate.graphics
 frame_ms = 1000 / 30
