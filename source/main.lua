@@ -4,6 +4,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+import "utils"
 import "sound"
 import "gameplay"
 import "visuals"
