@@ -1,8 +1,8 @@
-# Playdate Output
+# Playdate Output.
 builds/*
 *.pdx
 
-# Dev environment (to be reviewed)
+# Dev environment (to be reviewed).
 *.code-workspace
 .sentry-native
 Build and Run*
