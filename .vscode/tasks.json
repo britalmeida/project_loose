@@ -27,7 +27,7 @@
         },
         {
             "label": "Playdate: Build and Run",
-            "dependsOn": ["Playdate: Build", "Playdate: Run"],
+            "dependsOn": ["create build directory", "Playdate: Build", "Playdate: Run"],
             "dependsOrder": "sequence",
             "problemMatcher": [],
             "group": {
