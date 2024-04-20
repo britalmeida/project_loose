@@ -72,7 +72,7 @@ local function draw_poly_shape( x_min, y_min, width, height, params, alpha, colo
     gfx.setColor(color)
     local n = #params
     local x1 = x_min + width / 2
-    local y1 = y_min + (1 - params[1]) * height / 2
+    local y1 = y_min + (1 - math.sqrt(params[1])) * height / 2
     for a = 0, n-1, 1 do
         local phi = (a+1)/n * 2 * math.pi
         local r = math.sqrt(params[(a+1<n and a+1 or 0) + 1])
