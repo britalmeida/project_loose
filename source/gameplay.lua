@@ -6,21 +6,13 @@ GAMEPLAY_STATE = {
     -- Potion mix?
     potion_color = 0.5,
     potion_bubbliness = 0.0,
-
+    game_tick = 0,
     element_target_ratio = {},
     element_count = {},
 }
 
 -- Stir meter goes from 0 to 100
 STIR_METER = 0
-
--- Utility Functions
-
-local function clamp(value, min, max)
-    return math.max(math.min(value, max), min)
-end
-
-
 
 -- Resource Management
 
@@ -64,8 +56,8 @@ end
 ---@param timeDelta number
 function Handle_input(timeDelta)
     local gravityX, gravityY, _gravityZ = playdate.readAccelerometer()
-    GYRO_X = clamp(GYRO_X + gravityX * 10, 0, 400)
-    GYRO_Y = clamp(GYRO_Y + gravityY * 10, 0, 240)
+    GYRO_X = Clamp(GYRO_X + gravityX * 10, 0, 400)
+    GYRO_Y = Clamp(GYRO_Y + gravityY * 10, 0, 240)
 
     if playdate.buttonIsPressed( playdate.kButtonA ) then
         if not SOUND.cat_meow:isPlaying() then
@@ -80,14 +72,26 @@ function Handle_input(timeDelta)
     STIR_METER += revolutionsPerSecond * 3 - decaySpeed
     STIR_METER = math.max(STIR_METER, 0)
     STIR_METER = math.min(STIR_METER, 100)
+
+    if playdate.buttonIsPressed( playdate.kButtonB ) then
+        GAMEPLAY_STATE.flame_amount += 1
+    end
 end
 
 
 function Tick_gameplay()
+    GAMEPLAY_STATE.game_tick += 1
     -- Update ingredient animations.
     for _, ingredient in ipairs(INGREDIENTS) do
         if ingredient:isVisible() then
             ingredient:tick()
+        end
+    end
+
+    if not playdate.buttonIsPressed( playdate.kButtonB ) then
+        GAMEPLAY_STATE.flame_amount -= 1
+        if GAMEPLAY_STATE.flame_amount < 0 then
+            GAMEPLAY_STATE.flame_amount = 0
         end
     end
 end

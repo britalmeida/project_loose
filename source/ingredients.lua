@@ -1,6 +1,6 @@
 
-gfx = playdate.graphics
-local Sprite = gfx.sprite
+local gfx <const> = playdate.graphics
+local Sprite <const> = gfx.sprite
 
 -- Ingredient types
 local ingredient_types = {

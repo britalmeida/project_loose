@@ -130,9 +130,21 @@ end
 
 local function draw_game_background( x, y, width, height )
 
+    local sin = math.sin
+    local fmod = math.fmod
+
+    local x_pos, y_pos
+    x_pos = sin( (fmod(GAMEPLAY_STATE.game_tick, 4) / 2) * math.pi) * Clamp(GAMEPLAY_STATE.flame_amount/5, 0, 5)
+    x_pos += sin( (fmod(GAMEPLAY_STATE.game_tick, 8) / 4) * math.pi) * Clamp(GAMEPLAY_STATE.flame_amount/5, 0, 2)
+
+    if GAMEPLAY_STATE.flame_amount > 30 then
+        y_pos = sin( (fmod(GAMEPLAY_STATE.game_tick, 6) / 3) * math.pi) * 2
+    else
+        y_pos = 0
+    end
     -- Draw full screen background.
     gfx.pushContext()
-        TEXTURES.bg:draw(0, 0)
+        TEXTURES.bg:draw(x_pos, y_pos)
     gfx.popContext()
 
 end
@@ -149,7 +161,7 @@ local function draw_hud()
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
         gfx.setColor(gfx.kColorWhite)
         gfx.setFont(TEXTURES.font)
-        gfx.drawText("flame " .. string.format("%02d", GAMEPLAY_STATE.flame_amount * 100), x, y)
+        gfx.drawText("flame " .. string.format("%02d", GAMEPLAY_STATE.flame_amount), x, y)
         gfx.popContext()
     end
     do
