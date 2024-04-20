@@ -119,10 +119,10 @@ end
 function init_visuals()
 
     -- Load image layers.
-    --TEXTURES.bg = gfxi.new("images/bg")
+    TEXTURES.bg = gfxi.new("images/bg")
 
     -- Set the multiple things in their Z order of what overlaps what.
-    --setDrawPass(-40, draw_game_background)
+    setDrawPass(-40, draw_game_background)
     setDrawPass(10, draw_hud)
     setDrawPass(20, draw_debug)
     --setDrawPass(20, draw_test_dither_patterns)
