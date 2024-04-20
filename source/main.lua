@@ -4,6 +4,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 import "gameplay"
+import "visuals"
 
 local gfx <const> = playdate.graphics
 frame_ms = 1000 / 30
@@ -17,6 +18,7 @@ function initialize()
 
     -- Init all the things!
     init_gameplay()
+    init_visuals()
 end
 
 initialize()
