@@ -1,0 +1,3 @@
+[submodule "playdate-luacats"]
+	path = playdate-luacats
+	url = https://github.com/notpeter/playdate-luacats.git
