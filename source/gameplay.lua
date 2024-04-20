@@ -13,20 +13,20 @@ end
 -- Resource Management
 
 
-function init_gameplay()
+function Init_gameplay()
     -- Done only once on start of the game, to load and setup const resources.
 
     playdate.startAccelerometer()
 end
 
 
-function stop_gameplay()
+function Stop_gameplay()
     -- Done on every game over/win to stop ongoing sounds and events.
     -- Not a complete tear down of resources.
 end
 
 
-function reset_gameplay()
+function Reset_gameplay()
     -- Done on every (re)start of the play.
 end
 
@@ -34,7 +34,7 @@ end
 
 -- Update Loop
 
-function handle_input()
+function Handle_input()
     local gravityX, gravityY, _gravityZ = playdate.readAccelerometer()
     GYRO_X = clamp(GYRO_X + gravityX * 10, 0, 400)
     GYRO_Y = clamp(GYRO_Y + gravityY * 10, 0, 240)

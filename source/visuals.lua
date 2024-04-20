@@ -1,5 +1,5 @@
-gfx = playdate.graphics
-gfxi = playdate.graphics.image
+local gfx <const> = playdate.graphics
+local gfxi <const> = playdate.graphics.image
 
 -- Image Passes
 TEXTURES = {}
@@ -7,7 +7,7 @@ TEXTURES = {}
 
 -- Debug / Development
 
-function draw_test_dither_patterns()
+local function draw_test_dither_patterns()
 
     local dither_types = {
         gfxi.kDitherTypeNone,
@@ -65,7 +65,7 @@ end
 
 -- Draw passes
 
-function draw_game_background( x, y, width, height )
+local function draw_game_background( x, y, width, height )
 
     -- Draw full screen background.
     gfx.pushContext()
@@ -75,7 +75,7 @@ function draw_game_background( x, y, width, height )
 end
 
 
-function draw_hud()
+local function draw_hud()
     gfx.pushContext()
         -- Top left corner: Score!
         gfx.setColor(gfx.kColorBlack)
@@ -88,7 +88,7 @@ function draw_hud()
 end
 
 
-function draw_debug()
+local function draw_debug()
     gfx.pushContext()
         gfx.setColor(gfx.kColorBlack)
         gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
@@ -99,7 +99,7 @@ end
 
 -- Set a draw pass on Z depth
 
-function setDrawPass(z, drawCallback)
+function Set_draw_pass(z, drawCallback)
     local sprite = gfx.sprite.new()
     sprite:setSize(playdate.display.getSize())
     sprite:setCenter(0, 0)
@@ -116,14 +116,14 @@ end
 
 -- Load resources and initialize draw passes
 
-function init_visuals()
+function Init_visuals()
 
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
 
     -- Set the multiple things in their Z order of what overlaps what.
-    setDrawPass(-40, draw_game_background)
-    setDrawPass(10, draw_hud)
-    setDrawPass(20, draw_debug)
-    --setDrawPass(20, draw_test_dither_patterns)
+    Set_draw_pass(-40, draw_game_background)
+    Set_draw_pass(10, draw_hud)
+    Set_draw_pass(20, draw_debug)
+    --Set_draw_pass(20, draw_test_dither_patterns)
 end
