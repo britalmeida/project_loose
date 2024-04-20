@@ -3,8 +3,8 @@ local gfx <const> = playdate.graphics
 local Sprite <const> = gfx.sprite
 
 -- Ingredient types
-local ingredient_types = {
-    { name = "Whimsical Cat", img = gfx.image.new('images/ingredients/cat') }
+INGREDIENT_TYPES = {
+    { name = "Whimsical Cat", element_composition = {1, 0, -1, 0, 1}, img = gfx.image.new('images/ingredients/cat') }
 }
 
 INGREDIENTS = {}
@@ -15,9 +15,10 @@ class('Ingredient').extends(Sprite)
 function Ingredient:init(ingredient_type_idx)
     Ingredient.super.init(self)
 
+    self.ingredient_type_idx = ingredient_type_idx
     self.is_going_in_the_pot = false
 
-    self:setImage(ingredient_types[ingredient_type_idx].img)
+    self:setImage(INGREDIENT_TYPES[ingredient_type_idx].img)
     self:moveTo(300, 30)
 
     self:addSprite()

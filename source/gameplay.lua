@@ -1,5 +1,6 @@
 GYRO_X, GYRO_Y = 200, 120
 
+NUM_ELEMENTS = 5
 GAMEPLAY_STATE = {
     flame_amount = 0.0,
     water_amount = 0.0,
@@ -40,7 +41,7 @@ function Reset_gameplay()
     Init_ingredients()
 
     local sum = 0
-    for a = 1, 5, 1 do
+    for a = 1, NUM_ELEMENTS, 1 do
         GAMEPLAY_STATE.element_target_ratio[a] = math.random(100)
         sum = sum + GAMEPLAY_STATE.element_target_ratio[a]
     end
@@ -66,10 +67,18 @@ function Handle_input(timeDelta)
             SOUND.cat_meow:play()
         end
 
-        INGREDIENTS[1].is_going_in_the_pot = true
+        mixed_ingredient = INGREDIENTS[1]
+        mixed_ingredient_type_idx = mixed_ingredient.ingredient_type_idx
+        element_mix = INGREDIENT_TYPES[mixed_ingredient_type_idx].element_composition
+
+        mixed_ingredient.is_going_in_the_pot = true
         -- Start a timer to despawn the ingredient visuals.
          playdate.timer.new(0.8*1000, function()
-            INGREDIENTS[1]:setVisible(false)
+            mixed_ingredient:setVisible(false)
+
+            for a = 1, #GAMEPLAY_STATE.element_target_ratio, 1 do
+                GAMEPLAY_STATE.element_count[a] += element_mix[a]
+            end
         end)
     end
 
