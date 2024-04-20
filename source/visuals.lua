@@ -65,6 +65,53 @@ end
 
 -- Draw passes
 
+local function draw_poly_shape( x_min, y_min, width, height, params, alpha, color)
+    gfx.setColor(color)
+    local n = #params
+    local x1 = x_min + width / 2
+    local y1 = y_min + (1 - params[1]) * height / 2
+    for a = 0, n-1, 1 do
+        local phi = (a+1)/n * 2 * math.pi
+        local r = params[(a+1<n and a+1 or 0) + 1]
+        local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
+        local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
+        gfx.pushContext()
+            gfx.setDitherPattern(alpha, gfxi.kDitherTypeBayer8x8)
+            gfx.fillTriangle(x1, y1, x2, y2, x_min + width / 2, y_min + height / 2)
+        gfx.popContext()
+        gfx.drawLine( x1, y1, x2, y2)
+        x1 = x2
+        y1 = y2
+    end
+end
+
+local function draw_parameter_diagram( x_min, y_min, width, height )
+    
+    local PARAMS = {0.6, 0.8, 0.5}
+    local TARGET_PARAMS = {0.2, 0.6, 0.5}
+
+    gfx.pushContext()
+        local n = #PARAMS
+
+        local x_min = 170
+        local y_min = 20
+        local width = 60
+        local height = 60
+
+        -- Draw outline polygon
+        local par_lim = {}
+        for a = 1, #PARAMS, 1 do
+            par_lim[a] = 1
+        end
+        draw_poly_shape(x_min, y_min, width, height, par_lim, 0.25, gfx.kColorBlack)
+        -- Draw graph        
+        draw_poly_shape(x_min, y_min, width, height, PARAMS, 0.75, gfx.kColorWhite)
+        -- Draw graph        
+        draw_poly_shape(x_min, y_min, width, height, TARGET_PARAMS, 1.00, gfx.kColorBlack)
+
+    gfx.popContext()
+end
+
 local function draw_game_background( x, y, width, height )
 
     -- Draw full screen background.
@@ -94,6 +141,9 @@ local function draw_debug()
     gfx.pushContext()
         gfx.setColor(gfx.kColorBlack)
         gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
+    gfx.popContext()
+    gfx.pushContext()
+        draw_parameter_diagram( 170, 20, 60, 60 )
     gfx.popContext()
 end
 
@@ -125,6 +175,6 @@ function Init_visuals()
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     Set_draw_pass(10, draw_hud)
-    Set_draw_pass(20, draw_debug)
+    --Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
 end
