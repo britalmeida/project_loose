@@ -38,6 +38,11 @@ end
 
 function Reset_gameplay()
     -- Done on every (re)start of the play.
+
+    for _, ingredient in ipairs(INGREDIENTS) do
+        ingredient:remove()
+    end
+    INGREDIENTS = {}
 end
 
 
@@ -63,5 +68,15 @@ function Handle_input(timeDelta)
     STIR_METER += revolutionsPerSecond * 3 - decaySpeed
     STIR_METER = math.max(STIR_METER, 0)
     STIR_METER = math.min(STIR_METER, 100)
+end
+
+
+function Tick_gameplay()
+    -- Update ingredient animations.
+    for _, ingredient in ipairs(INGREDIENTS) do
+        if ingredient:isVisible() then
+            ingredient:tick()
+        end
+    end
 end
 

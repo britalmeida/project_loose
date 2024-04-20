@@ -8,6 +8,7 @@ import "sound"
 import "gameplay"
 import "visuals"
 import "menu"
+import "ingredients"
 
 
 local gfx <const> = playdate.graphics
@@ -47,6 +48,7 @@ function playdate.update()
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
         -- In gameplay.
         Handle_input(timeDelta)
+        Tick_gameplay()
     end
 
     -- Always redraw and update entities (sprites) and timers.
