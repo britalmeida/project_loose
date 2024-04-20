@@ -8,7 +8,16 @@ builds/*
 Build and Run*
 build_and_run.sh
 
-# OS Specific
-.DS_Store
+# Editors.
 *.kra~
 *.png~
+*~
+*.swp
+*.swo
+*#
+
+# Thumbnails.
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
