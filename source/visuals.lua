@@ -436,14 +436,18 @@ local function draw_game_background( x, y, width, height )
         TEXTURES.bg:draw(x_pos, y_pos)
 
         -- Draw flame animation
-        if GAMEPLAY_STATE.flame_amount > 0.7 then
+        if GAMEPLAY_STATE.flame_amount > 0.8 then
             local table_size = TEXTURES.stir_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
             TEXTURES.stir_flame_table[anim_tick + 1]:draw(-27, 0)
-        elseif GAMEPLAY_STATE.flame_amount > 0.4 then
+        elseif GAMEPLAY_STATE.flame_amount > 0.6 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
             TEXTURES.high_flame_table[anim_tick + 1]:draw(-15, 160)
+        elseif GAMEPLAY_STATE.flame_amount > 0.3 then
+            local table_size = TEXTURES.high_flame_table:getLength()
+            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
+            TEXTURES.medium_flame_table[anim_tick + 1]:draw(-15, 160)
         else
             local table_size = TEXTURES.low_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
@@ -515,6 +519,13 @@ function Init_visuals()
     TEXTURES.low_flame_table = gfx.imagetable.new(2)
     TEXTURES.low_flame_table:setImage(1, lowflame_a)
     TEXTURES.low_flame_table:setImage(2, lowflame_b)
+
+    local mediumflame_a = gfxi.new("images/fire/mediumflame_a")
+    local mediumflame_b = gfxi.new("images/fire/mediumflame_b")
+
+    TEXTURES.medium_flame_table = gfx.imagetable.new(2)
+    TEXTURES.medium_flame_table:setImage(1, mediumflame_a)
+    TEXTURES.medium_flame_table:setImage(2, mediumflame_b)
 
     local highflame_a = gfxi.new("images/fire/highflame_a")
     local highflame_b = gfxi.new("images/fire/highflame_b")
