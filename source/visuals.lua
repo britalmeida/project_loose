@@ -311,6 +311,46 @@ local function draw_liquid_surface()
     gfx.popContext()
 end
 
+Bubbles = {}
+Bubbles_rad = {}
+NUM_BUBBLES = 8
+for a = 1, NUM_BUBBLES, 1 do
+     Bubbles[a] = math.random(90) / 100 + 0.1
+     Bubbles_rad[a] = (math.random(100) / 100) * 2 * math.pi
+end
+
+local function draw_liquid_bubbles()
+    gfx.pushContext()
+    do
+        -- TODO: probably make these global variables so we don't have to change this in multiple places
+        local cauldron_center_x, cauldron_center_y = 105, 160
+        local ellipse_bottom_width = 70
+        local ellipse_height = 12
+
+        local speed_fac = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.05, 0.02)
+        local freq = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.4, 0.9)
+        local offset = GAMEPLAY_STATE.liquid_offset * speed_fac * freq / 2
+
+        for x = 1, NUM_BUBBLES, 1 do
+            local bubble_rad = Bubbles_rad[x] + offset
+            local bubble_amp = Bubbles[x]
+
+            local bot_offset = 0
+            if math.sin(bubble_rad) < 0 then
+                local max_amp = 15
+                bot_offset = math.sin(bubble_rad) * max_amp * Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
+            end
+
+            local b_x = bubble_amp * math.cos(bubble_rad) * ellipse_bottom_width + cauldron_center_x
+            local b_y = bubble_amp * math.sin(bubble_rad) * ellipse_height + cauldron_center_y - bot_offset
+
+            gfx.setColor(gfx.kColorWhite)
+            gfx.drawCircleAtPoint(b_x, b_y, 3)
+        end
+    end
+    gfx.popContext()
+end
+
 local function draw_dialog_bubble()
     local text = SHOWN_STRING
 
@@ -475,7 +515,8 @@ function Init_visuals()
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     -- depth 0: will be the cauldron? or the frog?
-    Set_draw_pass(4, draw_liquid_surface)
+    Set_draw_pass(3, draw_liquid_surface)
+    Set_draw_pass(4, draw_liquid_bubbles)
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
     Set_draw_pass(7, draw_dialog_bubble)
