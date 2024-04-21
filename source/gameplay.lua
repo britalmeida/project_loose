@@ -72,8 +72,8 @@ function Reset_gameplay()
     playdate.resetElapsedTime()
 end
 
-function update_rune_count(difference)
-    sum = 0
+function Update_rune_count(difference)
+    local sum = 0
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] += difference[a]
         if GAMEPLAY_STATE.rune_count[a]<0 then
