@@ -2,7 +2,7 @@ import "tutorial_frog"
 
 GYRO_X, GYRO_Y = 200, 120
 
-NUM_RUNES = 5
+NUM_RUNES = 3
 GAMEPLAY_STATE = {
     flame_amount = 0.0,
     water_amount = 0.0,
@@ -16,6 +16,7 @@ GAMEPLAY_STATE = {
     game_tick = 0,
     rune_target_ratio = {},
     rune_count = {},
+    rune_ratio = {},
 }
 
 -- Stir speed is the speed of cranking in revolutions per seconds
@@ -60,8 +61,9 @@ function Reset_gameplay()
     for a = 1, #GAMEPLAY_STATE.rune_target_ratio, 1 do
         GAMEPLAY_STATE.rune_target_ratio[a] = GAMEPLAY_STATE.rune_target_ratio[a] / sum
     end
-    for a = 1, #GAMEPLAY_STATE.rune_target_ratio, 1 do
+    for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
+        GAMEPLAY_STATE.rune_ratio[a] = 0
     end
 
     Reset_frog()
@@ -70,6 +72,16 @@ function Reset_gameplay()
     playdate.resetElapsedTime()
 end
 
+function update_rune_count(difference)
+    sum = 0
+    for a = 1, NUM_RUNES, 1 do
+        GAMEPLAY_STATE.rune_count[a] += difference[a]
+        sum = sum + GAMEPLAY_STATE.rune_count[a]
+    end
+    for a = 1, NUM_RUNES, 1 do
+        GAMEPLAY_STATE.rune_ratio[a] = GAMEPLAY_STATE.rune_count[a] / sum
+    end
+end
 
 -- Update Loop
 --- `timeDelta` is the time in seconds since the last update.
@@ -93,9 +105,7 @@ function Handle_input(timeDelta)
          playdate.timer.new(0.8*1000, function()
             mixed_ingredient:setVisible(false)
 
-            for a = 1, #GAMEPLAY_STATE.rune_target_ratio, 1 do
-                GAMEPLAY_STATE.rune_count[a] += rune_mix[a]
-            end
+            update_rune_count(rune_mix)
         end)
     end
 
