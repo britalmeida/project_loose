@@ -315,16 +315,17 @@ local function draw_liquid_surface()
     gfx.popContext()
 end
 
-Bubbles = {}
-Bubbles_rad = {}
-Bubbles_tick_off = {}
+Bubbles_amplitude = {}
+Bubbles_radians = {}
+Bubbles_tick_offset = {}
+Bubbles_animation_playing = {}
 NUM_BUBBLES = 10
 Phi = math.pi * (math.sqrt(5.) - 1.) -- Golden angle in radians
 for a = 1, NUM_BUBBLES, 1 do
     local y = 1 - ((a - 1) / (NUM_BUBBLES - 1)) * 2
-    Bubbles[a] = math.sqrt(1 - y * y) * 0.8 + 0.2
-    Bubbles_rad[a] = Phi * (a - 1) -- Golden angle increment
-    Bubbles_tick_off[a] = math.random(100)
+    Bubbles_amplitude[a] = math.sqrt(1 - y * y) * 0.8 + 0.2
+    Bubbles_radians[a] = Phi * (a - 1) -- Golden angle increment
+    Bubbles_tick_offset[a] = math.floor(Phi * (a - 1) * 50)
 end
 
 local function draw_liquid_bubbles()
@@ -340,8 +341,15 @@ local function draw_liquid_bubbles()
         local offset = GAMEPLAY_STATE.liquid_offset * speed_fac * freq / 2
 
         for x = 1, NUM_BUBBLES, 1 do
-            local bubble_rad = Bubbles_rad[x] + offset
-            local bubble_amp = Bubbles[x]
+            if GAMEPLAY_STATE.heat_amount > math.random() + 0.2 then
+                Bubbles_animation_playing[x] = true
+            end
+        end
+        for x = 1, NUM_BUBBLES, 1 do
+            if not Bubbles_animation_playing[x] then goto continue end
+
+            local bubble_rad = Bubbles_radians[x] + offset
+            local bubble_amp = Bubbles_amplitude[x]
 
             local bot_offset = 0
             if math.sin(bubble_rad) < 0 then
@@ -353,8 +361,13 @@ local function draw_liquid_bubbles()
             local b_y = bubble_amp * math.sin(bubble_rad) * ellipse_height + cauldron_center_y - bot_offset
 
             local table_size = TEXTURES.bubble_table:getLength()
-            local anim_tick = math.fmod(Bubbles_tick_off[x] + GAMEPLAY_STATE.game_tick // 3, table_size)
+            local anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, table_size)
             TEXTURES.bubble_table[anim_tick + 1]:draw(b_x - 5, b_y - 12)
+
+            if (anim_tick + 1) == table_size then
+               Bubbles_animation_playing[x] = false
+            end
+            ::continue::
         end
     end
     gfx.popContext()
@@ -451,7 +464,7 @@ local function draw_hud()
         local width = 22
         local height = 150
 
-        local meter = ( GAMEPLAY_STATE.flame_amount ) * (height - border * 2)
+        local meter = ( GAMEPLAY_STATE.heat_amount ) * (height - border * 2)
         gfx.setColor(gfx.kColorBlack)
         gfx.fillRoundRect(x, y, width, height, border)
         gfx.setColor(gfx.kColorWhite)
@@ -549,7 +562,7 @@ function Init_visuals()
     Set_draw_pass(6, draw_stirring_stick)
     Set_draw_pass(7, draw_dialog_bubble)
     Set_draw_pass(8, draw_debug_color_viscosity)
-    -- Set_draw_pass(10, draw_hud)
+    Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
 end

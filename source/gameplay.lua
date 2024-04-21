@@ -6,6 +6,7 @@ PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 NUM_RUNES = 3
 GAMEPLAY_STATE = {
     flame_amount = 0.0,
+    heat_amount = 0.0,
     water_amount = 0.0,
     liquid_offset = 0.0,
     liquid_momentum = 0.0,
@@ -176,6 +177,14 @@ function Tick_gameplay()
         GAMEPLAY_STATE.flame_amount *= flame_decay
     else
         GAMEPLAY_STATE.flame_amount = 0
+    end
+
+    if GAMEPLAY_STATE.heat_amount > GAMEPLAY_STATE.flame_amount then
+        -- Slowly decay the heat
+        GAMEPLAY_STATE.heat_amount -= 0.001
+    else
+        -- The flame heats up the cauldron
+        GAMEPLAY_STATE.heat_amount += 0.01 * GAMEPLAY_STATE.flame_amount
     end
 
     -- Update liquid color
