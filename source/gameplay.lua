@@ -94,22 +94,15 @@ function Handle_input(timeDelta)
     if playdate.buttonIsPressed( playdate.kButtonB ) then
         Ask_the_frog()
     end
-    if playdate.buttonIsPressed( playdate.kButtonA ) then
-        if not SOUND.cat_meow:isPlaying() then
-            SOUND.cat_meow:play()
+    if playdate.buttonJustPressed( playdate.kButtonA ) then
+        for i, ingredient in pairs(INGREDIENTS) do
+          ingredient:try_pickup()
         end
-
-        mixed_ingredient = INGREDIENTS[1]
-        mixed_ingredient_type_idx = mixed_ingredient.ingredient_type_idx
-        rune_mix = INGREDIENT_TYPES[mixed_ingredient_type_idx].rune_composition
-
-        mixed_ingredient.is_going_in_the_pot = true
-        -- Start a timer to despawn the ingredient visuals.
-         playdate.timer.new(0.8*1000, function()
-            mixed_ingredient:setVisible(false)
-
-            update_rune_count(rune_mix)
-        end)
+    end
+    if playdate.buttonJustReleased(playdate.kButtonA) then
+        for i, ingredient in pairs(INGREDIENTS) do
+            ingredient:release()
+        end
     end
 
     local angleDelta, _ = playdate.getCrankChange()
