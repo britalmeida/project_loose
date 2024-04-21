@@ -521,7 +521,7 @@ function Init_visuals()
     Set_draw_pass(6, draw_stirring_stick)
     Set_draw_pass(7, draw_dialog_bubble)
     Set_draw_pass(8, draw_debug_color_viscosity)
-    Set_draw_pass(10, draw_hud)
+    -- Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
 end
