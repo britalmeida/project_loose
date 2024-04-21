@@ -342,7 +342,7 @@ local function draw_liquid_bubbles()
         local offset = GAMEPLAY_STATE.liquid_offset * speed_fac * freq / 2
 
         for x = 1, NUM_BUBBLES, 1 do
-            if not Bubbles_animation_playing[x] and GAMEPLAY_STATE.heat_amount > math.random() + 0.2 then
+            if not Bubbles_animation_playing[x] and GAMEPLAY_STATE.heat_amount > math.random() + 0.1 then
                 Bubbles_animation_playing[x] = true
                 Bubbles_flip[x] = math.random() > 0.5
             end
