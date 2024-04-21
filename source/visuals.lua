@@ -190,6 +190,44 @@ local function draw_stirring_stick()
     gfx.popContext()
 end
 
+local function draw_dialog_bubble()
+    local text = "just blow air onto the\nbottom of the cauldron"
+
+    -- local text_lines = {"Just blow air onto", "the bottom of the cauldron"}
+    local text_lines = {}
+    for line in string.gmatch(text, "[^\n]+") do
+        table.insert(text_lines, line)
+    end
+
+    -- Bounding box of the dialog bubble, within which it is safe to place text.
+    local x_min = 140
+    local y_min = 60
+    local width = 210
+    local height = 65
+
+    -- Vertical advance of the line, in pixels.
+    local line_height = 18
+
+    local y_center =  y_min + height / 2
+    local current_line_y = y_center - line_height * #text_lines / 2
+    
+    gfx.pushContext()
+    do
+        -- The buggle graphics itself.
+        TEXTURES.dialog_bubble:draw(0, 0)
+
+        -- Debug drawing of the safe area bounds.
+        -- gfx.drawRect(x_min, y_min, width, height)
+
+        -- Draw lines of the text.
+        for i = 1, #text_lines, 1 do
+            gfx.drawTextAligned(text_lines[i], x_min + width / 2, current_line_y, kTextAlignment.center)
+            current_line_y += line_height
+        end
+    end
+    gfx.popContext()
+end
+
 local function draw_game_background( x, y, width, height )
 
     local sin = math.sin
@@ -276,12 +314,14 @@ function Init_visuals()
 
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
+    TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     -- depth 0: will be the cauldron? or the frog? 
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
+    -- Set_draw_pass(7, draw_dialog_bubble)
     Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
