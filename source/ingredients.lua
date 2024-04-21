@@ -57,7 +57,7 @@ function Ingredient:release()
     local bounds = self:getBoundsRect()
     local cauldron = playdate.geometry.rect.new(65, 152, 80, 15)
     if bounds:intersects(cauldron) then
-        update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
+        Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
         self:setVisible(false)
     else
         self:moveTo(self.start_pos:unpack())
