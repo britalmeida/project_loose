@@ -1,16 +1,16 @@
---metrics={"baseline":-2,"xHeight":2,"capHeight":0,"pairs":{},"left":[],"right":[]}
-datalen=560
-data=iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAV5JREFUSEu9VlsSxCAIW+9/aHd0ihPCQ9yp27+2SCDEaPvQ03vv41NrrfE/fK/ESYysw5wrOSSacQ++W8CIlbpGnFckxnj5JjAHUWcrMXaQAUf5sJmWVLbwYcFiowLM66TzwZACRto8OnkcmCjSCswXiz4DliS7+Xl6YYbKVIuAPFBOymw9u0R3fCKuk46j3Sjj/Nt2Yj0Yk6gYg7C0M5qSgWAyVGjkYFnSzPGWyqO5wXfjTJ5BRA4WFbF1Lp5N1eV2XRtxeQuirUQePP19d7gYqnlbeUmCPYyspSea0g4dCOmpkwHvqOX/q9pQBOQElSOxUoSxTFjkUvhW16mqTw75qqjcfWzmkFx/6FJQFpWr6spsfogZdzhT2HGlh8Dz4vg8CusmMHeq3m8BS6cjvwDiN8v9IZVeONKLNCvab3c8gKVrNetbwNP6HToW3k1gAcc5+xJ/Yb7RzP++j8NevmzAcC4VtYclAAAAAElFTkSuQmCC
-width=10
-height=10
+--metrics={"baseline":10,"xHeight":2,"capHeight":0,"pairs":{},"left":[],"right":[]}
+datalen=648
+data=iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAAAXNSR0IArs4c6QAAAaBJREFUWEftmNsSwyAIROv/f3Q6OuJsEEQjCelM+5h6OS4LkqSP8+84jiMvmVJKnku7LpYhiS/zzsLS4ehg0rxwUDwcgUqHDAWVIDVYF1AM3WzouU0g7M3aqOw2qODLspHlUZpXx7U5NRG7NbZBKxRluqiGlP1QHU5/c3BKLFdQVINU1UqVFPpsm9tAjdCrNlid56oo1vha9wuoVBd5xtN4voZr6KGktIJvhZ68rV1gPBldFJVANa/xxHpFwR9diQj8+BXKSpVrtMTF2E3juuHVjqqDkLJxtgu6CjEz7wSqNQnWdTiz0e6YBjqqa68FRbB6gHCfFoC3+hLtsgQaqa4IKvWTrH983Aq/Bao1CKwDmurcd8uQNl8tT0pXPv0K7A3cFXzepUNnFAZZmBTlyjvQqTw4f/lYVfzx7F0FbK3i1YmO83L0TMHMAY5Aosvg4ZAlEpQrOVQ2CpSSNe9PgPisUz8CtKso1aP4vOOKAC0XIfPmEFKtozcnULtDhH1U4aIURVj0qapRNCjZwOQwBzxkA3ObP6gp0eKAv6KLgpnDv8+eUTrhtUD3AAAAAElFTkSuQmCC
+width=14
+height=14
 
 tracking=1
 
-0	10
-1	10
-2	9
-3	10
-4	10
+0	1
+1	12
+2	12
+3	13
+4	1
 5	1
 6	1
 space	10
