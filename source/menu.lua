@@ -112,6 +112,7 @@ local function draw_ui()
 
             --------------------------------------------------------------------
             -- Cocktail details for development purposes.
+            --[[
 
             gfx.setColor(playdate.graphics.kColorWhite)
 
@@ -132,6 +133,7 @@ local function draw_ui()
                 gfx.drawRect(x, 155, 20, 20) -- Outline
             end
 
+            --]]
             -- End of development only code
             --------------------------------------------------------------------
 
