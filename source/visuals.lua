@@ -334,11 +334,11 @@ local function draw_game_background( x, y, width, height )
         if GAMEPLAY_STATE.flame_amount > 0.5 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.high_flame_table[anim_tick + 1]:draw(100, 150)
+            TEXTURES.high_flame_table[anim_tick + 1]:draw(-15, 160)
         else
             local table_size = TEXTURES.low_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-            TEXTURES.low_flame_table[anim_tick + 1]:draw(100, 150)
+            TEXTURES.low_flame_table[anim_tick + 1]:draw(-15, 160)
         end
     end
     gfx.popContext()
