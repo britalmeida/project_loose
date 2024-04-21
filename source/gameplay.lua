@@ -171,6 +171,14 @@ function Tick_gameplay()
         GAMEPLAY_STATE.flame_amount = 0
     end
 
+    -- Update liquid color
+    local color_change = 0.001
+    if STIR_SPEED < 0 then
+        GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color / ((color_change * math.abs(STIR_SPEED)) + 1)
+    elseif STIR_SPEED > 0 then
+        GAMEPLAY_STATE.potion_color = 1 - (1 - GAMEPLAY_STATE.potion_color) / ((color_change * STIR_SPEED) + 1)
+    end
+
     -- Update liquid state
     GAMEPLAY_STATE.liquid_momentum += Clamp(STIR_SPEED, -8, 8) / 10
     GAMEPLAY_STATE.liquid_offset += GAMEPLAY_STATE.liquid_momentum
