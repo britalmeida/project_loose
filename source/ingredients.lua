@@ -114,7 +114,7 @@ function Ingredient:drop()
   local drop = Ingredient(self.ingredient_type_idx, playdate.geometry.point.new(100, 80), true)
   drop.is_in_air = true
   drop:setZIndex(8)
-  drop.vel.dx, drop.vel.dy = math.random(-8, 8), math.random(-8, 8)
+  drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
 
   self.can_drop = false
