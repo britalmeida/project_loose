@@ -18,6 +18,7 @@ frame_ms = 1000 / 30
 
 local function initialize()
     -- Start all systems needed by the game to start ticking
+    playdate.sound.micinput.startListening()
 
     -- Make it different, every time!
     math.randomseed(playdate.getSecondsSinceEpoch())
@@ -33,6 +34,12 @@ initialize()
 --enter_menu_start()
 Enter_gameplay()
 
+function playdate.deviceDidUnlock()
+    -- Seems like the playdate disables the mic when locked.
+    -- So we need to turn it on again when we resume the game
+    -- TODO: Not tested if this fixes the issue
+    playdate.sound.micinput.startListening()
+end
 
 function playdate.update()
     -- Called before every frame is drawn.

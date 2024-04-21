@@ -214,7 +214,8 @@ local function draw_hud()
         local border = 3
         local width = 22
         local height = 150
-        local meter = (STIR_METER / 100) * (height - border * 2)
+
+        local meter = ( playdate.sound.micinput.getLevel() ) * (height - border * 2)
         gfx.setColor(gfx.kColorBlack)
         gfx.fillRoundRect(x, y, width, height, border)
         gfx.setColor(gfx.kColorWhite)
