@@ -179,11 +179,12 @@ function Tick_gameplay()
     end
 
     -- Update liquid color
-    local color_change = 0.001
-    if STIR_SPEED < 0 then
-        GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color / ((color_change * math.abs(STIR_SPEED)) + 1)
-    elseif STIR_SPEED > 0 then
-        GAMEPLAY_STATE.potion_color = 1 - (1 - GAMEPLAY_STATE.potion_color) / ((color_change * STIR_SPEED) + 1)
+    local color_change = 0.0002
+    GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
+    if GAMEPLAY_STATE.potion_color < 0 then
+        GAMEPLAY_STATE.potion_color = 0
+    elseif GAMEPLAY_STATE.potion_color > 1 then
+        GAMEPLAY_STATE.potion_color = 1
     end
 
     -- Update liquid state
