@@ -110,6 +110,31 @@ local function draw_ui()
             COCKTAILS[2].img:drawScaled(20+130, 0, 0.9, 0.9)
             COCKTAILS[2].img:drawScaled(20+260, 0, 0.9, 0.9)
 
+            --------------------------------------------------------------------
+            -- Cocktail details for development purposes.
+
+            gfx.setColor(playdate.graphics.kColorWhite)
+
+            for i = 1, 3, 1 do
+                -- Color.
+                x = 20 + 75 + 130 * (i - 1)
+                gfx.pushContext()
+                    gfx.setDitherPattern(1 - COCKTAILS[i].color, gfx.image.kDitherTypeBayer8x8)
+                    gfx.fillRect(x, 130, 20, 20)
+                gfx.popContext()
+                gfx.drawRect(x, 130, 20, 20)  -- Outline
+
+                -- Viscosity.
+                gfx.pushContext()
+                    gfx.setDitherPattern(1 - COCKTAILS[i].viscosity, gfx.image.kDitherTypeBayer8x8)
+                    gfx.fillRect(x, 155, 20, 20)
+                gfx.popContext()
+                gfx.drawRect(x, 155, 20, 20) -- Outline
+            end
+
+            -- End of development only code
+            --------------------------------------------------------------------
+
             gfx.setColor(gfx.kColorWhite)
             gfx.setLineWidth(5.0)
             gfx.drawRect(15+128*MENU_STATE.focused_option, 0, 120, 240)
