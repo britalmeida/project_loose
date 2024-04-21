@@ -15,6 +15,9 @@ GAMEPLAY_STATE = {
 -- Stir meter goes from 0 to 100
 STIR_METER = 0
 
+-- Stir position is an angle in radians
+STIR_POSITION = 0
+
 -- Resource Management
 
 
@@ -96,6 +99,9 @@ function Handle_input(timeDelta)
     if playdate.buttonIsPressed( playdate.kButtonB ) then
         GAMEPLAY_STATE.flame_amount += 1
     end
+
+    -- Use the absolute position of the crank to drive the stick in the cauldorn
+    STIR_POSITION = math.rad(playdate.getCrankPosition())
 end
 
 

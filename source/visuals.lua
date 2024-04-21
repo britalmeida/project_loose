@@ -170,6 +170,26 @@ local function draw_parameter_diagram()
     gfx.popContext()
 end
 
+local function draw_stirring_stick()
+    gfx.pushContext()
+    do
+        local t = STIR_POSITION
+        local cauldron_center_x, cauldron_center_y = 105, 160
+        local ellipse_top_width, ellipse_bottom_width = 100, 70
+        local ellipse_height = 12
+        local stick_height = 70
+
+        local a_x = math.cos(t) * ellipse_top_width + cauldron_center_x
+        local a_y = math.sin(t) * ellipse_height + cauldron_center_y - stick_height
+        local b_x = math.cos(t) * ellipse_bottom_width + cauldron_center_x
+        local b_y = math.sin(t) * ellipse_height + cauldron_center_y
+        
+        gfx.setLineWidth(5)
+        gfx.drawLine(a_x, a_y, b_x, b_y)
+    end
+    gfx.popContext()
+end
+
 local function draw_game_background( x, y, width, height )
 
     local sin = math.sin
@@ -261,6 +281,7 @@ function Init_visuals()
     Set_draw_pass(-40, draw_game_background)
     -- depth 0: will be the cauldron? or the frog? 
     Set_draw_pass(5, draw_parameter_diagram)
+    Set_draw_pass(6, draw_stirring_stick)
     Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
