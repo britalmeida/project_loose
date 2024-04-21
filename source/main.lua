@@ -34,7 +34,7 @@ end
 
 initialize()
 -- For testing, enter gameplay directly.
---enter_menu_start()
+--Enter_menu_start()
 Enter_gameplay()
 
 function playdate.deviceDidUnlock()

@@ -91,6 +91,18 @@ local function draw_ui()
 
     -- Draw gameover screen dynamic elements.
     elseif MENU_STATE.screen == MENU_SCREEN.gameover then
+
+    -- Draw mission selection cursor.
+    elseif MENU_STATE.screen == MENU_SCREEN.mission then
+        gfx.pushContext()
+            gfx.setColor(gfx.kColorBlack)
+            gfx.fillRect(0, 0, 400, 240)
+
+            -- Draw cocktails
+
+            gfx.setColor(gfx.kColorWhite)
+            gfx.fillCircleAtPoint(50 + 140*MENU_STATE.focused_option, 180, 7)
+        gfx.popContext()
     end
 end
 
@@ -144,6 +156,25 @@ function Handle_menu_input()
             SOUND.menu_confirm:play()
             Enter_menu_start()
         end
+
+        -- Cycle Options.
+        if playdate.buttonJustReleased( playdate.kButtonRight ) then
+            MENU_STATE.focused_option += 1
+            SOUND.menu_highlight:play()
+        end
+        if playdate.buttonJustReleased( playdate.kButtonLeft ) then
+            MENU_STATE.focused_option -= 1
+            SOUND.menu_highlight:play()
+        end
+        local crankTicks = playdate.getCrankTicks(3)
+        if crankTicks == 1 then
+            MENU_STATE.focused_option += 1
+        elseif crankTicks == -1 then
+            MENU_STATE.focused_option -= 1
+        end
+        -- Clamp so the option cycling doesn't wrap around.
+        MENU_STATE.focused_option = math.max(MENU_STATE.focused_option, 0)
+        MENU_STATE.focused_option = math.min(MENU_STATE.focused_option, 2)
 
     elseif MENU_STATE.screen == MENU_SCREEN.credits then
         if playdate.buttonJustReleased( playdate.kButtonB ) then
