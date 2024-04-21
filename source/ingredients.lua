@@ -51,6 +51,7 @@ function Ingredient:tick()
     local cauldron = playdate.geometry.rect.new(65, 152, 80, 15)
     if self.is_drop and self:getBoundsRect():intersects(cauldron) then
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
+        table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()
     end
     if self.is_picked_up then
@@ -68,6 +69,7 @@ function Ingredient:tick()
         local _, y = self:getPosition()
         if y > 300 then
           if self.is_drop then
+              table.remove(DROPS, table.indexOfElement(DROPS, self))
               self:remove()
           else
             self:moveTo(self.start_pos:unpack())
