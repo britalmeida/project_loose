@@ -14,7 +14,6 @@ GAMEPLAY_STATE = {
     potion_color = 0.5,
     potion_bubbliness = 0.0,
     game_tick = 0,
-    rune_target_ratio = {},
     rune_count = {},
     rune_ratio = {},
 }
@@ -52,15 +51,7 @@ function Reset_gameplay()
     end
     Init_ingredients()
 
-    -- Reset target ingredients.
-    local sum = 0
-    for a = 1, NUM_RUNES, 1 do
-        GAMEPLAY_STATE.rune_target_ratio[a] = math.random(100)
-        sum = sum + GAMEPLAY_STATE.rune_target_ratio[a]
-    end
-    for a = 1, #GAMEPLAY_STATE.rune_target_ratio, 1 do
-        GAMEPLAY_STATE.rune_target_ratio[a] = GAMEPLAY_STATE.rune_target_ratio[a] / sum
-    end
+    -- Reset current ingredient mix.
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_ratio[a] = 0

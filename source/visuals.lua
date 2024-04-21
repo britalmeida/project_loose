@@ -168,7 +168,7 @@ local function draw_parameter_diagram()
         end
     end
 
-    local target_params = GAMEPLAY_STATE.rune_target_ratio
+    local target_params = TARGET_COCKTAIL.rune_ratio
 
     gfx.pushContext()
         local size = 100

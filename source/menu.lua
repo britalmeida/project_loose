@@ -162,6 +162,7 @@ function Handle_menu_input()
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
+            Set_target_potion(MENU_STATE.focused_option + 1)
             Enter_gameplay()
         elseif playdate.buttonJustReleased( playdate.kButtonB ) then
             SOUND.menu_confirm:play()
