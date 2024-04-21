@@ -367,7 +367,7 @@ end
 
 local function draw_debug()
     gfx.pushContext()
-        gfx.setColor(gfx.kColorBlack)
+        gfx.setColor(gfx.kColorWhite)
         gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
         playdate.drawFPS(200,0)
     gfx.popContext()
