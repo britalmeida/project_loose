@@ -74,8 +74,11 @@ function Update_rune_count(difference)
     local sum = 0
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] += difference[a]
-        if GAMEPLAY_STATE.rune_count[a]<0 then
+        if GAMEPLAY_STATE.rune_count[a] < 0 then
             GAMEPLAY_STATE.rune_count[a] = 0
+        end
+        if GAMEPLAY_STATE.rune_count[a] > 20 then
+            GAMEPLAY_STATE.rune_count[a] = 20
         end
         sum = sum + GAMEPLAY_STATE.rune_count[a]
     end
