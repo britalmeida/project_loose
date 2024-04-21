@@ -134,7 +134,7 @@ end
 
 local function draw_parameter_diagram()
     
-    local params = GAMEPLAY_STATE.element_count
+    local params = GAMEPLAY_STATE.rune_count
     local sum = 0
     for a = 1, #params, 1 do
         sum = sum + params[a]
@@ -145,7 +145,7 @@ local function draw_parameter_diagram()
         end
     end
 
-    local target_params = GAMEPLAY_STATE.element_target_ratio
+    local target_params = GAMEPLAY_STATE.rune_target_ratio
 
     gfx.pushContext()
         local x_center = 100

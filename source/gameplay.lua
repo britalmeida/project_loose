@@ -2,7 +2,7 @@ import "tutorial_frog"
 
 GYRO_X, GYRO_Y = 200, 120
 
-NUM_ELEMENTS = 5
+NUM_RUNES = 5
 GAMEPLAY_STATE = {
     flame_amount = 0.0,
     water_amount = 0.0,
@@ -14,8 +14,8 @@ GAMEPLAY_STATE = {
     potion_color = 0.5,
     potion_bubbliness = 0.0,
     game_tick = 0,
-    element_target_ratio = {},
-    element_count = {},
+    rune_target_ratio = {},
+    rune_count = {},
 }
 
 -- Stir speed is the speed of cranking in revolutions per seconds
@@ -53,15 +53,15 @@ function Reset_gameplay()
 
     -- Reset target ingredients.
     local sum = 0
-    for a = 1, NUM_ELEMENTS, 1 do
-        GAMEPLAY_STATE.element_target_ratio[a] = math.random(100)
-        sum = sum + GAMEPLAY_STATE.element_target_ratio[a]
+    for a = 1, NUM_RUNES, 1 do
+        GAMEPLAY_STATE.rune_target_ratio[a] = math.random(100)
+        sum = sum + GAMEPLAY_STATE.rune_target_ratio[a]
     end
-    for a = 1, #GAMEPLAY_STATE.element_target_ratio, 1 do
-        GAMEPLAY_STATE.element_target_ratio[a] = GAMEPLAY_STATE.element_target_ratio[a] / sum
+    for a = 1, #GAMEPLAY_STATE.rune_target_ratio, 1 do
+        GAMEPLAY_STATE.rune_target_ratio[a] = GAMEPLAY_STATE.rune_target_ratio[a] / sum
     end
-    for a = 1, #GAMEPLAY_STATE.element_target_ratio, 1 do
-        GAMEPLAY_STATE.element_count[a] = 0
+    for a = 1, #GAMEPLAY_STATE.rune_target_ratio, 1 do
+        GAMEPLAY_STATE.rune_count[a] = 0
     end
 
     Reset_frog()
@@ -86,15 +86,15 @@ function Handle_input(timeDelta)
 
         mixed_ingredient = INGREDIENTS[1]
         mixed_ingredient_type_idx = mixed_ingredient.ingredient_type_idx
-        element_mix = INGREDIENT_TYPES[mixed_ingredient_type_idx].element_composition
+        rune_mix = INGREDIENT_TYPES[mixed_ingredient_type_idx].rune_composition
 
         mixed_ingredient.is_going_in_the_pot = true
         -- Start a timer to despawn the ingredient visuals.
          playdate.timer.new(0.8*1000, function()
             mixed_ingredient:setVisible(false)
 
-            for a = 1, #GAMEPLAY_STATE.element_target_ratio, 1 do
-                GAMEPLAY_STATE.element_count[a] += element_mix[a]
+            for a = 1, #GAMEPLAY_STATE.rune_target_ratio, 1 do
+                GAMEPLAY_STATE.rune_count[a] += rune_mix[a]
             end
         end)
     end

@@ -4,7 +4,7 @@ local Sprite <const> = gfx.sprite
 
 -- Ingredient types
 INGREDIENT_TYPES = {
-    { name = "Whimsical Cat", element_composition = {1, 1, 2, 0, 1}, img = gfx.image.new('images/ingredients/cat') }
+    { name = "Whimsical Cat", rune_composition = {1, 1, 2, 0, 1}, img = gfx.image.new('images/ingredients/cat') }
 }
 
 INGREDIENTS = {}
