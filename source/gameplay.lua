@@ -14,8 +14,8 @@ GAMEPLAY_STATE = {
     potion_color = 0.5,
     potion_bubbliness = 0.0,
     game_tick = 0,
-    rune_count = {},
-    rune_ratio = {},
+    rune_count = {0, 0, 0},
+    rune_ratio = {0, 0, 0},
 }
 
 -- Stir speed is the speed of cranking in revolutions per seconds
