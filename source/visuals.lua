@@ -316,12 +316,12 @@ end
 Bubbles = {}
 Bubbles_rad = {}
 Bubbles_tick_off = {}
-NUM_BUBBLES = 10
+NUM_BUBBLES = 9
 Phi = math.pi * (math.sqrt(5.) - 1.) -- Golden angle in radians
 for a = 1, NUM_BUBBLES, 1 do
-    local y = 1 - (a / (NUM_BUBBLES - 1)) * 2
+    local y = 1 - ((a - 1) / (NUM_BUBBLES - 1)) * 2
     Bubbles[a] = math.sqrt(1 - y * y) * 0.9 + 0.1
-    Bubbles_rad[a] = Phi * a -- Golden angle increment
+    Bubbles_rad[a] = Phi * (a - 1) -- Golden angle increment
     Bubbles_tick_off[a] = math.random(100)
 end
 
