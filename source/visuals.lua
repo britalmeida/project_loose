@@ -147,7 +147,10 @@ local function draw_poly_shape( x_min, y_min, width, height, params, alpha, colo
 end
 
 local function draw_parameter_diagram()
-    local params = GAMEPLAY_STATE.rune_count
+    local params = {}
+    for k, v in pairs(GAMEPLAY_STATE.rune_count) do
+        params[k] = v
+    end
 
     local sum = 0
     for a = 1, #params, 1 do
