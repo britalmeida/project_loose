@@ -353,7 +353,11 @@ local function draw_game_background( x, y, width, height )
         TEXTURES.bg:draw(x_pos, y_pos)
 
         -- Draw flame animation
-        if GAMEPLAY_STATE.flame_amount > 0.5 then
+        if GAMEPLAY_STATE.flame_amount > 0.7 then
+            local table_size = TEXTURES.stir_flame_table:getLength()
+            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
+            TEXTURES.stir_flame_table[anim_tick + 1]:draw(-27, 0)
+        elseif GAMEPLAY_STATE.flame_amount > 0.4 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
             TEXTURES.high_flame_table[anim_tick + 1]:draw(-15, 160)
@@ -435,6 +439,15 @@ function Init_visuals()
     TEXTURES.high_flame_table = gfx.imagetable.new(2)
     TEXTURES.high_flame_table:setImage(1, highflame_a)
     TEXTURES.high_flame_table:setImage(2, highflame_b)
+
+    local stir_flame_1 = gfxi.new("images/fire/stirredflame_1.png")
+    local stir_flame_2 = gfxi.new("images/fire/stirredflame_2.png")
+    local stir_flame_3 = gfxi.new("images/fire/stirredflame_3.png")
+
+    TEXTURES.stir_flame_table = gfx.imagetable.new(3)
+    TEXTURES.stir_flame_table:setImage(1, stir_flame_1)
+    TEXTURES.stir_flame_table:setImage(2, stir_flame_2)
+    TEXTURES.stir_flame_table:setImage(3, stir_flame_3)
 
     TEXTURES.font_symbols = gfx.font.new("fonts/symbols_outline")
 
