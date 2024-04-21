@@ -99,9 +99,20 @@ local function draw_ui()
             gfx.fillRect(0, 0, 400, 240)
 
             -- Draw cocktails
+            gfx.setColor(gfx.kColorWhite)
+            gfx.setImageDrawMode(gfx.kDrawModeInverted)
+            gfx.drawText(COCKTAILS[1].name, 30+20, 215)
+            gfx.drawText(COCKTAILS[2].name, 30+130, 215)
+            gfx.drawText(COCKTAILS[3].name, 30+265, 215)
+
+            gfx.setImageDrawMode(gfx.kDrawModeCopy)
+            COCKTAILS[1].img:drawScaled(20, 0, 0.9, 0.9)
+            COCKTAILS[2].img:drawScaled(20+130, 0, 0.9, 0.9)
+            COCKTAILS[2].img:drawScaled(20+260, 0, 0.9, 0.9)
 
             gfx.setColor(gfx.kColorWhite)
-            gfx.fillCircleAtPoint(50 + 140*MENU_STATE.focused_option, 180, 7)
+            gfx.setLineWidth(5.0)
+            gfx.drawRect(15+128*MENU_STATE.focused_option, 0, 120, 240)
         gfx.popContext()
     end
 end
