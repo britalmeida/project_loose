@@ -170,6 +170,64 @@ local function draw_parameter_diagram()
     gfx.popContext()
 end
 
+local function draw_stirring_stick()
+    gfx.pushContext()
+    do
+        local t = STIR_POSITION
+        local cauldron_center_x, cauldron_center_y = 105, 160
+        local ellipse_top_width, ellipse_bottom_width = 100, 70
+        local ellipse_height = 12
+        local stick_height = 70
+
+        local a_x = math.cos(t) * ellipse_top_width + cauldron_center_x
+        local a_y = math.sin(t) * ellipse_height + cauldron_center_y - stick_height
+        local b_x = math.cos(t) * ellipse_bottom_width + cauldron_center_x
+        local b_y = math.sin(t) * ellipse_height + cauldron_center_y
+        
+        gfx.setLineWidth(5)
+        gfx.drawLine(a_x, a_y, b_x, b_y)
+    end
+    gfx.popContext()
+end
+
+local function draw_dialog_bubble()
+    local text = "just blow air onto the\nbottom of the cauldron"
+
+    -- local text_lines = {"Just blow air onto", "the bottom of the cauldron"}
+    local text_lines = {}
+    for line in string.gmatch(text, "[^\n]+") do
+        table.insert(text_lines, line)
+    end
+
+    -- Bounding box of the dialog bubble, within which it is safe to place text.
+    local x_min = 140
+    local y_min = 60
+    local width = 210
+    local height = 65
+
+    -- Vertical advance of the line, in pixels.
+    local line_height = 18
+
+    local y_center =  y_min + height / 2
+    local current_line_y = y_center - line_height * #text_lines / 2
+    
+    gfx.pushContext()
+    do
+        -- The buggle graphics itself.
+        TEXTURES.dialog_bubble:draw(0, 0)
+
+        -- Debug drawing of the safe area bounds.
+        -- gfx.drawRect(x_min, y_min, width, height)
+
+        -- Draw lines of the text.
+        for i = 1, #text_lines, 1 do
+            gfx.drawTextAligned(text_lines[i], x_min + width / 2, current_line_y, kTextAlignment.center)
+            current_line_y += line_height
+        end
+    end
+    gfx.popContext()
+end
+
 local function draw_game_background( x, y, width, height )
 
     local sin = math.sin
@@ -186,9 +244,21 @@ local function draw_game_background( x, y, width, height )
     end
     -- Draw full screen background.
     gfx.pushContext()
+    do
         TEXTURES.bg:draw(x_pos, y_pos)
-    gfx.popContext()
 
+        -- Draw flame animation
+        if GAMEPLAY_STATE.flame_amount > 20 then
+            local table_size = TEXTURES.high_flame_table:getLength()
+            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
+            TEXTURES.high_flame_table[anim_tick + 1]:draw(100, 150)
+        else
+            local table_size = TEXTURES.low_flame_table:getLength()
+            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
+            TEXTURES.low_flame_table[anim_tick + 1]:draw(100, 150)
+        end
+    end
+    gfx.popContext()
 end
 
 
@@ -214,7 +284,8 @@ local function draw_hud()
         local border = 3
         local width = 22
         local height = 150
-        local meter = (STIR_METER / 100) * (height - border * 2)
+
+        local meter = ( playdate.sound.micinput.getLevel() ) * (height - border * 2)
         gfx.setColor(gfx.kColorBlack)
         gfx.fillRoundRect(x, y, width, height, border)
         gfx.setColor(gfx.kColorWhite)
@@ -228,6 +299,7 @@ local function draw_debug()
     gfx.pushContext()
         gfx.setColor(gfx.kColorBlack)
         gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
+        playdate.drawFPS(200,0)
     gfx.popContext()
 end
 
@@ -255,11 +327,29 @@ function Init_visuals()
 
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
+    TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
+
+    -- Load cauldron flame textures
+    local lowflame_a = gfxi.new("images/fire/lowflame_a")
+    local lowflame_b = gfxi.new("images/fire/lowflame_b")
+
+    TEXTURES.low_flame_table = gfx.imagetable.new(2)
+    TEXTURES.low_flame_table:setImage(1, lowflame_a)
+    TEXTURES.low_flame_table:setImage(2, lowflame_b)
+
+    local highflame_a = gfxi.new("images/fire/highflame_a")
+    local highflame_b = gfxi.new("images/fire/highflame_b")
+
+    TEXTURES.high_flame_table = gfx.imagetable.new(2)
+    TEXTURES.high_flame_table:setImage(1, highflame_a)
+    TEXTURES.high_flame_table:setImage(2, highflame_b)
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     -- depth 0: will be the cauldron? or the frog? 
     Set_draw_pass(5, draw_parameter_diagram)
+    Set_draw_pass(6, draw_stirring_stick)
+    -- Set_draw_pass(7, draw_dialog_bubble)
     Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
