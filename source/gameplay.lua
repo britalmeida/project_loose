@@ -110,7 +110,8 @@ function Handle_input(timeDelta)
     if playdate.buttonJustPressed( playdate.kButtonA ) then
       for i, ingredient in pairs(INGREDIENTS) do
           if ingredient.is_over_cauldron then
-            ingredient:release()
+            ingredient.is_over_cauldron = false
+            ingredient.is_in_air = true
           end
       end
         for i, ingredient in pairs(INGREDIENTS) do
