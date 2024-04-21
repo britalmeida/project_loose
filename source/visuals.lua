@@ -319,6 +319,7 @@ Bubbles_amplitude = {}
 Bubbles_radians = {}
 Bubbles_tick_offset = {}
 Bubbles_animation_playing = {}
+Bubbles_flip = {}
 NUM_BUBBLES = 10
 Phi = math.pi * (math.sqrt(5.) - 1.) -- Golden angle in radians
 for a = 1, NUM_BUBBLES, 1 do
@@ -341,8 +342,9 @@ local function draw_liquid_bubbles()
         local offset = GAMEPLAY_STATE.liquid_offset * speed_fac * freq / 2
 
         for x = 1, NUM_BUBBLES, 1 do
-            if GAMEPLAY_STATE.heat_amount > math.random() + 0.2 then
+            if not Bubbles_animation_playing[x] and GAMEPLAY_STATE.heat_amount > math.random() + 0.2 then
                 Bubbles_animation_playing[x] = true
+                Bubbles_flip[x] = math.random() > 0.5
             end
         end
         for x = 1, NUM_BUBBLES, 1 do
@@ -362,7 +364,12 @@ local function draw_liquid_bubbles()
 
             local table_size = TEXTURES.bubble_table:getLength()
             local anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.bubble_table[anim_tick + 1]:draw(b_x - 5, b_y - 12)
+
+            if Bubbles_flip[x] then
+                TEXTURES.bubble_table[anim_tick + 1]:draw(b_x - 5, b_y - 12, "flipX")
+            else
+                TEXTURES.bubble_table[anim_tick + 1]:draw(b_x - 5, b_y - 12)
+            end
 
             if (anim_tick + 1) == table_size then
                Bubbles_animation_playing[x] = false
@@ -461,7 +468,7 @@ end
 local function draw_hud()
     do
         gfx.pushContext()
-        -- Flame ammount indication.
+        -- Heat amount indication.
         local x = 10
         local y = 10
         local border = 3
@@ -573,7 +580,7 @@ function Init_visuals()
     Set_draw_pass(6, draw_stirring_stick)
     Set_draw_pass(7, draw_dialog_bubble)
     Set_draw_pass(8, draw_debug_color_viscosity)
-    Set_draw_pass(10, draw_hud)
+    -- Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
 end
