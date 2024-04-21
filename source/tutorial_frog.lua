@@ -80,12 +80,12 @@ function froggo_reality_check()
     viscous_diff = 0
 
     local tolerance = 0.1
-    if color_diff > viscous_diff and color_diff > rune_diff then
+    if color_diff < tolerance and viscous_diff < tolerance and rune_diff < tolerance then
+        current_topic_hint = -1
+    elseif color_diff > viscous_diff and color_diff > rune_diff then
         current_topic_hint = THINGS_TO_REMEMBER.stir
     elseif viscous_diff > color_diff and viscous_diff > rune_diff then
         current_topic_hint = THINGS_TO_REMEMBER.fire
-    elseif color_diff < tolerance and viscous_diff < tolerance and rune_diff < tolerance then
-        current_topic_hint = -1
     else
         current_topic_hint = THINGS_TO_REMEMBER.secret_ingredient
     end
