@@ -76,7 +76,7 @@ local function draw_soft_circle(x_center, y_center, radius, steps, blend, alpha,
 end
 
 local function draw_symbols( x_min, y_min, width, height, position_params, value_params)
-    params = position_params
+    local params = position_params
     if params == nil then
         return
     end
@@ -89,9 +89,9 @@ local function draw_symbols( x_min, y_min, width, height, position_params, value
         local n = #params
         local x1 = x_min + width / 2
         local y1 = y_min + (1 - math.sqrt(params[1])) * height / 2
-        for a = 0, n-1, 1 do
-            local i = (a+1<n and a+1 or 0) + 1
-            local phi = (a+1)/n * 2 * math.pi
+        for a = 1, n, 1 do
+            local i = (a<n and a or 0) + 1
+            local phi = (a)/n * 2 * math.pi
             local r = math.sqrt(params[i])
             local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
             local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
@@ -106,12 +106,14 @@ local function draw_symbols( x_min, y_min, width, height, position_params, value
                     glyph_size+margin*2, glyph_size+margin*2, 4)
             gfx.popContext()
 
-            local rune_strength = GAMEPLAY_STATE.rune_ratio[a+1]
+            local target = TARGET_COCKTAIL.rune_ratio[a]
+            local difference_weight = math.max(target, 1-target)
+            local rune_strength = 1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight)
             draw_soft_circle(x1, y1, 20*rune_strength, 4, 0.5, rune_strength, gfx.kColorWhite)
 
             gfx.pushContext()
                 gfx.setImageDrawMode(gfx.kDrawModeInverted)
-                gfx.drawText(tostring(a+1), glyph_x, glyph_y)
+                gfx.drawText(tostring(a), glyph_x, glyph_y)
             gfx.popContext()
 
             x1 = x2
