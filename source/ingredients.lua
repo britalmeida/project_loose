@@ -4,7 +4,15 @@ local Sprite <const> = gfx.sprite
 
 -- Ingredient types
 INGREDIENT_TYPES = {
-    { name = "Whimsical Cat", rune_composition = {1, 1, 2, 0, 1}, img = gfx.image.new('images/ingredients/cat') }
+    { name = "Garlic", rune_composition = {1, 0, 0}, img = gfx.image.new('images/ingredients/garlic') },
+    { name = "Mushrooms", rune_composition = {0, 1, 2}, img = gfx.image.new('images/ingredients/mushrooms') },
+    { name = "Peanut Butter", rune_composition = {0, 1, 2}, img = gfx.image.new('images/ingredients/peanutbutter') },
+    { name = "Peppermints", rune_composition = {0, 1, 2}, img = gfx.image.new('images/ingredients/peppermints') },
+    { name = "Perfume", rune_composition = {0, 1, 2}, img = gfx.image.new('images/ingredients/perfume') },
+    { name = "Salt", rune_composition = {0, 1, 2}, img = gfx.image.new('images/ingredients/salt') },
+    { name = "Snail Shells", rune_composition = {0, 1, 2}, img = gfx.image.new('images/ingredients/snailshells') },
+    { name = "Spiderweb", rune_composition = {0, 1, 2}, img = gfx.image.new('images/ingredients/spiderweb') },
+    { name = "Toenails", rune_composition = {0, 1, 2}, img = gfx.image.new('images/ingredients/toenails') },
 }
 
 INGREDIENTS = {}
@@ -61,4 +69,6 @@ end
 function Init_ingredients()
     INGREDIENTS = {}
     table.insert(INGREDIENTS, Ingredient(1, playdate.geometry.point.new(300, 30)))
+    table.insert(INGREDIENTS, Ingredient(2, playdate.geometry.point.new(340, 30)))
+    table.insert(INGREDIENTS, Ingredient(3, playdate.geometry.point.new(360, 30)))
 end
