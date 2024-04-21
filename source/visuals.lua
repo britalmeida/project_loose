@@ -348,6 +348,8 @@ local function draw_liquid_bubbles()
 
             gfx.setColor(gfx.kColorWhite)
             gfx.drawCircleAtPoint(b_x, b_y, 3)
+            gfx.setColor(gfx.kColorBlack)
+            gfx.drawCircleAtPoint(b_x, b_y, 4)
         end
     end
     gfx.popContext()
