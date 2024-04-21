@@ -6,6 +6,8 @@ local last_topic_hint = THINGS_TO_REMEMBER.none
 local current_topic_hint = THINGS_TO_REMEMBER.none
 local current_rune_hint = 1
 local rune_offset = 1
+local current_stirr_hint = 1
+local stirr_offset = 1
 local last_sentence = -1
 local current_sentence = -1
 SHOWN_STRING = ""
@@ -23,7 +25,8 @@ local fire_reminders <const> = {
 }
 
 local stirr_reminders <const> = {
-    "The liquid looks too dark, stirr!", "The liquid looks too bright, stirr!"
+    {"Waaaaay too dark\ncrank it the other way", "The liquid looks too dark\nstirr!", "Just a lil'bit too dark"}, -- 1 == too dark
+    {"Oh my eyes!\nLiquid is way too bright", "The liquid looks too bright\nstirr!", "Just a lil'bit too light"} -- 2 = too bright
 }
 
 local ingredient_reminders <const> = {
@@ -91,6 +94,20 @@ function froggo_reality_check()
         current_topic_hint = -1
     elseif color_diff > viscous_diff and color_diff > rune_diff then
         current_topic_hint = THINGS_TO_REMEMBER.stir
+        -- clockwise makes it more 1
+        if (TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color) < 0.0 then
+            current_stirr_hint = 2
+        else
+            current_stirr_hint = 1
+        end
+        local abs_diff = math.abs(TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color)
+        if abs_diff < 0.3 then
+            stirr_offset = 3
+        elseif abs_diff < 0.75 then
+            stirr_offset = 2
+        else
+            stirr_offset = 1
+        end
     elseif viscous_diff > color_diff and viscous_diff > rune_diff then
         current_topic_hint = THINGS_TO_REMEMBER.fire
     else
@@ -142,12 +159,7 @@ function set_current_sentence()
         if last_sentence == -1 then
             current_sentence = 0
         else
-            -- clockwise makes it more 1
-            if (TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color) < 0.0 then
-                current_sentence = 2
-            else
-                current_sentence = 1
-            end
+            current_sentence = 1
         end
     elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
         if last_sentence == -1 then
@@ -174,7 +186,7 @@ function set_speech_bubble_content()
             if current_topic_hint == THINGS_TO_REMEMBER.fire then
                 SHOWN_STRING = fire_reminders[current_sentence][1]
             elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
-                SHOWN_STRING = stirr_reminders[current_sentence]
+                SHOWN_STRING = stirr_reminders[current_stirr_hint][stirr_offset]
             elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
                 SHOWN_STRING = ingredient_reminders[current_rune_hint][rune_offset]
             end
