@@ -315,10 +315,12 @@ end
 
 Bubbles = {}
 Bubbles_rad = {}
+Bubbles_tick_off = {}
 NUM_BUBBLES = 8
 for a = 1, NUM_BUBBLES, 1 do
      Bubbles[a] = math.random(90) / 100 + 0.1
-     Bubbles_rad[a] = (math.random(100) / 100) * 2 * math.pi
+     Bubbles_rad[a] = (math.random(200) / 100) * 2 * math.pi
+     Bubbles_tick_off[a] = math.random(100)
 end
 
 local function draw_liquid_bubbles()
@@ -346,10 +348,9 @@ local function draw_liquid_bubbles()
             local b_x = bubble_amp * math.cos(bubble_rad) * ellipse_bottom_width + cauldron_center_x
             local b_y = bubble_amp * math.sin(bubble_rad) * ellipse_height + cauldron_center_y - bot_offset
 
-            gfx.setColor(gfx.kColorWhite)
-            gfx.drawCircleAtPoint(b_x, b_y, 3)
-            gfx.setColor(gfx.kColorBlack)
-            gfx.drawCircleAtPoint(b_x, b_y, 4)
+            local table_size = TEXTURES.bubble_table:getLength()
+            local anim_tick = math.fmod(Bubbles_tick_off[x] + GAMEPLAY_STATE.game_tick // 3, table_size)
+            TEXTURES.bubble_table[anim_tick + 1]:draw(b_x - 5, b_y - 12)
         end
     end
     gfx.popContext()
@@ -513,6 +514,25 @@ function Init_visuals()
     TEXTURES.stir_flame_table:setImage(1, stir_flame_1)
     TEXTURES.stir_flame_table:setImage(2, stir_flame_2)
     TEXTURES.stir_flame_table:setImage(3, stir_flame_3)
+
+    local bubble_1 = gfxi.new("images/bubbles/bubble1.png")
+    local bubble_2 = gfxi.new("images/bubbles/bubble2.png")
+    local bubble_3 = gfxi.new("images/bubbles/bubble3.png")
+    local bubble_4 = gfxi.new("images/bubbles/bubble4.png")
+    local bubble_5 = gfxi.new("images/bubbles/bubble5.png")
+    local bubble_6 = gfxi.new("images/bubbles/bubble6.png")
+    local bubble_7 = gfxi.new("images/bubbles/bubble7.png")
+    local bubble_8 = gfxi.new("images/bubbles/bubble8.png")
+
+    TEXTURES.bubble_table = gfx.imagetable.new(8)
+    TEXTURES.bubble_table:setImage(1, bubble_1)
+    TEXTURES.bubble_table:setImage(2, bubble_2)
+    TEXTURES.bubble_table:setImage(3, bubble_3)
+    TEXTURES.bubble_table:setImage(4, bubble_4)
+    TEXTURES.bubble_table:setImage(5, bubble_5)
+    TEXTURES.bubble_table:setImage(6, bubble_6)
+    TEXTURES.bubble_table:setImage(7, bubble_7)
+    TEXTURES.bubble_table:setImage(8, bubble_8)
 
     TEXTURES.font_symbols = gfx.font.new("fonts/symbols_outline")
 
