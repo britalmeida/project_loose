@@ -1,3 +1,5 @@
+import "tutorial_frog"
+
 GYRO_X, GYRO_Y = 200, 120
 
 NUM_ELEMENTS = 5
@@ -29,6 +31,8 @@ function Init_gameplay()
     -- Done only once on start of the game, to load and setup const resources.
 
     playdate.startAccelerometer()
+
+    Init_frog()
 end
 
 
@@ -59,6 +63,8 @@ function Reset_gameplay()
     for a = 1, #GAMEPLAY_STATE.element_target_ratio, 1 do
         GAMEPLAY_STATE.element_count[a] = 0
     end
+
+    Reset_frog()
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -142,5 +148,7 @@ function Tick_gameplay()
     if math.abs(GAMEPLAY_STATE.liquid_momentum) < 1e-4 then
       GAMEPLAY_STATE.liquid_momentum = 0
     end
+
+    Tick_frog()
 end
 

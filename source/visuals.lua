@@ -243,7 +243,11 @@ local function draw_liquid_surface()
 end
 
 local function draw_dialog_bubble()
-    local text = "just blow air onto the\nbottom of the cauldron"
+    local text = SHOWN_STRING
+
+    if text == "" then
+        return
+    end
 
     -- local text_lines = {"Just blow air onto", "the bottom of the cauldron"}
     local text_lines = {}
@@ -402,7 +406,7 @@ function Init_visuals()
     Set_draw_pass(4, draw_liquid_surface)
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
-    -- Set_draw_pass(7, draw_dialog_bubble)
+    Set_draw_pass(7, draw_dialog_bubble)
     Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
