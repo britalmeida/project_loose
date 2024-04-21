@@ -1,6 +1,7 @@
 import "tutorial_frog"
 
 GYRO_X, GYRO_Y = 200, 120
+PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 
 NUM_RUNES = 3
 GAMEPLAY_STATE = {
@@ -23,6 +24,12 @@ STIR_SPEED = 0
 
 -- Stir position is an angle in radians
 STIR_POSITION = 0
+
+GRAVITY_X = 0
+GRAVITY_Y = 0
+GRAVITY_Z = 0
+
+SHAKE_VAL = 0
 
 -- Resource Management
 
@@ -81,21 +88,30 @@ end
 --- `timeDelta` is the time in seconds since the last update.
 ---@param timeDelta number
 function Handle_input(timeDelta)
-    local gravityX, gravityY, _gravityZ = playdate.readAccelerometer()
-    GYRO_X = Clamp(GYRO_X + gravityX * 10, 0, 400)
-    GYRO_Y = Clamp(GYRO_Y + gravityY * 10, 0, 240)
+    GRAVITY_X, GRAVITY_Y, GRAVITY_Z = playdate.readAccelerometer()
+    SHAKE_VAL = GRAVITY_X * GRAVITY_X + GRAVITY_Y * GRAVITY_Y + GRAVITY_Z * GRAVITY_Z
+    if SHAKE_VAL < 1.1 then
+      PREV_GYRO_X = GYRO_X
+      PREV_GYRO_Y = GYRO_Y
+      GYRO_X = Clamp(GYRO_X + GRAVITY_X * 10, 0, 400)
+      GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * 10, 0, 240)
+    end
 
     if playdate.buttonIsPressed( playdate.kButtonB ) then
         Ask_the_frog()
     end
     if playdate.buttonJustPressed( playdate.kButtonA ) then
         for i, ingredient in pairs(INGREDIENTS) do
-          ingredient:try_pickup()
+          if ingredient:try_pickup() then
+            break
+          end
         end
     end
     if playdate.buttonJustReleased(playdate.kButtonA) then
         for i, ingredient in pairs(INGREDIENTS) do
-            ingredient:release()
+            if ingredient.is_picked_up then
+              ingredient:release()
+            end
         end
     end
 
@@ -131,6 +147,13 @@ function Tick_gameplay()
     for _, ingredient in ipairs(INGREDIENTS) do
         if ingredient:isVisible() then
             ingredient:tick()
+        end
+    end
+
+    -- Update drops animations.
+    for _, drop in ipairs(DROPS) do
+        if drop:isVisible() then
+          drop:tick()
         end
     end
 
