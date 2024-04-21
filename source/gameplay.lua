@@ -112,6 +112,7 @@ function Handle_input(timeDelta)
           if ingredient.is_over_cauldron then
             ingredient.is_over_cauldron = false
             ingredient.is_in_air = true
+            ingredient:setZIndex(0)
           end
       end
         for i, ingredient in pairs(INGREDIENTS) do

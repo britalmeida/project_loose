@@ -94,7 +94,6 @@ function Ingredient:try_pickup()
 end
 
 function Ingredient:release()
-    self:setZIndex(0)
     self.is_picked_up = false
     self.is_over_cauldron = false
 
@@ -108,6 +107,7 @@ function Ingredient:release()
         self:moveTo(x_center, y_center)
         self.is_over_cauldron = true
     else
+        self:setZIndex(0)
         self.is_in_air = true
     end
 end
