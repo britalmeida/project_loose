@@ -2,7 +2,7 @@ local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
 
 MENU_STATE = {}
-MENU_SCREEN = { gameplay = 0, gameover = 1, start = 2, howto = 3, credits = 4 }
+MENU_SCREEN = { gameplay = 0, gameover = 1, start = 2, mission = 3, credits = 4 }
 local UI_TEXTURES = {}
 
 
@@ -42,9 +42,9 @@ function Enter_menu_start()
     end
 end
 
-local function enter_menu_howto()
-    MENU_STATE.screen = MENU_SCREEN.howto
-    MENU_STATE.active_screen_texture = UI_TEXTURES.howto
+local function enter_menu_mission()
+    MENU_STATE.screen = MENU_SCREEN.mission
+    MENU_STATE.active_screen_texture = UI_TEXTURES.mission
 end
 
 local function enter_menu_credits()
@@ -86,7 +86,7 @@ local function draw_ui()
     if MENU_STATE.screen == MENU_SCREEN.start then
         gfx.pushContext()
             gfx.setColor(gfx.kColorWhite)
-            gfx.fillCircleAtPoint(50, 94 + 42*MENU_STATE.focused_option, 7)
+            gfx.fillCircleAtPoint(50, 94 + 42*MENU_STATE.focused_option*2, 7)
         gfx.popContext()
 
     -- Draw gameover screen dynamic elements.
@@ -111,12 +111,9 @@ function Handle_menu_input()
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
             if MENU_STATE.focused_option == 0 then
-                Enter_gameplay()
+                enter_menu_mission()
             end
             if MENU_STATE.focused_option == 1 then
-                enter_menu_howto()
-            end
-            if MENU_STATE.focused_option == 2 then
                 enter_menu_credits()
             end
         end
@@ -137,10 +134,13 @@ function Handle_menu_input()
         end
         -- Clamp so the option cycling doesn't wrap around.
         MENU_STATE.focused_option = math.max(MENU_STATE.focused_option, 0)
-        MENU_STATE.focused_option = math.min(MENU_STATE.focused_option, 2)
+        MENU_STATE.focused_option = math.min(MENU_STATE.focused_option, 1)
 
-    elseif MENU_STATE.screen == MENU_SCREEN.howto then
-        if playdate.buttonJustReleased( playdate.kButtonB ) then
+    elseif MENU_STATE.screen == MENU_SCREEN.mission then
+        if playdate.buttonJustReleased( playdate.kButtonA ) then
+            SOUND.menu_confirm:play()
+            Enter_gameplay()
+        elseif playdate.buttonJustReleased( playdate.kButtonB ) then
             SOUND.menu_confirm:play()
             Enter_menu_start()
         end
@@ -158,7 +158,7 @@ function Init_menus()
 
     UI_TEXTURES.gameover = gfxi.new("images/menu_temp")
     UI_TEXTURES.start = gfxi.new("images/menu_start")
-    UI_TEXTURES.howto = gfxi.new("images/menu_temp")
+    UI_TEXTURES.mission = gfxi.new("images/menu_temp")
     UI_TEXTURES.credits = gfxi.new("images/menu_temp")
 
     MENU_STATE.screen = MENU_SCREEN.start
