@@ -1,5 +1,5 @@
 local FROG_STATE = { idle = 0, speaking = 1, cooldown = 2 }
-local THINGS_TO_REMEMBER <const> = { none = -1, fire = 0, stir = 1, secret_ingredient = 2 }
+local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3 }
 
 local frog_state = FROG_STATE.waiting
 local last_topic_hint = THINGS_TO_REMEMBER.none
@@ -59,11 +59,34 @@ function croak()
 end
 
 
-function evaluate_conditions()
-    -- Counting time with no flame. As soon as there is flame, restart.
-    if playdate.sound.micinput.getLevel() > 0.1 then
-        days_without_fire_timer:reset()
+function froggo_reality_check()
+    -- Match expectations with reality.
+    local color_diff = math.abs(TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color)
+    local viscous_diff = math.abs(TARGET_COCKTAIL.viscosity - GAMEPLAY_STATE.liquid_viscosity)
+    local rune_per_component_diff = {
+        TARGET_COCKTAIL.rune_ratio[1] - GAMEPLAY_STATE.rune_ratio[1],
+        TARGET_COCKTAIL.rune_ratio[2] - GAMEPLAY_STATE.rune_ratio[2],
+        TARGET_COCKTAIL.rune_ratio[3] - GAMEPLAY_STATE.rune_ratio[3],
+    }
+    local rune_diff = math.abs((rune_per_component_diff[1] + rune_per_component_diff[2] + rune_per_component_diff[3]) * 0.5)
+
+    local tolerance = 0.1
+    if color_diff > viscous_diff and color_diff > rune_diff then
+        current_topic_hint = THINGS_TO_REMEMBER.stir
+    elseif viscous_diff > color_diff and viscous_diff > rune_diff then
+        current_topic_hint = THINGS_TO_REMEMBER.fire
+    elseif color_diff < tolerance and viscous_diff < tolerance and rune_diff < tolerance then
+        current_topic_hint = -1
+    else
+        current_topic_hint = THINGS_TO_REMEMBER.secret_ingredient
     end
+
+    --print("froggo thinks priority is "..current_topic_hint.." diffs: c:"..tostring(color_diff).." v:"..tostring(viscous_diff).." r:"..tostring(rune_diff).." becaaause "..rune_per_component_diff[1]..","..rune_per_component_diff[2]..","..rune_per_component_diff[3])
+
+    -- Counting time with no flame. As soon as there is flame, restart.
+    --if playdate.sound.micinput.getLevel() > 0.1 then
+    --    days_without_fire_timer:reset()
+    --end
 end
 
 
@@ -104,7 +127,7 @@ end
 function set_speech_bubble_content()
     if current_sentence ~= -1 then
         if current_sentence == 0 then
-            SHOWN_STRING = forgotten_topics_callouts[current_topic_hint+2]
+            SHOWN_STRING = forgotten_topics_callouts[current_topic_hint]
         elseif current_sentence == -2 then
             SHOWN_STRING = positive_acceptance
         else
@@ -119,6 +142,7 @@ end
 
 -- ><
 function Tick_frog()
+    froggo_reality_check()
 end
 
 
