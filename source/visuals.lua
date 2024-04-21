@@ -244,9 +244,21 @@ local function draw_game_background( x, y, width, height )
     end
     -- Draw full screen background.
     gfx.pushContext()
+    do
         TEXTURES.bg:draw(x_pos, y_pos)
-    gfx.popContext()
 
+        -- Draw flame animation
+        if GAMEPLAY_STATE.flame_amount > 20 then
+            local table_size = TEXTURES.high_flame_table:getLength()
+            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
+            TEXTURES.high_flame_table[anim_tick + 1]:draw(100, 150)
+        else
+            local table_size = TEXTURES.low_flame_table:getLength()
+            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
+            TEXTURES.low_flame_table[anim_tick + 1]:draw(100, 150)
+        end
+    end
+    gfx.popContext()
 end
 
 
@@ -287,6 +299,7 @@ local function draw_debug()
     gfx.pushContext()
         gfx.setColor(gfx.kColorBlack)
         gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
+        playdate.drawFPS(200,0)
     gfx.popContext()
 end
 
@@ -315,6 +328,21 @@ function Init_visuals()
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
+
+    -- Load cauldron flame textures
+    local lowflame_a = gfxi.new("images/fire/lowflame_a")
+    local lowflame_b = gfxi.new("images/fire/lowflame_b")
+
+    TEXTURES.low_flame_table = gfx.imagetable.new(2)
+    TEXTURES.low_flame_table:setImage(1, lowflame_a)
+    TEXTURES.low_flame_table:setImage(2, lowflame_b)
+
+    local highflame_a = gfxi.new("images/fire/highflame_a")
+    local highflame_b = gfxi.new("images/fire/highflame_b")
+
+    TEXTURES.high_flame_table = gfx.imagetable.new(2)
+    TEXTURES.high_flame_table:setImage(1, highflame_a)
+    TEXTURES.high_flame_table:setImage(2, highflame_b)
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
