@@ -76,6 +76,9 @@ function froggo_reality_check()
     -- Check for new priority of thing that is off target.
     last_topic_hint = current_topic_hint
 
+    -- viscosity is not an active target now.
+    viscous_diff = 0
+
     local tolerance = 0.1
     if color_diff > viscous_diff and color_diff > rune_diff then
         current_topic_hint = THINGS_TO_REMEMBER.stir
