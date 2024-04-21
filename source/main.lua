@@ -26,9 +26,6 @@ local function initialize()
     Init_gameplay()
     Init_visuals()
     Init_menus()
-
-    -- Reset time delta
-    playdate.resetElapsedTime()
 end
 
 initialize()
@@ -56,6 +53,4 @@ function playdate.update()
     gfx.clear()
     gfx.sprite.update()
     playdate.timer.updateTimers()
-
-    playdate.resetElapsedTime()
 end

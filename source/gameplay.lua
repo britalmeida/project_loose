@@ -40,6 +40,7 @@ function Reset_gameplay()
     end
     Init_ingredients()
 
+    -- Reset target ingredients.
     local sum = 0
     for a = 1, NUM_ELEMENTS, 1 do
         GAMEPLAY_STATE.element_target_ratio[a] = math.random(100)
@@ -51,6 +52,9 @@ function Reset_gameplay()
     for a = 1, #GAMEPLAY_STATE.element_target_ratio, 1 do
         GAMEPLAY_STATE.element_count[a] = 0
     end
+
+    -- Reset time delta
+    playdate.resetElapsedTime()
 end
 
 
