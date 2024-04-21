@@ -322,19 +322,6 @@ end
 
 local function draw_hud()
     do
-        -- old flame indicator
-        -- gfx.pushContext()
-        -- local x = 60
-        -- local y = 210
-        -- gfx.setColor(gfx.kColorBlack)
-        -- gfx.fillRoundRect(x - 3, y - 3, 75, 22, 3)
-        -- gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-        -- gfx.setColor(gfx.kColorWhite)
-        -- gfx.setFont(TEXTURES.font)
-        -- gfx.drawText("flame " .. string.format("%02d", GAMEPLAY_STATE.flame_amount), x, y)
-        -- gfx.popContext()
-    end
-    do
         gfx.pushContext()
         -- Flame ammount indication.
         local x = 10
