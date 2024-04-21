@@ -103,6 +103,11 @@ function Handle_input(timeDelta)
         Ask_the_frog()
     end
     if playdate.buttonJustPressed( playdate.kButtonA ) then
+      for i, ingredient in pairs(INGREDIENTS) do
+          if ingredient.is_over_cauldron then
+            ingredient:release()
+          end
+      end
         for i, ingredient in pairs(INGREDIENTS) do
           if ingredient:try_pickup() then
             break
