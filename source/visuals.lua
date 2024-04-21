@@ -184,14 +184,70 @@ local function draw_stirring_stick()
         local b_x = math.cos(t) * ellipse_bottom_width + cauldron_center_x
         local b_y = math.sin(t) * ellipse_height + cauldron_center_y
         
-        gfx.setLineWidth(5)
+        gfx.setColor(gfx.kColorBlack)
+        gfx.setLineWidth(6)
         gfx.drawLine(a_x, a_y, b_x, b_y)
+
+        gfx.setColor(gfx.kColorWhite)
+        gfx.setLineWidth(3)
+        gfx.drawLine(a_x - math.cos(t) * 2, a_y + 2, b_x, b_y)
+    end
+    gfx.popContext()
+end
+
+local function draw_liquid_surface()
+    gfx.pushContext()
+    do
+        local polygon = playdate.geometry.polygon
+
+        local cauldron_center_x, cauldron_center_y = 105, 160
+        local cauldron_width, cauldron_height = 80, 15
+
+        local num_points = 64
+        -- freq 0.4 speed_fac 0.05 vicousity 0.85 --> viscous
+        -- freq 0.9 speed_fac 0.02 vicousity 0.95 --> liquid
+
+        local freq = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.4, 0.9)
+        -- maximum amplitude in pixels
+        local max_amp = 15
+        -- speed of the waves (0.01 slow 0.1 fast)
+        local speed_fac = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.05, 0.02)
+
+        local offset = GAMEPLAY_STATE.liquid_offset * speed_fac
+        local amp_fac = Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
+        
+        local surface = polygon.new(num_points)
+        for i=1,num_points do
+            local angle = i / num_points * math.pi * 2
+
+            -- Only affects points at the back side of the cauldron
+            local x = math.max(i - num_points / 2, 0)
+            local amplitude = math.sin(x / (num_points / 2) * math.pi) * max_amp
+            local wave_height = amplitude * amp_fac *
+                math.sin(((x / (num_points / 2) * math.pi * 2) - offset) * freq * math.pi)
+            
+            -- Draw wavy points (back) and round edge (front)
+            local a_x = math.cos(angle) * cauldron_width + cauldron_center_x
+            local a_y = math.sin(angle) * cauldron_height + cauldron_center_y - wave_height
+            surface:setPointAt(i, a_x, a_y)
+        end
+        surface:close()
+
+        gfx.setColor(gfx.kColorBlack)
+        gfx.fillPolygon(surface)
+        gfx.setColor(gfx.kColorWhite)
+        gfx.setLineWidth(3)
+        gfx.drawPolygon(surface)
     end
     gfx.popContext()
 end
 
 local function draw_dialog_bubble()
-    local text = "just blow air onto the\nbottom of the cauldron"
+    local text = SHOWN_STRING
+
+    if text == "" then
+        return
+    end
 
     -- local text_lines = {"Just blow air onto", "the bottom of the cauldron"}
     local text_lines = {}
@@ -346,10 +402,11 @@ function Init_visuals()
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
-    -- depth 0: will be the cauldron? or the frog? 
+    -- depth 0: will be the cauldron? or the frog?
+    Set_draw_pass(4, draw_liquid_surface)
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
-    -- Set_draw_pass(7, draw_dialog_bubble)
+    Set_draw_pass(7, draw_dialog_bubble)
     Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
