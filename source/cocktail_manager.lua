@@ -9,8 +9,8 @@ COCKTAILS = {
 TARGET_COCKTAIL = {
   type_idx = 1,
   rune_ratio = {1, 0, 0},
-  color = 0.5,
-  viscosity = 0.5,
+  color = 0.1,
+  viscosity = 0.2,
 }
 
 function Set_target_potion(chosen_cocktail_idx)
