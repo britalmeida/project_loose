@@ -41,7 +41,7 @@ function Enter_cooldown()
     frog_state = FROG_STATE.cooldown
 
     -- Give the frog a short moment to breathe before speaking again.
-    playdate.timer.new(1*1000, function()
+    playdate.timer.new(0.1*1000, function()
         frog_state = FROG_STATE.idle
     end)
 end
@@ -71,7 +71,7 @@ function froggo_reality_check()
         TARGET_COCKTAIL.rune_ratio[2] - GAMEPLAY_STATE.rune_ratio[2],
         TARGET_COCKTAIL.rune_ratio[3] - GAMEPLAY_STATE.rune_ratio[3],
     }
-    local rune_diff = math.abs((rune_per_component_diff[1] + rune_per_component_diff[2] + rune_per_component_diff[3]) * 0.5)
+    local rune_diff = (math.abs(rune_per_component_diff[1]) + math.abs(rune_per_component_diff[2]) + math.abs(rune_per_component_diff[3])) * 0.5
 
     -- Check for new priority of thing that is off target.
     last_topic_hint = current_topic_hint
