@@ -94,6 +94,7 @@ function Ingredient:try_pickup()
 end
 
 function Ingredient:release()
+    self:setZIndex(0)
     self.is_picked_up = false
     self.is_over_cauldron = false
 
