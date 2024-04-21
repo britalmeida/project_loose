@@ -4,7 +4,6 @@ local gfxi <const> = playdate.graphics.image
 -- Image Passes
 TEXTURES = {}
 
-
 -- Debug / Development
 
 local function draw_test_dither_patterns()
@@ -65,17 +64,25 @@ end
 
 -- Draw passes
 
-local function draw_symbols_in_poly_shape( x_min, y_min, width, height, position_params, value_params)
+local function draw_soft_circle(x_center, y_center, radius, steps, blend, alpha, color)
+    for a = 1, steps, 1 do
+        gfx.pushContext()
+            gfx.setColor(color)
+            gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
+            gfx.fillCircleAtPoint(x_center, y_center, (1 - a / steps) * radius * blend + radius)
+        gfx.popContext()
+    end
+end
+
+local function draw_symbols( x_min, y_min, width, height, position_params, value_params)
     params = position_params
     if params == nil then
         return
     end
 
     gfx.pushContext()
-
-        gfx.setFont(gfx.getSystemFont(gfx.font.kVariantBold))
-        local glyph_width = 8
-        local glyph_height = 18
+        gfx.setFont(TEXTURES.font_symbols)
+        local glyph_size = 14
         local margin = 3
 
         local n = #params
@@ -88,18 +95,22 @@ local function draw_symbols_in_poly_shape( x_min, y_min, width, height, position
             local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
             local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
 
-            local glyph_x = x1-glyph_width*0.5
-            local glyph_y = y1-glyph_height*0.5
+            local glyph_x = x1-glyph_size*0.5
+            local glyph_y = y1-glyph_size*0.5
+
             gfx.pushContext()
                 gfx.setDitherPattern(value_params[i], gfxi.kDitherTypeScreen)
                 gfx.fillRoundRect(
                     glyph_x-margin, glyph_y-margin,
-                    glyph_width+margin*2, glyph_height+margin*2, 4)
+                    glyph_size+margin*2, glyph_size+margin*2, 4)
             gfx.popContext()
+            
+            local rune_strength = GAMEPLAY_STATE.rune_ratio[a+1]
+            draw_soft_circle(x1, y1, 20*rune_strength, 4, 0.5, rune_strength, gfx.kColorWhite)
+
             gfx.pushContext()
-                gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-                gfx.setColor(gfx.kColorWhite)
-                gfx.drawText(tostring(a), glyph_x, glyph_y)
+                gfx.setImageDrawMode(gfx.kDrawModeInverted)
+                gfx.drawText(tostring(a+1), glyph_x, glyph_y)
             gfx.popContext()
 
             x1 = x2
@@ -113,23 +124,25 @@ local function draw_poly_shape( x_min, y_min, width, height, params, alpha, colo
     if params == nil then
         return
     end
-    gfx.setColor(color)
-    local n = #params
-    local x1 = x_min + width / 2
-    local y1 = y_min + (1 - math.sqrt(params[1])) * height / 2
-    for a = 0, n-1, 1 do
-        local phi = (a+1)/n * 2 * math.pi
-        local r = math.sqrt(params[(a+1<n and a+1 or 0) + 1])
-        local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
-        local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
-        gfx.pushContext()
-            gfx.setDitherPattern(alpha, gfxi.kDitherTypeScreen)
-            gfx.fillTriangle(x1, y1, x2, y2, x_min + width / 2, y_min + height / 2)
-        gfx.popContext()
-        gfx.drawLine( x1, y1, x2, y2)
-        x1 = x2
-        y1 = y2
-    end
+    gfx.pushContext()
+        gfx.setColor(color)
+        local n = #params
+        local x1 = x_min + width / 2
+        local y1 = y_min + (1 - math.sqrt(params[1])) * height / 2
+        for a = 0, n-1, 1 do
+            local phi = (a+1)/n * 2 * math.pi
+            local r = math.sqrt(params[(a+1<n and a+1 or 0) + 1])
+            local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
+            local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
+            gfx.pushContext()
+                gfx.setDitherPattern(alpha, gfxi.kDitherTypeBayer4x4)
+                gfx.fillTriangle(x1, y1, x2, y2, x_min + width / 2, y_min + height / 2)
+            gfx.popContext()
+            gfx.drawLine( x1, y1, x2, y2)
+            x1 = x2
+            y1 = y2
+        end
+    gfx.popContext()
 end
 
 local function draw_parameter_diagram()
@@ -148,10 +161,11 @@ local function draw_parameter_diagram()
     local target_params = GAMEPLAY_STATE.rune_target_ratio
 
     gfx.pushContext()
+        local size = 100
         local x_center = 100
-        local y_center = 90
-        local width = 100
-        local height = 100
+        local y_center = 80
+        local width = size
+        local height = size
         local x_min = x_center - width * 0.5
         local y_min = y_center - height * 0.5
 
@@ -160,12 +174,23 @@ local function draw_parameter_diagram()
         for a = 1, #params, 1 do
             par_lim[a] = 1
         end
-        --draw_symbols_in_poly_shape(x_min, y_min, width, height, par_lim, params)
-        --draw_poly_shape(x_min, y_min, width, height, par_lim, 0.5, gfx.kColorBlack)
+
+        gfx.pushContext()
+            gfx.setColor(gfx.kColorBlack)        
+            gfx.setDitherPattern(0, gfxi.kDitherTypeBayer4x4)
+            --gfx.fillRect(0,0,400,240)
+        gfx.popContext()
+
+        -- Draw background gradient
+        --draw_soft_circle(x_center, y_center, size * 0.5, 4, gfx.kColorWhite)
+
+
+        draw_poly_shape(x_min, y_min, width, height, par_lim, 0, gfx.kColorBlack)
         -- Draw current potion mix
-        draw_poly_shape(x_min, y_min, width, height, params, 0.45, gfx.kColorBlack)
-        -- Draw draw target potion mix
+        draw_poly_shape(x_min, y_min, width, height, params, 0.45, gfx.kColorWhite)
+        -- Draw target potion mix
         draw_poly_shape(x_min, y_min, width, height, target_params, 1.00, gfx.kColorBlack)
+        draw_symbols(x_min, y_min, width, height, par_lim, params)
 
     gfx.popContext()
 end
@@ -388,6 +413,8 @@ function Init_visuals()
     TEXTURES.high_flame_table = gfx.imagetable.new(2)
     TEXTURES.high_flame_table:setImage(1, highflame_a)
     TEXTURES.high_flame_table:setImage(2, highflame_b)
+
+    TEXTURES.font_symbols = gfx.font.new("fonts/symbols_outline")
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
