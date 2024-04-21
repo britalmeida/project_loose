@@ -148,6 +148,16 @@ end
 
 local function draw_parameter_diagram()
     local params = GAMEPLAY_STATE.rune_count
+    if #params == 0 then
+        -- The game plane has not been fully initialzied yet. The game is likely
+        -- sitting at the starting menu, from which some of the passes are
+        -- requested to be drawn.
+        --
+        -- TODO: This check might be removed when the game state is properly
+        -- initialized.
+        return
+    end
+
     local sum = 0
     for a = 1, #params, 1 do
         sum = sum + params[a]
