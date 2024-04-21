@@ -288,23 +288,25 @@ local function draw_game_background( x, y, width, height )
 
     local sin = math.sin
     local fmod = math.fmod
+    local x_pos = 0
+    local y_pos = 0
 
-    local x_pos, y_pos
-    x_pos = sin( (fmod(GAMEPLAY_STATE.game_tick, 4) / 2) * math.pi) * Clamp(GAMEPLAY_STATE.flame_amount/5, 0, 5)
-    x_pos += sin( (fmod(GAMEPLAY_STATE.game_tick, 8) / 4) * math.pi) * Clamp(GAMEPLAY_STATE.flame_amount/5, 0, 2)
+    -- Screen shake
+    --x_pos = sin( (fmod(GAMEPLAY_STATE.game_tick, 4) / 2) * math.pi) * GAMEPLAY_STATE.flame_amount * 5
+    --x_pos += sin( (fmod(GAMEPLAY_STATE.game_tick, 8) / 4) * math.pi) * GAMEPLAY_STATE.flame_amount * 2
 
-    if GAMEPLAY_STATE.flame_amount > 30 then
-        y_pos = sin( (fmod(GAMEPLAY_STATE.game_tick, 6) / 3) * math.pi) * 2
-    else
-        y_pos = 0
-    end
+    --if GAMEPLAY_STATE.flame_amount > 0.5 then
+    --    y_pos = sin( (fmod(GAMEPLAY_STATE.game_tick, 6) / 3) * math.pi) * 2
+    --else
+    --    y_pos = 0
+    --end
     -- Draw full screen background.
     gfx.pushContext()
     do
         TEXTURES.bg:draw(x_pos, y_pos)
 
         -- Draw flame animation
-        if GAMEPLAY_STATE.flame_amount > 20 then
+        if GAMEPLAY_STATE.flame_amount > 0.5 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
             TEXTURES.high_flame_table[anim_tick + 1]:draw(100, 150)
@@ -320,28 +322,28 @@ end
 
 local function draw_hud()
     do
-        gfx.pushContext()
-        -- Flame ammount indication.
-        local x = 60
-        local y = 210
-        gfx.setColor(gfx.kColorBlack)
-        gfx.fillRoundRect(x - 3, y - 3, 75, 22, 3)
-        gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-        gfx.setColor(gfx.kColorWhite)
-        gfx.setFont(TEXTURES.font)
-        gfx.drawText("flame " .. string.format("%02d", GAMEPLAY_STATE.flame_amount), x, y)
-        gfx.popContext()
+        -- old flame indicator
+        -- gfx.pushContext()
+        -- local x = 60
+        -- local y = 210
+        -- gfx.setColor(gfx.kColorBlack)
+        -- gfx.fillRoundRect(x - 3, y - 3, 75, 22, 3)
+        -- gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+        -- gfx.setColor(gfx.kColorWhite)
+        -- gfx.setFont(TEXTURES.font)
+        -- gfx.drawText("flame " .. string.format("%02d", GAMEPLAY_STATE.flame_amount), x, y)
+        -- gfx.popContext()
     end
     do
         gfx.pushContext()
-        -- Crank speed indication.
+        -- Flame ammount indication.
         local x = 10
         local y = 10
         local border = 3
         local width = 22
         local height = 150
 
-        local meter = ( playdate.sound.micinput.getLevel() ) * (height - border * 2)
+        local meter = ( GAMEPLAY_STATE.flame_amount ) * (height - border * 2)
         gfx.setColor(gfx.kColorBlack)
         gfx.fillRoundRect(x, y, width, height, border)
         gfx.setColor(gfx.kColorWhite)

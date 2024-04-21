@@ -103,10 +103,10 @@ function Handle_input(timeDelta)
     local revolutionsPerSecond = math.rad(angleDelta) / (timeDelta)
     STIR_SPEED = revolutionsPerSecond
 
-    if playdate.buttonIsPressed( playdate.kButtonB ) then
-        GAMEPLAY_STATE.flame_amount += 1
+    local mic_lvl = playdate.sound.micinput.getLevel()
+    if mic_lvl > GAMEPLAY_STATE.flame_amount then
+        GAMEPLAY_STATE.flame_amount = mic_lvl
     end
-
     -- Use the absolute position of the crank to drive the stick in the cauldorn
     STIR_POSITION = math.rad(playdate.getCrankPosition())
 
@@ -134,11 +134,11 @@ function Tick_gameplay()
         end
     end
 
-    if not playdate.buttonIsPressed( playdate.kButtonB ) then
-        GAMEPLAY_STATE.flame_amount -= 1
-        if GAMEPLAY_STATE.flame_amount < 0 then
-            GAMEPLAY_STATE.flame_amount = 0
-        end
+    if GAMEPLAY_STATE.flame_amount > 0.01 then
+        local flame_decay = 0.99
+        GAMEPLAY_STATE.flame_amount *= flame_decay
+    else
+        GAMEPLAY_STATE.flame_amount = 0
     end
 
     -- Update liquid state
