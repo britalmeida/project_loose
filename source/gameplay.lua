@@ -4,6 +4,10 @@ NUM_ELEMENTS = 5
 GAMEPLAY_STATE = {
     flame_amount = 0.0,
     water_amount = 0.0,
+    liquid_offset = 0.0,
+    liquid_momentum = 0.0,
+    -- This is a factor between 0 and 1 (0.85 = high viscosity, 0.95 = low viscosity)
+    liquid_viscosity = 0.9,
     -- Potion mix?
     potion_color = 0.5,
     potion_bubbliness = 0.0,
@@ -12,8 +16,8 @@ GAMEPLAY_STATE = {
     element_count = {},
 }
 
--- Stir meter goes from 0 to 100
-STIR_METER = 0
+-- Stir speed is the speed of cranking in revolutions per seconds
+STIR_SPEED = 0
 
 -- Stir position is an angle in radians
 STIR_POSITION = 0
@@ -90,11 +94,8 @@ function Handle_input(timeDelta)
     end
 
     local angleDelta, _ = playdate.getCrankChange()
-    local revolutionsPerSecond = math.abs(angleDelta) / 360 / timeDelta
-    local decaySpeed = 5
-    STIR_METER += revolutionsPerSecond * 3 - decaySpeed
-    STIR_METER = math.max(STIR_METER, 0)
-    STIR_METER = math.min(STIR_METER, 100)
+    local revolutionsPerSecond = math.rad(angleDelta) / (timeDelta)
+    STIR_SPEED = revolutionsPerSecond
 
     if playdate.buttonIsPressed( playdate.kButtonB ) then
         GAMEPLAY_STATE.flame_amount += 1
@@ -102,6 +103,19 @@ function Handle_input(timeDelta)
 
     -- Use the absolute position of the crank to drive the stick in the cauldorn
     STIR_POSITION = math.rad(playdate.getCrankPosition())
+
+    -- DEBUG VISCOSITY
+    if playdate.buttonIsPressed( playdate.kButtonUp ) then
+      GAMEPLAY_STATE.liquid_viscosity -= 0.01
+      GAMEPLAY_STATE.liquid_viscosity = Clamp(GAMEPLAY_STATE.liquid_viscosity, 0.80, 0.99)
+      print(GAMEPLAY_STATE.liquid_viscosity)
+    end
+
+    if playdate.buttonIsPressed( playdate.kButtonDown ) then
+      GAMEPLAY_STATE.liquid_viscosity += 0.01
+      GAMEPLAY_STATE.liquid_viscosity = Clamp(GAMEPLAY_STATE.liquid_viscosity, 0.80, 0.99)
+      print(GAMEPLAY_STATE.liquid_viscosity)
+    end
 end
 
 
@@ -119,6 +133,14 @@ function Tick_gameplay()
         if GAMEPLAY_STATE.flame_amount < 0 then
             GAMEPLAY_STATE.flame_amount = 0
         end
+    end
+
+    -- Update liquid state
+    GAMEPLAY_STATE.liquid_momentum += Clamp(STIR_SPEED, -8, 8) / 10
+    GAMEPLAY_STATE.liquid_offset += GAMEPLAY_STATE.liquid_momentum
+    GAMEPLAY_STATE.liquid_momentum *= GAMEPLAY_STATE.liquid_viscosity
+    if math.abs(GAMEPLAY_STATE.liquid_momentum) < 1e-4 then
+      GAMEPLAY_STATE.liquid_momentum = 0
     end
 end
 
