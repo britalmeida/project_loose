@@ -5,15 +5,15 @@ local Sprite <const> = gfx.sprite
 
 -- Ingredient types
 INGREDIENT_TYPES = {
-    { name = "Garlic",         rune_composition = {-1, -1, 3},  x=260, y=30, img = gfxi.new('images/ingredients/garlic'),       drop = gfx.image.new('images/ingredients/garlic_drop') },
-    { name = "Mushrooms",      rune_composition = {0, 3, 1},  x=300, y=30, img = gfxi.new('images/ingredients/mushrooms'),    drop = gfx.image.new('images/ingredients/mushrooms_drop') },
+    { name = "Garlic",         rune_composition = {3, 1, 0},  x=210, y=90, img = gfxi.new('images/ingredients/garlic'),       drop = gfx.image.new('images/ingredients/garlic_drop') },
+    { name = "Mushrooms",      rune_composition = {0, 3, 1},  x=260, y=30, img = gfxi.new('images/ingredients/mushrooms'),    drop = gfx.image.new('images/ingredients/mushrooms_drop') },
     { name = "Peanut Butter",  rune_composition = {1, 0, 3},  x=340, y=30, img = gfxi.new('images/ingredients/peanutbutter'), drop = gfx.image.new('images/ingredients/peanutbutter_drop') },
-    { name = "Peppermints",    rune_composition = {2, -1, 0},  x=260, y=90, img = gfxi.new('images/ingredients/peppermints'),  drop = gfx.image.new('images/ingredients/peppermints_drop') },
-    { name = "Perfume",        rune_composition = {3, -1, -1},  x=300, y=90, img = gfxi.new('images/ingredients/perfume'),      drop = gfx.image.new('images/ingredients/perfume_drop') },
-    { name = "Salt",           rune_composition = {1, -2, -1},  x=340, y=90, img = gfxi.new('images/ingredients/salt'),         drop = gfx.image.new('images/ingredients/salt_drop') },
-    { name = "Snail Shells",   rune_composition = {1, 0, -2}, x=260, y=150, img = gfxi.new('images/ingredients/snailshells'), drop = gfx.image.new('images/ingredients/snailshells_drop') },
-    { name = "Spiderweb",      rune_composition = {1, 3, 0}, x=300, y=150, img = gfxi.new('images/ingredients/spiderweb'),   drop = gfx.image.new('images/ingredients/spiderweb_drop') },
-    { name = "Toenails",       rune_composition = {-2, 1, 0}, x=340, y=150, img = gfxi.new('images/ingredients/toenails'),    drop = gfx.image.new('images/ingredients/toenails_drop') },
+    { name = "Peppermints",    rune_composition = {2, 0, 2},  x=260, y=120, img = gfxi.new('images/ingredients/peppermints'),  drop = gfx.image.new('images/ingredients/peppermints_drop') },
+    { name = "Perfume",        rune_composition = {2, 2, 0},  x=310, y=120, img = gfxi.new('images/ingredients/perfume'),      drop = gfx.image.new('images/ingredients/perfume_drop') },
+    { name = "Salt",           rune_composition = {0, 2, 2},  x=300, y=30, img = gfxi.new('images/ingredients/salt'),         drop = gfx.image.new('images/ingredients/salt_drop') },
+    { name = "Snail Shells",   rune_composition = {-3, 1, 0}, x=260, y=180, img = gfxi.new('images/ingredients/snailshells'), drop = gfx.image.new('images/ingredients/snailshells_drop') },
+    { name = "Spiderweb",      rune_composition = {0, -3, 1}, x=360, y=40, img = gfxi.new('images/ingredients/spiderweb'),   drop = gfx.image.new('images/ingredients/spiderweb_drop') },
+    { name = "Toenails",       rune_composition = {1, 0, -3}, x=350, y=120, img = gfxi.new('images/ingredients/toenails'),    drop = gfx.image.new('images/ingredients/toenails_drop') },
 }
 
 INGREDIENTS = {}
@@ -107,6 +107,7 @@ function Ingredient:release()
         self:moveTo(x_center, y_center)
         self.is_over_cauldron = true
     else
+        self:setZIndex(0)
         self.is_in_air = true
     end
 end
