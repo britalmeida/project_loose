@@ -1,5 +1,6 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
+local vec2d <const> = playdate.geometry.vector2D
 
 -- Image Passes
 TEXTURES = {}
@@ -104,7 +105,7 @@ local function draw_symbols( x_min, y_min, width, height, position_params, value
                     glyph_x-margin, glyph_y-margin,
                     glyph_size+margin*2, glyph_size+margin*2, 4)
             gfx.popContext()
-            
+
             local rune_strength = GAMEPLAY_STATE.rune_ratio[a+1]
             draw_soft_circle(x1, y1, 20*rune_strength, 4, 0.5, rune_strength, gfx.kColorWhite)
 
@@ -146,7 +147,6 @@ local function draw_poly_shape( x_min, y_min, width, height, params, alpha, colo
 end
 
 local function draw_parameter_diagram()
-    
     local params = GAMEPLAY_STATE.rune_count
     local sum = 0
     for a = 1, #params, 1 do
@@ -176,7 +176,7 @@ local function draw_parameter_diagram()
         end
 
         gfx.pushContext()
-            gfx.setColor(gfx.kColorBlack)        
+            gfx.setColor(gfx.kColorBlack)
             gfx.setDitherPattern(0, gfxi.kDitherTypeBayer4x4)
             --gfx.fillRect(0,0,400,240)
         gfx.popContext()
@@ -208,7 +208,20 @@ local function draw_stirring_stick()
         local a_y = math.sin(t) * ellipse_height + cauldron_center_y - stick_height
         local b_x = math.cos(t) * ellipse_bottom_width + cauldron_center_x
         local b_y = math.sin(t) * ellipse_height + cauldron_center_y
-        
+
+        -- Bottom offset is used to make sure that the bottom stick doesn't go out of the water
+        local bot_offset = 0
+        if t > math.pi and t < 2*math.pi then
+            local max_amp = 15
+            bot_offset = math.sin(t) * max_amp * Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
+            local vec_top = vec2d.new(a_x, a_y)
+            local vec_bot = vec2d.new(b_x, b_y)
+            local vec_dir = vec_bot - vec_top
+            vec_dir:normalize()
+            vec_bot = vec_bot - vec_dir * bot_offset
+            b_x, b_y = vec_bot:unpack()
+        end
+
         gfx.setColor(gfx.kColorBlack)
         gfx.setLineWidth(6)
         gfx.drawLine(a_x, a_y, b_x, b_y)
@@ -240,7 +253,7 @@ local function draw_liquid_surface()
 
         local offset = GAMEPLAY_STATE.liquid_offset * speed_fac
         local amp_fac = Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
-        
+
         local surface = polygon.new(num_points)
         for i=1,num_points do
             local angle = i / num_points * math.pi * 2
@@ -250,7 +263,7 @@ local function draw_liquid_surface()
             local amplitude = math.sin(x / (num_points / 2) * math.pi) * max_amp
             local wave_height = amplitude * amp_fac *
                 math.sin(((x / (num_points / 2) * math.pi * 2) - offset) * freq * math.pi)
-            
+
             -- Draw wavy points (back) and round edge (front)
             local a_x = math.cos(angle) * cauldron_width + cauldron_center_x
             local a_y = math.sin(angle) * cauldron_height + cauldron_center_y - wave_height
@@ -291,7 +304,7 @@ local function draw_dialog_bubble()
 
     local y_center =  y_min + height / 2
     local current_line_y = y_center - line_height * #text_lines / 2
-    
+
     gfx.pushContext()
     do
         -- The buggle graphics itself.
@@ -310,7 +323,6 @@ local function draw_dialog_bubble()
 end
 
 local function draw_game_background( x, y, width, height )
-
     local sin = math.sin
     local fmod = math.fmod
     local x_pos = 0
