@@ -4,6 +4,8 @@ local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingred
 local frog_state = FROG_STATE.waiting
 local last_topic_hint = THINGS_TO_REMEMBER.none
 local current_topic_hint = THINGS_TO_REMEMBER.none
+local current_rune_hint = 1
+local rune_offset = 1
 local last_sentence = -1
 local current_sentence = -1
 SHOWN_STRING = ""
@@ -24,8 +26,13 @@ local stirr_reminders <const> = {
     "The liquid looks too dark, stirr!", "The liquid looks too bright, stirr!"
 }
 
+local ingredient_reminders <const> = {
+    {"Too much love\ncan't stand it!", "Add some passion?"}, -- 1 = heart
+    {"Definitely missing happy stuff", "Missing doom and gloom"}, -- 2 = doom
+    {"What a tangle :/", "Add some veggies"}, -- 3 = weeds
+}
 
-local speech_cooldown_timer
+
 local days_without_fire_timer
 
 
@@ -55,7 +62,7 @@ function croak()
     set_speech_bubble_content()
 
     -- Disable speech bubble after a short moment.
-    playdate.timer.new(1.5*1000, function()
+    playdate.timer.new(2*1000, function()
         SHOWN_STRING = ""
         Enter_cooldown()
     end)
@@ -88,12 +95,23 @@ function froggo_reality_check()
         current_topic_hint = THINGS_TO_REMEMBER.fire
     else
         current_topic_hint = THINGS_TO_REMEMBER.secret_ingredient
+        if math.abs(rune_per_component_diff[1]) >= math.abs(rune_per_component_diff[2]) and math.abs(rune_per_component_diff[1]) >= math.abs(rune_per_component_diff[3]) then
+            current_rune_hint = 1
+        elseif math.abs(rune_per_component_diff[2]) >= math.abs(rune_per_component_diff[1]) and math.abs(rune_per_component_diff[2]) >= math.abs(rune_per_component_diff[3]) then
+            current_rune_hint = 2
+        else
+            current_rune_hint = 3
+        end
+        if rune_per_component_diff[current_rune_hint] < 0 then
+            rune_offset = 1
+        else
+            rune_offset = 2
+        end
     end
 
     print("froggo thinks priority is "..current_topic_hint.." diffs: v:"..tostring(viscous_diff).." c:"..tostring(color_diff).." r:"..tostring(rune_diff).." becaaause "..rune_per_component_diff[1]..","..rune_per_component_diff[2]..","..rune_per_component_diff[3])
 
     if last_topic_hint ~= current_topic_hint then
-        print("topic swap!")
         last_sentence = -1
     end
     -- Counting time with no flame. As soon as there is flame, restart.
@@ -134,6 +152,8 @@ function set_current_sentence()
     elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
         if last_sentence == -1 then
             current_sentence = 0
+        else
+            current_sentence = 1
         end
     end
 end
@@ -156,7 +176,7 @@ function set_speech_bubble_content()
             elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
                 SHOWN_STRING = stirr_reminders[current_sentence]
             elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
-                SHOWN_STRING = forgotten_topics_callouts[current_topic_hint]
+                SHOWN_STRING = ingredient_reminders[current_rune_hint][rune_offset]
             end
         end
         print(SHOWN_STRING)
