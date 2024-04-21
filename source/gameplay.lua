@@ -79,6 +79,9 @@ function Handle_input(timeDelta)
     GYRO_X = Clamp(GYRO_X + gravityX * 10, 0, 400)
     GYRO_Y = Clamp(GYRO_Y + gravityY * 10, 0, 240)
 
+    if playdate.buttonIsPressed( playdate.kButtonB ) then
+        Ask_the_frog()
+    end
     if playdate.buttonIsPressed( playdate.kButtonA ) then
         if not SOUND.cat_meow:isPlaying() then
             SOUND.cat_meow:play()
