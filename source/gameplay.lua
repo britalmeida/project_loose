@@ -89,7 +89,7 @@ end
 ---@param timeDelta number
 function Handle_input(timeDelta)
     GRAVITY_X, GRAVITY_Y, GRAVITY_Z = playdate.readAccelerometer()
-    -- Occasionally when simulator startes to upload the game to the actual
+    -- Occasionally when simulator starts to upload the game to the actual
     -- device the gyro returns nil as results.
     if GRAVITY_X == nil then
         return
