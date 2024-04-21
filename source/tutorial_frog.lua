@@ -10,15 +10,18 @@ SHOWN_STRING = ""
 
 local positive_acceptance <const> = "that'll do it!"
 local forgotten_topics_callouts <const> = {
-    "",
     "hey, you forgot the fire",
     "hey, you forgot to stir",
-    "hey, you forgot the cat",
+    "hey, you forgot an ingredient",
 }
 local fire_reminders <const> = {
     {"seriously, gently blow the fire", "your potion won't cook without fire. just sayin'"},
     {"just blow air onto the\nbottom of the cauldron"},
     {"for realz, blow air.\ntryyyy it!"},
+}
+
+local stirr_reminders <const> = {
+    "The liquid looks too dark, stirr!", "The liquid looks too bright, stirr!"
 }
 
 
@@ -70,6 +73,9 @@ function froggo_reality_check()
     }
     local rune_diff = math.abs((rune_per_component_diff[1] + rune_per_component_diff[2] + rune_per_component_diff[3]) * 0.5)
 
+    -- Check for new priority of thing that is off target.
+    last_topic_hint = current_topic_hint
+
     local tolerance = 0.1
     if color_diff > viscous_diff and color_diff > rune_diff then
         current_topic_hint = THINGS_TO_REMEMBER.stir
@@ -81,8 +87,12 @@ function froggo_reality_check()
         current_topic_hint = THINGS_TO_REMEMBER.secret_ingredient
     end
 
-    --print("froggo thinks priority is "..current_topic_hint.." diffs: c:"..tostring(color_diff).." v:"..tostring(viscous_diff).." r:"..tostring(rune_diff).." becaaause "..rune_per_component_diff[1]..","..rune_per_component_diff[2]..","..rune_per_component_diff[3])
+    print("froggo thinks priority is "..current_topic_hint.." diffs: c:"..tostring(viscous_diff).." c:"..tostring(color_diff).." r:"..tostring(rune_diff).." becaaause "..rune_per_component_diff[1]..","..rune_per_component_diff[2]..","..rune_per_component_diff[3])
 
+    if last_topic_hint ~= current_topic_hint then
+        print("topic swap!")
+        last_sentence = -1
+    end
     -- Counting time with no flame. As soon as there is flame, restart.
     --if playdate.sound.micinput.getLevel() > 0.1 then
     --    days_without_fire_timer:reset()
@@ -95,54 +105,64 @@ function set_current_sentence()
     last_sentence = current_sentence
     current_sentence = -1
 
-    -- Silly hint progression
-    if current_topic_hint == THINGS_TO_REMEMBER.none then
+    froggo_reality_check()
 
-        -- When the fire is out for long, transition to fire.
-        if days_without_fire_timer.value >= 1 then
-            current_topic_hint = THINGS_TO_REMEMBER.fire
-            current_sentence = 0
-        end
+    if current_topic_hint == -1 then
+        -- Potion approved!
+        current_sentence = -2
+        return
     elseif current_topic_hint == THINGS_TO_REMEMBER.fire then
-
-        -- If the player makes fire, transition back to good.
-        if days_without_fire_timer.value < 1 then
-            current_topic_hint = THINGS_TO_REMEMBER.none
-            current_sentence = -2
+        if last_sentence == -1 then
+            current_sentence = 0
+        elseif last_sentence < 3 then
+            current_sentence = last_sentence + 1
+        end
+    elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
+        if last_sentence == -1 then
+            current_sentence = 0
         else
-
-            if last_sentence < 3 then
-                current_sentence = last_sentence + 1
+            -- clockwise makes it more 1
+            if (TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color) < 0.0 then
+                current_sentence = 2
             else
-                playdate.timer.new(1.5*1000, function()
-                    current_topic_hint = THINGS_TO_REMEMBER.secret_ingredient
-                    current_sentence = 0
-                end)
+                current_sentence = 1
             end
+        end
+    elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
+        if last_sentence == -1 then
+            current_sentence = 0
         end
     end
 end
 
 
 function set_speech_bubble_content()
-    if current_sentence ~= -1 then
+    if current_sentence == -1 then
+        -- Disable speech bubble.
+        SHOWN_STRING = ""
+    else
         if current_sentence == 0 then
+            -- Hinting a topic for the first time.
             SHOWN_STRING = forgotten_topics_callouts[current_topic_hint]
         elseif current_sentence == -2 then
+            -- Won the game.
             SHOWN_STRING = positive_acceptance
         else
-            SHOWN_STRING = fire_reminders[current_sentence][1]
+            if current_topic_hint == THINGS_TO_REMEMBER.fire then
+                SHOWN_STRING = fire_reminders[current_sentence][1]
+            elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
+                SHOWN_STRING = stirr_reminders[current_sentence]
+            elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
+                SHOWN_STRING = forgotten_topics_callouts[current_topic_hint]
+            end
         end
         print(SHOWN_STRING)
-    else
-        SHOWN_STRING = ""
     end
 end
 
 
 -- ><
 function Tick_frog()
-    froggo_reality_check()
 end
 
 
