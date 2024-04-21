@@ -89,6 +89,11 @@ end
 ---@param timeDelta number
 function Handle_input(timeDelta)
     GRAVITY_X, GRAVITY_Y, GRAVITY_Z = playdate.readAccelerometer()
+    -- Occasionally when simulator startes to upload the game to the actual
+    -- device the gyro returns nil as results.
+    if GRAVITY_X == nil then
+        return
+    end
     SHAKE_VAL = GRAVITY_X * GRAVITY_X + GRAVITY_Y * GRAVITY_Y + GRAVITY_Z * GRAVITY_Z
 
     local gyroSpeed = 30
