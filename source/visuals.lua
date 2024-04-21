@@ -193,7 +193,7 @@ local function draw_parameter_diagram()
         -- Draw current potion mix
         draw_poly_shape(x_min, y_min, width, height, params, 0.45, gfx.kColorWhite)
         -- Draw target potion mix
-        draw_poly_shape(x_min, y_min, width, height, target_params, 1.00, gfx.kColorBlack)
+        draw_poly_shape(x_min, y_min, width, height, target_params, 1.00, gfx.kColorWhite)
         draw_symbols(x_min, y_min, width, height, par_lim, params)
 
     gfx.popContext()
