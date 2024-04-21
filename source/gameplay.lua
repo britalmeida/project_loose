@@ -90,11 +90,13 @@ end
 function Handle_input(timeDelta)
     GRAVITY_X, GRAVITY_Y, GRAVITY_Z = playdate.readAccelerometer()
     SHAKE_VAL = GRAVITY_X * GRAVITY_X + GRAVITY_Y * GRAVITY_Y + GRAVITY_Z * GRAVITY_Z
+
+    local gyroSpeed = 30
     if SHAKE_VAL < 1.1 then
       PREV_GYRO_X = GYRO_X
       PREV_GYRO_Y = GYRO_Y
-      GYRO_X = Clamp(GYRO_X + GRAVITY_X * 10, 0, 400)
-      GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * 10, 0, 240)
+      GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed, 0, 400)
+      GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
     end
 
     if playdate.buttonIsPressed( playdate.kButtonB ) then
