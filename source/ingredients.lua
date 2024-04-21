@@ -4,15 +4,15 @@ local Sprite <const> = gfx.sprite
 
 -- Ingredient types
 INGREDIENT_TYPES = {
-    { name = "Garlic", rune_composition = {1, -3, 3}, img = gfx.image.new('images/ingredients/garlic') },
-    { name = "Mushrooms", rune_composition = {-1, 1, 3}, img = gfx.image.new('images/ingredients/mushrooms') },
-    { name = "Peanut Butter", rune_composition = {2, -2, 2}, img = gfx.image.new('images/ingredients/peanutbutter') },
-    { name = "Peppermints", rune_composition = {1, 3, -1}, img = gfx.image.new('images/ingredients/peppermints') },
-    { name = "Perfume", rune_composition = {3, -1, 1}, img = gfx.image.new('images/ingredients/perfume') },
-    { name = "Salt", rune_composition = {3, 1, -3}, img = gfx.image.new('images/ingredients/salt') },
-    { name = "Snail Shells", rune_composition = {2, 2, -2}, img = gfx.image.new('images/ingredients/snailshells') },
-    { name = "Spiderweb", rune_composition = {-2, 2, 2}, img = gfx.image.new('images/ingredients/spiderweb') },
-    { name = "Toenails", rune_composition = {-3, 3, 1}, img = gfx.image.new('images/ingredients/toenails') },
+    { name = "Garlic", rune_composition = {3, 1, 0}, img = gfx.image.new('images/ingredients/garlic') },
+    { name = "Mushrooms", rune_composition = {0, 3, 1}, img = gfx.image.new('images/ingredients/mushrooms') },
+    { name = "Peanut Butter", rune_composition = {1, 0, 3}, img = gfx.image.new('images/ingredients/peanutbutter') },
+    { name = "Peppermints", rune_composition = {2, 0, 2}, img = gfx.image.new('images/ingredients/peppermints') },
+    { name = "Perfume", rune_composition = {2, 2, 0}, img = gfx.image.new('images/ingredients/perfume') },
+    { name = "Salt", rune_composition = {0, 2, 2}, img = gfx.image.new('images/ingredients/salt') },
+    { name = "Snail Shells", rune_composition = {-3, 1, 0}, img = gfx.image.new('images/ingredients/snailshells') },
+    { name = "Spiderweb", rune_composition = {0, -3, 1}, img = gfx.image.new('images/ingredients/spiderweb') },
+    { name = "Toenails", rune_composition = {1, 0, -3}, img = gfx.image.new('images/ingredients/toenails') },
 }
 
 INGREDIENTS = {}
