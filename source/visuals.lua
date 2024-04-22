@@ -345,6 +345,7 @@ for a = 1, NUM_BUBBLES, 1 do
     Bubbles_amplitude[a] = math.sqrt(1 - y * y) * 0.8 + 0.2
     Bubbles_radians[a] = Phi * (a - 1) -- Golden angle increment
     Bubbles_tick_offset[a] = math.floor(Phi * (a - 1) * 50)
+    Bubbles_types[a] = 0
 end
 
 local function draw_liquid_bubbles()
