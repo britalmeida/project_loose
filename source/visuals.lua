@@ -566,7 +566,7 @@ local function draw_ingredient_grab_cursor()
         end
 
         -- Draw FPS
-        playdate.drawFPS(200,0)
+        -- playdate.drawFPS(200,0)
     gfx.popContext()
 end
 
