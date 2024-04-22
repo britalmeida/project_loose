@@ -362,6 +362,19 @@ local function draw_liquid_bubbles()
     gfx.popContext()
 end
 
+
+local function draw_overlayed_cocktail_recipe()
+    if GAMEPLAY_STATE.showing_cocktail then
+        gfx.pushContext()
+            COCKTAILS[TARGET_COCKTAIL.type_idx].img:draw(0, 0)
+        gfx.popContext()
+        gfx.pushContext()
+            COCKTAILS[TARGET_COCKTAIL.type_idx].img:draw(0, 0)
+        gfx.popContext()
+    end
+end
+
+
 local function draw_dialog_bubble()
     local text = SHOWN_STRING
 
@@ -570,6 +583,8 @@ function Init_visuals()
     -- 22: grabbed ingredients
     Set_draw_pass(22, draw_ingredient_grab_cursor)
     Set_draw_pass(25, draw_dialog_bubble)
+    -- depth 30+: overlayed modal instructions
+    Set_draw_pass(30, draw_overlayed_cocktail_recipe)
     -- Development
     --Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)

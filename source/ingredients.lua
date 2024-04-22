@@ -126,9 +126,16 @@ function Ingredient:drop()
 end
 
 
-function Init_ingredients()
-    INGREDIENTS = {}
-    for a=1, #INGREDIENT_TYPES, 1 do
-        table.insert(INGREDIENTS, Ingredient(a, geo.point.new(INGREDIENT_TYPES[a].x, INGREDIENT_TYPES[a].y), false))
-    end
+function Reset_ingredients()
+
+  -- Clear current ingredients.
+  for _, ingredient in ipairs(INGREDIENTS) do
+    ingredient:remove()
+  end
+  INGREDIENTS = {}
+
+  -- Recreate the shelve ingredients.
+  for a=1, #INGREDIENT_TYPES, 1 do
+    table.insert(INGREDIENTS, Ingredient(a, geo.point.new(INGREDIENT_TYPES[a].x, INGREDIENT_TYPES[a].y), false))
+  end
 end

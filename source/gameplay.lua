@@ -3,6 +3,7 @@ PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 
 NUM_RUNES = 3
 GAMEPLAY_STATE = {
+    showing_cocktail = false,
     -- Fire!
     flame_amount = 0.0,
     heat_amount = 0.0,
@@ -52,23 +53,28 @@ end
 function Reset_gameplay()
     -- Done on every (re)start of the play.
 
-    -- Reset available ingredients.
-    for _, ingredient in ipairs(INGREDIENTS) do
-        ingredient:remove()
-    end
-    Init_ingredients()
-
+    GAMEPLAY_STATE.game_tick = 0
+    GAMEPLAY_STATE.showing_cocktail = false
+    GAMEPLAY_STATE.flame_amount = 0.0
+    GAMEPLAY_STATE.heat_amount = 0.0
+    GAMEPLAY_STATE.liquid_offset = 0.0
+    GAMEPLAY_STATE.liquid_momentum = 0.0
+    GAMEPLAY_STATE.liquid_viscosity = 0.9
+    GAMEPLAY_STATE.potion_color = 0.5
+    GAMEPLAY_STATE.potion_bubbliness = 0.0
     -- Reset current ingredient mix.
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_ratio[a] = 0
     end
 
+    Reset_ingredients()
     Reset_frog()
 
     -- Reset time delta
     playdate.resetElapsedTime()
 end
+
 
 function Update_rune_count(difference)
     local sum = 0
@@ -88,6 +94,8 @@ end
 --- `timeDelta` is the time in seconds since the last update.
 ---@param timeDelta number
 function Handle_input(timeDelta)
+
+    -- Get values from gyro.
     GRAVITY_X, GRAVITY_Y, GRAVITY_Z = playdate.readAccelerometer()
     -- Occasionally when simulator starts to upload the game to the actual
     -- device the gyro returns nil as results.
@@ -104,6 +112,7 @@ function Handle_input(timeDelta)
       GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
     end
 
+    -- Check for pressed buttons.
     if playdate.buttonIsPressed( playdate.kButtonB ) then
         Ask_the_frog()
     end
@@ -128,29 +137,25 @@ function Handle_input(timeDelta)
             end
         end
     end
+    if playdate.buttonJustReleased( playdate.kButtonDown ) or
+        playdate.buttonJustReleased( playdate.kButtonUp ) or
+        playdate.buttonJustReleased( playdate.kButtonLeft ) or
+        playdate.buttonJustReleased( playdate.kButtonRight ) then
+        GAMEPLAY_STATE.showing_cocktail = not GAMEPLAY_STATE.showing_cocktail
+    end
+    
 
+    -- Crank stirring
     local angleDelta, _ = playdate.getCrankChange()
     local revolutionsPerSecond = math.rad(angleDelta) / (timeDelta)
     STIR_SPEED = revolutionsPerSecond
-
-    local mic_lvl = playdate.sound.micinput.getLevel()
-    if mic_lvl > GAMEPLAY_STATE.flame_amount then
-        GAMEPLAY_STATE.flame_amount = mic_lvl
-    end
     -- Use the absolute position of the crank to drive the stick in the cauldorn
     STIR_POSITION = math.rad(playdate.getCrankPosition())
 
-    -- DEBUG VISCOSITY
-    if playdate.buttonIsPressed( playdate.kButtonUp ) then
-      GAMEPLAY_STATE.liquid_viscosity -= 0.01
-      GAMEPLAY_STATE.liquid_viscosity = Clamp(GAMEPLAY_STATE.liquid_viscosity, 0.80, 0.99)
-      print(GAMEPLAY_STATE.liquid_viscosity)
-    end
-
-    if playdate.buttonIsPressed( playdate.kButtonDown ) then
-      GAMEPLAY_STATE.liquid_viscosity += 0.01
-      GAMEPLAY_STATE.liquid_viscosity = Clamp(GAMEPLAY_STATE.liquid_viscosity, 0.80, 0.99)
-      print(GAMEPLAY_STATE.liquid_viscosity)
+    -- Microphone level check.
+    local mic_lvl = playdate.sound.micinput.getLevel()
+    if mic_lvl > GAMEPLAY_STATE.flame_amount then
+        GAMEPLAY_STATE.flame_amount = mic_lvl
     end
 end
 
