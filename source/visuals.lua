@@ -469,15 +469,15 @@ local function draw_cauldron()
         elseif GAMEPLAY_STATE.flame_amount > 0.6 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.high_flame_table[anim_tick + 1]:draw(15, 160)
+            TEXTURES.high_flame_table[anim_tick + 1]:draw(22, 160)
         elseif GAMEPLAY_STATE.flame_amount > 0.3 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.medium_flame_table[anim_tick + 1]:draw(15, 160)
+            TEXTURES.medium_flame_table[anim_tick + 1]:draw(22, 160)
         else
             local table_size = TEXTURES.low_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-            TEXTURES.low_flame_table[anim_tick + 1]:draw(15, 160)
+            TEXTURES.low_flame_table[anim_tick + 1]:draw(22, 160)
         end
     gfx.popContext()
 end
