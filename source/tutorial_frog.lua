@@ -136,6 +136,8 @@ function froggo_reality_check()
 
     if Is_potion_good_enough() then
         current_topic_hint = -1
+    elseif PLAYER_LEARNED.how_to_fire == false then
+        current_topic_hint = THINGS_TO_REMEMBER.fire
     elseif DIFF_TO_TARGET.color_abs > DIFF_TO_TARGET.ingredients_abs then
         current_topic_hint = THINGS_TO_REMEMBER.stir
         -- clockwise makes it more 1
