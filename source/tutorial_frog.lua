@@ -42,36 +42,72 @@ local ingredient_reminders <const> = {
 
 local days_without_fire_timer
 
+local froggo_img = gfx.image.new("images/frog/frog")
+local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
+local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
+local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/frog/animation-cocktail'), 8
+local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
+
+class('Froggo').extends(Sprite)
+
+function Froggo:init()
+    Froggo.super.init(self)
+
+    -- Initialize animation state
+    self.anim_current = nil
+    self.anim_idle = animloop.new(anim_idle_framerate * frame_ms, anim_idle_imgs, true)
+    self.anim_headshake = animloop.new(anim_headshake_framerate * frame_ms, anim_headshake_imgs, true)
+    self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
+    self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
+
+    self:setImage(froggo_img)
+    self:setZIndex(Z_DEPTH.frog)
+    self:moveTo(350, 148)
+
+    self:addSprite()
+    self:setVisible(true)
+
+    self:reset()
+end
+
+
+function Froggo:reset()
+    self.state = FROG_STATE.idle
+    self.anim_current = self.anim_idle
+
+    Reset_frog()
+end
+
 
 -- Events for transition
-function Ask_the_frog()
-    if frog_state == FROG_STATE.idle then
+function Froggo:Ask_the_frog()
+    if self.state == FROG_STATE.idle then
         -- Start speaking
-        croak()
+        self:croak()
     end
 end
 
-function Enter_cooldown()
-    frog_state = FROG_STATE.cooldown
+function Froggo:Enter_cooldown()
+    self.state = FROG_STATE.cooldown
 
     -- Give the frog a short moment to breathe before speaking again.
     playdate.timer.new(0.1*1000, function()
-        frog_state = FROG_STATE.idle
+        self.state = FROG_STATE.idle
     end)
 end
 
 -- Actions
 
-function croak()
+function Froggo:croak()
     -- Speak!
-    frog_state = FROG_STATE.speaking
+    self.state = FROG_STATE.speaking
     set_current_sentence()
     set_speech_bubble_content()
 
     -- Disable speech bubble after a short moment.
     playdate.timer.new(2*1000, function()
         SHOWN_STRING = ""
-        Enter_cooldown()
+        self:Enter_cooldown()
     end)
 end
 
@@ -199,8 +235,6 @@ end
 
 -- ><
 function Reset_frog()
-    frog_state = FROG_STATE.idle
-
     last_topic_hint = THINGS_TO_REMEMBER.none
     current_topic_hint = THINGS_TO_REMEMBER.none
     last_sentence = -1
@@ -213,36 +247,9 @@ function Reset_frog()
 end
 
 
-local froggo_img = gfx.image.new("images/frog/frog")
-local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
-local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
-local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/frog/animation-cocktail'), 8
-local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
-
-class('Froggo').extends(Sprite)
-
-function Froggo:init()
-    Froggo.super.init(self)
-
-    -- Initialize animation state
-    self.anim_current = nil
-    self.anim_idle = animloop.new(anim_idle_framerate * frame_ms, anim_idle_imgs, true)
-    self.anim_headshake = animloop.new(anim_headshake_framerate * frame_ms, anim_headshake_imgs, true)
-    self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
-    self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
-
-    self:setImage(froggo_img)
-    self:setZIndex(Z_DEPTH.frog)
-    self:moveTo(350, 148)
-
-    self:addSprite()
-    self:setVisible(true)
-end
-
-
 function Froggo:tick()
     -- Called during gameplay when self:isVisible == true
-    if frog_state == FROG_STATE.speaking then
+    if self.state == FROG_STATE.speaking then
         self.anim_current = self.anim_blabla
     else
         -- Idle and other unhandled states
