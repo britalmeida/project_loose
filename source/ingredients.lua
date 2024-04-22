@@ -127,8 +127,10 @@ function Ingredient:drop()
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
 
-  if not SOUND.drop_01:isPlaying() then
-    SOUND.drop_01:play()
+  local drops = {SOUND.drop_01, SOUND.drop_02, SOUND.drop_03}
+  local r = math.random(1, 3)
+  if not drops[r]:isPlaying() then
+    drops[r]:play()
   end
 
   self.can_drop = false
