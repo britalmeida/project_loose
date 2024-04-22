@@ -2,7 +2,7 @@ local gfx <const> = playdate.graphics
 local Sprite <const> = gfx.sprite
 local animloop <const> = playdate.graphics.animation.loop
 
-local FROG_STATE = { idle = 0, speaking = 1, cooldown = 2 }
+local FROG_STATE = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
 local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3 }
 
 local frog_state = FROG_STATE.waiting
@@ -72,8 +72,7 @@ end
 
 
 function Froggo:reset()
-    self.state = FROG_STATE.idle
-    self.anim_current = self.anim_idle
+    self:go_idle()
 
     Reset_frog()
 end
@@ -87,13 +86,20 @@ function Froggo:Ask_the_frog()
     end
 end
 
-function Froggo:Enter_cooldown()
-    self.state = FROG_STATE.cooldown
+function Froggo:go_idle()
+    self.state = FROG_STATE.idle
+    self.anim_current = self.anim_idle
+end
 
-    -- Give the frog a short moment to breathe before speaking again.
-    playdate.timer.new(0.1*1000, function()
-        self.state = FROG_STATE.idle
-    end)
+function Froggo:go_reacting()
+    self.state = FROG_STATE.reacting
+    -- TODO if better vs if worse
+    self.anim_current = self.anim_headshake
+end
+
+function Froggo:go_drinking()
+    self.state = FROG_STATE.drinking
+    self.anim_current = self.anim_cocktail
 end
 
 -- Actions
@@ -101,13 +107,24 @@ end
 function Froggo:croak()
     -- Speak!
     self.state = FROG_STATE.speaking
+    self.anim_current = self.anim_blabla
+
     set_current_sentence()
     set_speech_bubble_content()
 
-    -- Disable speech bubble after a short moment.
     playdate.timer.new(2*1000, function()
+        -- Disable speech bubble after a short moment.
         SHOWN_STRING = ""
-        self:Enter_cooldown()
+
+        -- Give the frog a short moment to breathe before speaking/drinking again.
+        playdate.timer.new(0.1*1000, function()
+            if current_topic_hint == -1 then
+                -- The potion is correct!
+                self:go_drinking()
+            else
+                self:go_idle()
+            end
+        end)
     end)
 end
 
@@ -248,14 +265,6 @@ end
 
 
 function Froggo:tick()
-    -- Called during gameplay when self:isVisible == true
-    if self.state == FROG_STATE.speaking then
-        self.anim_current = self.anim_blabla
-    else
-        -- Idle and other unhandled states
-        self.anim_current = self.anim_idle
-    end
-
     -- Set the image frame to display.
     if self.anim_current then
         self:setImage(self.anim_current:image())
