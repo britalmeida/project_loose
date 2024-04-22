@@ -137,11 +137,10 @@ function Handle_input(timeDelta)
             end
         end
     end
-    if playdate.buttonJustReleased( playdate.kButtonDown ) or
-        playdate.buttonJustReleased( playdate.kButtonUp ) or
-        playdate.buttonJustReleased( playdate.kButtonLeft ) or
-        playdate.buttonJustReleased( playdate.kButtonRight ) then
-        GAMEPLAY_STATE.showing_cocktail = not GAMEPLAY_STATE.showing_cocktail
+    if playdate.buttonJustPressed( playdate.kButtonLeft ) then
+        GAMEPLAY_STATE.showing_cocktail = true
+    elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
+        GAMEPLAY_STATE.showing_cocktail = false
     end
     
 
