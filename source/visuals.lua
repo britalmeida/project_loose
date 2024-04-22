@@ -82,6 +82,19 @@ local function draw_soft_circle(x_center, y_center, radius, steps, blend, alpha,
     end
 end
 
+local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend, alpha, color)
+    for a = 1, steps, 1 do
+        gfx.pushContext()
+            local iteration_width = (1 - a / steps) * width * blend + width
+            local iteration_height = (1 - a / steps) * height * blend + height
+            local ellipse_bb = playdate.geometry.rect.new(x_center - iteration_width * 0.5, y_center - iteration_height * 0.5, iteration_width, iteration_height)
+            gfx.setColor(color)
+            gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
+            gfx.fillEllipseInRect(ellipse_bb)
+        gfx.popContext()
+    end
+end
+
 local function draw_symbols( x_min, y_min, width, height, position_params, value_params)
     local params = position_params
     if params == nil then
@@ -417,6 +430,13 @@ local function draw_dialog_bubble()
     gfx.popContext()
 end
 
+local function draw_bg_lighting()
+    local light_strength = GAMEPLAY_STATE.heat_amount * 0.8 + 0.2
+    gfx.pushContext()
+        draw_soft_ellipse(LIQUID_CENTER_X, 240, 200 + light_strength * 80, 160 + light_strength * 70, 10, math.max(0.25, light_strength), light_strength, gfx.kColorWhite)
+    gfx.popContext()
+end
+
 local function draw_game_background( x, y, width, height )
     local sin = math.sin
     local fmod = math.fmod
@@ -573,6 +593,7 @@ function Init_visuals()
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
+    Set_draw_pass(-1, draw_bg_lighting)
     -- depth 0: cauldron
     Set_draw_pass(3, draw_liquid_surface)
     Set_draw_pass(4, draw_liquid_bubbles)
