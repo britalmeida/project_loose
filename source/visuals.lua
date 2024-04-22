@@ -516,7 +516,16 @@ end
 local function draw_ingredient_grab_cursor()
     gfx.pushContext()
         gfx.setColor(gfx.kColorWhite)
-        gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
+
+        if playdate.buttonIsPressed( playdate.kButtonA ) then
+            gfx.setLineWidth(2.0)
+            gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
+        else
+            gfx.setLineWidth(4.0)
+            selected_ingredient_type = INGREDIENT_TYPES[CURR_SEL_INGREDIENT]
+            gfx.drawCircleAtPoint(selected_ingredient_type.x, selected_ingredient_type.y, 30)
+        end
+
         playdate.drawFPS(200,0)
     gfx.popContext()
 end
