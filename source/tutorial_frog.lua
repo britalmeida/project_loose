@@ -222,6 +222,8 @@ end
 local froggo_img = gfx.image.new("images/frog/frog")
 local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
 local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
+local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/frog/animation-cocktail'), 8
+local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
 
 class('Froggo').extends(Sprite)
 
@@ -232,6 +234,8 @@ function Froggo:init()
     self.anim_current = nil
     self.anim_idle = animloop.new(anim_idle_framerate * frame_ms, anim_idle_imgs, true)
     self.anim_headshake = animloop.new(anim_headshake_framerate * frame_ms, anim_headshake_imgs, true)
+    self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
+    self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
 
     self:setImage(froggo_img)
     self:setZIndex(Z_DEPTH.frog)
