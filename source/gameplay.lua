@@ -30,6 +30,11 @@ STIR_SPEED = 0
 -- Stir position is an angle in radians
 STIR_POSITION = 0
 
+IS_GYRO_INITIALZIED = false
+AVG_GRAVITY_X = 0
+AVG_GRAVITY_Y = 0
+AVG_GRAVITY_Z = 0
+
 GRAVITY_X = 0
 GRAVITY_Y = 0
 GRAVITY_Z = 0
@@ -102,15 +107,47 @@ end
 function Handle_input(timeDelta)
 
     -- Get values from gyro.
-    GRAVITY_X, GRAVITY_Y, GRAVITY_Z = playdate.readAccelerometer()
+    local raw_gravity_x, raw_gravity_y, raw_gravity_z = playdate.readAccelerometer()
     -- Occasionally when simulator starts to upload the game to the actual
     -- device the gyro returns nil as results.
-    if GRAVITY_X == nil then
+    if raw_gravity_x == nil then
         return
     end
-    SHAKE_VAL = GRAVITY_X * GRAVITY_X + GRAVITY_Y * GRAVITY_Y + GRAVITY_Z * GRAVITY_Z
 
-    local gyroSpeed = 30
+    SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
+
+    if IS_GYRO_INITIALZIED == false then
+        -- For the initial vlaue use the gyro at the start of the game, so that
+        -- it calibrates as quickly as possible to the current device orientation.
+        AVG_GRAVITY_X = raw_gravity_x
+        AVG_GRAVITY_Y = raw_gravity_y
+        AVG_GRAVITY_Z = raw_gravity_z
+        IS_GYRO_INITIALZIED = true
+    else
+        -- Exponential moving average:
+        --   https://en.wikipedia.org/wiki/Exponential_smoothing
+        --
+        -- The weight from the number of samples can be estimated as `2 / (n + 1)`.
+        -- See the Relationship between SMA and EMA section of the
+        --   https://en.wikipedia.org/wiki/Moving_average
+        local num_smooth_samples = 120
+        local alpha = 2 / (num_smooth_samples + 1)
+
+        AVG_GRAVITY_X = alpha * raw_gravity_x + (1 - alpha) * AVG_GRAVITY_X
+        AVG_GRAVITY_Y = alpha * raw_gravity_y + (1 - alpha) * AVG_GRAVITY_Y
+        AVG_GRAVITY_Z = alpha * raw_gravity_z + (1 - alpha) * AVG_GRAVITY_Z
+
+        len = math.sqrt(AVG_GRAVITY_X*AVG_GRAVITY_X + AVG_GRAVITY_Y*AVG_GRAVITY_Y + AVG_GRAVITY_Z*AVG_GRAVITY_Z)
+        AVG_GRAVITY_X /= len
+        AVG_GRAVITY_Y /= len
+        AVG_GRAVITY_Z /= len
+    end
+
+    GRAVITY_X = raw_gravity_x - AVG_GRAVITY_X
+    GRAVITY_Y = raw_gravity_y - AVG_GRAVITY_Y
+    GRAVITY_Z = raw_gravity_z - AVG_GRAVITY_Z
+
+    local gyroSpeed = 60
     if SHAKE_VAL < 1.1 then
       PREV_GYRO_X = GYRO_X
       PREV_GYRO_Y = GYRO_Y
