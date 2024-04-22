@@ -437,31 +437,22 @@ local function draw_bg_lighting()
     gfx.popContext()
 end
 
-local function draw_game_background( x, y, width, height )
-    local sin = math.sin
-    local fmod = math.fmod
-    local x_pos = 0
-    local y_pos = 0
-
-    -- Screen shake
-    --x_pos = sin( (fmod(GAMEPLAY_STATE.game_tick, 4) / 2) * math.pi) * GAMEPLAY_STATE.flame_amount * 5
-    --x_pos += sin( (fmod(GAMEPLAY_STATE.game_tick, 8) / 4) * math.pi) * GAMEPLAY_STATE.flame_amount * 2
-
-    --if GAMEPLAY_STATE.flame_amount > 0.5 then
-    --    y_pos = sin( (fmod(GAMEPLAY_STATE.game_tick, 6) / 3) * math.pi) * 2
-    --else
-    --    y_pos = 0
-    --end
+local function draw_game_background()
     -- Draw full screen background.
     gfx.pushContext()
-    do
-        TEXTURES.bg:draw(x_pos, y_pos)
+        TEXTURES.bg:draw(0, 0)
+    gfx.popContext()
+end
 
-        -- Draw flame animation
+
+local function draw_cauldron()
+    -- Draw flame animation
+    local fmod = math.fmod
+    gfx.pushContext()
         if GAMEPLAY_STATE.flame_amount > 0.8 then
             local table_size = TEXTURES.stir_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.stir_flame_table[anim_tick + 1]:draw(27, 0)
+            TEXTURES.stir_flame_table[anim_tick + 1]:draw(0, 0)
         elseif GAMEPLAY_STATE.flame_amount > 0.6 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
@@ -475,7 +466,6 @@ local function draw_game_background( x, y, width, height )
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
             TEXTURES.low_flame_table[anim_tick + 1]:draw(15, 160)
         end
-    end
     gfx.popContext()
 end
 
@@ -594,7 +584,7 @@ function Init_visuals()
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
     Set_draw_pass(-1, draw_bg_lighting)
-    -- depth 0: cauldron
+    Set_draw_pass(0, draw_cauldron)
     Set_draw_pass(3, draw_liquid_surface)
     Set_draw_pass(4, draw_liquid_bubbles)
     Set_draw_pass(5, draw_parameter_diagram)
