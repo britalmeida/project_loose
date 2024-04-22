@@ -5,6 +5,7 @@ MENU_STATE = {}
 MENU_SCREEN = { gameplay = 0, gameover = 1, start = 2, mission = 3, credits = 4 }
 local UI_TEXTURES = {}
 
+local bob_pos = 0
 
 -- System Menu
 
@@ -84,9 +85,16 @@ local function draw_ui()
 
     -- Start menu draws a selected option indicator.
     if MENU_STATE.screen == MENU_SCREEN.start then
+        bob_pos += 0.2
+        local bob_offset = 5*math.sin(bob_pos)
         gfx.pushContext()
-            gfx.setColor(gfx.kColorWhite)
-            gfx.fillCircleAtPoint(50, 94 + 42*MENU_STATE.focused_option*2, 7)
+            if MENU_STATE.focused_option == 0 then
+                UI_TEXTURES.start_right_select:draw(0, 0)
+                UI_TEXTURES.arrow:draw(270 + bob_offset, 145)
+            else
+                UI_TEXTURES.start_left_select:draw(0, 0)
+                UI_TEXTURES.arrow:draw(128 + bob_offset, 148, "flipX")
+            end
         gfx.popContext()
 
     -- Draw gameover screen dynamic elements.
@@ -135,11 +143,11 @@ function Handle_menu_input()
             end
         end
         -- Cycle Options.
-        if playdate.buttonJustReleased( playdate.kButtonDown ) then
+        if playdate.buttonJustReleased( playdate.kButtonLeft ) then
             MENU_STATE.focused_option += 1
             SOUND.menu_highlight:play()
         end
-        if playdate.buttonJustReleased( playdate.kButtonUp ) then
+        if playdate.buttonJustReleased( playdate.kButtonRight ) then
             MENU_STATE.focused_option -= 1
             SOUND.menu_highlight:play()
         end
@@ -197,6 +205,10 @@ function Init_menus()
     UI_TEXTURES.start = gfxi.new("images/menu_start")
     UI_TEXTURES.mission = gfxi.new("images/menu_start")
     UI_TEXTURES.credits = gfxi.new("images/menu_credits")
+
+    UI_TEXTURES.start_left_select = gfxi.new("images/menu_start_left")
+    UI_TEXTURES.start_right_select = gfxi.new("images/menu_start_right")
+    UI_TEXTURES.arrow = gfxi.new("images/arrow")
 
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.active_screen_texture = UI_TEXTURES.start
