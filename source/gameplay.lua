@@ -178,18 +178,18 @@ function Handle_input(timeDelta)
     GRAVITY_Y = raw_gravity_y*co - raw_gravity_z*si
     GRAVITY_Z = raw_gravity_y*si + raw_gravity_z*co
 
-    -- local axis_sign
-    -- if AVG_GRAVITY_Z < 1 then
-    --     axis_sign = 1
-    -- else
-    --     axis_sign = -1
-    -- end
+    local axis_sign = 0
+    if raw_gravity_z < 0 then
+        axis_sign = -1
+    else
+        axis_sign = 1
+    end
 
     local gyroSpeed = 60
     if SHAKE_VAL < 1.1 then
       PREV_GYRO_X = GYRO_X
       PREV_GYRO_Y = GYRO_Y
-      GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed, 0, 400)
+      GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
       GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
     end
 
