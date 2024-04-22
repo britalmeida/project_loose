@@ -234,7 +234,7 @@ function Tick_gameplay()
 
     if GAMEPLAY_STATE.heat_amount > GAMEPLAY_STATE.flame_amount then
         -- Slowly decay the heat
-        GAMEPLAY_STATE.heat_amount -= 0.001
+        GAMEPLAY_STATE.heat_amount -= 0.0002
     else
         -- The flame heats up the cauldron
         GAMEPLAY_STATE.heat_amount += 0.01 * GAMEPLAY_STATE.flame_amount
