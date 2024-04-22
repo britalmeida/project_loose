@@ -128,6 +128,10 @@ end
 function Froggo:go_drinking()
     self.state = FROG_STATE.drinking
     self.anim_current = self.anim_cocktail
+
+    playdate.timer.new(5*1000, function()
+        Enter_menu_start()
+    end)
 end
 
 -- Actions
@@ -158,7 +162,7 @@ end
 
 function Froggo:froggo_react()
     self.state = FROG_STATE.reacting
-    
+
     self:go_reacting()
 
     playdate.timer.new(1*1000, function()
