@@ -531,6 +531,16 @@ local function draw_ingredient_grab_cursor()
     gfx.popContext()
 end
 
+local function draw_ingredient_place_hint()
+    gfx.pushContext()
+        -- Blink the circle on and off every 12 frames
+        local blink_time = 12
+        if GAMEPLAY_STATE.cursor_hold and GAMEPLAY_STATE.game_tick % blink_time*2 > blink_time then
+          TEXTURES.place_hint:drawCentered(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
+        end
+    gfx.popContext()
+end
+
 
 -- Set a draw pass on Z depth
 
@@ -574,6 +584,8 @@ function Init_visuals()
     TEXTURES.cursor = gfxi.new("images/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/closed_hand")
 
+    TEXTURES.place_hint = gfxi.new("images/empty_circle")
+
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
@@ -584,6 +596,7 @@ function Init_visuals()
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
     -- 10: frog
+    Set_draw_pass(11, draw_ingredient_place_hint)
     -- depth 20+: UI
     -- 22: grabbed ingredients
     Set_draw_pass(22, draw_ingredient_grab_cursor)
