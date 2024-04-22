@@ -89,6 +89,7 @@ end
 function Ingredient:release()
     self.is_picked_up = false
     self.is_over_cauldron = false
+    self.vel.dx, self.vel.dy = 0, 0
 
     local bounds = self:getBoundsRect()
 
