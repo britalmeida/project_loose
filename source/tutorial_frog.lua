@@ -40,8 +40,6 @@ local ingredient_reminders <const> = {
 }
 
 
-local days_without_fire_timer
-
 local froggo_img = gfx.image.new("images/frog/frog")
 local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
 local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
@@ -131,7 +129,6 @@ end
 
 function froggo_reality_check()
     -- Match expectations with reality.
-    local viscous_diff = 0 -- viscosity is not an active target now.
     local rune_per_component_diff = DIFF_TO_TARGET.runes
 
     -- Check for new priority of thing that is off target.
@@ -139,7 +136,7 @@ function froggo_reality_check()
 
     if Is_potion_good_enough() then
         current_topic_hint = -1
-    elseif DIFF_TO_TARGET.color_abs > viscous_diff and DIFF_TO_TARGET.color_abs > DIFF_TO_TARGET.ingredients_abs then
+    elseif DIFF_TO_TARGET.color_abs > DIFF_TO_TARGET.ingredients_abs then
         current_topic_hint = THINGS_TO_REMEMBER.stir
         -- clockwise makes it more 1
         if DIFF_TO_TARGET.color < 0.0 then
@@ -154,8 +151,6 @@ function froggo_reality_check()
         else
             stirr_offset = 1
         end
-    elseif viscous_diff > DIFF_TO_TARGET.color_abs and viscous_diff > DIFF_TO_TARGET.ingredients_abs then
-        current_topic_hint = THINGS_TO_REMEMBER.fire
     else
         current_topic_hint = THINGS_TO_REMEMBER.secret_ingredient
         if math.abs(rune_per_component_diff[1]) >= math.abs(rune_per_component_diff[2]) and math.abs(rune_per_component_diff[1]) >= math.abs(rune_per_component_diff[3]) then
@@ -172,15 +167,11 @@ function froggo_reality_check()
         end
     end
 
-    print("froggo thinks priority is "..current_topic_hint.." diffs: v:"..tostring(viscous_diff).." c:"..tostring(DIFF_TO_TARGET.color_abs).." r:"..tostring(DIFF_TO_TARGET.ingredients_abs).." becaaause "..rune_per_component_diff[1]..","..rune_per_component_diff[2]..","..rune_per_component_diff[3])
+    print("froggo thinks priority is "..current_topic_hint.." diffs: ".." c:"..tostring(DIFF_TO_TARGET.color_abs).." r:"..tostring(DIFF_TO_TARGET.ingredients_abs).." becaaause "..rune_per_component_diff[1]..","..rune_per_component_diff[2]..","..rune_per_component_diff[3])
 
     if last_topic_hint ~= current_topic_hint then
         last_sentence = -1
     end
-    -- Counting time with no flame. As soon as there is flame, restart.
-    --if playdate.sound.micinput.getLevel() > 0.1 then
-    --    days_without_fire_timer:reset()
-    --end
 end
 
 
@@ -249,10 +240,6 @@ function Reset_frog()
     last_sentence = -1
     current_sentence = -1
     SHOWN_STRING = ""
-
-    if days_without_fire_timer then
-        days_without_fire_timer:reset()
-    end
 end
 
 
@@ -263,7 +250,3 @@ function Froggo:tick()
     end
 end
 
-
-function Init_frog()
-    days_without_fire_timer = playdate.timer.new(5*1000, 0, 1)
-end

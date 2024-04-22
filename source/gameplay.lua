@@ -32,6 +32,9 @@ DIFF_TO_TARGET = {
     runes = { 1, 1, 1},
 }
 
+PLAYER_LEARNED = {
+    how_to_fire = false
+}
 
 FROG = nil
 
@@ -60,7 +63,6 @@ function Init_gameplay()
 
     playdate.startAccelerometer()
 
-    Init_frog()
     FROG = Froggo()
 end
 
@@ -94,6 +96,8 @@ function Reset_gameplay()
 
     Reset_ingredients()
     FROG:reset()
+
+    PLAYER_LEARNED.how_to_fire = false
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -313,4 +317,11 @@ function Calculate_goodness()
     DIFF_TO_TARGET.runes = runes_diff
 
     -- print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
+end
+
+
+function Check_player_learnings()
+    if GAMEPLAY_STATE.heat_amount > 0.3 then
+        PLAYER_LEARNED.how_to_fire = true
+    end
 end
