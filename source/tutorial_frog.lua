@@ -15,23 +15,23 @@ local last_sentence = -1
 local current_sentence = -1
 SHOWN_STRING = ""
 
-local positive_acceptance <const> = "that'll do it!"
+local positive_acceptance <const> = "That'll do it!"
 local forgotten_topics_callouts <const> = {
-    "hey, you forgot the fire",
-    "hey, you forgot to stir",
-    "hey, you forgot an ingredient",
+    "Hey, you forgot the fire",
+    "Hey, you forgot to stir",
+    "Hey, you forgot an ingredient",
 }
 local fire_reminders <const> = {
     --{"hey... the fire is getting low"},
-    {"keep it warm to see the magic"},
-    {"fire is good, glow is good"},
+    {"Keep it warm to see the magic"},
+    {"Fire is good, glow is good"},
 }
 
 local fire_tutorials <const> = {
     "Magical brews need fire\nto reveal their magic",
     "Blow to stoke up the fire\npuff puff puff!",
-    "just blow air onto the\nbottom of the cauldron",
-    "for realz, blow air on the mic.\ntryyyy it!",
+    "Just blow air onto the\nbottom of the cauldron",
+    "For realz, blow air\non the mic.\nTryyyy it!",
 }
 
 local stirr_reminders <const> = {
