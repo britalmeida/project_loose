@@ -120,6 +120,7 @@ function Ingredient:release()
 end
 
 function Ingredient:drop()
+  Splash_animating = true
   local drop = Ingredient(self.ingredient_type_idx, geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y), true)
   drop.is_in_air = true
   drop:setZIndex(Z_DEPTH.grabbed_ingredient)

@@ -16,6 +16,7 @@ LIQUID_AABB = geo.rect.new(
 MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 120
 MAGIC_TRIANGLE_SIZE = 100
 
+Splash_animating = false
 
 -- Debug / Development
 
@@ -598,6 +599,17 @@ function Set_draw_pass(z, drawCallback)
     return sprite
 end
 
+function Draw_splash()
+    if Splash_animating then
+        local anim_length = TEXTURES.splish:getLength()
+        local anim_tick = math.fmod(GAMEPLAY_STATE.game_tick // 3, anim_length)
+        TEXTURES.splish[anim_tick + 1]:draw(5,20)
+        if (anim_tick + 1) == anim_length then
+            Splash_animating = false
+        end
+    end
+end
+
 -- Load resources and initialize draw passes
 
 function Init_visuals()
@@ -619,6 +631,8 @@ function Init_visuals()
     TEXTURES.bubble_table = gfx.imagetable.new("images/bubbles/bubble")
     TEXTURES.bubble_table2 = gfx.imagetable.new("images/bubbles/bubble2")
 
+    TEXTURES.splish = gfx.imagetable.new("images/splish")
+
     TEXTURES.font_symbols = gfx.font.new("fonts/symbols_outline")
 
     TEXTURES.cursor = gfxi.new("images/open_hand")
@@ -637,6 +651,7 @@ function Init_visuals()
     Set_draw_pass(4, draw_liquid_bubbles)
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
+    Set_draw_pass(7, Draw_splash)
     -- 10: frog
     Set_draw_pass(11, draw_ingredient_place_hint)
     -- depth 20+: UI
