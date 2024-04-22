@@ -446,6 +446,11 @@ end
 
 
 local function draw_cauldron()
+    -- Draw cauldron image
+    gfx.pushContext()
+        TEXTURES.cauldron:draw(0, 0)
+    gfx.popContext()
+
     -- Draw flame animation
     local fmod = math.fmod
     gfx.pushContext()
@@ -524,6 +529,7 @@ function Init_visuals()
 
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
+    TEXTURES.cauldron = gfxi.new("images/cauldron")
     TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
 
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
