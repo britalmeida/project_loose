@@ -19,3 +19,12 @@ function MapRange(value, from_min, from_max, to_min, to_max)
   local factor = (value - from_min) / (from_max - from_min)
   return to_min + factor * (to_max - to_min);
 end
+
+function Sign(value)
+  if value < 0 then
+    return -1
+  elseif value > 0 then
+    return 1
+  end
+  return 0
+end
