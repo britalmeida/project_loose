@@ -5,8 +5,6 @@ MENU_STATE = {}
 MENU_SCREEN = { gameplay = 0, gameover = 1, start = 2, mission = 3, credits = 4 }
 local UI_TEXTURES = {}
 
-local bob_pos = 0
-
 -- System Menu
 
 local function add_system_menu_entries()
@@ -85,16 +83,9 @@ local function draw_ui()
 
     -- Start menu draws a selected option indicator.
     if MENU_STATE.screen == MENU_SCREEN.start then
-        bob_pos += 0.2
-        local bob_offset = 5*math.sin(bob_pos)
         gfx.pushContext()
-            if MENU_STATE.focused_option == 0 then
                 UI_TEXTURES.start_right_select:draw(0, 0)
-                UI_TEXTURES.arrow:draw(270 + bob_offset, 145)
-            else
                 UI_TEXTURES.start_left_select:draw(0, 0)
-                UI_TEXTURES.arrow:draw(128 + bob_offset, 148, "flipX")
-            end
         gfx.popContext()
 
     -- Draw gameover screen dynamic elements.
@@ -135,32 +126,12 @@ function Handle_menu_input()
         -- Select an Option.
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
-            if MENU_STATE.focused_option == 0 then
-                enter_menu_mission()
-            end
-            if MENU_STATE.focused_option == 1 then
-                enter_menu_credits()
-            end
+            enter_menu_mission()
         end
-        -- Cycle Options.
-        if playdate.buttonJustReleased( playdate.kButtonLeft ) then
-            MENU_STATE.focused_option += 1
-            SOUND.menu_highlight:play()
+        if playdate.buttonJustReleased( playdate.kButtonB ) then
+            SOUND.menu_confirm:play()
+            enter_menu_credits()
         end
-        if playdate.buttonJustReleased( playdate.kButtonRight ) then
-            MENU_STATE.focused_option -= 1
-            SOUND.menu_highlight:play()
-        end
-        local crankTicks = playdate.getCrankTicks(3)
-        if crankTicks == 1 then
-            MENU_STATE.focused_option += 1
-        elseif crankTicks == -1 then
-            MENU_STATE.focused_option -= 1
-        end
-        -- Clamp so the option cycling doesn't wrap around.
-        MENU_STATE.focused_option = math.max(MENU_STATE.focused_option, 0)
-        MENU_STATE.focused_option = math.min(MENU_STATE.focused_option, 1)
-
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
