@@ -4,7 +4,7 @@ COCKTAILS = {
   { name="Snailiva",  rune_composition={4, 1, 0}, color=0.1, img=gfxi.new('images/cocktails/snailiva') },
   { name="Greentoe",  rune_composition={0, 3, 7}, color=0.2, img=gfxi.new('images/cocktails/greentoe') },
   { name="Silkini",   rune_composition={0, 1, 2}, color=0.9, img=gfxi.new('images/cocktails/silkini') },
-  { name="Dicybrew",   rune_composition={1, 1, 1}, color=1, img=gfxi.new('images/cocktails/silkini') },
+  { name="Dicybrew",   rune_composition={1, 1, 1}, color=1, img=gfxi.new('images/cocktails/therandomizer_cocktail_sheet') },
 }
 
 TARGET_COCKTAIL = {
