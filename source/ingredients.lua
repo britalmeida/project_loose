@@ -111,6 +111,8 @@ function Ingredient:release()
     if bounds:intersects(triangle_bounds) then
         self:moveTo(x_center, y_center)
         self.is_over_cauldron = true
+    elseif bounds:containsPoint(self.start_pos) then
+        self:respawn()
     else
         self:setZIndex(Z_DEPTH.ingredients)
         self.is_in_air = true
