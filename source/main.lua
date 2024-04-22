@@ -1,3 +1,4 @@
+import "CoreLibs/animation"
 import "CoreLibs/crank"
 import "CoreLibs/object"
 import "CoreLibs/graphics"

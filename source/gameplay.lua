@@ -19,6 +19,7 @@ GAMEPLAY_STATE = {
     -- ??
     game_tick = 0,
 }
+FROG = nil
 
 -- Stir speed is the speed of cranking in revolutions per seconds
 STIR_SPEED = 0
@@ -41,6 +42,7 @@ function Init_gameplay()
     playdate.startAccelerometer()
 
     Init_frog()
+    FROG = Froggo()
 end
 
 
@@ -70,6 +72,7 @@ function Reset_gameplay()
 
     Reset_ingredients()
     Reset_frog()
+    FROG:reset()
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -208,5 +211,6 @@ function Tick_gameplay()
     end
 
     Tick_frog()
+    FROG:tick()
 end
 

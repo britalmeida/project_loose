@@ -1,5 +1,6 @@
 local gfx <const> = playdate.graphics
 local Sprite <const> = gfx.sprite
+local animloop <const> = playdate.graphics.animation.loop
 
 local FROG_STATE = { idle = 0, speaking = 1, cooldown = 2 }
 local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3 }
@@ -218,12 +219,18 @@ end
 
 
 
-froggo_img = gfx.image.new("images/frog")
+local froggo_img = gfx.image.new("images/frog/frog")
+local anim_idle_imgs = gfx.imagetable.new('images/frog/animation-idle')
+local anim_idle_framerate = 16
 
 class('Froggo').extends(Sprite)
 
 function Froggo:init()
     Froggo.super.init(self)
+
+    -- Initialize animation state
+    self.anim_current = nil
+    self.anim_idle = animloop.new(anim_idle_framerate * frame_ms, anim_idle_imgs, true)
 
     self:setImage(froggo_img)
     self:setZIndex(Z_DEPTH.frog)
@@ -234,7 +241,21 @@ function Froggo:init()
 end
 
 
+function Froggo:reset()
+    self.anim_current = self.anim_idle
+end
+
+
+function Froggo:tick()
+    -- Called during gameplay when self:isVisible == true
+
+    -- Set the image frame to display.
+    if self.anim_current then
+        self:setImage(self.anim_current:image())
+    end
+end
+
+
 function Init_frog()
     days_without_fire_timer = playdate.timer.new(5*1000, 0, 1)
-    Froggo()
 end
