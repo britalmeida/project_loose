@@ -110,11 +110,11 @@ function Ingredient:release()
     local triangle_bounds = geo.rect.new(x_center - size/2, y_center - size/2, size, size)
     if bounds:intersects(triangle_bounds) then
         self:moveTo(x_center, y_center)
+        self:setZIndex(5)
         self.is_over_cauldron = true
     elseif bounds:containsPoint(self.start_pos) then
         self:respawn()
     else
-        self:setZIndex(Z_DEPTH.ingredients)
         self.is_in_air = true
     end
 end
@@ -139,6 +139,7 @@ function Ingredient:respawn()
     self:remove()
   else
     self:moveTo(self.start_pos:unpack())
+    self:setZIndex(Z_DEPTH.ingredients)
     self.is_in_air = false
     self.is_over_cauldron = false
     self.is_picked_up = false
