@@ -329,8 +329,8 @@ end
 local function draw_liquid_bubbles()
     gfx.pushContext()
     do
-        local ellipse_bottom_width = 70
-        local ellipse_height = 12
+        local ellipse_height = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
+        local ellipse_bottom_width = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
 
         local speed_fac = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.05, 0.02)
         local freq = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.4, 0.9)
