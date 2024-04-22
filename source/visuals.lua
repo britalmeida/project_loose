@@ -405,7 +405,11 @@ local function draw_liquid_bubbles()
                 local drop_sprite = INGREDIENT_TYPES[Bubbles_types[x]].drop
                 local offset_y = drop_sprite.height * sink
                 local mask = playdate.geometry.rect.new(0, 0, drop_sprite.width, drop_sprite.height - offset_y)
+              if Bubbles_flip[x] then
+                drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 12, "flipX", mask)
+              else
                 drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 12, 0, mask)
+              end
             else
               if Bubbles_flip[x] then
                   bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y, "flipX")
