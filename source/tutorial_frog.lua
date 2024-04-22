@@ -28,6 +28,13 @@ local fire_reminders <const> = {
     {"for realz, blow air.\ntryyyy it!"},
 }
 
+local fire_tutorials <const> = {
+    "Magical brews need fire\nto reveal their magic",
+    "Blow to stoke up the fire\npuff puff puff!",
+    "just blow air onto the\nbottom of the cauldron",
+    "for realz, blow air on the mic.\ntryyyy it!",
+}
+
 local stirr_reminders <const> = {
     {"Waaaaay too dark\ncrank it the other way", "The liquid looks too dark\nstirr!", "Just a lil'bit too dark"}, -- 1 == too dark
     {"Oh my eyes!\nLiquid is way too bright", "The liquid looks too bright\nstirr!", "Just a lil'bit too light"} -- 2 = too bright
@@ -191,7 +198,7 @@ function set_current_sentence()
     elseif current_topic_hint == THINGS_TO_REMEMBER.fire then
         if last_sentence == -1 then
             current_sentence = 0
-        elseif last_sentence < 3 then
+        elseif last_sentence < 4 then
             current_sentence = last_sentence + 1
         end
     elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
@@ -223,7 +230,7 @@ function set_speech_bubble_content()
             SHOWN_STRING = positive_acceptance
         else
             if current_topic_hint == THINGS_TO_REMEMBER.fire then
-                SHOWN_STRING = fire_reminders[current_sentence][1]
+                SHOWN_STRING = fire_tutorials[current_sentence]
             elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
                 SHOWN_STRING = stirr_reminders[current_stirr_hint][stirr_offset]
             elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
