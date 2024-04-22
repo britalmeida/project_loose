@@ -1,5 +1,6 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
+local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
 
 -- Image Passes
@@ -8,6 +9,10 @@ TEXTURES = {}
 -- Constants
 LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 147
 LIQUID_WIDTH, LIQUID_HEIGHT = 65, 25
+LIQUID_AABB = geo.rect.new(
+    LIQUID_CENTER_X-LIQUID_WIDTH,
+    LIQUID_CENTER_Y-LIQUID_HEIGHT*0.5,
+    LIQUID_WIDTH*2, LIQUID_HEIGHT)
 MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 70
 MAGIC_TRIANGLE_SIZE = 100
 
@@ -87,7 +92,7 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
         gfx.pushContext()
             local iteration_width = (1 - a / steps) * width * blend + width
             local iteration_height = (1 - a / steps) * height * blend + height
-            local ellipse_bb = playdate.geometry.rect.new(x_center - iteration_width * 0.5, y_center - iteration_height * 0.5, iteration_width, iteration_height)
+            local ellipse_bb = geo.rect.new(x_center - iteration_width * 0.5, y_center - iteration_height * 0.5, iteration_width, iteration_height)
             gfx.setColor(color)
             gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
             gfx.fillEllipseInRect(ellipse_bb)
@@ -490,6 +495,14 @@ local function draw_debug()
         gfx.fillRoundRect(x + border, y + height - meter - border, width - border * 2, meter, 3)
     gfx.popContext()
 
+    -- Cauldron hit zone
+    gfx.pushContext()
+        gfx.setColor(gfx.kColorWhite)
+        gfx.setLineWidth(2)
+        gfx.drawRect(LIQUID_AABB)
+    gfx.popContext()
+
+    -- FPS
     gfx.pushContext()
         gfx.setColor(gfx.kColorWhite)
         playdate.drawFPS(200,0)
