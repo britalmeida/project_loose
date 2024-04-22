@@ -381,13 +381,16 @@ local function draw_liquid_bubbles()
 end
 
 
-local function draw_overlayed_cocktail_recipe()
+local function draw_overlayed_instructions()
     if GAMEPLAY_STATE.showing_cocktail then
         gfx.pushContext()
             COCKTAILS[TARGET_COCKTAIL.type_idx].img:draw(0, 0)
         gfx.popContext()
+    end
+
+    if GAMEPLAY_STATE.showing_instructions then
         gfx.pushContext()
-            COCKTAILS[TARGET_COCKTAIL.type_idx].img:draw(0, 0)
+            TEXTURES.instructions:draw(400-TEXTURES.instructions.width, 0)
         gfx.popContext()
     end
 end
@@ -544,6 +547,7 @@ function Init_visuals()
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
     TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
+    TEXTURES.instructions = gfxi.new("images/instructions")
 
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
 
@@ -614,7 +618,7 @@ function Init_visuals()
     Set_draw_pass(22, draw_ingredient_grab_cursor)
     Set_draw_pass(25, draw_dialog_bubble)
     -- depth 30+: overlayed modal instructions
-    Set_draw_pass(30, draw_overlayed_cocktail_recipe)
+    Set_draw_pass(30, draw_overlayed_instructions)
     -- Development
     --Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)

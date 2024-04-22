@@ -4,6 +4,7 @@ PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 NUM_RUNES = 3
 GAMEPLAY_STATE = {
     showing_cocktail = false,
+    showing_instructions = false,
     -- Fire!
     flame_amount = 0.0,
     heat_amount = 0.0,
@@ -57,6 +58,7 @@ function Reset_gameplay()
 
     GAMEPLAY_STATE.game_tick = 0
     GAMEPLAY_STATE.showing_cocktail = false
+    GAMEPLAY_STATE.showing_instructions = false
     GAMEPLAY_STATE.flame_amount = 0.0
     GAMEPLAY_STATE.heat_amount = 0.0
     GAMEPLAY_STATE.liquid_offset = 0.0
@@ -140,12 +142,17 @@ function Handle_input(timeDelta)
             end
         end
     end
+    -- Modal instruction overlays.
     if playdate.buttonJustPressed( playdate.kButtonLeft ) then
         GAMEPLAY_STATE.showing_cocktail = true
     elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
         GAMEPLAY_STATE.showing_cocktail = false
     end
-    
+    if playdate.buttonJustPressed( playdate.kButtonRight ) then
+        GAMEPLAY_STATE.showing_instructions = true
+    elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
+        GAMEPLAY_STATE.showing_instructions = false
+    end
 
     -- Crank stirring
     local angleDelta, _ = playdate.getCrankChange()
