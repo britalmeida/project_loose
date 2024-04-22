@@ -36,7 +36,7 @@ local stirr_reminders <const> = {
 local ingredient_reminders <const> = {
     {"Too much love\ncan't stand it!", "Add some passion?"}, -- 1 = heart
     {"Definitely missing happy stuff", "Missing doom and gloom"}, -- 2 = doom
-    {"What a tangle :/", "Add some veggies"}, -- 3 = weeds
+    {"Too much organic in it", "Add some veggies"}, -- 3 = weeds
 }
 
 
