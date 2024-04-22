@@ -127,6 +127,10 @@ function Ingredient:drop()
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
 
+  if not SOUND.drop_01:isPlaying() then
+    SOUND.drop_01:play()
+  end
+
   self.can_drop = false
   playdate.timer.new(500, function ()
       self.can_drop = true

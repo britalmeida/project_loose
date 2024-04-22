@@ -36,9 +36,10 @@ function Enter_menu_start()
     Stop_gameplay()
 
     MENU_STATE.active_screen_texture = UI_TEXTURES.start
-    --if not SOUND.bg_loop_menu:isPlaying() then
-    --    SOUND.bg_loop_menu:play(0)
-    --end
+    SOUND.bg_loop_gameplay:stop()
+    if not SOUND.bg_loop_menu:isPlaying() then
+        SOUND.bg_loop_menu:play(0)
+    end
 end
 
 local function enter_menu_mission()
@@ -63,6 +64,10 @@ function Enter_gameplay()
     MENU_STATE.screen = MENU_SCREEN.gameplay
 
     SOUND.bg_loop_menu:stop()
+    if not SOUND.bg_loop_gameplay:isPlaying() then
+        SOUND.bg_loop_gameplay:play(0)
+    end
+
     add_system_menu_entries()
     Reset_gameplay()
 end

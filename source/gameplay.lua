@@ -266,8 +266,17 @@ function Tick_gameplay()
 
     if GAMEPLAY_STATE.flame_amount > 0.01 then
         local flame_decay = 0.99
+        print(GAMEPLAY_STATE.flame_amount)
         GAMEPLAY_STATE.flame_amount *= flame_decay
+        if (GAMEPLAY_STATE.flame_amount > 0.4) then
+            if not SOUND.fire_blow:isPlaying() then
+                SOUND.fire_blow:play()
+            end
+        end
     else
+        if SOUND.fire_burn:isPlaying() then
+            SOUND.fire_burn:stop()
+        end
         GAMEPLAY_STATE.flame_amount = 0
     end
 
