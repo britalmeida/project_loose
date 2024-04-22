@@ -198,10 +198,6 @@ end
 
 
 -- ><
-function Tick_frog()
-end
-
-
 function Reset_frog()
     frog_state = FROG_STATE.idle
 
@@ -215,8 +211,6 @@ function Reset_frog()
         days_without_fire_timer:reset()
     end
 end
-
-
 
 
 local froggo_img = gfx.image.new("images/frog/frog")
@@ -246,13 +240,14 @@ function Froggo:init()
 end
 
 
-function Froggo:reset()
-    self.anim_current = self.anim_idle
-end
-
-
 function Froggo:tick()
     -- Called during gameplay when self:isVisible == true
+    if frog_state == FROG_STATE.speaking then
+        self.anim_current = self.anim_blabla
+    else
+        -- Idle and other unhandled states
+        self.anim_current = self.anim_idle
+    end
 
     -- Set the image frame to display.
     if self.anim_current then

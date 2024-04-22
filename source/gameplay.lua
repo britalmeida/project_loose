@@ -76,7 +76,6 @@ function Reset_gameplay()
 
     Reset_ingredients()
     Reset_frog()
-    FROG:reset()
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -221,7 +220,6 @@ function Tick_gameplay()
       GAMEPLAY_STATE.liquid_momentum = 0
     end
 
-    Tick_frog()
     FROG:tick()
 end
 
