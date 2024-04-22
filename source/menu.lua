@@ -154,6 +154,8 @@ function Handle_menu_input()
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
+            -- reset mystery potion
+            Reroll_mystery_potion()
             Set_target_potion(MENU_STATE.focused_option + 1)
             Enter_gameplay()
         elseif playdate.buttonJustReleased( playdate.kButtonB ) then
