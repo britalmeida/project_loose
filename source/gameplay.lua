@@ -1,3 +1,5 @@
+local vec2d <const> = playdate.geometry.vector2D
+
 GYRO_X, GYRO_Y = 200, 120
 PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 
@@ -154,9 +156,24 @@ function Handle_input(timeDelta)
         AVG_GRAVITY_Z /= len
     end
 
-    GRAVITY_X = raw_gravity_x - AVG_GRAVITY_X
-    GRAVITY_Y = raw_gravity_y - AVG_GRAVITY_Y
-    GRAVITY_Z = raw_gravity_z - AVG_GRAVITY_Z
+    local v1 = vec2d.new(0, 1)
+    local v2 = vec2d.new(AVG_GRAVITY_Y, AVG_GRAVITY_Z)
+    local angle = v2:angleBetween(v1) / 180 * math.pi
+
+    local co = math.cos(angle)
+    local si = math.sin(angle)
+
+    GRAVITY_X = raw_gravity_x
+
+    GRAVITY_Y = raw_gravity_y*co - raw_gravity_z*si
+    GRAVITY_Z = raw_gravity_y*si + raw_gravity_z*co
+
+    -- local axis_sign
+    -- if AVG_GRAVITY_Z < 1 then
+    --     axis_sign = 1
+    -- else
+    --     axis_sign = -1
+    -- end
 
     local gyroSpeed = 60
     if SHAKE_VAL < 1.1 then
