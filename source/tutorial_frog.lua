@@ -131,38 +131,31 @@ end
 
 function froggo_reality_check()
     -- Match expectations with reality.
-    local color_diff = math.abs(TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color)
     local viscous_diff = 0 -- viscosity is not an active target now.
-    local rune_per_component_diff = {
-        TARGET_COCKTAIL.rune_ratio[1] - GAMEPLAY_STATE.rune_ratio[1],
-        TARGET_COCKTAIL.rune_ratio[2] - GAMEPLAY_STATE.rune_ratio[2],
-        TARGET_COCKTAIL.rune_ratio[3] - GAMEPLAY_STATE.rune_ratio[3],
-    }
-    local rune_diff = (math.abs(rune_per_component_diff[1]) + math.abs(rune_per_component_diff[2]) + math.abs(rune_per_component_diff[3])) * 0.5
+    local rune_per_component_diff = DIFF_TO_TARGET.runes
 
     -- Check for new priority of thing that is off target.
     last_topic_hint = current_topic_hint
 
     local tolerance = 0.1
-    if color_diff < tolerance and viscous_diff < tolerance and rune_diff < tolerance then
+    if DIFF_TO_TARGET.color_abs < tolerance and viscous_diff < tolerance and DIFF_TO_TARGET.ingredients_abs < tolerance then
         current_topic_hint = -1
-    elseif color_diff > viscous_diff and color_diff > rune_diff then
+    elseif DIFF_TO_TARGET.color_abs > viscous_diff and DIFF_TO_TARGET.color_abs > DIFF_TO_TARGET.ingredients_abs then
         current_topic_hint = THINGS_TO_REMEMBER.stir
         -- clockwise makes it more 1
-        if (TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color) < 0.0 then
+        if DIFF_TO_TARGET.color < 0.0 then
             current_stirr_hint = 2
         else
             current_stirr_hint = 1
         end
-        local abs_diff = math.abs(TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color)
-        if abs_diff < 0.3 then
+        if DIFF_TO_TARGET.color_abs < 0.3 then
             stirr_offset = 3
-        elseif abs_diff < 0.75 then
+        elseif DIFF_TO_TARGET.color_abs < 0.75 then
             stirr_offset = 2
         else
             stirr_offset = 1
         end
-    elseif viscous_diff > color_diff and viscous_diff > rune_diff then
+    elseif viscous_diff > DIFF_TO_TARGET.color_abs and viscous_diff > DIFF_TO_TARGET.ingredients_abs then
         current_topic_hint = THINGS_TO_REMEMBER.fire
     else
         current_topic_hint = THINGS_TO_REMEMBER.secret_ingredient
@@ -180,7 +173,7 @@ function froggo_reality_check()
         end
     end
 
-    print("froggo thinks priority is "..current_topic_hint.." diffs: v:"..tostring(viscous_diff).." c:"..tostring(color_diff).." r:"..tostring(rune_diff).." becaaause "..rune_per_component_diff[1]..","..rune_per_component_diff[2]..","..rune_per_component_diff[3])
+    print("froggo thinks priority is "..current_topic_hint.." diffs: v:"..tostring(viscous_diff).." c:"..tostring(DIFF_TO_TARGET.color_abs).." r:"..tostring(DIFF_TO_TARGET.ingredients_abs).." becaaause "..rune_per_component_diff[1]..","..rune_per_component_diff[2]..","..rune_per_component_diff[3])
 
     if last_topic_hint ~= current_topic_hint then
         last_sentence = -1

@@ -61,6 +61,7 @@ function playdate.update()
         -- In gameplay.
         Handle_input(timeDelta)
         Tick_gameplay()
+        Calculate_goodness()
     end
 
     -- Always redraw and update entities (sprites) and timers.

@@ -1,3 +1,5 @@
+local vec2d <const> = playdate.geometry.vector2D
+
 GYRO_X, GYRO_Y = 200, 120
 PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 
@@ -22,6 +24,15 @@ GAMEPLAY_STATE = {
     -- The cursor is held down
     cursor_hold = false,
 }
+
+DIFF_TO_TARGET = {
+    color = 1,
+    color_abs = 1,
+    ingredients_abs = 1,
+    runes = { 1, 1, 1},
+}
+
+
 FROG = nil
 
 -- Stir speed is the speed of cranking in revolutions per seconds
@@ -78,6 +89,8 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_ratio[a] = 0
     end
+
+    Calculate_goodness()
 
     Reset_ingredients()
     FROG:reset()
@@ -143,9 +156,24 @@ function Handle_input(timeDelta)
         AVG_GRAVITY_Z /= len
     end
 
-    GRAVITY_X = raw_gravity_x - AVG_GRAVITY_X
-    GRAVITY_Y = raw_gravity_y - AVG_GRAVITY_Y
-    GRAVITY_Z = raw_gravity_z - AVG_GRAVITY_Z
+    local v1 = vec2d.new(0, 1)
+    local v2 = vec2d.new(AVG_GRAVITY_Y, AVG_GRAVITY_Z)
+    local angle = v2:angleBetween(v1) / 180 * math.pi
+
+    local co = math.cos(angle)
+    local si = math.sin(angle)
+
+    GRAVITY_X = raw_gravity_x
+
+    GRAVITY_Y = raw_gravity_y*co - raw_gravity_z*si
+    GRAVITY_Z = raw_gravity_y*si + raw_gravity_z*co
+
+    -- local axis_sign
+    -- if AVG_GRAVITY_Z < 1 then
+    --     axis_sign = 1
+    -- else
+    --     axis_sign = -1
+    -- end
 
     local gyroSpeed = 60
     if SHAKE_VAL < 1.1 then
@@ -260,3 +288,24 @@ function Tick_gameplay()
     FROG:tick()
 end
 
+
+
+function Calculate_goodness()
+    local prev_diff = DIFF_TO_TARGET
+
+    -- Match expectations with reality.
+    DIFF_TO_TARGET.color = math.abs(TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color)
+    DIFF_TO_TARGET.color_abs = math.abs(DIFF_TO_TARGET.color)
+
+    local runes_diff = {
+        TARGET_COCKTAIL.rune_ratio[1] - GAMEPLAY_STATE.rune_ratio[1],
+        TARGET_COCKTAIL.rune_ratio[2] - GAMEPLAY_STATE.rune_ratio[2],
+        TARGET_COCKTAIL.rune_ratio[3] - GAMEPLAY_STATE.rune_ratio[3],
+    }
+    DIFF_TO_TARGET.ingredients_abs = (
+        math.abs(runes_diff[1]) + math.abs(runes_diff[2]) + math.abs(runes_diff[3])
+    ) * 0.5
+    DIFF_TO_TARGET.runes = runes_diff
+
+    print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
+end
