@@ -22,6 +22,15 @@ GAMEPLAY_STATE = {
     -- The cursor is held down
     cursor_hold = false,
 }
+
+DIFF_TO_TARGET = {
+    color = 1,
+    color_abs = 1,
+    ingredients_abs = 1,
+    runes = { 1, 1, 1},
+}
+
+
 FROG = nil
 
 -- Stir speed is the speed of cranking in revolutions per seconds
@@ -78,6 +87,8 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_ratio[a] = 0
     end
+
+    Calculate_goodness()
 
     Reset_ingredients()
     FROG:reset()
@@ -260,3 +271,24 @@ function Tick_gameplay()
     FROG:tick()
 end
 
+
+
+function Calculate_goodness()
+    local prev_diff = DIFF_TO_TARGET
+
+    -- Match expectations with reality.
+    DIFF_TO_TARGET.color = math.abs(TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color)
+    DIFF_TO_TARGET.color_abs = math.abs(DIFF_TO_TARGET.color)
+
+    local runes_diff = {
+        TARGET_COCKTAIL.rune_ratio[1] - GAMEPLAY_STATE.rune_ratio[1],
+        TARGET_COCKTAIL.rune_ratio[2] - GAMEPLAY_STATE.rune_ratio[2],
+        TARGET_COCKTAIL.rune_ratio[3] - GAMEPLAY_STATE.rune_ratio[3],
+    }
+    DIFF_TO_TARGET.ingredients_abs = (
+        math.abs(runes_diff[1]) + math.abs(runes_diff[2]) + math.abs(runes_diff[3])
+    ) * 0.5
+    DIFF_TO_TARGET.runes = runes_diff
+
+    print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
+end
