@@ -520,10 +520,12 @@ end
 
 local function draw_ingredient_grab_cursor()
     gfx.pushContext()
-        gfx.setColor(gfx.kColorWhite)
-        gfx.setLineWidth(2.0)
-        -- Gyro cursor
-        gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
+        if GAMEPLAY_STATE.cursor_hold then
+            TEXTURES.cursor_hold:drawCentered(GYRO_X, GYRO_Y)
+        else
+            TEXTURES.cursor:drawCentered(GYRO_X, GYRO_Y)
+        end
+
         -- Draw FPS
         playdate.drawFPS(200,0)
     gfx.popContext()
@@ -569,6 +571,9 @@ function Init_visuals()
 
     TEXTURES.font_symbols = gfx.font.new("fonts/symbols_outline")
 
+    TEXTURES.cursor = gfxi.new("images/open_hand")
+    TEXTURES.cursor_hold = gfxi.new("images/closed_hand")
+
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
@@ -590,4 +595,4 @@ function Init_visuals()
     --Set_draw_pass(20, draw_test_dither_patterns)
 end
 
-Z_DEPTH = { frog=10, ingredients=-5, grabbed_ingredient = 22 }
+Z_DEPTH = { frog=10, ingredients=-5, grabbed_ingredient = 21 }

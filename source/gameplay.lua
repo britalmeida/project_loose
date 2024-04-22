@@ -19,6 +19,8 @@ GAMEPLAY_STATE = {
     rune_ratio = {0, 0, 0},
     -- ??
     game_tick = 0,
+    -- The cursor is held down
+    cursor_hold = false,
 }
 FROG = nil
 
@@ -122,6 +124,7 @@ function Handle_input(timeDelta)
         Ask_the_frog()
     end
     if playdate.buttonJustPressed( playdate.kButtonA ) then
+        GAMEPLAY_STATE.cursor_hold = true
         for i, ingredient in pairs(INGREDIENTS) do
             if ingredient.is_over_cauldron then
                 ingredient.is_over_cauldron = false
@@ -136,6 +139,7 @@ function Handle_input(timeDelta)
         end
     end
     if playdate.buttonJustReleased(playdate.kButtonA) then
+        GAMEPLAY_STATE.cursor_hold = false
         for i, ingredient in pairs(INGREDIENTS) do
             if ingredient.is_picked_up then
               ingredient:release()
