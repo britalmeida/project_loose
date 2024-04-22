@@ -56,6 +56,7 @@ function Ingredient:tick()
     end
     if self.is_picked_up then
         self.vel.dx, self.vel.dy = PREV_GYRO_X - GYRO_X, PREV_GYRO_Y - GYRO_Y
+        -- Follow the gyro
         self:moveTo(GYRO_X, GYRO_Y)
     elseif self.is_over_cauldron then
       if SHAKE_VAL > 2 and self.can_drop then
@@ -69,15 +70,7 @@ function Ingredient:tick()
         local _, y = self:getPosition()
         -- Falling off the bottom
         if y > 500 then
-          if self.is_drop then
-              table.remove(DROPS, table.indexOfElement(DROPS, self))
-              self:remove()
-          else
-            self:moveTo(self.start_pos:unpack())
-            self.is_in_air = false
-            self.is_over_cauldron = false
-            self.is_picked_up = false
-          end
+          self:respawn()
         end
     end
 end
@@ -123,6 +116,18 @@ function Ingredient:drop()
   playdate.timer.new(500, function ()
       self.can_drop = true
   end)
+end
+
+function Ingredient:respawn()
+  if self.is_drop then
+    table.remove(DROPS, table.indexOfElement(DROPS, self))
+    self:remove()
+  else
+    self:moveTo(self.start_pos:unpack())
+    self.is_in_air = false
+    self.is_over_cauldron = false
+    self.is_picked_up = false
+  end
 end
 
 
