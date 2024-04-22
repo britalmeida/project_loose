@@ -1,7 +1,7 @@
-Falk David		Developing
-Ines Almeida		Developing
-Julien Kaspar		Testing
-Sebastian Parborg	Developing
-Sergey Sharybin		Developing & Art
-Simon Thommes		Developing
+Falk David		Programming
+Ines Almeida		Programming
+Julien Kaspar		UI, Testing & Art
+Sebastian Parborg	Programming
+Sergey Sharybin		Frogramming & Art
+Simon Thommes		Programming
 Vivien Lulkowski	Art & Animation
