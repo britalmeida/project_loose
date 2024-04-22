@@ -92,54 +92,21 @@ local function draw_ui()
     -- Draw gameover screen dynamic elements.
     elseif MENU_STATE.screen == MENU_SCREEN.gameover then
 
-    -- Draw mission selection cursor.
+    -- Draw mission selection options.
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
         gfx.pushContext()
+            -- Fullscreen bg fill
             gfx.setColor(gfx.kColorBlack)
             gfx.fillRect(0, 0, 400, 240)
-
             -- Draw cocktails
-            gfx.setColor(gfx.kColorWhite)
-            gfx.setImageDrawMode(gfx.kDrawModeInverted)
-            gfx.drawText(COCKTAILS[1].name, 30+20, 215)
-            gfx.drawText(COCKTAILS[2].name, 30+130, 215)
-            gfx.drawText(COCKTAILS[3].name, 30+265, 215)
-
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
-            COCKTAILS[1].img:drawScaled(20, 0, 0.9, 0.9)
-            COCKTAILS[2].img:drawScaled(20+130, 0, 0.9, 0.9)
-            COCKTAILS[2].img:drawScaled(20+260, 0, 0.9, 0.9)
-
-            --------------------------------------------------------------------
-            -- Cocktail details for development purposes.
-
-            gfx.setColor(playdate.graphics.kColorWhite)
-
-            for i = 1, 3, 1 do
-                -- Color.
-                x = 20 + 75 + 130 * (i - 1)
-                gfx.pushContext()
-                    gfx.setDitherPattern(1 - COCKTAILS[i].color, gfx.image.kDitherTypeBayer8x8)
-                    gfx.fillRect(x, 130, 20, 20)
-                gfx.popContext()
-                gfx.drawRect(x, 130, 20, 20)  -- Outline
-
-                -- Viscosity.
-                --[[
-                gfx.pushContext()
-                    gfx.setDitherPattern(1 - COCKTAILS[i].viscosity, gfx.image.kDitherTypeBayer8x8)
-                    gfx.fillRect(x, 155, 20, 20)
-                gfx.popContext()
-                gfx.drawRect(x, 155, 20, 20) -- Outline
-                --]]
+            for a = 1, #COCKTAILS, 1 do
+                COCKTAILS[a].img:draw(10 + 130*(a-1), 0)
             end
-
-            -- End of development only code
-            --------------------------------------------------------------------
-
+            -- Draw current option indicator
             gfx.setColor(gfx.kColorWhite)
             gfx.setLineWidth(5.0)
-            gfx.drawRect(15+128*MENU_STATE.focused_option, 0, 120, 240)
+            gfx.drawRect(10 + 130*MENU_STATE.focused_option, 0, 120, 240)
         gfx.popContext()
     end
 end
