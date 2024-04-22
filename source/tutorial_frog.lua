@@ -239,7 +239,7 @@ function Froggo:init()
 
     self:setImage(froggo_img)
     self:setZIndex(Z_DEPTH.frog)
-    self:moveTo(345, 170)
+    self:moveTo(350, 148)
 
     self:addSprite()
     self:setVisible(true)

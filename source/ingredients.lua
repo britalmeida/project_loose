@@ -65,9 +65,10 @@ function Ingredient:tick()
       end
     elseif self.is_in_air then
         self:moveBy(self.vel:unpack())
-        self.vel:addVector(geo.vector2D.new(0, 9))
+        self.vel:addVector(geo.vector2D.new(0, 6))
         local _, y = self:getPosition()
-        if y > 300 then
+        -- Falling off the bottom
+        if y > 500 then
           if self.is_drop then
               table.remove(DROPS, table.indexOfElement(DROPS, self))
               self:remove()
