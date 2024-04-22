@@ -83,37 +83,39 @@ local function draw_symbols( x_min, y_min, width, height, position_params, value
 
     gfx.pushContext()
         gfx.setFont(TEXTURES.font_symbols)
-        local glyph_size = 14
         local margin = 3
 
         local n = #params
         local x1 = x_min + width / 2
         local y1 = y_min + (1 - math.sqrt(params[1])) * height / 2
         for a = 1, n, 1 do
+            local glyph_width = TEXTURES.rune_images[a].width
+            local glyph_height = TEXTURES.rune_images[a].height
             local i = (a<n and a or 0) + 1
             local phi = (a)/n * 2 * math.pi
             local r = math.sqrt(params[i])
             local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
             local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
 
-            local glyph_x = x1-glyph_size*0.5
-            local glyph_y = y1-glyph_size*0.5
+            local glyph_x = x1-glyph_width*0.5
+            local glyph_y = y1-glyph_height*0.5
 
             gfx.pushContext()
                 gfx.setDitherPattern(value_params[i], gfxi.kDitherTypeScreen)
                 gfx.fillRoundRect(
                     glyph_x-margin, glyph_y-margin,
-                    glyph_size+margin*2, glyph_size+margin*2, 4)
+                    glyph_width+margin*2, glyph_height+margin*2, 4)
             gfx.popContext()
 
             local target = TARGET_COCKTAIL.rune_ratio[a]
             local difference_weight = math.max(target, 1-target)
-            local rune_strength = 1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight)
+            local rune_strength = GAMEPLAY_STATE.heat_amount * (1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight))
             draw_soft_circle(x1, y1, 20*rune_strength, 4, 0.5, rune_strength, gfx.kColorWhite)
 
             gfx.pushContext()
-                gfx.setImageDrawMode(gfx.kDrawModeInverted)
-                gfx.drawText(tostring(a), glyph_x, glyph_y)
+                --gfx.setImageDrawMode(gfx.kDrawModeInverted)
+                TEXTURES.rune_images[a]:draw(glyph_x, glyph_y)
+                --gfx.drawText(tostring(a), glyph_x, glyph_y)
             gfx.popContext()
 
             x1 = x2
@@ -193,9 +195,9 @@ local function draw_parameter_diagram()
 
         draw_poly_shape(x_min, y_min, width, height, par_lim, 0, gfx.kColorBlack)
         -- Draw current potion mix
-        draw_poly_shape(x_min, y_min, width, height, params, 0.45, gfx.kColorWhite)
+        --draw_poly_shape(x_min, y_min, width, height, params, 0.45, gfx.kColorWhite)
         -- Draw target potion mix
-        draw_poly_shape(x_min, y_min, width, height, target_params, 1.00, gfx.kColorWhite)
+        --draw_poly_shape(x_min, y_min, width, height, target_params, 1.00, gfx.kColorWhite)
         draw_symbols(x_min, y_min, width, height, par_lim, params)
 
     gfx.popContext()
@@ -519,6 +521,8 @@ function Init_visuals()
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
 
+    TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
+
     -- Load cauldron flame textures
     local lowflame_a = gfxi.new("images/fire/lowflame_a")
     local lowflame_b = gfxi.new("images/fire/lowflame_b")
@@ -579,7 +583,7 @@ function Init_visuals()
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
     Set_draw_pass(7, draw_dialog_bubble)
-    Set_draw_pass(8, draw_debug_color_viscosity)
+    -- Set_draw_pass(8, draw_debug_color_viscosity)
     -- Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
