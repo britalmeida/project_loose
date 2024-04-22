@@ -4,6 +4,7 @@ COCKTAILS = {
   { name="Snailiva",  rune_composition={4, 1, 0}, color=0.1, img=gfxi.new('images/cocktails/snailiva') },
   { name="Greentoe",  rune_composition={0, 3, 7}, color=0.2, img=gfxi.new('images/cocktails/greentoe') },
   { name="Silkini",   rune_composition={0, 1, 2}, color=0.9, img=gfxi.new('images/cocktails/silkini') },
+  { name="Dicybrew",   rune_composition={1, 1, 1}, color=1, img=gfxi.new('images/cocktails/silkini') },
 }
 
 TARGET_COCKTAIL = {
@@ -11,6 +12,17 @@ TARGET_COCKTAIL = {
   rune_ratio = {1, 0, 0},
   color = 0.1,
 }
+
+function Reroll_mystery_potion()
+    for a = 1, #COCKTAILS, 1 do
+      if COCKTAILS[a].name == "Dicybrew" then
+          COCKTAILS[a].color = math.random(100)/100
+          for b = 1, 3, 1 do
+            COCKTAILS[a].rune_composition[b] = math.random(9)
+          end
+      end
+  end
+end
 
 function Set_target_potion(chosen_cocktail_idx)
   local chosen_cocktail = COCKTAILS[chosen_cocktail_idx]

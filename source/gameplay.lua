@@ -98,6 +98,9 @@ function Reset_gameplay()
 
     Calculate_goodness()
 
+    -- reset mystery potion
+    Reroll_mystery_potion()
+
     Reset_ingredients()
     FROG:reset()
 
