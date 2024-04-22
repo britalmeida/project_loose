@@ -55,7 +55,7 @@ function Ingredient:tick()
         self:remove()
     end
     if self.is_picked_up then
-        self.vel.dx, self.vel.dy = PREV_GYRO_X - GYRO_X, PREV_GYRO_Y - GYRO_Y
+        self.vel.dx, self.vel.dy = GYRO_X - PREV_GYRO_X, GYRO_Y - PREV_GYRO_Y
         -- Follow the gyro
         self:moveTo(GYRO_X, GYRO_Y)
     elseif self.is_over_cauldron then
@@ -89,6 +89,7 @@ end
 function Ingredient:release()
     self.is_picked_up = false
     self.is_over_cauldron = false
+    self.vel.dx, self.vel.dy = 0, 0
 
     local bounds = self:getBoundsRect()
 

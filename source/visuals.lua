@@ -445,6 +445,7 @@ local function draw_dialog_bubble()
 
         -- Draw lines of the text.
         for i = 1, #text_lines, 1 do
+            gfx.setFont(TEXTURES.speech_font)
             gfx.drawTextAligned(text_lines[i], x_min + width / 2, current_line_y, kTextAlignment.center)
             current_line_y += line_height
         end
@@ -594,6 +595,8 @@ function Init_visuals()
     TEXTURES.cursor_hold = gfxi.new("images/closed_hand")
 
     TEXTURES.place_hint = gfxi.new("images/empty_circle")
+
+    TEXTURES.speech_font = gfx.font.new("fonts/diamond_12")
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
