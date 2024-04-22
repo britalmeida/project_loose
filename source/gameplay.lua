@@ -32,7 +32,7 @@ DIFF_TO_TARGET = {
     runes = { 1, 1, 1},
 }
 
-STATE_CHANGE = 0
+TREND = 0
 
 PLAYER_LEARNED = {
     how_to_fire = false,
@@ -317,6 +317,8 @@ function Calculate_goodness()
         end
     end
 
+    local prev_trend = TREND
+
     -- Match expectations with reality.
     DIFF_TO_TARGET.color = TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color
     DIFF_TO_TARGET.color_abs = math.abs(DIFF_TO_TARGET.color)
@@ -332,26 +334,16 @@ function Calculate_goodness()
     DIFF_TO_TARGET.runes = runes_diff
 
     -- calculate state change
-    local reaction_tolerance = 0.3
 
-    local state_change_color = 0
-    local state_change_runes = 0
+    local color_trend = -Sign(DIFF_TO_TARGET.color_abs - prev_diff.color_abs)
+    local rune_trend = -Sign(DIFF_TO_TARGET.ingredients_abs - prev_diff.ingredients_abs)
 
-    if prev_diff.color_abs < reaction_tolerance and DIFF_TO_TARGET.color_abs > reaction_tolerance then
-        state_change_color = -1
-    elseif prev_diff.color_abs > reaction_tolerance and DIFF_TO_TARGET.color_abs < reaction_tolerance then
-        state_change_color = 1
+    local new_trend = color_trend + rune_trend
+    if new_trend ~= 0 then
+        TREND = new_trend
     end
 
-    if prev_diff.ingredients_abs < reaction_tolerance and DIFF_TO_TARGET.ingredients_abs > reaction_tolerance then
-        state_change_color = -1
-    elseif prev_diff.ingredients_abs > reaction_tolerance and DIFF_TO_TARGET.ingredients_abs < reaction_tolerance then
-        state_change_color = 1
-    end
-
-    STATE_CHANGE = state_change_color + state_change_runes
-
-    if STATE_CHANGE ~= 0 then
+    if math.abs(TREND - prev_trend) == 2 then
         FROG:Notify_the_frog()
     end
 

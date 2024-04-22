@@ -117,9 +117,9 @@ end
 function Froggo:go_reacting()
     self.state = FROG_STATE.reacting
 
-    if STATE_CHANGE > 0 then
+    if TREND > 0 then
         self.anim_current = self.anim_happy
-    elseif STATE_CHANGE < 0 then
+    elseif TREND < 0 then
         self.anim_current = self.anim_headshake
     end
 
