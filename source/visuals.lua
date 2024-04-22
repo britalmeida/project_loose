@@ -7,13 +7,13 @@ local vec2d <const> = playdate.geometry.vector2D
 TEXTURES = {}
 
 -- Constants
-LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 147
+LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 170
 LIQUID_WIDTH, LIQUID_HEIGHT = 65, 25
 LIQUID_AABB = geo.rect.new(
     LIQUID_CENTER_X-LIQUID_WIDTH,
     LIQUID_CENTER_Y-LIQUID_HEIGHT*0.5,
     LIQUID_WIDTH*2, LIQUID_HEIGHT)
-MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 70
+MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 120
 MAGIC_TRIANGLE_SIZE = 100
 
 
@@ -108,48 +108,39 @@ local function draw_symbols( x_min, y_min, width, height, position_params, value
 
     gfx.pushContext()
         gfx.setFont(TEXTURES.font_symbols)
-        local margin = 3
+        local margin = 2
 
         local n = #params
-        local x1 = x_min + width / 2
-        local y1 = y_min + (1 - math.sqrt(params[1])) * height / 2
         for a = 1, n, 1 do
             local glyph_width = TEXTURES.rune_images[a].width
             local glyph_height = TEXTURES.rune_images[a].height
             local i = (a<n and a or 0) + 1
-            local phi = (a)/n * 2 * math.pi
-            local r = math.sqrt(params[i])
-            local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
-            local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
-
-            local glyph_x = x1-glyph_width*0.5
-            local glyph_y = y1-glyph_height*0.5
+            local phi = (a-2)/n * 2 * math.pi * 0.3
+            local r = math.sqrt(params[i]) * 1.5
+            local glyph_x = x_min + ((math.sin(phi) * r) + 1) * width / 2
+            local glyph_y = y_min + ((-math.cos(phi) * r) + 1) * height / 2
 
             gfx.pushContext()
                 gfx.setDitherPattern(value_params[i], gfxi.kDitherTypeScreen)
-                gfx.fillRoundRect(
-                    glyph_x-margin, glyph_y-margin,
-                    glyph_width+margin*2, glyph_height+margin*2, 4)
+                gfx.fillCircleAtPoint(glyph_x, glyph_y, math.max(glyph_height, glyph_width) * 0.5 + margin)
             gfx.popContext()
 
             local target = TARGET_COCKTAIL.rune_ratio[a]
             local difference_weight = math.max(target, 1-target)
             local rune_strength = math.min(math.sqrt(GAMEPLAY_STATE.heat_amount * 1.2), 1) * (1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight))
-            draw_soft_circle(x1, y1, 20*rune_strength, 4, 0.5, rune_strength, gfx.kColorWhite)
+            draw_soft_circle(glyph_x, glyph_y, 10 * rune_strength + 12, 4, 0.5, rune_strength, gfx.kColorWhite)
 
             gfx.pushContext()
                 --gfx.setImageDrawMode(gfx.kDrawModeInverted)
-                TEXTURES.rune_images[a]:draw(glyph_x, glyph_y)
+                TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
                 gfx.setColor(gfx.kColorBlack)
-                gfx.setDitherPattern(1-(math.max(0.8-GAMEPLAY_STATE.heat_amount, 0) * 0.8), gfxi.kDitherTypeBayer4x4)
-                gfx.fillRoundRect(
-                    glyph_x-margin, glyph_y-margin,
-                    glyph_width+margin*2, glyph_height+margin*2, 4)
+                gfx.setDitherPattern(1-(math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8), gfxi.kDitherTypeBayer4x4)
+                gfx.fillCircleAtPoint(glyph_x, glyph_y, math.max(glyph_height, glyph_width) * 0.5 + margin)
+                --gfx.fillRoundRect(
+                --    glyph_x-margin, glyph_y-margin,
+                --    glyph_width+margin*2, glyph_height+margin*2, 4)
                 --gfx.drawText(tostring(a), glyph_x, glyph_y)
             gfx.popContext()
-
-            x1 = x2
-            y1 = y2
         end
 
     gfx.popContext()
@@ -221,7 +212,7 @@ local function draw_parameter_diagram()
         --draw_soft_circle(x_center, y_center, size * 0.5, 4, gfx.kColorWhite)
 
 
-        draw_poly_shape(x_min, y_min, width, height, par_lim, 0, gfx.kColorBlack)
+        --draw_poly_shape(x_min, y_min, width, height, par_lim, 0, gfx.kColorBlack)
         -- Draw current potion mix
         --draw_poly_shape(x_min, y_min, width, height, params, 0.45, gfx.kColorWhite)
         -- Draw target potion mix
@@ -461,7 +452,7 @@ end
 local function draw_cauldron()
     -- Draw cauldron image
     gfx.pushContext()
-        TEXTURES.cauldron:draw(0, 0)
+        TEXTURES.cauldron:draw(0, 23)
     gfx.popContext()
 
     -- Draw flame animation
