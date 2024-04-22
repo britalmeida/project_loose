@@ -100,12 +100,13 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
     end
 end
 
-local function draw_symbols( x_min, y_min, width, height, position_params, value_params)
+local function draw_symbols( x, y, width, position_params)
     local params = position_params
     if params == nil then
         return
     end
 
+    local meter_height = 20
     gfx.pushContext()
         gfx.setFont(TEXTURES.font_symbols)
         local margin = 2
@@ -114,32 +115,27 @@ local function draw_symbols( x_min, y_min, width, height, position_params, value
         for a = 1, n, 1 do
             local glyph_width = TEXTURES.rune_images[a].width
             local glyph_height = TEXTURES.rune_images[a].height
-            local i = (a<n and a or 0) + 1
-            local phi = (a-2)/n * 2 * math.pi * 0.3
-            local r = math.sqrt(params[i]) * 1.5
-            local glyph_x = x_min + ((math.sin(phi) * r) + 1) * width / 2
-            local glyph_y = y_min + ((-math.cos(phi) * r) + 1) * height / 2
-
-            gfx.pushContext()
-                gfx.setDitherPattern(value_params[i], gfxi.kDitherTypeScreen)
-                gfx.fillCircleAtPoint(glyph_x, glyph_y, math.max(glyph_height, glyph_width) * 0.5 + margin)
-            gfx.popContext()
+            local glyph_x = x + width * 0.5 * (a - 2)
+            local glyph_y = y
 
             local target = TARGET_COCKTAIL.rune_ratio[a]
             local difference_weight = math.max(target, 1-target)
             local rune_strength = math.min(math.sqrt(GAMEPLAY_STATE.heat_amount * 1.2), 1) * (1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight))
+
+            glyph_y = glyph_y + (GAMEPLAY_STATE.rune_ratio[a] -0.5)* meter_height
+
+            gfx.pushContext()
+                gfx.setDitherPattern(0, gfxi.kDitherTypeScreen)
+                gfx.fillCircleAtPoint(glyph_x, glyph_y, math.max(glyph_height, glyph_width) * 0.5 + margin)
+            gfx.popContext()
+
             draw_soft_circle(glyph_x, glyph_y, 10 * rune_strength + 12, 4, 0.5, rune_strength, gfx.kColorWhite)
 
             gfx.pushContext()
-                --gfx.setImageDrawMode(gfx.kDrawModeInverted)
                 TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
                 gfx.setColor(gfx.kColorBlack)
                 gfx.setDitherPattern(1-(math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8), gfxi.kDitherTypeBayer4x4)
                 gfx.fillCircleAtPoint(glyph_x, glyph_y, math.max(glyph_height, glyph_width) * 0.5 + margin)
-                --gfx.fillRoundRect(
-                --    glyph_x-margin, glyph_y-margin,
-                --    glyph_width+margin*2, glyph_height+margin*2, 4)
-                --gfx.drawText(tostring(a), glyph_x, glyph_y)
             gfx.popContext()
         end
 
@@ -217,7 +213,7 @@ local function draw_parameter_diagram()
         --draw_poly_shape(x_min, y_min, width, height, params, 0.45, gfx.kColorWhite)
         -- Draw target potion mix
         --draw_poly_shape(x_min, y_min, width, height, target_params, 1.00, gfx.kColorWhite)
-        draw_symbols(x_min, y_min, width, height, par_lim, params)
+        draw_symbols(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y - 70, 80, params)
 
     gfx.popContext()
 end
