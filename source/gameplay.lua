@@ -80,7 +80,7 @@ function Reset_gameplay()
     end
 
     Reset_ingredients()
-    Reset_frog()
+    FROG:reset()
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -157,7 +157,7 @@ function Handle_input(timeDelta)
 
     -- Check for pressed buttons.
     if playdate.buttonIsPressed( playdate.kButtonB ) then
-        Ask_the_frog()
+        FROG:Ask_the_frog()
     end
     if playdate.buttonJustPressed( playdate.kButtonA ) then
         GAMEPLAY_STATE.cursor_hold = true
