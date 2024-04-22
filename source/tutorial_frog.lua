@@ -3,9 +3,8 @@ local Sprite <const> = gfx.sprite
 local animloop <const> = playdate.graphics.animation.loop
 
 local FROG_STATE = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
-local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3, grab = 4, shake = 5 }
+local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3, grab = 4, shake = 5, fire2 = 6 }
 
-local frog_state = FROG_STATE.waiting
 local last_topic_hint = THINGS_TO_REMEMBER.none
 local current_topic_hint = THINGS_TO_REMEMBER.none
 local current_rune_hint = 1
@@ -23,9 +22,9 @@ local forgotten_topics_callouts <const> = {
     "hey, you forgot an ingredient",
 }
 local fire_reminders <const> = {
-    {"seriously, gently blow the fire", "your potion won't cook without fire. just sayin'"},
-    {"just blow air onto the\nbottom of the cauldron"},
-    {"for realz, blow air.\ntryyyy it!"},
+    --{"hey... the fire is getting low"},
+    {"keep it warm to see the magic"},
+    {"fire is good, glow is good"},
 }
 
 local fire_tutorials <const> = {
@@ -52,7 +51,7 @@ local ingredient_tutorials_grab <const> = {
 }
 
 local ingredient_tutorials_drop <const> = {
-    "Hold the ingredient over\nthe cauldron and shake!",
+    "Release the ingredient over\nthe cauldron and shake!",
     "Shake, shake. Shake it off!!",
 }
 
@@ -182,6 +181,8 @@ function froggo_reality_check()
         current_topic_hint = THINGS_TO_REMEMBER.grab
     elseif PLAYER_LEARNED.how_to_shake == false then
         current_topic_hint = THINGS_TO_REMEMBER.shake
+    elseif GAMEPLAY_STATE.heat_amount < 0.3 then
+        current_topic_hint = THINGS_TO_REMEMBER.fire
     elseif DIFF_TO_TARGET.color_abs > DIFF_TO_TARGET.ingredients_abs then
         current_topic_hint = THINGS_TO_REMEMBER.stir
         -- clockwise makes it more 1
@@ -238,7 +239,7 @@ function set_current_sentence()
         elseif last_sentence < 4 then
             current_sentence = last_sentence + 1
         end
-    elseif current_topic_hint == THINGS_TO_REMEMBER.grab or current_topic_hint == THINGS_TO_REMEMBER.shake then
+    elseif current_topic_hint == THINGS_TO_REMEMBER.grab or current_topic_hint == THINGS_TO_REMEMBER.shake or current_topic_hint == THINGS_TO_REMEMBER.fire2 then
         if last_sentence == -1 then
             current_sentence = 1
         elseif last_sentence < 2 then
@@ -274,6 +275,8 @@ function set_speech_bubble_content()
         else
             if current_topic_hint == THINGS_TO_REMEMBER.fire then
                 SHOWN_STRING = fire_tutorials[current_sentence]
+            elseif current_topic_hint == THINGS_TO_REMEMBER.fire2 then
+                SHOWN_STRING = fire_reminders[current_sentence]
             elseif current_topic_hint == THINGS_TO_REMEMBER.grab then
                 SHOWN_STRING = ingredient_tutorials_grab[current_sentence]
             elseif current_topic_hint == THINGS_TO_REMEMBER.shake then
