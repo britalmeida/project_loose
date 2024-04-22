@@ -108,7 +108,6 @@ local function draw_ui()
             if MENU_STATE.focused_option > 2 then
                 offset = MENU_STATE.focused_option - 2
             end
-            print(offset)
             for a = 1, 3, 1 do
                 COCKTAILS[a + offset].img:draw(10 + 130*(a-1), 0)
             end

@@ -24,7 +24,7 @@ function Reroll_mystery_potion()
   end
 end
 
-function Set_target_potion(chosen_cocktail_idx)
+function Set_target_potion(chosen_cocktail_idx)  
   local chosen_cocktail = COCKTAILS[chosen_cocktail_idx]
 
   TARGET_COCKTAIL.type_idx = chosen_cocktail_idx
