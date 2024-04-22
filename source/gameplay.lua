@@ -32,8 +32,12 @@ DIFF_TO_TARGET = {
     runes = { 1, 1, 1},
 }
 
+STATE_CHANGE = 0
+
 PLAYER_LEARNED = {
-    how_to_fire = false
+    how_to_fire = false,
+    how_to_grab = false,
+    how_to_shake = false
 }
 
 FROG = nil
@@ -98,6 +102,8 @@ function Reset_gameplay()
     FROG:reset()
 
     PLAYER_LEARNED.how_to_fire = false
+    PLAYER_LEARNED.how_to_grab = false
+    PLAYER_LEARNED.how_to_shake = false
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -172,18 +178,18 @@ function Handle_input(timeDelta)
     GRAVITY_Y = raw_gravity_y*co - raw_gravity_z*si
     GRAVITY_Z = raw_gravity_y*si + raw_gravity_z*co
 
-    -- local axis_sign
-    -- if AVG_GRAVITY_Z < 1 then
-    --     axis_sign = 1
-    -- else
-    --     axis_sign = -1
-    -- end
+    local axis_sign = 0
+    if raw_gravity_z < 0 then
+        axis_sign = -1
+    else
+        axis_sign = 1
+    end
 
     local gyroSpeed = 60
     if SHAKE_VAL < 1.1 then
       PREV_GYRO_X = GYRO_X
       PREV_GYRO_Y = GYRO_Y
-      GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed, 0, 400)
+      GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
       GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
     end
 
@@ -202,6 +208,7 @@ function Handle_input(timeDelta)
         end
         for i, ingredient in pairs(INGREDIENTS) do
             if ingredient:try_pickup() then
+                PLAYER_LEARNED.how_to_grab = true
                 break
             end
         end
@@ -289,6 +296,9 @@ function Tick_gameplay()
       GAMEPLAY_STATE.liquid_momentum = 0
     end
 
+    -- Give the frog a chance to react
+    Calculate_goodness()
+
     FROG:tick()
 end
 
@@ -300,7 +310,12 @@ function Is_potion_good_enough()
 end
 
 function Calculate_goodness()
-    local prev_diff = DIFF_TO_TARGET
+    local prev_diff = {}
+    if DIFF_TO_TARGET ~= nil then
+        for k, v in pairs(DIFF_TO_TARGET) do
+            prev_diff[k] = v
+        end
+    end
 
     -- Match expectations with reality.
     DIFF_TO_TARGET.color = TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color
@@ -316,6 +331,30 @@ function Calculate_goodness()
     ) * 0.5
     DIFF_TO_TARGET.runes = runes_diff
 
+    -- calculate state change
+    local reaction_tolerance = 0.3
+
+    local state_change_color = 0
+    local state_change_runes = 0
+
+    if prev_diff.color_abs < reaction_tolerance and DIFF_TO_TARGET.color_abs > reaction_tolerance then
+        state_change_color = -1
+    elseif prev_diff.color_abs > reaction_tolerance and DIFF_TO_TARGET.color_abs < reaction_tolerance then
+        state_change_color = 1
+    end
+
+    if prev_diff.ingredients_abs < reaction_tolerance and DIFF_TO_TARGET.ingredients_abs > reaction_tolerance then
+        state_change_color = -1
+    elseif prev_diff.ingredients_abs > reaction_tolerance and DIFF_TO_TARGET.ingredients_abs < reaction_tolerance then
+        state_change_color = 1
+    end
+
+    STATE_CHANGE = state_change_color + state_change_runes
+
+    if STATE_CHANGE ~= 0 then
+        FROG:Notify_the_frog()
+    end
+
     -- print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
 end
 
@@ -324,4 +363,9 @@ function Check_player_learnings()
     if GAMEPLAY_STATE.heat_amount > 0.3 then
         PLAYER_LEARNED.how_to_fire = true
     end
+
+    if GAMEPLAY_STATE.cursor_hold then
+        
+    end
+    
 end

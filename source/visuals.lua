@@ -336,6 +336,8 @@ Bubbles_radians = {}
 Bubbles_tick_offset = {}
 Bubbles_animation_playing = {}
 Bubbles_flip = {}
+Bubbles_types = {}
+Bubbles_animation_length = {}
 NUM_BUBBLES = 10
 Phi = math.pi * (math.sqrt(5.) - 1.) -- Golden angle in radians
 for a = 1, NUM_BUBBLES, 1 do
@@ -343,6 +345,7 @@ for a = 1, NUM_BUBBLES, 1 do
     Bubbles_amplitude[a] = math.sqrt(1 - y * y) * 0.8 + 0.2
     Bubbles_radians[a] = Phi * (a - 1) -- Golden angle increment
     Bubbles_tick_offset[a] = math.floor(Phi * (a - 1) * 50)
+    Bubbles_types[a] = 0
 end
 
 local function draw_liquid_bubbles()
@@ -359,6 +362,9 @@ local function draw_liquid_bubbles()
             if not Bubbles_animation_playing[x] and GAMEPLAY_STATE.heat_amount > math.random() + 0.1 then
                 Bubbles_animation_playing[x] = true
                 Bubbles_flip[x] = math.random() > 0.5
+                if math.random() > 0.9 then
+                    Bubbles_types[x] = -1
+                end
             end
         end
         for x = 1, NUM_BUBBLES, 1 do
@@ -379,22 +385,37 @@ local function draw_liquid_bubbles()
             local bubble_tab = TEXTURES.bubble_table
             local bub_off_x, bub_off_y = 5, 12
 
-            if math.fmod(x, 2) == 0 then
+            if Bubbles_types[x] < 0 then
                 bubble_tab = TEXTURES.bubble_table2
                 bub_off_x, bub_off_y = 12, 12
             end
 
-            local table_size = bubble_tab:getLength()
-            local anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, table_size)
-
-            if Bubbles_flip[x] then
-                bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y, "flipX")
-            else
-                bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y)
+            local anim_length = 0
+            if Bubbles_types[x] <= 0 then
+              anim_length = bubble_tab:getLength()
+            else 
+              anim_length = 30
             end
 
-            if (anim_tick + 1) == table_size then
+            local anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, anim_length)
+
+            if Bubbles_types[x] > 0 then
+                local sink = math.sin(GAMEPLAY_STATE.game_tick / (2 * math.pi) * 0.7 + Bubbles_tick_offset[x]) * 0.3 + (anim_tick / anim_length)
+                local drop_sprite = INGREDIENT_TYPES[Bubbles_types[x]].drop
+                local offset_y = drop_sprite.height * sink
+                local mask = playdate.geometry.rect.new(0, 0, drop_sprite.width, drop_sprite.height - offset_y)
+                drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 12, 0, mask)
+            else
+              if Bubbles_flip[x] then
+                  bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y, "flipX")
+              else
+                  bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y)
+              end
+            end
+
+            if (anim_tick + 1) == anim_length then
                Bubbles_animation_playing[x] = false
+               Bubbles_types[x] = 0
             end
             ::continue::
         end

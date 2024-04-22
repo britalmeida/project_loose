@@ -53,6 +53,12 @@ function Ingredient:tick()
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
         table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()
+        for x = 1, NUM_BUBBLES, 1 do
+          if not Bubbles_animation_playing[x] then
+            Bubbles_animation_playing[x] = true
+            Bubbles_types[x] = self.ingredient_type_idx
+          end
+        end
     end
     if self.is_picked_up then
         self.vel.dx, self.vel.dy = GYRO_X - PREV_GYRO_X, GYRO_Y - PREV_GYRO_Y
@@ -60,6 +66,7 @@ function Ingredient:tick()
         self:moveTo(GYRO_X, GYRO_Y)
     elseif self.is_over_cauldron then
       if SHAKE_VAL > 2 and self.can_drop then
+        PLAYER_LEARNED.how_to_shake = true
         playdate.timer.new(200, function ()
           self:drop()
         end)

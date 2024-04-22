@@ -3,7 +3,7 @@ local Sprite <const> = gfx.sprite
 local animloop <const> = playdate.graphics.animation.loop
 
 local FROG_STATE = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
-local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3 }
+local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3, grab = 4, shake = 5 }
 
 local frog_state = FROG_STATE.waiting
 local last_topic_hint = THINGS_TO_REMEMBER.none
@@ -28,6 +28,13 @@ local fire_reminders <const> = {
     {"for realz, blow air.\ntryyyy it!"},
 }
 
+local fire_tutorials <const> = {
+    "Magical brews need fire\nto reveal their magic",
+    "Blow to stoke up the fire\npuff puff puff!",
+    "just blow air onto the\nbottom of the cauldron",
+    "for realz, blow air on the mic.\ntryyyy it!",
+}
+
 local stirr_reminders <const> = {
     {"Waaaaay too dark\ncrank it the other way", "The liquid looks too dark\nstirr!", "Just a lil'bit too dark"}, -- 1 == too dark
     {"Oh my eyes!\nLiquid is way too bright", "The liquid looks too bright\nstirr!", "Just a lil'bit too light"} -- 2 = too bright
@@ -39,10 +46,20 @@ local ingredient_reminders <const> = {
     {"Too much organic in it", "Add some veggies"}, -- 3 = weeds
 }
 
+local ingredient_tutorials_grab <const> = {
+    "Try grabbing an ingredient",
+    "Tilt to hover an ingredient\nHold (A) to grab",
+}
+
+local ingredient_tutorials_drop <const> = {
+    "Hold the ingredient over\nthe cauldron and shake!",
+    "Shake, shake. Shake it off!!",
+}
 
 local froggo_img = gfx.image.new("images/frog/frog")
 local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
 local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
+local anim_happy_imgs, anim_happy_framerate = gfx.imagetable.new('images/frog/animation-excited'), 8
 local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/frog/animation-cocktail'), 8
 local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
 
@@ -55,6 +72,7 @@ function Froggo:init()
     self.anim_current = nil
     self.anim_idle = animloop.new(anim_idle_framerate * frame_ms, anim_idle_imgs, true)
     self.anim_headshake = animloop.new(anim_headshake_framerate * frame_ms, anim_headshake_imgs, true)
+    self.anim_happy = animloop.new(anim_happy_framerate * frame_ms, anim_happy_imgs, true)
     self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
     self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
 
@@ -84,6 +102,14 @@ function Froggo:Ask_the_frog()
     end
 end
 
+function Froggo:Notify_the_frog()
+    -- notify the frog when significant change happened
+    if self.state == FROG_STATE.idle then
+        -- React to a state change
+        self:froggo_react()
+    end
+end
+
 function Froggo:go_idle()
     self.state = FROG_STATE.idle
     self.anim_current = self.anim_idle
@@ -91,8 +117,13 @@ end
 
 function Froggo:go_reacting()
     self.state = FROG_STATE.reacting
-    -- TODO if better vs if worse
-    self.anim_current = self.anim_headshake
+
+    if STATE_CHANGE > 0 then
+        self.anim_current = self.anim_happy
+    elseif STATE_CHANGE < 0 then
+        self.anim_current = self.anim_headshake
+    end
+
 end
 
 function Froggo:go_drinking()
@@ -126,6 +157,15 @@ function Froggo:croak()
     end)
 end
 
+function Froggo:froggo_react()
+    self.state = FROG_STATE.reacting
+    
+    self:go_reacting()
+
+    playdate.timer.new(1*1000, function()
+        self:go_idle()
+    end)
+end
 
 function froggo_reality_check()
     -- Match expectations with reality.
@@ -138,6 +178,10 @@ function froggo_reality_check()
         current_topic_hint = -1
     elseif PLAYER_LEARNED.how_to_fire == false then
         current_topic_hint = THINGS_TO_REMEMBER.fire
+    elseif PLAYER_LEARNED.how_to_grab == false then
+        current_topic_hint = THINGS_TO_REMEMBER.grab
+    elseif PLAYER_LEARNED.how_to_shake == false then
+        current_topic_hint = THINGS_TO_REMEMBER.shake
     elseif DIFF_TO_TARGET.color_abs > DIFF_TO_TARGET.ingredients_abs then
         current_topic_hint = THINGS_TO_REMEMBER.stir
         -- clockwise makes it more 1
@@ -191,7 +235,13 @@ function set_current_sentence()
     elseif current_topic_hint == THINGS_TO_REMEMBER.fire then
         if last_sentence == -1 then
             current_sentence = 0
-        elseif last_sentence < 3 then
+        elseif last_sentence < 4 then
+            current_sentence = last_sentence + 1
+        end
+    elseif current_topic_hint == THINGS_TO_REMEMBER.grab or current_topic_hint == THINGS_TO_REMEMBER.shake then
+        if last_sentence == -1 then
+            current_sentence = 1
+        elseif last_sentence < 2 then
             current_sentence = last_sentence + 1
         end
     elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
@@ -223,7 +273,11 @@ function set_speech_bubble_content()
             SHOWN_STRING = positive_acceptance
         else
             if current_topic_hint == THINGS_TO_REMEMBER.fire then
-                SHOWN_STRING = fire_reminders[current_sentence][1]
+                SHOWN_STRING = fire_tutorials[current_sentence]
+            elseif current_topic_hint == THINGS_TO_REMEMBER.grab then
+                SHOWN_STRING = ingredient_tutorials_grab[current_sentence]
+            elseif current_topic_hint == THINGS_TO_REMEMBER.shake then
+                SHOWN_STRING = ingredient_tutorials_drop[current_sentence]
             elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
                 SHOWN_STRING = stirr_reminders[current_stirr_hint][stirr_offset]
             elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
