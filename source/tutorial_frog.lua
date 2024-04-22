@@ -162,10 +162,9 @@ end
 
 function Froggo:froggo_react()
     self.state = FROG_STATE.reacting
-
+    
     self:go_reacting()
-
-    playdate.timer.new(1*1000, function()
+    playdate.timer.new(2*1000, function()
         self:go_idle()
     end)
 end
