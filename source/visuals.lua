@@ -552,54 +552,12 @@ function Init_visuals()
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
 
     -- Load cauldron flame textures
-    local lowflame_a = gfxi.new("images/fire/lowflame_a")
-    local lowflame_b = gfxi.new("images/fire/lowflame_b")
+    TEXTURES.low_flame_table = gfx.imagetable.new("images/fire/lowflame")
+    TEXTURES.medium_flame_table = gfx.imagetable.new("images/fire/mediumflame")
+    TEXTURES.high_flame_table = gfx.imagetable.new("images/fire/highflame")
+    TEXTURES.stir_flame_table = gfx.imagetable.new("images/fire/stirredflame")
 
-    TEXTURES.low_flame_table = gfx.imagetable.new(2)
-    TEXTURES.low_flame_table:setImage(1, lowflame_a)
-    TEXTURES.low_flame_table:setImage(2, lowflame_b)
-
-    local mediumflame_a = gfxi.new("images/fire/mediumflame_a")
-    local mediumflame_b = gfxi.new("images/fire/mediumflame_b")
-
-    TEXTURES.medium_flame_table = gfx.imagetable.new(2)
-    TEXTURES.medium_flame_table:setImage(1, mediumflame_a)
-    TEXTURES.medium_flame_table:setImage(2, mediumflame_b)
-
-    local highflame_a = gfxi.new("images/fire/highflame_a")
-    local highflame_b = gfxi.new("images/fire/highflame_b")
-
-    TEXTURES.high_flame_table = gfx.imagetable.new(2)
-    TEXTURES.high_flame_table:setImage(1, highflame_a)
-    TEXTURES.high_flame_table:setImage(2, highflame_b)
-
-    local stir_flame_1 = gfxi.new("images/fire/stirredflame_1.png")
-    local stir_flame_2 = gfxi.new("images/fire/stirredflame_2.png")
-    local stir_flame_3 = gfxi.new("images/fire/stirredflame_3.png")
-
-    TEXTURES.stir_flame_table = gfx.imagetable.new(3)
-    TEXTURES.stir_flame_table:setImage(1, stir_flame_1)
-    TEXTURES.stir_flame_table:setImage(2, stir_flame_2)
-    TEXTURES.stir_flame_table:setImage(3, stir_flame_3)
-
-    local bubble_1 = gfxi.new("images/bubbles/bubble1.png")
-    local bubble_2 = gfxi.new("images/bubbles/bubble2.png")
-    local bubble_3 = gfxi.new("images/bubbles/bubble3.png")
-    local bubble_4 = gfxi.new("images/bubbles/bubble4.png")
-    local bubble_5 = gfxi.new("images/bubbles/bubble5.png")
-    local bubble_6 = gfxi.new("images/bubbles/bubble6.png")
-    local bubble_7 = gfxi.new("images/bubbles/bubble7.png")
-    local bubble_8 = gfxi.new("images/bubbles/bubble8.png")
-
-    TEXTURES.bubble_table = gfx.imagetable.new(8)
-    TEXTURES.bubble_table:setImage(1, bubble_1)
-    TEXTURES.bubble_table:setImage(2, bubble_2)
-    TEXTURES.bubble_table:setImage(3, bubble_3)
-    TEXTURES.bubble_table:setImage(4, bubble_4)
-    TEXTURES.bubble_table:setImage(5, bubble_5)
-    TEXTURES.bubble_table:setImage(6, bubble_6)
-    TEXTURES.bubble_table:setImage(7, bubble_7)
-    TEXTURES.bubble_table:setImage(8, bubble_8)
+    TEXTURES.bubble_table = gfx.imagetable.new("images/bubbles/bubble")
 
     TEXTURES.font_symbols = gfx.font.new("fonts/symbols_outline")
 
