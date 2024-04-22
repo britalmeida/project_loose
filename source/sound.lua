@@ -11,4 +11,5 @@ SOUND = {
   bg_loop_gameplay = sp.new("sound/menu_music_loop"),
   menu_confirm = sp.new("sound/menu_item_confirm"),
   menu_highlight = sp.new("sound/menu_item_highlight"),
+  stir_sound = sp.new("sound/pot_stir")
 }

@@ -240,6 +240,10 @@ function Handle_input(timeDelta)
     -- Use the absolute position of the crank to drive the stick in the cauldorn
     STIR_POSITION = math.rad(playdate.getCrankPosition())
 
+    if math.abs(angleDelta) > 5 and not SOUND.stir_sound:isPlaying() then
+        SOUND.stir_sound:play()
+    end
+
     -- Microphone level check.
     local mic_lvl = playdate.sound.micinput.getLevel()
     if mic_lvl > GAMEPLAY_STATE.flame_amount then
