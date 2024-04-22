@@ -444,27 +444,29 @@ local function draw_game_background( x, y, width, height )
 end
 
 
-local function draw_hud()
-    do
-        gfx.pushContext()
-        -- Heat amount indication.
-        local x = 10
-        local y = 10
-        local border = 3
-        local width = 22
-        local height = 150
-
-        local meter = ( GAMEPLAY_STATE.heat_amount ) * (height - border * 2)
+local function draw_debug()
+    -- Heat amount indication.
+    local x = 10
+    local y = 10
+    local border = 3
+    local width = 22
+    local height = 150
+    local meter = ( GAMEPLAY_STATE.heat_amount ) * (height - border * 2)
+    gfx.pushContext()
         gfx.setColor(gfx.kColorBlack)
         gfx.fillRoundRect(x, y, width, height, border)
         gfx.setColor(gfx.kColorWhite)
         gfx.fillRoundRect(x + border, y + height - meter - border, width - border * 2, meter, 3)
-        gfx.popContext()
-    end
+    gfx.popContext()
+
+    gfx.pushContext()
+        gfx.setColor(gfx.kColorWhite)
+        playdate.drawFPS(200,0)
+    gfx.popContext()
 end
 
 
-local function draw_debug()
+local function draw_ingredient_grab_cursor()
     gfx.pushContext()
         gfx.setColor(gfx.kColorWhite)
         gfx.drawCircleAtPoint(GYRO_X, GYRO_Y, 30)
@@ -554,13 +556,20 @@ function Init_visuals()
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
-    -- depth 0: will be the cauldron? or the frog?
+    -- -5: shelved ingredients
+    -- depth 0: cauldron
     Set_draw_pass(3, draw_liquid_surface)
     Set_draw_pass(4, draw_liquid_bubbles)
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
-    Set_draw_pass(7, draw_dialog_bubble)
-    -- Set_draw_pass(10, draw_hud)
-    Set_draw_pass(20, draw_debug)
+    -- depth 10+: frog
+    -- depth 20+: UI
+    -- 22: grabbed ingredients
+    Set_draw_pass(22, draw_ingredient_grab_cursor)
+    Set_draw_pass(25, draw_dialog_bubble)
+    -- Development
+    --Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)
 end
+
+Z_DEPTH = { ingredients=-5, grabbed_ingredient = 22 }

@@ -86,7 +86,7 @@ function Ingredient:try_pickup()
     local bounds = self:getBoundsRect()
     if bounds:containsPoint(GYRO_X, GYRO_Y) then
         -- Move sprite to the front
-        self:setZIndex(8)
+        self:setZIndex(Z_DEPTH.grabbed_ingredient)
         self.is_picked_up = true
         return true
     end
@@ -107,7 +107,7 @@ function Ingredient:release()
         self:moveTo(x_center, y_center)
         self.is_over_cauldron = true
     else
-        self:setZIndex(0)
+        self:setZIndex(Z_DEPTH.ingredients)
         self.is_in_air = true
     end
 end
@@ -115,7 +115,7 @@ end
 function Ingredient:drop()
   local drop = Ingredient(self.ingredient_type_idx, geo.point.new(100, 80), true)
   drop.is_in_air = true
-  drop:setZIndex(8)
+  drop:setZIndex(Z_DEPTH.grabbed_ingredient)
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
 
