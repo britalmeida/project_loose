@@ -5,8 +5,8 @@ SOUND = {
   fire_blow = sp.new("sound/fire_blow"),
   fire_burn = sp.new("sound/fire_burn"),
   drop_01 = sp.new("sound/drop_01"),
-  bg_loop_menu = sp.new("sound/fire_burn"),
-  bg_loop_gameplay = sp.new("sound/fire_burn"),
+  bg_loop_menu = sp.new("sound/menu_music_loop"),
+  bg_loop_gameplay = sp.new("sound/menu_music_loop"),
   menu_confirm = sp.new("sound/menu_item_confirm"),
   menu_highlight = sp.new("sound/menu_item_highlight"),
 }
