@@ -32,6 +32,8 @@ DIFF_TO_TARGET = {
     runes = { 1, 1, 1},
 }
 
+STATE_CHANGE = 0
+
 PLAYER_LEARNED = {
     how_to_fire = false,
     how_to_grab = false,
@@ -294,6 +296,9 @@ function Tick_gameplay()
       GAMEPLAY_STATE.liquid_momentum = 0
     end
 
+    -- Give the frog a chance to react
+    Calculate_goodness()
+
     FROG:tick()
 end
 
@@ -305,7 +310,12 @@ function Is_potion_good_enough()
 end
 
 function Calculate_goodness()
-    local prev_diff = DIFF_TO_TARGET
+    local prev_diff = {}
+    if DIFF_TO_TARGET ~= nil then
+        for k, v in pairs(DIFF_TO_TARGET) do
+            prev_diff[k] = v
+        end
+    end
 
     -- Match expectations with reality.
     DIFF_TO_TARGET.color = TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color
@@ -320,6 +330,30 @@ function Calculate_goodness()
         math.abs(runes_diff[1]) + math.abs(runes_diff[2]) + math.abs(runes_diff[3])
     ) * 0.5
     DIFF_TO_TARGET.runes = runes_diff
+
+    -- calculate state change
+    local reaction_tolerance = 0.3
+
+    local state_change_color = 0
+    local state_change_runes = 0
+
+    if prev_diff.color_abs < reaction_tolerance and DIFF_TO_TARGET.color_abs > reaction_tolerance then
+        state_change_color = -1
+    elseif prev_diff.color_abs > reaction_tolerance and DIFF_TO_TARGET.color_abs < reaction_tolerance then
+        state_change_color = 1
+    end
+
+    if prev_diff.ingredients_abs < reaction_tolerance and DIFF_TO_TARGET.ingredients_abs > reaction_tolerance then
+        state_change_color = -1
+    elseif prev_diff.ingredients_abs > reaction_tolerance and DIFF_TO_TARGET.ingredients_abs < reaction_tolerance then
+        state_change_color = 1
+    end
+
+    STATE_CHANGE = state_change_color + state_change_runes
+
+    if STATE_CHANGE ~= 0 then
+        FROG:Notify_the_frog()
+    end
 
     -- print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
 end

@@ -59,6 +59,7 @@ local ingredient_tutorials_drop <const> = {
 local froggo_img = gfx.image.new("images/frog/frog")
 local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
 local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
+local anim_happy_imgs, anim_happy_framerate = gfx.imagetable.new('images/frog/animation-excited'), 8
 local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/frog/animation-cocktail'), 8
 local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
 
@@ -71,6 +72,7 @@ function Froggo:init()
     self.anim_current = nil
     self.anim_idle = animloop.new(anim_idle_framerate * frame_ms, anim_idle_imgs, true)
     self.anim_headshake = animloop.new(anim_headshake_framerate * frame_ms, anim_headshake_imgs, true)
+    self.anim_happy = animloop.new(anim_happy_framerate * frame_ms, anim_happy_imgs, true)
     self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
     self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
 
@@ -100,6 +102,14 @@ function Froggo:Ask_the_frog()
     end
 end
 
+function Froggo:Notify_the_frog()
+    -- notify the frog when significant change happened
+    if self.state == FROG_STATE.idle then
+        -- React to a state change
+        self:froggo_react()
+    end
+end
+
 function Froggo:go_idle()
     self.state = FROG_STATE.idle
     self.anim_current = self.anim_idle
@@ -107,8 +117,13 @@ end
 
 function Froggo:go_reacting()
     self.state = FROG_STATE.reacting
-    -- TODO if better vs if worse
-    self.anim_current = self.anim_headshake
+
+    if STATE_CHANGE > 0 then
+        self.anim_current = self.anim_happy
+    elseif STATE_CHANGE < 0 then
+        self.anim_current = self.anim_headshake
+    end
+
 end
 
 function Froggo:go_drinking()
@@ -142,6 +157,15 @@ function Froggo:croak()
     end)
 end
 
+function Froggo:froggo_react()
+    self.state = FROG_STATE.reacting
+    
+    self:go_reacting()
+
+    playdate.timer.new(1*1000, function()
+        self:go_idle()
+    end)
+end
 
 function froggo_reality_check()
     -- Match expectations with reality.
