@@ -269,7 +269,7 @@ function Tick_gameplay()
     end
 
     -- Update liquid color
-    local color_change = 0.0002
+    local color_change = 0.0005
     GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
     if GAMEPLAY_STATE.potion_color < 0 then
         GAMEPLAY_STATE.potion_color = 0
