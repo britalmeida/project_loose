@@ -1,3 +1,6 @@
+local gfx <const> = playdate.graphics
+local Sprite <const> = gfx.sprite
+
 local FROG_STATE = { idle = 0, speaking = 1, cooldown = 2 }
 local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3 }
 
@@ -216,6 +219,25 @@ function Reset_frog()
 end
 
 
+
+
+froggo_img = gfx.image.new("images/frog")
+
+class('Froggo').extends(Sprite)
+
+function Froggo:init()
+    Froggo.super.init(self)
+
+    self:setImage(froggo_img)
+    self:setZIndex(Z_DEPTH.frog)
+    self:moveTo(345, 170)
+
+    self:addSprite()
+    self:setVisible(true)
+end
+
+
 function Init_frog()
     days_without_fire_timer = playdate.timer.new(5*1000, 0, 1)
+    Froggo()
 end

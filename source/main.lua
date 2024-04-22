@@ -11,6 +11,7 @@ import "visuals"
 import "menu"
 import "ingredients"
 import "cocktail_manager"
+import "tutorial_frog"
 
 
 local gfx <const> = playdate.graphics

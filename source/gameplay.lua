@@ -1,5 +1,3 @@
-import "tutorial_frog"
-
 GYRO_X, GYRO_Y = 200, 120
 PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 

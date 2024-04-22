@@ -5,6 +5,13 @@ local vec2d <const> = playdate.geometry.vector2D
 -- Image Passes
 TEXTURES = {}
 
+-- Constants
+local LIQUID_CENTER_X, LIQUID_CENTER_Y <const> = 145, 147
+local LIQUID_WIDTH, LIQUID_HEIGHT <const> = 65, 25
+local MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y <const> = 150, 70
+local MAGIC_TRIANGLE_SIZE <const> = 100
+
+
 -- Debug / Development
 
 local function draw_test_dither_patterns()
@@ -169,13 +176,11 @@ local function draw_parameter_diagram()
     local target_params = TARGET_COCKTAIL.rune_ratio
 
     gfx.pushContext()
-        local size = 100
-        local x_center = 100
-        local y_center = 80
-        local width = size
-        local height = size
-        local x_min = x_center - width * 0.5
-        local y_min = y_center - height * 0.5
+        local size = MAGIC_TRIANGLE_SIZE
+        local width = MAGIC_TRIANGLE_SIZE
+        local height = MAGIC_TRIANGLE_SIZE
+        local x_min = MAGIC_TRIANGLE_CENTER_X - width * 0.5
+        local y_min = MAGIC_TRIANGLE_CENTER_Y - height * 0.5
 
         -- Draw outline polygon
         local par_lim = {}
@@ -208,15 +213,19 @@ local function draw_stirring_stick()
     gfx.pushContext()
     do
         local t = STIR_POSITION
-        local cauldron_center_x, cauldron_center_y = 105, 160
-        local ellipse_top_width, ellipse_bottom_width = 100, 70
-        local ellipse_height = 12
-        local stick_height = 70
 
-        local a_x = math.cos(t) * ellipse_top_width + cauldron_center_x
-        local a_y = math.sin(t) * ellipse_height + cauldron_center_y - stick_height
-        local b_x = math.cos(t) * ellipse_bottom_width + cauldron_center_x
-        local b_y = math.sin(t) * ellipse_height + cauldron_center_y
+        -- Calculate 2 elipses:
+        -- 'a': for the path of the top point of the stick,
+        -- 'b': for the bottom point
+        local stick_height, stick_tilt = 60, 45
+        local ellipse_height = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
+        local ellipse_bottom_width = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
+        local ellipse_top_width = ellipse_bottom_width + stick_tilt
+
+        local a_x = math.cos(t) * ellipse_top_width + LIQUID_CENTER_X
+        local a_y = math.sin(t) * ellipse_height + LIQUID_CENTER_Y - stick_height
+        local b_x = math.cos(t) * ellipse_bottom_width + LIQUID_CENTER_X
+        local b_y = math.sin(t) * ellipse_height + LIQUID_CENTER_Y
 
         -- Bottom offset is used to make sure that the bottom stick doesn't go out of the water
         local bot_offset = 0
@@ -231,10 +240,10 @@ local function draw_stirring_stick()
             b_x, b_y = vec_bot:unpack()
         end
 
+        -- Draw stick
         gfx.setColor(gfx.kColorBlack)
         gfx.setLineWidth(6)
         gfx.drawLine(a_x, a_y, b_x, b_y)
-
         gfx.setColor(gfx.kColorWhite)
         gfx.setLineWidth(3)
         gfx.drawLine(a_x - math.cos(t) * 2, a_y + 2, b_x, b_y)
@@ -246,10 +255,6 @@ local function draw_liquid_surface()
     gfx.pushContext()
     do
         local polygon = playdate.geometry.polygon
-
-        local cauldron_center_x, cauldron_center_y = 105, 160
-        local cauldron_width, cauldron_height = 80, 15
-
         local num_points = 64
         -- freq 0.4 speed_fac 0.05 vicousity 0.85 --> viscous
         -- freq 0.9 speed_fac 0.02 vicousity 0.95 --> liquid
@@ -274,8 +279,8 @@ local function draw_liquid_surface()
                 math.sin(((x / (num_points / 2) * math.pi * 2) - offset) * freq * math.pi)
 
             -- Draw wavy points (back) and round edge (front)
-            local a_x = math.cos(angle) * cauldron_width + cauldron_center_x
-            local a_y = math.sin(angle) * cauldron_height + cauldron_center_y - wave_height
+            local a_x = math.cos(angle) * LIQUID_WIDTH + LIQUID_CENTER_X
+            local a_y = math.sin(angle) * LIQUID_HEIGHT + LIQUID_CENTER_Y - wave_height
             surface:setPointAt(i, a_x, a_y)
         end
         surface:close()
@@ -311,8 +316,6 @@ end
 local function draw_liquid_bubbles()
     gfx.pushContext()
     do
-        -- TODO: probably make these global variables so we don't have to change this in multiple places
-        local cauldron_center_x, cauldron_center_y = 105, 160
         local ellipse_bottom_width = 70
         local ellipse_height = 12
 
@@ -338,8 +341,8 @@ local function draw_liquid_bubbles()
                 bot_offset = math.sin(bubble_rad) * max_amp * Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
             end
 
-            local b_x = bubble_amp * math.cos(bubble_rad) * ellipse_bottom_width + cauldron_center_x
-            local b_y = bubble_amp * math.sin(bubble_rad) * ellipse_height + cauldron_center_y - bot_offset
+            local b_x = bubble_amp * math.cos(bubble_rad) * ellipse_bottom_width + LIQUID_CENTER_X
+            local b_y = bubble_amp * math.sin(bubble_rad) * ellipse_height + LIQUID_CENTER_Y - bot_offset
 
             local table_size = TEXTURES.bubble_table:getLength()
             local anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, table_size)
@@ -425,19 +428,19 @@ local function draw_game_background( x, y, width, height )
         if GAMEPLAY_STATE.flame_amount > 0.8 then
             local table_size = TEXTURES.stir_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.stir_flame_table[anim_tick + 1]:draw(-27, 0)
+            TEXTURES.stir_flame_table[anim_tick + 1]:draw(27, 0)
         elseif GAMEPLAY_STATE.flame_amount > 0.6 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.high_flame_table[anim_tick + 1]:draw(-15, 160)
+            TEXTURES.high_flame_table[anim_tick + 1]:draw(15, 160)
         elseif GAMEPLAY_STATE.flame_amount > 0.3 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.medium_flame_table[anim_tick + 1]:draw(-15, 160)
+            TEXTURES.medium_flame_table[anim_tick + 1]:draw(15, 160)
         else
             local table_size = TEXTURES.low_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-            TEXTURES.low_flame_table[anim_tick + 1]:draw(-15, 160)
+            TEXTURES.low_flame_table[anim_tick + 1]:draw(15, 160)
         end
     end
     gfx.popContext()
@@ -562,7 +565,7 @@ function Init_visuals()
     Set_draw_pass(4, draw_liquid_bubbles)
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
-    -- depth 10+: frog
+    -- 10: frog
     -- depth 20+: UI
     -- 22: grabbed ingredients
     Set_draw_pass(22, draw_ingredient_grab_cursor)
@@ -572,4 +575,4 @@ function Init_visuals()
     --Set_draw_pass(20, draw_test_dither_patterns)
 end
 
-Z_DEPTH = { ingredients=-5, grabbed_ingredient = 22 }
+Z_DEPTH = { frog=10, ingredients=-5, grabbed_ingredient = 22 }

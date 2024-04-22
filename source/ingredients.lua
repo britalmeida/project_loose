@@ -5,15 +5,15 @@ local Sprite <const> = gfx.sprite
 
 -- Ingredient types
 INGREDIENT_TYPES = {
-    { name = "Garlic",         rune_composition = {-1, -1, 3},  x=210, y=90, img = gfxi.new('images/ingredients/garlic'),       drop = gfx.image.new('images/ingredients/garlic_drop') },
-    { name = "Mushrooms",      rune_composition = {0, 3, 1},  x=260, y=30, img = gfxi.new('images/ingredients/mushrooms'),    drop = gfx.image.new('images/ingredients/mushrooms_drop') },
-    { name = "Peanut Butter",  rune_composition = {1, 0, 3},  x=340, y=30, img = gfxi.new('images/ingredients/peanutbutter'), drop = gfx.image.new('images/ingredients/peanutbutter_drop') },
-    { name = "Peppermints",    rune_composition = {2, -1, 0},  x=260, y=120, img = gfxi.new('images/ingredients/peppermints'),  drop = gfx.image.new('images/ingredients/peppermints_drop') },
-    { name = "Perfume",        rune_composition = {3, -1, -1},  x=310, y=120, img = gfxi.new('images/ingredients/perfume'),      drop = gfx.image.new('images/ingredients/perfume_drop') },
-    { name = "Salt",           rune_composition = {1, -2, -1},  x=300, y=30, img = gfxi.new('images/ingredients/salt'),         drop = gfx.image.new('images/ingredients/salt_drop') },
-    { name = "Snail Shells",   rune_composition = {1, 0, -2}, x=260, y=180, img = gfxi.new('images/ingredients/snailshells'), drop = gfx.image.new('images/ingredients/snailshells_drop') },
-    { name = "Spiderweb",      rune_composition = {1, 3, 0}, x=360, y=40, img = gfxi.new('images/ingredients/spiderweb'),   drop = gfx.image.new('images/ingredients/spiderweb_drop') },
-    { name = "Toenails",       rune_composition = {-2, 1, 0}, x=350, y=120, img = gfxi.new('images/ingredients/toenails'),    drop = gfx.image.new('images/ingredients/toenails_drop') },
+    { name="Garlic",         rune_composition={-1, -1,  3},  x=270, y= 95, img=gfxi.new('images/ingredients/garlic'),       drop=gfx.image.new('images/ingredients/garlic_drop') },
+    { name="Mushrooms",      rune_composition={ 0,  3,  1},  x=300, y= 25, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfx.image.new('images/ingredients/mushrooms_drop') },
+    { name="Peanut Butter",  rune_composition={ 1,  0,  3},  x=365, y= 25, img=gfxi.new('images/ingredients/peanutbutter'), drop=gfx.image.new('images/ingredients/peanutbutter_drop') },
+    { name="Peppermints",    rune_composition={ 2, -1,  0},  x= 30, y= 30, img=gfxi.new('images/ingredients/peppermints'),  drop=gfx.image.new('images/ingredients/peppermints_drop') },
+    { name="Perfume",        rune_composition={ 3, -1, -1},  x=250, y= 25, img=gfxi.new('images/ingredients/perfume'),      drop=gfx.image.new('images/ingredients/perfume_drop') },
+    { name="Salt",           rune_composition={ 1, -2, -1},  x= 60, y= 83, img=gfxi.new('images/ingredients/salt'),         drop=gfx.image.new('images/ingredients/salt_drop') },
+    { name="Snail Shells",   rune_composition={ 1,  0, -2},  x= 20, y=145, img=gfxi.new('images/ingredients/snailshells'),  drop=gfx.image.new('images/ingredients/snailshells_drop') },
+    { name="Spiderweb",      rune_composition={ 1,  3,  0},  x=365, y= 95, img=gfxi.new('images/ingredients/spiderweb'),    drop=gfx.image.new('images/ingredients/spiderweb_drop') },
+    { name="Toenails",       rune_composition={-2,  1,  0},  x= 20, y= 83, img=gfxi.new('images/ingredients/toenails'),     drop=gfx.image.new('images/ingredients/toenails_drop') },
 }
 
 INGREDIENTS = {}
@@ -99,9 +99,9 @@ function Ingredient:release()
 
     local bounds = self:getBoundsRect()
 
-    local size = 100
-    local x_center = 100
-    local y_center = 80
+    local size = MAGIC_TRIANGLE_SIZE
+    local x_center = MAGIC_TRIANGLE_CENTER_X
+    local y_center = MAGIC_TRIANGLE_CENTER_Y
     local triangle_bounds = geo.rect.new(x_center - size/2, y_center - size/2, size, size)
     if bounds:intersects(triangle_bounds) then
         self:moveTo(x_center, y_center)
@@ -113,7 +113,7 @@ function Ingredient:release()
 end
 
 function Ingredient:drop()
-  local drop = Ingredient(self.ingredient_type_idx, geo.point.new(100, 80), true)
+  local drop = Ingredient(self.ingredient_type_idx, geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y), true)
   drop.is_in_air = true
   drop:setZIndex(Z_DEPTH.grabbed_ingredient)
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
