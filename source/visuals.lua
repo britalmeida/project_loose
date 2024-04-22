@@ -441,7 +441,7 @@ end
 local function draw_bg_lighting()
     local light_strength = GAMEPLAY_STATE.heat_amount * 0.8 + 0.2
     gfx.pushContext()
-        draw_soft_ellipse(LIQUID_CENTER_X, 240, 200 + light_strength * 80, 160 + light_strength * 70, 10, math.max(0.25, light_strength), light_strength, gfx.kColorWhite)
+        draw_soft_ellipse(LIQUID_CENTER_X, 240, 200 + light_strength * 60, 120 + light_strength * 40, 10, math.max(0.25, light_strength) * 0.8, light_strength, gfx.kColorWhite)
     gfx.popContext()
 end
 
