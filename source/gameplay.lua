@@ -122,24 +122,18 @@ function Handle_input(timeDelta)
         Ask_the_frog()
     end
     if playdate.buttonJustPressed( playdate.kButtonA ) then
-      for i, ingredient in pairs(INGREDIENTS) do
-          if ingredient.is_over_cauldron then
-            ingredient.is_over_cauldron = false
-            ingredient.is_in_air = true
-            ingredient:setZIndex(Z_DEPTH.ingredients)
-          end
-      end
-      selected_ingredient_type = INGREDIENT_TYPES[CURR_SEL_INGREDIENT]
-      selected_ingredient = INGREDIENTS[CURR_SEL_INGREDIENT]
-      selected_ingredient:pickup()
-      GYRO_X, GYRO_Y = selected_ingredient_type.x, selected_ingredient_type.y
-      PREV_GYRO_X, PREV_GYRO_Y = selected_ingredient_type.x, selected_ingredient_type.y
-
-        --for i, ingredient in pairs(INGREDIENTS) do
-        --  if ingredient:try_pickup() then
-        --    break
-        --  end
-        --end
+        for i, ingredient in pairs(INGREDIENTS) do
+            if ingredient.is_over_cauldron then
+                ingredient.is_over_cauldron = false
+                ingredient.is_in_air = true
+                ingredient:setZIndex(Z_DEPTH.ingredients)
+            end
+        end
+        for i, ingredient in pairs(INGREDIENTS) do
+            if ingredient:try_pickup() then
+                break
+            end
+        end
     end
     if playdate.buttonJustReleased(playdate.kButtonA) then
         for i, ingredient in pairs(INGREDIENTS) do
@@ -149,29 +143,16 @@ function Handle_input(timeDelta)
         end
     end
     -- Modal instruction overlays.
-    if playdate.buttonJustPressed( playdate.kButtonUp ) then
+    if playdate.buttonJustPressed( playdate.kButtonLeft ) then
         GAMEPLAY_STATE.showing_cocktail = true
-    elseif playdate.buttonJustReleased( playdate.kButtonUp ) then
+    elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
         GAMEPLAY_STATE.showing_cocktail = false
     end
-    if playdate.buttonJustPressed( playdate.kButtonDown ) then
+    if playdate.buttonJustPressed( playdate.kButtonRight ) then
         GAMEPLAY_STATE.showing_instructions = true
-    elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
+    elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
         GAMEPLAY_STATE.showing_instructions = false
     end
-
-    if playdate.buttonJustReleased( playdate.kButtonLeft ) then
-        CURR_SEL_INGREDIENT -=1
-        if CURR_SEL_INGREDIENT < 1 then
-            CURR_SEL_INGREDIENT = #INGREDIENT_TYPES
-        end
-    elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
-        CURR_SEL_INGREDIENT +=1
-        if CURR_SEL_INGREDIENT > #INGREDIENT_TYPES then
-            CURR_SEL_INGREDIENT = 1
-        end
-    end
-    
 
     -- Crank stirring
     local angleDelta, _ = playdate.getCrankChange()

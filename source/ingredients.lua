@@ -5,21 +5,19 @@ local Sprite <const> = gfx.sprite
 
 -- Ingredient types
 INGREDIENT_TYPES = {
-  { name="Perfume",        rune_composition={ 3, -1, -1},  x=250, y= 25, img=gfxi.new('images/ingredients/perfume'),      drop=gfx.image.new('images/ingredients/perfume_drop') },
-  { name="Mushrooms",      rune_composition={ 0,  3,  1},  x=300, y= 25, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfx.image.new('images/ingredients/mushrooms_drop') },
-  { name="Peanut Butter",  rune_composition={ 1,  0,  3},  x=365, y= 25, img=gfxi.new('images/ingredients/peanutbutter'), drop=gfx.image.new('images/ingredients/peanutbutter_drop') },
-  { name="Toenails",       rune_composition={-2,  1,  0},  x= 20, y= 83, img=gfxi.new('images/ingredients/toenails'),     drop=gfx.image.new('images/ingredients/toenails_drop') },
-  { name="Salt",           rune_composition={ 1, -2, -1},  x= 60, y= 83, img=gfxi.new('images/ingredients/salt'),         drop=gfx.image.new('images/ingredients/salt_drop') },
-  { name="Peppermints",    rune_composition={ 2, -1,  0},  x= 30, y= 30, img=gfxi.new('images/ingredients/peppermints'),  drop=gfx.image.new('images/ingredients/peppermints_drop') },
+    { name="Peppermints",    rune_composition={ 2, -1,  0},  x= 30, y= 30, img=gfxi.new('images/ingredients/peppermints'),  drop=gfx.image.new('images/ingredients/peppermints_drop') },
+    { name="Perfume",        rune_composition={ 3, -1, -1},  x=250, y= 25, img=gfxi.new('images/ingredients/perfume'),      drop=gfx.image.new('images/ingredients/perfume_drop') },
+    { name="Mushrooms",      rune_composition={ 0,  3,  1},  x=300, y= 25, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfx.image.new('images/ingredients/mushrooms_drop') },
+    { name="Peanut Butter",  rune_composition={ 1,  -1,  1},  x=365, y= 25, img=gfxi.new('images/ingredients/peanutbutter'), drop=gfx.image.new('images/ingredients/peanutbutter_drop') },
+    { name="Toenails",       rune_composition={-2,  1,  0},  x= 20, y= 83, img=gfxi.new('images/ingredients/toenails'),     drop=gfx.image.new('images/ingredients/toenails_drop') },
+    { name="Salt",           rune_composition={ 1, -2, -1},  x= 60, y= 83, img=gfxi.new('images/ingredients/salt'),         drop=gfx.image.new('images/ingredients/salt_drop') },
     { name="Garlic",         rune_composition={-1, -1,  3},  x=270, y= 95, img=gfxi.new('images/ingredients/garlic'),       drop=gfx.image.new('images/ingredients/garlic_drop') },
     { name="Spiderweb",      rune_composition={ 1,  3,  0},  x=365, y= 95, img=gfxi.new('images/ingredients/spiderweb'),    drop=gfx.image.new('images/ingredients/spiderweb_drop') },
-    { name="Snail Shells",   rune_composition={ 1,  0, -2},  x= 20, y=145, img=gfxi.new('images/ingredients/snailshells'),  drop=gfx.image.new('images/ingredients/snailshells_drop') },
+    { name="Snail Shells",   rune_composition={ 1,  1, -2},  x= 20, y=145, img=gfxi.new('images/ingredients/snailshells'),  drop=gfx.image.new('images/ingredients/snailshells_drop') },
 }
 
 INGREDIENTS = {}
 DROPS = {}
-
-CURR_SEL_INGREDIENT = 1
 
 class('Ingredient').extends(Sprite)
 
@@ -83,17 +81,13 @@ function Ingredient:tick()
     end
 end
 
-function Ingredient:pickup()
-      -- Move sprite to the front
-      self:setZIndex(Z_DEPTH.grabbed_ingredient)
-      self.is_picked_up = true
-end
 
 function Ingredient:try_pickup()
     local bounds = self:getBoundsRect()
     if bounds:containsPoint(GYRO_X, GYRO_Y) then
-        self:pickup()
-        return true
+      -- Move sprite to the front
+      self:setZIndex(Z_DEPTH.grabbed_ingredient)
+      self.is_picked_up = true        return true
     end
     return false
 end
