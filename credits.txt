@@ -1,4 +1,5 @@
 Falk David		Programming
+Francesco Siddi		Sound
 Ines Almeida		Programming
 Julien Kaspar		UI, Testing & Art
 Sebastian Parborg	Programming
