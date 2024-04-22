@@ -203,29 +203,6 @@ local function draw_parameter_diagram()
     gfx.popContext()
 end
 
-local function draw_debug_color_viscosity()
-    gfx.pushContext()
-
-        gfx.setColor(playdate.graphics.kColorWhite)
-
-        -- Color.
-        gfx.pushContext()
-            gfx.setDitherPattern(1 - TARGET_COCKTAIL.color, gfx.image.kDitherTypeBayer8x8)
-            gfx.fillRect(200, 25, 20, 20)
-        gfx.popContext()
-        gfx.drawRect(200, 25, 20, 20)  -- Outline
-
-        -- Viscosity.
-        --[[
-        gfx.pushContext()
-            gfx.setDitherPattern(1 - TARGET_COCKTAIL.viscosity, gfx.image.kDitherTypeBayer8x8)
-            gfx.fillRect(200, 50, 20, 20)
-        gfx.popContext()
-        gfx.drawRect(200, 50, 20, 20) -- Outline
-        --]]
-
-    gfx.popContext()
-end
 
 local function draw_stirring_stick()
     gfx.pushContext()
@@ -583,7 +560,6 @@ function Init_visuals()
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
     Set_draw_pass(7, draw_dialog_bubble)
-    -- Set_draw_pass(8, draw_debug_color_viscosity)
     -- Set_draw_pass(10, draw_hud)
     Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)

@@ -5,19 +5,20 @@ PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 
 NUM_RUNES = 3
 GAMEPLAY_STATE = {
+    -- Fire!
     flame_amount = 0.0,
     heat_amount = 0.0,
-    water_amount = 0.0,
+    -- Viscosity
     liquid_offset = 0.0,
     liquid_momentum = 0.0,
-    -- This is a factor between 0 and 1 (0.85 = high viscosity, 0.95 = low viscosity)
-    liquid_viscosity = 0.9,
-    -- Potion mix?
+    liquid_viscosity = 0.9, -- This is a factor between 0 and 1 (0.85 = high viscosity, 0.95 = low viscosity)
+    -- Current potion mix
     potion_color = 0.5,
     potion_bubbliness = 0.0,
-    game_tick = 0,
     rune_count = {0, 0, 0},
     rune_ratio = {0, 0, 0},
+    -- ??
+    game_tick = 0,
 }
 
 -- Stir speed is the speed of cranking in revolutions per seconds
