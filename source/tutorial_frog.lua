@@ -137,8 +137,7 @@ function froggo_reality_check()
     -- Check for new priority of thing that is off target.
     last_topic_hint = current_topic_hint
 
-    local tolerance = 0.1
-    if DIFF_TO_TARGET.color_abs < tolerance and viscous_diff < tolerance and DIFF_TO_TARGET.ingredients_abs < tolerance then
+    if Is_potion_good_enough() then
         current_topic_hint = -1
     elseif DIFF_TO_TARGET.color_abs > viscous_diff and DIFF_TO_TARGET.color_abs > DIFF_TO_TARGET.ingredients_abs then
         current_topic_hint = THINGS_TO_REMEMBER.stir

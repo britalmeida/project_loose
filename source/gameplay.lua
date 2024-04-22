@@ -289,6 +289,11 @@ function Tick_gameplay()
 end
 
 
+local tolerance = 0.1
+
+function Is_potion_good_enough()
+    return DIFF_TO_TARGET.color_abs < tolerance and DIFF_TO_TARGET.ingredients_abs < tolerance 
+end
 
 function Calculate_goodness()
     local prev_diff = DIFF_TO_TARGET
