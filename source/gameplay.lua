@@ -32,6 +32,9 @@ DIFF_TO_TARGET = {
     runes = { 1, 1, 1},
 }
 
+PLAYER_LEARNED = {
+    how_to_fire = false
+}
 
 FROG = nil
 
@@ -60,7 +63,6 @@ function Init_gameplay()
 
     playdate.startAccelerometer()
 
-    Init_frog()
     FROG = Froggo()
 end
 
@@ -94,6 +96,8 @@ function Reset_gameplay()
 
     Reset_ingredients()
     FROG:reset()
+
+    PLAYER_LEARNED.how_to_fire = false
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -269,7 +273,7 @@ function Tick_gameplay()
     end
 
     -- Update liquid color
-    local color_change = 0.0002
+    local color_change = 0.0005
     GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
     if GAMEPLAY_STATE.potion_color < 0 then
         GAMEPLAY_STATE.potion_color = 0
@@ -289,6 +293,11 @@ function Tick_gameplay()
 end
 
 
+local tolerance = 0.1
+
+function Is_potion_good_enough()
+    return DIFF_TO_TARGET.color_abs < tolerance and DIFF_TO_TARGET.ingredients_abs < tolerance 
+end
 
 function Calculate_goodness()
     local prev_diff = DIFF_TO_TARGET
@@ -308,4 +317,11 @@ function Calculate_goodness()
     DIFF_TO_TARGET.runes = runes_diff
 
     -- print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
+end
+
+
+function Check_player_learnings()
+    if GAMEPLAY_STATE.heat_amount > 0.3 then
+        PLAYER_LEARNED.how_to_fire = true
+    end
 end

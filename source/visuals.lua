@@ -376,13 +376,21 @@ local function draw_liquid_bubbles()
             local b_x = bubble_amp * math.cos(bubble_rad) * ellipse_bottom_width + LIQUID_CENTER_X
             local b_y = bubble_amp * math.sin(bubble_rad) * ellipse_height + LIQUID_CENTER_Y - bot_offset
 
-            local table_size = TEXTURES.bubble_table:getLength()
+            local bubble_tab = TEXTURES.bubble_table
+            local bub_off_x, bub_off_y = 5, 12
+
+            if math.fmod(x, 2) == 0 then
+                bubble_tab = TEXTURES.bubble_table2
+                bub_off_x, bub_off_y = 12, 12
+            end
+
+            local table_size = bubble_tab:getLength()
             local anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, table_size)
 
             if Bubbles_flip[x] then
-                TEXTURES.bubble_table[anim_tick + 1]:draw(b_x - 5, b_y - 12, "flipX")
+                bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y, "flipX")
             else
-                TEXTURES.bubble_table[anim_tick + 1]:draw(b_x - 5, b_y - 12)
+                bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y)
             end
 
             if (anim_tick + 1) == table_size then
@@ -588,6 +596,7 @@ function Init_visuals()
     TEXTURES.stir_flame_table = gfx.imagetable.new("images/fire/stirredflame")
 
     TEXTURES.bubble_table = gfx.imagetable.new("images/bubbles/bubble")
+    TEXTURES.bubble_table2 = gfx.imagetable.new("images/bubbles/bubble2")
 
     TEXTURES.font_symbols = gfx.font.new("fonts/symbols_outline")
 
