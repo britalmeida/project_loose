@@ -134,12 +134,17 @@ local function draw_symbols( x_min, y_min, width, height, position_params, value
 
             local target = TARGET_COCKTAIL.rune_ratio[a]
             local difference_weight = math.max(target, 1-target)
-            local rune_strength = GAMEPLAY_STATE.heat_amount * (1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight))
+            local rune_strength = math.min(math.sqrt(GAMEPLAY_STATE.heat_amount * 1.2), 1) * (1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight))
             draw_soft_circle(x1, y1, 20*rune_strength, 4, 0.5, rune_strength, gfx.kColorWhite)
 
             gfx.pushContext()
                 --gfx.setImageDrawMode(gfx.kDrawModeInverted)
                 TEXTURES.rune_images[a]:draw(glyph_x, glyph_y)
+                gfx.setColor(gfx.kColorBlack)
+                gfx.setDitherPattern(1-(math.max(0.8-GAMEPLAY_STATE.heat_amount, 0) * 0.8), gfxi.kDitherTypeBayer4x4)
+                gfx.fillRoundRect(
+                    glyph_x-margin, glyph_y-margin,
+                    glyph_width+margin*2, glyph_height+margin*2, 4)
                 --gfx.drawText(tostring(a), glyph_x, glyph_y)
             gfx.popContext()
 
