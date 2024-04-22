@@ -32,17 +32,18 @@ local function initialize()
     playdate.resetElapsedTime()
 end
 
+-- Start the game: initialize resources and enter the menu or gameplay.
 initialize()
--- For testing, enter gameplay directly.
---Enter_menu_start()
-Enter_gameplay()
+Enter_menu_start()
+--Enter_gameplay() -- For testing, enter gameplay directly.
+
 
 function playdate.deviceDidUnlock()
     -- Seems like the playdate disables the mic when locked.
     -- So we need to turn it on again when we resume the game
-    -- TODO: Not tested if this fixes the issue
     playdate.sound.micinput.startListening()
 end
+
 
 function playdate.update()
     -- Called before every frame is drawn.
