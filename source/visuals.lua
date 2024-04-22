@@ -227,7 +227,7 @@ local function draw_stirring_stick()
         -- Calculate 2 elipses:
         -- 'a': for the path of the top point of the stick,
         -- 'b': for the bottom point
-        local stick_height, stick_tilt = 60, 45
+        local stick_width, stick_height, stick_tilt = 10, 60, 45
         local ellipse_height = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
         local ellipse_bottom_width = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
         local ellipse_top_width = ellipse_bottom_width + stick_tilt
@@ -251,12 +251,34 @@ local function draw_stirring_stick()
         end
 
         -- Draw stick
-        gfx.setColor(gfx.kColorBlack)
-        gfx.setLineWidth(6)
-        gfx.drawLine(a_x, a_y, b_x, b_y)
+        local stick_outline_width = 3
+        local stick_outer = playdate.geometry.polygon.new(4)
+        stick_outer:setPointAt(1, a_x + stick_width/2 + stick_outline_width, a_y)
+        stick_outer:setPointAt(2, a_x - stick_width/2 - stick_outline_width, a_y)
+        stick_outer:setPointAt(3, b_x - stick_width/2 - stick_outline_width, b_y)
+        stick_outer:setPointAt(4, b_x + stick_width/2 + stick_outline_width, b_y)
+        stick_outer:close()
+
+        local stick_inner = playdate.geometry.polygon.new(4)
+        stick_inner:setPointAt(1, a_x + stick_width/2, a_y)
+        stick_inner:setPointAt(2, a_x - stick_width/2, a_y)
+        stick_inner:setPointAt(3, b_x - stick_width/2, b_y)
+        stick_inner:setPointAt(4, b_x + stick_width/2, b_y)
+        stick_inner:close()
+        
+
         gfx.setColor(gfx.kColorWhite)
-        gfx.setLineWidth(3)
-        gfx.drawLine(a_x - math.cos(t) * 2, a_y + 2, b_x, b_y)
+        gfx.fillCircleAtPoint(a_x, a_y, stick_width / 2 + stick_outline_width - 1)
+        gfx.fillPolygon(stick_outer)
+
+        gfx.setColor(gfx.kColorBlack)
+        gfx.fillCircleAtPoint(a_x, a_y, stick_width / 2 -1)
+        gfx.setDitherPattern(0.05)
+        gfx.fillPolygon(stick_inner)
+        
+        gfx.setColor(gfx.kColorWhite)
+        gfx.setLineWidth(1)
+        gfx.drawLine(a_x - 2, a_y, b_x - 2, b_y)
     end
     gfx.popContext()
 end
