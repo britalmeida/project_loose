@@ -362,6 +362,9 @@ local function draw_liquid_bubbles()
             if not Bubbles_animation_playing[x] and GAMEPLAY_STATE.heat_amount > math.random() + 0.1 then
                 Bubbles_animation_playing[x] = true
                 Bubbles_flip[x] = math.random() > 0.5
+                if math.random() > 0.9 then
+                    Bubbles_types[x] = -1
+                end
             end
         end
         for x = 1, NUM_BUBBLES, 1 do
@@ -382,13 +385,13 @@ local function draw_liquid_bubbles()
             local bubble_tab = TEXTURES.bubble_table
             local bub_off_x, bub_off_y = 5, 12
 
-            if math.fmod(x, 2) == 0 then
+            if Bubbles_types[x] < 0 then
                 bubble_tab = TEXTURES.bubble_table2
                 bub_off_x, bub_off_y = 12, 12
             end
 
             local anim_length = 0
-            if Bubbles_types[x] == 0 then
+            if Bubbles_types[x] <= 0 then
               anim_length = bubble_tab:getLength()
             else 
               anim_length = 30
