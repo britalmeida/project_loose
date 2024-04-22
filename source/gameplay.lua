@@ -307,5 +307,5 @@ function Calculate_goodness()
     ) * 0.5
     DIFF_TO_TARGET.runes = runes_diff
 
-    print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
+    -- print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
 end
