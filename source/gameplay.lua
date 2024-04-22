@@ -347,7 +347,10 @@ function Calculate_goodness()
 
     -- calculate state change
 
-    local color_trend = -Sign(DIFF_TO_TARGET.color_abs - prev_diff.color_abs)
+    local color_trend = 0
+    if math.abs(DIFF_TO_TARGET.color_abs - prev_diff.color_abs) > 0.001 then
+        color_trend = -Sign(DIFF_TO_TARGET.color_abs - prev_diff.color_abs)
+    end
     local rune_trend = -Sign(DIFF_TO_TARGET.ingredients_abs - prev_diff.ingredients_abs)
 
     local new_trend = color_trend + rune_trend
