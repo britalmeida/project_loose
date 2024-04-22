@@ -1,5 +1,6 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
+local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
 
 -- Image Passes
@@ -8,6 +9,10 @@ TEXTURES = {}
 -- Constants
 LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 147
 LIQUID_WIDTH, LIQUID_HEIGHT = 65, 25
+LIQUID_AABB = geo.rect.new(
+    LIQUID_CENTER_X-LIQUID_WIDTH,
+    LIQUID_CENTER_Y-LIQUID_HEIGHT*0.5,
+    LIQUID_WIDTH*2, LIQUID_HEIGHT)
 MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 70
 MAGIC_TRIANGLE_SIZE = 100
 
@@ -87,7 +92,7 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
         gfx.pushContext()
             local iteration_width = (1 - a / steps) * width * blend + width
             local iteration_height = (1 - a / steps) * height * blend + height
-            local ellipse_bb = playdate.geometry.rect.new(x_center - iteration_width * 0.5, y_center - iteration_height * 0.5, iteration_width, iteration_height)
+            local ellipse_bb = geo.rect.new(x_center - iteration_width * 0.5, y_center - iteration_height * 0.5, iteration_width, iteration_height)
             gfx.setColor(color)
             gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
             gfx.fillEllipseInRect(ellipse_bb)
@@ -376,13 +381,16 @@ local function draw_liquid_bubbles()
 end
 
 
-local function draw_overlayed_cocktail_recipe()
+local function draw_overlayed_instructions()
     if GAMEPLAY_STATE.showing_cocktail then
         gfx.pushContext()
             COCKTAILS[TARGET_COCKTAIL.type_idx].img:draw(0, 0)
         gfx.popContext()
+    end
+
+    if GAMEPLAY_STATE.showing_instructions then
         gfx.pushContext()
-            COCKTAILS[TARGET_COCKTAIL.type_idx].img:draw(0, 0)
+            TEXTURES.instructions:draw(400-TEXTURES.instructions.width, 0)
         gfx.popContext()
     end
 end
@@ -461,15 +469,15 @@ local function draw_cauldron()
         elseif GAMEPLAY_STATE.flame_amount > 0.6 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.high_flame_table[anim_tick + 1]:draw(15, 160)
+            TEXTURES.high_flame_table[anim_tick + 1]:draw(22, 160)
         elseif GAMEPLAY_STATE.flame_amount > 0.3 then
             local table_size = TEXTURES.high_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.medium_flame_table[anim_tick + 1]:draw(15, 160)
+            TEXTURES.medium_flame_table[anim_tick + 1]:draw(22, 160)
         else
             local table_size = TEXTURES.low_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-            TEXTURES.low_flame_table[anim_tick + 1]:draw(15, 160)
+            TEXTURES.low_flame_table[anim_tick + 1]:draw(22, 160)
         end
     gfx.popContext()
 end
@@ -490,6 +498,14 @@ local function draw_debug()
         gfx.fillRoundRect(x + border, y + height - meter - border, width - border * 2, meter, 3)
     gfx.popContext()
 
+    -- Cauldron hit zone
+    gfx.pushContext()
+        gfx.setColor(gfx.kColorWhite)
+        gfx.setLineWidth(2)
+        gfx.drawRect(LIQUID_AABB)
+    gfx.popContext()
+
+    -- FPS
     gfx.pushContext()
         gfx.setColor(gfx.kColorWhite)
         playdate.drawFPS(200,0)
@@ -531,6 +547,7 @@ function Init_visuals()
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
     TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
+    TEXTURES.instructions = gfxi.new("images/instructions")
 
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
 
@@ -601,7 +618,7 @@ function Init_visuals()
     Set_draw_pass(22, draw_ingredient_grab_cursor)
     Set_draw_pass(25, draw_dialog_bubble)
     -- depth 30+: overlayed modal instructions
-    Set_draw_pass(30, draw_overlayed_cocktail_recipe)
+    Set_draw_pass(30, draw_overlayed_instructions)
     -- Development
     --Set_draw_pass(20, draw_debug)
     --Set_draw_pass(20, draw_test_dither_patterns)

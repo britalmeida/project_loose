@@ -49,8 +49,7 @@ end
 function Ingredient:tick()
     -- Called during gameplay when self:isVisible == true
 
-    local cauldron = geo.rect.new(65, 152, 80, 15)
-    if self.is_drop and self:getBoundsRect():intersects(cauldron) then
+    if self.is_drop and self:getBoundsRect():intersects(LIQUID_AABB) then
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
         table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()
