@@ -78,7 +78,7 @@ end
 function froggo_reality_check()
     -- Match expectations with reality.
     local color_diff = math.abs(TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color)
-    local viscous_diff = math.abs(TARGET_COCKTAIL.viscosity - GAMEPLAY_STATE.liquid_viscosity)
+    local viscous_diff = 0 -- viscosity is not an active target now.
     local rune_per_component_diff = {
         TARGET_COCKTAIL.rune_ratio[1] - GAMEPLAY_STATE.rune_ratio[1],
         TARGET_COCKTAIL.rune_ratio[2] - GAMEPLAY_STATE.rune_ratio[2],
@@ -88,9 +88,6 @@ function froggo_reality_check()
 
     -- Check for new priority of thing that is off target.
     last_topic_hint = current_topic_hint
-
-    -- viscosity is not an active target now.
-    viscous_diff = 0
 
     local tolerance = 0.1
     if color_diff < tolerance and viscous_diff < tolerance and rune_diff < tolerance then
