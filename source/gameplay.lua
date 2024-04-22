@@ -33,7 +33,9 @@ DIFF_TO_TARGET = {
 }
 
 PLAYER_LEARNED = {
-    how_to_fire = false
+    how_to_fire = false,
+    how_to_grab = false,
+    how_to_shake = false
 }
 
 FROG = nil
@@ -98,6 +100,8 @@ function Reset_gameplay()
     FROG:reset()
 
     PLAYER_LEARNED.how_to_fire = false
+    PLAYER_LEARNED.how_to_grab = false
+    PLAYER_LEARNED.how_to_shake = false
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -202,6 +206,7 @@ function Handle_input(timeDelta)
         end
         for i, ingredient in pairs(INGREDIENTS) do
             if ingredient:try_pickup() then
+                PLAYER_LEARNED.how_to_grab = true
                 break
             end
         end
@@ -324,4 +329,9 @@ function Check_player_learnings()
     if GAMEPLAY_STATE.heat_amount > 0.3 then
         PLAYER_LEARNED.how_to_fire = true
     end
+
+    if GAMEPLAY_STATE.cursor_hold then
+        
+    end
+    
 end

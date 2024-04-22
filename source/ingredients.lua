@@ -66,6 +66,7 @@ function Ingredient:tick()
         self:moveTo(GYRO_X, GYRO_Y)
     elseif self.is_over_cauldron then
       if SHAKE_VAL > 2 and self.can_drop then
+        PLAYER_LEARNED.how_to_shake = true
         playdate.timer.new(200, function ()
           self:drop()
         end)
