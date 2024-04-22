@@ -303,7 +303,7 @@ function Calculate_goodness()
     local prev_diff = DIFF_TO_TARGET
 
     -- Match expectations with reality.
-    DIFF_TO_TARGET.color = math.abs(TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color)
+    DIFF_TO_TARGET.color = TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color
     DIFF_TO_TARGET.color_abs = math.abs(DIFF_TO_TARGET.color)
 
     local runes_diff = {
