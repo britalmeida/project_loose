@@ -108,6 +108,9 @@ local function draw_symbols( x, y, width, position_params)
         return
     end
 
+    local wiggle_freq_avg = 2
+    local freq_var = 0.1
+
     local meter_height = 40
     gfx.pushContext()
         local margin = 2
@@ -117,7 +120,9 @@ local function draw_symbols( x, y, width, position_params)
             local glyph_width = TEXTURES.rune_images[a].width
             local glyph_height = TEXTURES.rune_images[a].height
             local glyph_x = x + width * 0.5 * (a - 2)
-            local glyph_y = y
+            local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
+            local wiggle = math.sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + math.pi * 0.3)
+            local glyph_y = y + wiggle
 
             local target = TARGET_COCKTAIL.rune_ratio[a]
             local difference_weight = math.max(target, 1-target)
