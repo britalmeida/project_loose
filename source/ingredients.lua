@@ -32,6 +32,7 @@ function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
     self.can_drop = true
     self.is_drop = is_drop
     self.is_hover = false
+    self.hover_tick = 0
 
     self.vel = geo.vector2D.new(0, 0)
 
@@ -87,11 +88,29 @@ end
 
 function Ingredient:hover()
   local bounds = self:getBoundsRect()
+  local hover_time = 10
   if bounds:containsPoint(GYRO_X, GYRO_Y) then
+    self.is_hover = true
+    self.hover_tick += 1
+  else
+    self.hover_tick -= 1
+  end
+
+  self.hover_tick = math.max(self.hover_tick, 0)
+  self.hover_tick = math.min(self.hover_tick, hover_time)
+
+  if self.hover_tick == 0 then
+    self.is_hover = false
+  end
+
+  if self.hover_tick > 0 then
     -- Move sprite to the front
     self:setZIndex(Z_DEPTH.grabbed_ingredient)
-    self.is_hover = true
-    local hover_vector = geo.vector2D.new(0, -10)
+    local time = GAMEPLAY_STATE.game_tick / 30
+    local wiggle_freq = 1
+    local x_offset = math.sin(time * 2 * math.pi * (wiggle_freq - 0.1))
+    local y_offset = math.sin(time * 2 * math.pi * (wiggle_freq + 0.1))
+    local hover_vector = geo.vector2D.new(0 + x_offset, -5 + y_offset) * self.hover_tick / hover_time
 
     self:moveTo((self.start_pos + hover_vector):unpack())
     return true
