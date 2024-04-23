@@ -592,23 +592,21 @@ function Init_visuals()
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
-    TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
+    TEXTURES.dialog_bubble = gfxi.new("images/speech/dialog_bubble")
     TEXTURES.instructions = gfxi.new("images/instructions")
-
-    TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
-
-    -- Load cauldron flame textures
-    TEXTURES.low_flame_table = gfx.imagetable.new("images/fire/lowflame")
-    TEXTURES.medium_flame_table = gfx.imagetable.new("images/fire/mediumflame")
-    TEXTURES.high_flame_table = gfx.imagetable.new("images/fire/highflame")
-    TEXTURES.stir_flame_table = gfx.imagetable.new("images/fire/stirredflame")
     -- Load images
-    TEXTURES.bubble_table = gfx.imagetable.new("images/bubbles/bubble")
-    TEXTURES.bubble_table2 = gfx.imagetable.new("images/bubbles/bubble2")
-    TEXTURES.splish = gfx.imagetable.new("images/splish")
-    TEXTURES.cursor = gfxi.new("images/open_hand")
-    TEXTURES.cursor_hold = gfxi.new("images/closed_hand")
-    TEXTURES.place_hint = gfxi.new("images/empty_circle")
+   TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
+    TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
+   TEXTURES.place_hint = gfxi.new("images/cursor/empty_circle")
+    TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
+    -- Load fx
+    TEXTURES.low_flame_table = gfx.imagetable.new("images/fx/lowflame")
+    TEXTURES.medium_flame_table = gfx.imagetable.new("images/fx/mediumflame")
+    TEXTURES.high_flame_table = gfx.imagetable.new("images/fx/highflame")
+    TEXTURES.stir_flame_table = gfx.imagetable.new("images/fx/stirredflame")
+    TEXTURES.bubble_table = gfx.imagetable.new("images/fx/bubble")
+    TEXTURES.bubble_table2 = gfx.imagetable.new("images/fx/bubble2")
+    TEXTURES.splish = gfx.imagetable.new("images/fx/splish")
 
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")

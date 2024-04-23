@@ -199,7 +199,6 @@ function Init_menus()
 
     UI_TEXTURES.start_left_select = gfxi.new("images/menu_start_left")
     UI_TEXTURES.start_right_select = gfxi.new("images/menu_start_right")
-    UI_TEXTURES.arrow = gfxi.new("images/arrow")
 
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.active_screen_texture = UI_TEXTURES.start

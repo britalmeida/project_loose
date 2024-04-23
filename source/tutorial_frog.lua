@@ -55,7 +55,6 @@ local ingredient_tutorials_drop <const> = {
     "Shake, shake. Shake it off!!",
 }
 
-local froggo_img = gfx.image.new("images/frog/frog")
 local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
 local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
 local anim_happy_imgs, anim_happy_framerate = gfx.imagetable.new('images/frog/animation-excited'), 8
@@ -75,7 +74,6 @@ function Froggo:init()
     self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
     self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
 
-    self:setImage(froggo_img)
     self:setZIndex(Z_DEPTH.frog)
     self:moveTo(350, 148)
 
