@@ -3,8 +3,9 @@ local gfxi <const> = playdate.graphics.image
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
 
--- Image Passes
+-- Resources
 TEXTURES = {}
+FONTS = {}
 
 -- Constants
 LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 170
@@ -109,7 +110,6 @@ local function draw_symbols( x, y, width, position_params)
 
     local meter_height = 40
     gfx.pushContext()
-        gfx.setFont(TEXTURES.font_symbols)
         local margin = 2
 
         local n = #params
@@ -440,7 +440,7 @@ local function draw_dialog_bubble()
 
         -- Draw lines of the text.
         for i = 1, #text_lines, 1 do
-            gfx.setFont(TEXTURES.speech_font)
+            gfx.setFont(FONTS.speech_font)
             gfx.drawTextAligned(text_lines[i], x_min + width / 2, current_line_y, kTextAlignment.center)
             current_line_y += line_height
         end
@@ -597,20 +597,16 @@ function Init_visuals()
     TEXTURES.medium_flame_table = gfx.imagetable.new("images/fire/mediumflame")
     TEXTURES.high_flame_table = gfx.imagetable.new("images/fire/highflame")
     TEXTURES.stir_flame_table = gfx.imagetable.new("images/fire/stirredflame")
-
+    -- Load images
     TEXTURES.bubble_table = gfx.imagetable.new("images/bubbles/bubble")
     TEXTURES.bubble_table2 = gfx.imagetable.new("images/bubbles/bubble2")
-
     TEXTURES.splish = gfx.imagetable.new("images/splish")
-
-    TEXTURES.font_symbols = gfx.font.new("fonts/symbols_outline")
-
     TEXTURES.cursor = gfxi.new("images/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/closed_hand")
-
     TEXTURES.place_hint = gfxi.new("images/empty_circle")
 
-    TEXTURES.speech_font = gfx.font.new("fonts/diamond_12")
+    -- Load fonts
+    FONTS.speech_font = gfx.font.new("fonts/froggotini17")
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
