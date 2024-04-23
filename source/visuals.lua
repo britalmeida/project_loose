@@ -285,6 +285,22 @@ local function draw_stirring_stick()
     gfx.popContext()
 end
 
+local function draw_liquid_glow()
+
+    local target = TARGET_COCKTAIL.color
+    local difference_weight = math.max(target, 1-target)
+
+    local light_strength =  1 - math.abs((GAMEPLAY_STATE.potion_color - target) / difference_weight)
+    local glow_center_x = LIQUID_CENTER_X
+    local glow_center_y = LIQUID_CENTER_Y
+    local glow_width = LIQUID_WIDTH + 100 + light_strength * 20
+    local glow_height = LIQUID_HEIGHT + 60 + light_strength * 10
+    local glow_blend = math.max(0.25, light_strength) * 0.3
+    gfx.pushContext()
+        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 10, glow_blend, light_strength, gfx.kColorWhite)
+    gfx.popContext()
+end
+
 local function draw_liquid_surface()
     gfx.pushContext()
     do
@@ -655,6 +671,7 @@ function Init_visuals()
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
+    Set_draw_pass(-2, draw_liquid_glow)
     Set_draw_pass(-1, draw_bg_lighting)
     Set_draw_pass(0, draw_cauldron)
     Set_draw_pass(3, draw_liquid_surface)
