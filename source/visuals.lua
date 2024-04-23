@@ -592,7 +592,7 @@ function Init_visuals()
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
-    TEXTURES.dialog_bubble = gfxi.new("images/speech/dialog_bubble")
+    TEXTURES.dialog_bubble = gfxi.new("images/speech/dialog_bubble_twolines")
     TEXTURES.instructions = gfxi.new("images/instructions")
     -- Load images
    TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
