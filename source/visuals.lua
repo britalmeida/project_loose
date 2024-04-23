@@ -454,14 +454,25 @@ local function draw_dialog_bubble()
 end
 
 local function draw_bg_lighting()
-    local light_strength = GAMEPLAY_STATE.heat_amount * 0.8 + 0.2
+    local flicker_freq = {0.0023, 0.3, 5.2}
+    local flicker_strength = {0.01, 0.002, 0.004}
+    local flicker = 0
+    local tick = GAMEPLAY_STATE.game_tick + math.random()
+    local time  = (tick - math.fmod(tick, 8)) / 30
+    for a = 1, #flicker_freq, 1 do
+        flicker += math.sin(time * 2 * math.pi * flicker_freq[a]) * flicker_strength[a]
+    end
+    flicker *= (1 - GAMEPLAY_STATE.heat_amount ^ 2)
+    
+    local light_strength = (GAMEPLAY_STATE.heat_amount * 0.8 + 0.2 ) + flicker
     local glow_center_x = LIQUID_CENTER_X
     local glow_center_y = 240
     local glow_width = 200 + light_strength * 60
     local glow_height = 120 + light_strength * 40
     local glow_blend = math.max(0.25, light_strength) * 0.8
+
     gfx.pushContext()
-        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 10, glow_blend, light_strength, gfx.kColorWhite)
+        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 10, glow_blend, light_strength * 0.5, gfx.kColorWhite)
     gfx.popContext()
 end
 
@@ -614,8 +625,8 @@ function Init_visuals()
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
-    Set_draw_pass(-2, draw_liquid_glow)
-    Set_draw_pass(-1, draw_bg_lighting)
+    Set_draw_pass(-2, draw_bg_lighting)
+    Set_draw_pass(-1, draw_liquid_glow)
     Set_draw_pass(0, draw_cauldron)
     Set_draw_pass(3, draw_liquid_surface)
     Set_draw_pass(4, draw_liquid_bubbles)
