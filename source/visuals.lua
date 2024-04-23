@@ -144,31 +144,6 @@ local function draw_symbols( x, y, width, position_params)
     gfx.popContext()
 end
 
-local function draw_poly_shape( x_min, y_min, width, height, params, alpha, color)
-    if params == nil then
-        return
-    end
-    gfx.pushContext()
-        gfx.setColor(color)
-        local n = #params
-        local x1 = x_min + width / 2
-        local y1 = y_min + (1 - math.sqrt(params[1])) * height / 2
-        for a = 0, n-1, 1 do
-            local phi = (a+1)/n * 2 * math.pi
-            local r = math.sqrt(params[(a+1<n and a+1 or 0) + 1])
-            local x2 = x_min + ((math.sin(phi) * r) + 1) * width / 2
-            local y2 = y_min + ((-math.cos(phi) * r) + 1) * height / 2
-            gfx.pushContext()
-                gfx.setDitherPattern(alpha, gfxi.kDitherTypeBayer4x4)
-                gfx.fillTriangle(x1, y1, x2, y2, x_min + width / 2, y_min + height / 2)
-            gfx.popContext()
-            gfx.drawLine( x1, y1, x2, y2)
-            x1 = x2
-            y1 = y2
-        end
-    gfx.popContext()
-end
-
 local function draw_parameter_diagram()
     local params = {}
     for k, v in pairs(GAMEPLAY_STATE.rune_count) do
@@ -185,39 +160,7 @@ local function draw_parameter_diagram()
         end
     end
 
-    local target_params = TARGET_COCKTAIL.rune_ratio
-
-    gfx.pushContext()
-        local size = MAGIC_TRIANGLE_SIZE
-        local width = MAGIC_TRIANGLE_SIZE
-        local height = MAGIC_TRIANGLE_SIZE
-        local x_min = MAGIC_TRIANGLE_CENTER_X - width * 0.5
-        local y_min = MAGIC_TRIANGLE_CENTER_Y - height * 0.5
-
-        -- Draw outline polygon
-        local par_lim = {}
-        for a = 1, #params, 1 do
-            par_lim[a] = 1
-        end
-
-        gfx.pushContext()
-            gfx.setColor(gfx.kColorBlack)
-            gfx.setDitherPattern(0, gfxi.kDitherTypeBayer4x4)
-            --gfx.fillRect(0,0,400,240)
-        gfx.popContext()
-
-        -- Draw background gradient
-        --draw_soft_circle(x_center, y_center, size * 0.5, 4, gfx.kColorWhite)
-
-
-        --draw_poly_shape(x_min, y_min, width, height, par_lim, 0, gfx.kColorBlack)
-        -- Draw current potion mix
-        --draw_poly_shape(x_min, y_min, width, height, params, 0.45, gfx.kColorWhite)
-        -- Draw target potion mix
-        --draw_poly_shape(x_min, y_min, width, height, target_params, 1.00, gfx.kColorWhite)
-        draw_symbols(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y - 70, 80, params)
-
-    gfx.popContext()
+    draw_symbols(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y - 70, 80, params)
 end
 
 
