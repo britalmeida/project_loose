@@ -1,11 +1,13 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
+local animloop <const> = playdate.graphics.animation.loop
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
 
 -- Resources
-TEXTURES = {}
 FONTS = {}
+TEXTURES = {}
+ANIMS = {}
 
 -- Constants
 LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 170
@@ -417,6 +419,8 @@ local function draw_dialog_bubble()
         return
     end
 
+    local no_love = false --text == "Too much love\ncan't stand it!"
+
     -- local text_lines = {"Just blow air onto", "the bottom of the cauldron"}
     local text_lines = {}
     for line in string.gmatch(text, "[^\n]+") do
@@ -438,21 +442,27 @@ local function draw_dialog_bubble()
     gfx.pushContext()
     do
         -- The buggle graphics itself.
-        if #text_lines > 1 then
-            TEXTURES.dialog_bubble_twolines:draw(0, 0)
+        if no_love then
+            ANIMS.speech_bubble:image():draw(0, 0)
         else
-            TEXTURES.dialog_bubble_oneline:draw(0, 0)
+            if #text_lines > 1 then
+                TEXTURES.dialog_bubble_twolines:draw(0, 0)
+            else
+                TEXTURES.dialog_bubble_oneline:draw(0, 0)
+            end
         end
 
         -- Debug drawing of the safe area bounds.
         -- gfx.drawRect(x_min, y_min, width, height)
 
         -- Draw lines of the text.
+        if not no_love then
         for i = 1, #text_lines, 1 do
             gfx.setFont(FONTS.speech_font)
             gfx.drawTextAligned(text_lines[i], x_min + width / 2, current_line_y, kTextAlignment.center)
             current_line_y += line_height
         end
+    end
     end
     gfx.popContext()
 end
@@ -609,11 +619,14 @@ function Init_visuals()
     TEXTURES.cauldron = gfxi.new("images/cauldron")
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/dialog_bubble_oneline")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/dialog_bubble_twolines")
+    local bubble_framerate = 8
+    local bubble_imgs = gfx.imagetable.new('images/speech/animation-lesslove')
+    local bubble_num_imgs = bubble_imgs:getLength()
     TEXTURES.instructions = gfxi.new("images/instructions")
     -- Load images
-   TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
+    TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
-   TEXTURES.place_hint = gfxi.new("images/cursor/empty_circle")
+    TEXTURES.place_hint = gfxi.new("images/cursor/empty_circle")
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
     -- Load fx
     TEXTURES.low_flame_table = gfx.imagetable.new("images/fx/lowflame")
@@ -623,6 +636,10 @@ function Init_visuals()
     TEXTURES.bubble_table = gfx.imagetable.new("images/fx/bubble")
     TEXTURES.bubble_table2 = gfx.imagetable.new("images/fx/bubble2")
     TEXTURES.splish = gfx.imagetable.new("images/fx/splish")
+
+    -- Create animation timers.
+    ANIMS.speech_bubble = animloop.new(bubble_framerate * frame_ms, bubble_imgs, true)
+
 
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")
