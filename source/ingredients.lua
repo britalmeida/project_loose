@@ -31,6 +31,7 @@ function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
     self.is_in_air = false
     self.can_drop = true
     self.is_drop = is_drop
+    self.is_hover = false
 
     self.vel = geo.vector2D.new(0, 0)
 
@@ -79,9 +80,29 @@ function Ingredient:tick()
         if y > 500 then
           self:respawn()
         end
+    else
+      self:hover()
     end
 end
 
+function Ingredient:hover()
+  local bounds = self:getBoundsRect()
+  if bounds:containsPoint(GYRO_X, GYRO_Y) then
+    -- Move sprite to the front
+    self:setZIndex(Z_DEPTH.grabbed_ingredient)
+    self.is_hover = true
+    local hover_vector = geo.vector2D.new(0, -10)
+
+    self:moveTo((self.start_pos + hover_vector):unpack())
+    return true
+  else
+    if self.is_hover then
+      self:moveTo(self.start_pos:unpack())
+    end
+    self.is_hover = false
+  end
+  return false
+end
 
 function Ingredient:try_pickup()
     local bounds = self:getBoundsRect()
