@@ -8,12 +8,12 @@ INGREDIENT_TYPES = {
     { name="Peppermints",    rune_composition={ 2, -1,  0},  x= 30, y= 30, img=gfxi.new('images/ingredients/peppermints'),  drop=gfx.image.new('images/ingredients/peppermints_drop'), hold=nil },
     { name="Perfume",        rune_composition={ 3, -1, -1},  x=250, y= 25, img=gfxi.new('images/ingredients/perfume'),      drop=gfx.image.new('images/ingredients/perfume_drop'), hold=nil  },
     { name="Mushrooms",      rune_composition={ 0,  3,  1},  x=300, y= 25, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfx.image.new('images/ingredients/mushrooms_drop'), hold=nil  },
-    { name="Peanut Butter",  rune_composition={ 1,  -1,  1},  x=365, y= 25, img=gfxi.new('images/ingredients/peanutbutter'), drop=gfx.image.new('images/ingredients/peanutbutter_drop'), hold=nil  },
-    { name="Toenails",       rune_composition={-2,  1,  0},  x= 20, y= 83, img=gfxi.new('images/ingredients/toenails'),     drop=gfx.image.new('images/ingredients/toenails_drop'), hold=nil  },
+    { name="Peanut Butter",  rune_composition={ 1,  -1, 1},  x=365, y= 25, img=gfxi.new('images/ingredients/peanutbutter'), drop=gfx.image.new('images/ingredients/peanutbutter_drop'), hold=nil  },
+    { name="Toenails",       rune_composition={-2,  1,  0},  x= 20, y= 82, img=gfxi.new('images/ingredients/toenails'),     drop=gfx.image.new('images/ingredients/toenails_drop'), hold=nil  },
     { name="Salt",           rune_composition={ 1, -2, -1},  x= 60, y= 83, img=gfxi.new('images/ingredients/salt'),         drop=gfx.image.new('images/ingredients/salt_drop'), hold=nil  },
     { name="Garlic",         rune_composition={-1, -1,  3},  x=270, y= 95, img=gfxi.new('images/ingredients/garlic'),       drop=gfx.image.new('images/ingredients/garlic_drop'), hold=nil  },
     { name="Spiderweb",      rune_composition={ 1,  3,  0},  x=365, y= 95, img=gfxi.new('images/ingredients/spiderweb'),    drop=gfx.image.new('images/ingredients/spiderweb_drop'), hold=gfx.image.new('images/ingredients/spiderweb_held')  },
-    { name="Snail Shells",   rune_composition={ 1,  1, -2},  x= 20, y=145, img=gfxi.new('images/ingredients/snailshells'),  drop=gfx.image.new('images/ingredients/snailshells_drop'), hold=gfx.image.new('images/ingredients/snailshells_held')  },
+    { name="Snail Shells",   rune_composition={ 1,  1, -2},  x= 20, y=137, img=gfxi.new('images/ingredients/snailshells'),  drop=gfx.image.new('images/ingredients/snailshells_drop'), hold=gfx.image.new('images/ingredients/snailshells_held')  },
 }
 
 INGREDIENTS = {}
