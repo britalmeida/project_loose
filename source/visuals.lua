@@ -289,8 +289,9 @@ local function draw_liquid_glow()
 
     local target = TARGET_COCKTAIL.color
     local difference_weight = math.max(target, 1-target)
-
-    local light_strength =  1 - math.abs((GAMEPLAY_STATE.potion_color - target) / difference_weight)
+    
+    local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
+    local light_strength = heat_response * (1 - math.abs((GAMEPLAY_STATE.potion_color - target) / difference_weight))
     local glow_center_x = LIQUID_CENTER_X
     local glow_center_y = LIQUID_CENTER_Y
     local glow_width = LIQUID_WIDTH + 100 + light_strength * 20
