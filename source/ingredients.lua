@@ -99,10 +99,6 @@ function Ingredient:hover()
   self.hover_tick = math.max(self.hover_tick, 0)
   self.hover_tick = math.min(self.hover_tick, hover_time)
 
-  if self.hover_tick == 0 then
-    self.is_hover = false
-  end
-
   if self.hover_tick > 0 then
     -- Move sprite to the front
     self:setZIndex(Z_DEPTH.grabbed_ingredient)
