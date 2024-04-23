@@ -1,7 +1,7 @@
 name=Froggotten Recipes
-author=Team Snooze
-description=WIP for PlayJam5
-bundleID=com.playjam.projectsnooze
-version=0.0.1
+author=Team Froggo
+description=PlayJam 5 game
+bundleID=com.playjam.frogotten
+version=1.0.0
 buildNumber=1
 imagePath=images/launcher
