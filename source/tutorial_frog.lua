@@ -288,7 +288,6 @@ function set_speech_bubble_content()
                 SHOWN_STRING = ingredient_reminders[current_rune_hint][rune_offset]
             end
         end
-        print(SHOWN_STRING)
     end
 end
 

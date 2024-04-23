@@ -438,7 +438,11 @@ local function draw_dialog_bubble()
     gfx.pushContext()
     do
         -- The buggle graphics itself.
-        TEXTURES.dialog_bubble:draw(0, 0)
+        if #text_lines > 1 then
+            TEXTURES.dialog_bubble_twolines:draw(0, 0)
+        else
+            TEXTURES.dialog_bubble_oneline:draw(0, 0)
+        end
 
         -- Debug drawing of the safe area bounds.
         -- gfx.drawRect(x_min, y_min, width, height)
@@ -603,7 +607,8 @@ function Init_visuals()
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
-    TEXTURES.dialog_bubble = gfxi.new("images/speech/dialog_bubble_twolines")
+    TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/dialog_bubble_oneline")
+    TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/dialog_bubble_twolines")
     TEXTURES.instructions = gfxi.new("images/instructions")
     -- Load images
    TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
