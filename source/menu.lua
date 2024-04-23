@@ -165,11 +165,11 @@ function Handle_menu_input()
         -- Cycle Options.
         if playdate.buttonJustReleased( playdate.kButtonRight ) then
             MENU_STATE.focused_option += 1
-            SOUND.menu_highlight:play()
+            SOUND.menu_confirm:play()
         end
         if playdate.buttonJustReleased( playdate.kButtonLeft ) then
             MENU_STATE.focused_option -= 1
-            SOUND.menu_highlight:play()
+            SOUND.menu_confirm:play()
         end
         local crankTicks = playdate.getCrankTicks(3)
         if crankTicks == 1 then

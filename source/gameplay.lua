@@ -242,6 +242,14 @@ function Handle_input(timeDelta)
 
     if math.abs(angleDelta) > 5 and not SOUND.stir_sound:isPlaying() then
         SOUND.stir_sound:play()
+    elseif math.abs(angleDelta) < 5 and SOUND.stir_sound:isPlaying() then
+        -- Stop the sound with a bit of delay when stirring stops.
+        playdate.timer.new(0.2*1000, function()
+            -- Re-test if we should still stop the sound or maybe it stopped on its own or player cranks again.
+            if math.abs(angleDelta) < 5 and SOUND.stir_sound:isPlaying() then
+                SOUND.stir_sound:stop()
+            end
+        end)
     end
 
     -- Microphone level check.
