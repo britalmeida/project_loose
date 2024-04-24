@@ -55,10 +55,14 @@ function Ingredient:tick()
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
         table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()
-        for x = 1, NUM_BUBBLES, 1 do
-          if not Bubbles_animation_playing[x] then
-            Bubbles_animation_playing[x] = true
-            Bubbles_types[x] = self.ingredient_type_idx
+        local num_floating_drops = 4
+        for _ = 1, num_floating_drops do
+          for x = 1, NUM_BUBBLES, 1 do
+            if not Bubbles_animation_playing[x] then
+              Bubbles_animation_playing[x] = true
+              Bubbles_types[x] = self.ingredient_type_idx
+              break
+            end
           end
         end
     end
@@ -69,6 +73,7 @@ function Ingredient:tick()
     elseif self.is_over_cauldron then
       if SHAKE_VAL > 2 and self.can_drop then
         PLAYER_LEARNED.how_to_shake = true
+        self.can_drop = false
         playdate.timer.new(200, function ()
           self:drop()
         end)
@@ -169,7 +174,6 @@ function Ingredient:drop()
     drops[r]:play()
   end
 
-  self.can_drop = false
   playdate.timer.new(500, function ()
       self.can_drop = true
   end)
