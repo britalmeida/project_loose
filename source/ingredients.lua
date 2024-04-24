@@ -34,6 +34,8 @@ function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
     self.is_hover = false
     self.hover_tick = 0
 
+    self.wiggle_tick = 0
+
     self.vel = geo.vector2D.new(0, 0)
 
     if self.is_drop then
@@ -71,6 +73,7 @@ function Ingredient:tick()
         -- Follow the gyro
         self:moveTo(GYRO_X, GYRO_Y)
     elseif self.is_over_cauldron then
+      self:wiggle()
       if SHAKE_VAL > 2 and self.can_drop then
         PLAYER_LEARNED.how_to_shake = true
         self.can_drop = false
@@ -124,6 +127,29 @@ function Ingredient:hover()
   return false
 end
 
+function Ingredient:wiggle()
+  print(self.wiggle_tick, self.wiggle_time)
+  self.wiggle_tick += 1
+  local fps = math.ceil(playdate.getFPS())
+  local center = geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
+  if self.wiggle_tick / fps >= self.wiggle_time then
+    -- reset and wait
+    local pause = math.random(2 * fps, 4 * fps)
+    self.wiggle_tick = -pause
+    self.wiggle_time = math.random(2, 8) / 10
+    self:moveTo(center:unpack())
+  elseif self.wiggle_tick > 0 then
+    -- wiggle!
+    local wiggle_freq = 8
+    local time = GAMEPLAY_STATE.game_tick / playdate.getFPS()
+    local x_offset = math.sin(time * 2 * math.pi * (wiggle_freq - 0.1))
+    local y_offset = math.sin(time * 2 * math.pi * (wiggle_freq + 0.1))
+    local hover_vector = geo.vector2D.new(x_offset, y_offset) * self.wiggle_tick / fps / self.wiggle_time * 0.8
+
+    self:moveTo((center + hover_vector):unpack())
+  end
+end
+
 function Ingredient:try_pickup()
     local bounds = self:getBoundsRect()
     if bounds:containsPoint(GYRO_X, GYRO_Y) then
@@ -152,6 +178,7 @@ function Ingredient:release()
     if bounds:intersects(triangle_bounds) then
         self:moveTo(x_center, y_center)
         self:setZIndex(5)
+        self.wiggle_time = math.random(2, 8) / 10
         self.is_over_cauldron = true
     elseif bounds:containsPoint(self.start_pos) then
         self:respawn()
