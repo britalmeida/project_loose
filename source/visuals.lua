@@ -472,7 +472,7 @@ local function draw_bg_lighting()
     local flicker_strength = {0.01, 0.002, 0.004}
     local flicker = 0
     local tick = GAMEPLAY_STATE.game_tick + math.random()
-    local time  = (tick - math.fmod(tick, 8)) / 30
+    local time  = (tick - math.fmod(tick, 8)) / playdate.getFPS()
     for a = 1, #flicker_freq, 1 do
         flicker += math.sin(time * 2 * math.pi * flicker_freq[a]) * flicker_strength[a]
     end

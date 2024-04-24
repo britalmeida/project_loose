@@ -107,7 +107,7 @@ function Ingredient:hover()
   if self.hover_tick > 0 then
     -- Move sprite to the front
     self:setZIndex(Z_DEPTH.grabbed_ingredient)
-    local time = GAMEPLAY_STATE.game_tick / 30
+    local time = GAMEPLAY_STATE.game_tick / playdate.getFPS()
     local wiggle_freq = 1
     local x_offset = math.sin(time * 2 * math.pi * (wiggle_freq - 0.1))
     local y_offset = math.sin(time * 2 * math.pi * (wiggle_freq + 0.1))
