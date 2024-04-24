@@ -216,6 +216,7 @@ function Handle_input(timeDelta)
                 break
             end
         end
+        FROG:Click_the_frog()
     end
     if playdate.buttonJustReleased(playdate.kButtonA) then
         GAMEPLAY_STATE.cursor_hold = false

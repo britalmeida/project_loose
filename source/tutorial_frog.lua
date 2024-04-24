@@ -99,6 +99,15 @@ function Froggo:Ask_the_frog()
     end
 end
 
+function Froggo:Click_the_frog()
+    local bounds = self:getBoundsRect()
+    -- Make it a bit smaller, so we don't accedentially click on the frog
+    bounds = bounds.insetBy(15, 15)
+    if bounds:containsPoint(GYRO_X, GYRO_Y) then
+        self:Ask_the_frog()
+    end
+end
+
 function Froggo:Notify_the_frog()
     -- notify the frog when significant change happened
     if self.state == FROG_STATE.idle then
