@@ -457,12 +457,12 @@ local function draw_dialog_bubble()
 
         -- Draw lines of the text.
         if not no_love then
-        for i = 1, #text_lines, 1 do
-            gfx.setFont(FONTS.speech_font)
-            gfx.drawTextAligned(text_lines[i], x_min + width / 2, current_line_y, kTextAlignment.center)
-            current_line_y += line_height
-        end
-    end
+            for i = 1, #text_lines, 1 do
+                gfx.setFont(FONTS.speech_font)
+                gfx.drawTextAligned(text_lines[i], x_min + width / 2, current_line_y, kTextAlignment.center)
+                current_line_y += line_height
+            end
+       end
     end
     gfx.popContext()
 end

@@ -136,7 +136,8 @@ function Handle_input(timeDelta)
     if raw_gravity_x == nil then
         return
     end
-
+    
+    -- Calculate G's (length of acceleration vector)
     SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
 
     if IS_GYRO_INITIALZIED == false then
