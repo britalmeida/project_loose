@@ -100,6 +100,9 @@ function Reset_gameplay()
 
     Reset_ingredients()
     FROG:reset()
+    playdate.timer.new(1000, function ()
+      FROG:ask_for_cocktail()
+    end)
 
     PLAYER_LEARNED.how_to_fire = false
     PLAYER_LEARNED.how_to_grab = false

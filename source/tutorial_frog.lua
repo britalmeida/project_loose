@@ -132,6 +132,17 @@ function Froggo:go_drinking()
     end)
 end
 
+function Froggo:ask_for_cocktail()
+    self.state = FROG_STATE.speaking
+    self.anim_current = self.anim_blabla
+
+    SHOWN_STRING = string.format("One \"%s\", please!", COCKTAILS[TARGET_COCKTAIL.type_idx].name)
+
+    playdate.timer.new(2*1000, function()
+        self:reset()
+    end)
+end
+
 -- Actions
 
 function Froggo:croak()
