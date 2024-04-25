@@ -128,7 +128,6 @@ function Ingredient:hover()
 end
 
 function Ingredient:wiggle()
-  print(self.wiggle_tick, self.wiggle_time)
   self.wiggle_tick += 1
   local fps = math.ceil(playdate.getFPS())
   local center = geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
