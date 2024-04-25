@@ -290,8 +290,8 @@ function Tick_gameplay()
             end
         end
     else
-        if SOUND.fire_burn:isPlaying() then
-            SOUND.fire_burn:stop()
+        if SOUND.fire_blow:isPlaying() then
+            SOUND.fire_blow:stop()
         end
         GAMEPLAY_STATE.flame_amount = 0
     end
@@ -302,6 +302,16 @@ function Tick_gameplay()
     else
         -- The flame heats up the cauldron
         GAMEPLAY_STATE.heat_amount += 0.01 * GAMEPLAY_STATE.flame_amount
+    end
+    print(GAMEPLAY_STATE.heat_amount)
+    if GAMEPLAY_STATE.heat_amount > 0.1 then
+        if not SOUND.fire_burn:isPlaying() then
+            SOUND.fire_burn:play()
+        end
+    else
+        if SOUND.fire_burn:isPlaying() then
+            SOUND.fire_burn:stop()
+        end
     end
 
     -- Update liquid color
