@@ -115,8 +115,6 @@ local function draw_symbols( x, y, width, position_params)
 
     local meter_height = 40
     gfx.pushContext()
-        local margin = 2
-
         local n = #params
         for a = 1, n, 1 do
             local glyph_width = TEXTURES.rune_images[a].width
@@ -133,18 +131,28 @@ local function draw_symbols( x, y, width, position_params)
 
             glyph_y = glyph_y - (GAMEPLAY_STATE.rune_ratio[a] - 0.5)* meter_height
 
-            gfx.pushContext()
-                gfx.setDitherPattern(0, gfxi.kDitherTypeScreen)
-                gfx.fillCircleAtPoint(glyph_x, glyph_y, math.max(glyph_height, glyph_width) * 0.5 + margin)
-            gfx.popContext()
+            -- draw range line
+            local line_thickness = 5
+            local bar_pol = playdate.geometry.polygon.new(4)
+            bar_pol:setPointAt(1, glyph_x + line_thickness/2, y + meter_height * 0.5)
+            bar_pol:setPointAt(2, glyph_x - line_thickness/2, y + meter_height * 0.5)
+            bar_pol:setPointAt(3, glyph_x - line_thickness/2, y - meter_height * 0.5)
+            bar_pol:setPointAt(4, glyph_x + line_thickness/2, y - meter_height * 0.5)
+            bar_pol:close()
+    
+            gfx.setColor(gfx.kColorWhite)
+            gfx.setDitherPattern(0.6, gfxi.kDitherTypeBayer4x4)
+            gfx.fillCircleAtPoint(glyph_x, y + meter_height * 0.5, line_thickness *0.5)
+            gfx.fillCircleAtPoint(glyph_x, y - meter_height * 0.5, line_thickness *0.5)
+            gfx.fillPolygon(bar_pol)
 
             draw_soft_circle(glyph_x, glyph_y, 10 * rune_strength + 12, 4, 0.5, rune_strength, gfx.kColorWhite)
 
             gfx.pushContext()
                 TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
-                gfx.setColor(gfx.kColorBlack)
-                gfx.setDitherPattern(1-(math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8), gfxi.kDitherTypeBayer4x4)
-                gfx.fillCircleAtPoint(glyph_x, glyph_y, math.max(glyph_height, glyph_width) * 0.5 + margin)
+                gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
+                local overlay = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
+                TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
             gfx.popContext()
         end
 
