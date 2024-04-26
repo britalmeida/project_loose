@@ -394,6 +394,9 @@ local function draw_dialog_bubble()
     if text == "" then
         return
     end
+    if type(text) ~= "string" then
+        return
+    end
 
     -- local text_lines = {"Just blow air onto", "the bottom of the cauldron"}
     local text_lines = {}
