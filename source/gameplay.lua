@@ -298,7 +298,6 @@ function Tick_gameplay()
         -- The flame heats up the cauldron
         GAMEPLAY_STATE.heat_amount += 0.01 * GAMEPLAY_STATE.flame_amount
     end
-    print(GAMEPLAY_STATE.heat_amount)
     if GAMEPLAY_STATE.heat_amount > 0.1 then
         if not SOUND.fire_burn:isPlaying() then
             SOUND.fire_burn:play()
