@@ -247,6 +247,8 @@ function set_current_sentence()
         if last_sentence == -1 then
             current_sentence = 0
             current_sentence = last_sentence + 1
+        else
+            current_sentence = 2
         end
     elseif current_topic_hint == THINGS_TO_REMEMBER.grab or
         current_topic_hint == THINGS_TO_REMEMBER.shake or
@@ -256,19 +258,18 @@ function set_current_sentence()
             current_sentence = 1
         elseif last_sentence < 2 then
             current_sentence = last_sentence + 1
+        else
+            current_sentence = 1
         end
     elseif current_topic_hint == THINGS_TO_REMEMBER.stir then
-        if last_sentence == -1 then
+        if last_sentence == -1 and
+         not (PLAYER_LEARNED.how_to_cw_for_brighter or PLAYER_LEARNED.how_to_ccw_for_darker) then
             current_sentence = 0
         else
             current_sentence = 1
         end
     elseif current_topic_hint == THINGS_TO_REMEMBER.secret_ingredient then
-        if last_sentence == -1 then
-            current_sentence = 0
-        else
-            current_sentence = 1
-        end
+        current_sentence = 1
     end
 end
 
