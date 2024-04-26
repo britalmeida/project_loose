@@ -418,6 +418,9 @@ local function draw_dialog_bubble()
     if text == "" then
         return
     end
+    if type(text) ~= "string" then
+        return
+    end
 
     local no_love = false --text == "Too much love\ncan't stand it!"
 
