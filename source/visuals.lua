@@ -113,7 +113,7 @@ local function draw_symbols( x, y, width, position_params)
     local wiggle_freq_avg = 2
     local freq_var = 0.1
 
-    local meter_height = 40
+    local meter_height = 60
     gfx.pushContext()
         local n = #params
         for a = 1, n, 1 do
@@ -127,9 +127,11 @@ local function draw_symbols( x, y, width, position_params)
             local target = TARGET_COCKTAIL.rune_ratio[a]
             local difference_weight = math.max(target, 1-target)
             local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
-            local rune_strength = heat_response * (1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight))
+            local rune_match = (1 - math.abs((GAMEPLAY_STATE.rune_ratio[a] - target) / difference_weight))
+            local glow_strength = heat_response * rune_match
 
             glyph_y = glyph_y - (GAMEPLAY_STATE.rune_ratio[a] - 0.5)* meter_height
+            local target_y = y - (target - 0.5) * meter_height
 
             -- draw range line
             local line_thickness = 5
@@ -146,7 +148,10 @@ local function draw_symbols( x, y, width, position_params)
             gfx.fillCircleAtPoint(glyph_x, y - meter_height * 0.5, line_thickness *0.5)
             gfx.fillPolygon(bar_pol)
 
-            draw_soft_circle(glyph_x, glyph_y, 10 * rune_strength + 12, 4, 0.5, rune_strength, gfx.kColorWhite)
+            gfx.setColor(gfx.kColorWhite)
+            gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
+            gfx.fillRoundRect(glyph_x - 10, target_y - 2, 20, 4, 2)
+            draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 6, 4, 0.5, glow_strength, gfx.kColorWhite)
 
             gfx.pushContext()
                 TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
