@@ -77,6 +77,8 @@ function Ingredient:tick()
       self:wiggle()
       if SHAKE_VAL > 2 and self.can_drop then
         PLAYER_LEARNED.how_to_shake = true
+        self.wiggle_tick = 0
+        self.wiggle_time = 0.8
         self.can_drop = false
         playdate.timer.new(200, function ()
           self:drop()
