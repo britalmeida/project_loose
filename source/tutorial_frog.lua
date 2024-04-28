@@ -64,6 +64,7 @@ local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images
 local anim_happy_imgs, anim_happy_framerate = gfx.imagetable.new('images/frog/animation-excited'), 8
 local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/frog/animation-cocktail'), 8
 local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
+local anim_tickleface_img, anim_tickleface_framerate = gfx.imagetable.new('images/frog/animation-tickleface'), 2.5
 
 class('Froggo').extends(Sprite)
 
@@ -77,6 +78,7 @@ function Froggo:init()
     self.anim_happy = animloop.new(anim_happy_framerate * frame_ms, anim_happy_imgs, true)
     self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
     self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
+    self.anim_tickleface = animloop.new(anim_tickleface_framerate * frame_ms, anim_tickleface_img, true)
 
     self:setZIndex(Z_DEPTH.frog)
     self:moveTo(350, 148)
@@ -108,7 +110,8 @@ function Froggo:Click_the_frog()
     -- Make it a bit smaller, so we don't accedentially click on the frog
     bounds:inset(15, 15)
     if bounds:containsPoint(GYRO_X, GYRO_Y) then
-        self:Ask_the_frog()
+        self:froggo_tickleface()
+
     end
 end
 
@@ -134,6 +137,16 @@ function Froggo:go_reacting()
         self.anim_current = self.anim_headshake
     end
 
+end
+
+function Froggo:froggo_tickleface()
+    self.state = FROG_STATE.reacting
+
+    self.anim_current = self.anim_tickleface
+    self.anim_current.frame = 1
+    playdate.timer.new(2.9*1000, function()
+        self:go_idle()
+    end)
 end
 
 function Froggo:go_drinking()
