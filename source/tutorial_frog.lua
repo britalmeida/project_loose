@@ -109,7 +109,7 @@ function Froggo:Click_the_frog()
     local bounds = self:getBoundsRect()
     -- Make it a bit smaller, so we don't accedentially click on the frog
     bounds:inset(15, 15)
-    if bounds:containsPoint(GYRO_X, GYRO_Y) then
+    if bounds:containsPoint(GYRO_X, GYRO_Y) and self.state == FROG_STATE.idle then
         self:froggo_tickleface()
 
     end
