@@ -103,6 +103,16 @@ local function draw_soft_ring(x_center, y_center, radius, steps, blend, alpha, c
     end
 end
 
+local function draw_soft_ring(x_center, y_center, radius, steps, blend, alpha, color)
+    for a = 1, steps, 1 do
+        gfx.pushContext()
+            gfx.setColor(color)
+            gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
+            gfx.drawCircleAtPoint(x_center, y_center, (1 - a / steps) * radius * blend + radius)
+        gfx.popContext()
+    end
+end
+
 local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend, alpha, color)
     for a = 1, steps, 1 do
         gfx.pushContext()
