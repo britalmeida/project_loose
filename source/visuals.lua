@@ -544,6 +544,14 @@ local function draw_cauldron()
 end
 
 
+local function draw_instructions_prompt()
+    -- Draw full screen background.
+    gfx.pushContext()
+        TEXTURES.instructions_prompt:draw(0, 0)
+    gfx.popContext()
+end
+
+
 local function draw_debug()
     -- Heat amount indication.
     local x = 10
@@ -633,6 +641,7 @@ function Init_visuals()
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
+    TEXTURES.instructions_prompt = gfxi.new("images/instructions_prompt")
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/dialog_bubble_oneline")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/dialog_bubble_twolines")
     local bubble_framerate = 8
@@ -675,6 +684,7 @@ function Init_visuals()
     Set_draw_pass(11, draw_ingredient_place_hint)
     -- depth 20+: UI
     -- 22: grabbed ingredients
+    Set_draw_pass(21, draw_instructions_prompt)
     Set_draw_pass(22, draw_ingredient_grab_cursor)
     Set_draw_pass(25, draw_dialog_bubble)
     -- depth 30+: overlayed modal instructions
