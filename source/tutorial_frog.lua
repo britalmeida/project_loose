@@ -166,7 +166,7 @@ function Froggo:croak()
     set_current_sentence()
     set_speech_bubble_content()
 
-    playdate.timer.new(2*1000, function()
+    playdate.timer.new(4*1000, function()
         -- Disable speech bubble after a short moment.
         SHOWN_STRING = ""
 
