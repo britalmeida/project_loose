@@ -2,7 +2,7 @@ local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
 
 MENU_STATE = {}
-MENU_SCREEN = { gameplay = 0, gameover = 1, start = 2, mission = 3, credits = 4 }
+MENU_SCREEN = { gameplay = 0, start = 2, mission = 3, credits = 4 }
 local UI_TEXTURES = {}
 
 -- System Menu
@@ -52,14 +52,6 @@ local function enter_menu_credits()
     MENU_STATE.active_screen_texture = UI_TEXTURES.credits
 end
 
-local function enter_menu_gameover()
-    MENU_STATE.screen = MENU_SCREEN.gameover
-    MENU_STATE.active_screen_texture = UI_TEXTURES.gameover
-
-    Stop_gameplay()
-    -- Play gameover effects & transitions.
-end
-
 function Enter_gameplay()
     MENU_STATE.screen = MENU_SCREEN.gameplay
 
@@ -92,9 +84,6 @@ local function draw_ui()
                 UI_TEXTURES.start_right_select:draw(0, 0)
                 UI_TEXTURES.start_left_select:draw(0, 0)
         gfx.popContext()
-
-    -- Draw gameover screen dynamic elements.
-    elseif MENU_STATE.screen == MENU_SCREEN.gameover then
 
     -- Draw mission selection options.
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
@@ -130,17 +119,7 @@ end
 
 
 function Handle_menu_input()
-    if MENU_STATE.screen == MENU_SCREEN.gameover then
-        if playdate.buttonIsPressed( playdate.kButtonA ) then
-            SOUND.menu_confirm:play()
-            Enter_gameplay()
-        end
-        if playdate.buttonJustReleased( playdate.kButtonB ) then
-            SOUND.menu_confirm:play()
-            Enter_menu_start()
-        end
-
-    elseif MENU_STATE.screen == MENU_SCREEN.start then
+    if MENU_STATE.screen == MENU_SCREEN.start then
         -- Select an Option.
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
@@ -150,6 +129,7 @@ function Handle_menu_input()
             SOUND.menu_confirm:play()
             enter_menu_credits()
         end
+
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
@@ -192,9 +172,8 @@ end
 
 function Init_menus()
 
-    UI_TEXTURES.gameover = gfxi.new("images/menu_gameover")
     UI_TEXTURES.start = gfxi.new("images/menu_start")
-    UI_TEXTURES.mission = gfxi.new("images/menu_start")
+    UI_TEXTURES.mission = gfxi.new(1,1)  -- unused
     UI_TEXTURES.credits = gfxi.new("images/menu_credits")
 
     UI_TEXTURES.start_left_select = gfxi.new("images/menu_start_left")
