@@ -4,6 +4,7 @@ local gfxi <const> = playdate.graphics.image
 MENU_STATE = {}
 MENU_SCREEN = { gameplay = 0, start = 2, mission = 3, credits = 4 }
 local UI_TEXTURES = {}
+local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the mission selection, others are (half) clipped.
 
 -- System Menu
 
@@ -61,6 +62,7 @@ function Enter_gameplay()
     end
 
     add_system_menu_entries()
+    Reroll_mystery_potion()
     Reset_gameplay()
 end
 
@@ -75,7 +77,7 @@ local function draw_ui()
 
     -- In menus. The gameplay is inactive.
 
-    -- Draw baground screen image.
+    -- Draw background screen image.
     MENU_STATE.active_screen_texture:draw(0, 0)
 
     -- Start menu draws a selected option indicator.
@@ -93,26 +95,20 @@ local function draw_ui()
             gfx.fillRect(0, 0, 400, 240)
             -- Draw cocktails
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
-            local offset = 0
-            if MENU_STATE.focused_option > 2 then
-                offset = MENU_STATE.focused_option - 2
-            end
-            for a = 1, 3, 1 do
-                COCKTAILS[a + offset].img:draw(10 + 130*(a-1), 0)
-            end
-            -- Scroll bar
-            gfx.setColor(gfx.kColorWhite)
-            gfx.setLineWidth(5.0)
-            local selection_height = 240
-            local num_cocktails = #COCKTAILS
-            if num_cocktails > 3 then
-                selection_height = 235
-                local scroll_width = 380 / num_cocktails
-                local scroll_offset = MENU_STATE.focused_option * scroll_width
-                gfx.fillRect(10 + scroll_offset, 238, scroll_width, 2)
+            local cocktail_width = 130
+            local first_cocktail_x = -cocktail_width * 0.5
+            for i, cocktail in pairs(COCKTAILS) do
+                if (i-1) >= MENU_STATE.first_option_in_view - 1 and
+                    (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
+                    local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
+                    cocktail.img:draw(first_cocktail_x + cocktail_width * cocktail_relative_to_window, 0)
+                end
             end
             -- Draw current option indicator
-            gfx.drawRect(10 + 130*(MENU_STATE.focused_option - offset), 0, 120, selection_height)
+            gfx.setColor(gfx.kColorWhite)
+            gfx.setLineWidth(3.0)
+            local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
+            gfx.drawRect(first_cocktail_x + cocktail_width * focus_relative_to_window, 0, 120, 240)
         gfx.popContext()
     end
 end
@@ -134,7 +130,6 @@ function Handle_menu_input()
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
             -- reset mystery potion
-            Reroll_mystery_potion()
             Set_target_potion(MENU_STATE.focused_option + 1)
             Enter_gameplay()
         elseif playdate.buttonJustReleased( playdate.kButtonB ) then
@@ -161,6 +156,13 @@ function Handle_menu_input()
         MENU_STATE.focused_option = math.max(MENU_STATE.focused_option, 0)
         MENU_STATE.focused_option = math.min(MENU_STATE.focused_option, #COCKTAILS - 1)
 
+        -- Set the scroll window so that the selected option is in view.
+        if MENU_STATE.focused_option < MENU_STATE.first_option_in_view then
+            MENU_STATE.first_option_in_view = MENU_STATE.focused_option
+        elseif MENU_STATE.focused_option >= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
+            MENU_STATE.first_option_in_view = MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS - 1
+        end
+
     elseif MENU_STATE.screen == MENU_SCREEN.credits then
         if playdate.buttonJustReleased( playdate.kButtonB ) then
             SOUND.menu_confirm:play()
@@ -182,6 +184,7 @@ function Init_menus()
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.active_screen_texture = UI_TEXTURES.start
     MENU_STATE.focused_option = 0
+    MENU_STATE.first_option_in_view = 0
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(100, draw_ui) -- UI goes on top of everything.
