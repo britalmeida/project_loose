@@ -12,8 +12,7 @@ local ACTION_STATE = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
 
 -- Froggo content machine
 --- A separate multi-level state machine to select the sentence the frog says when speaking.
-local TUTORIAL_STATE <const> = { complete = 0, start = 1, fire = 1, stir = 2, grab = 3, shake = 4 }
-local TOPICS <const> = { fire = 1, ingredient = 2, color = 3 }
+local TUTORIAL_STATE <const> = { start = 1, fire = 1, stir = 2, grab = 3, shake = 4, complete = 5 }
 
 local positive_acceptance <const> = "That'll do it!"
 local forgotten_topics_callouts <const> = {
@@ -26,55 +25,63 @@ local fire_reminders <const> = {
     "Keep it warm to see the magic",
     "Fire is good, glow is good",
 }
-
 local fire_tutorials <const> = {
     "Blow to stoke up the fire\npuff puff puff!",
     "Just blow air onto the\nbottom of the cauldron",
     "For realz, blow air\non the mic.\nTryyyy it!",
 }
-
-local stirr_reminders <const> = {
-    {"Waaaaay too dark\ncrank it the other way", "The liquid looks too dark\nstirr!", "Just a lil'bit too dark"}, -- 1 == too dark
-    {"Oh my eyes!\nLiquid is way too bright", "The liquid looks too bright\nstirr!", "Just a lil'bit too light"} -- 2 = too bright
-}
-
 local stir_tutorials <const> = {
     "Stir clockwise for brighter liquid\nthe other way for dark magic",
     "Stir the other way?",
 }
-
-local ingredient_reminders <const> = {
-    {"Too much love\ncan't stand it!", "Add some passion?"}, -- 1 = heart
-    {"Definitely missing happy stuff", "Missing doom and gloom"}, -- 2 = doom
-    {"Too much organic in it", "Add some veggies"}, -- 3 = weeds
+local need_more_bright <const> = {
+    "Oh my eyes!\nLiquid is way too bright",
+    "The liquid looks too bright\nstirr!",
+    "Just a lil'bit too light",
 }
-
-local ingredient_tutorials_grab <const> = {
+local need_less_bright <const> = {
+    "Waaaaay too dark\ncrank it the other way",
+    "The liquid looks too dark\nstirr!",
+    "Just a lil'bit too dark",
+}
+local need_more_love <const> = {
+    "Add some passion?",
+}
+local need_less_love <const> = {
+    "Too much love\ncan't stand it!",
+}
+local need_more_doom <const> = {
+    "Missing doom and gloom",
+}
+local need_less_doom <const> = {
+    "Definitely missing happy stuff",
+}
+local need_more_weed <const> = {
+    "Add some veggies",
+}
+local need_less_weed <const> = {
+    "Too much organic in it",
+}
+local grab_tutorials <const> = {
     "Try grabbing an ingredient",
     "Tilt to hover an ingredient\nHold (A) to grab",
 }
-
-local ingredient_tutorials_drop <const> = {
+local drop_tutorials <const> = {
     "Release the ingredient over\nthe cauldron and shake!",
     "Shake, shake. Shake it off!!",
 }
 
 local sayings <const> = {
-    tutorial = {
-        fire = fire_tutorials,
-        stir = stir_tutorials,
-        grab = ingredient_tutorials_grab,
-        shake = ingredient_tutorials_drop
-    },
+    tutorial = { fire_tutorials, stir_tutorials, grab_tutorials, drop_tutorials }, -- fire, stir, grab, shake
     once = forgotten_topics_callouts,
     help = {
         fire = fire_reminders,
         ingredient = {
-            love = { too_much = ingredient_reminders[1][1], too_little = ingredient_reminders[1][2] },
-            doom = { too_much = ingredient_reminders[2][1], too_little = ingredient_reminders[2][2] },
-            weed = { too_much = ingredient_reminders[3][1], too_little = ingredient_reminders[3][2] },
+            { need_less_love, need_more_love },
+            { need_less_doom, need_more_doom },
+            { need_less_weed, need_more_weed },
         },
-        color = { too_dark = stirr_reminders[1], too_bright = stirr_reminders[2], }
+        color = { need_less_bright, need_more_bright } -- too_dark, too_bright
     }
 }
 
@@ -124,7 +131,7 @@ function Froggo:reset()
 
     -- Reset speech content state machine.
     self.tutorial_state = TUTORIAL_STATE.start
-    self.has_said_once_reminders = { fire = false, stir = false, ingredient = false }
+    self.has_said_once_reminders = { false, false, false } -- fire, stir, ingredient
     self.last_spoken_sentence_topic = nil
     self.last_spoken_sentence_pool = nil
     self.last_spoken_sentence_cycle_idx = 0
@@ -325,13 +332,13 @@ function Froggo:think()
         -- Reminder to keep the heat up whenever it goes low.
         if GAMEPLAY_STATE.heat_amount < 0.3 then
             self:select_next_sentence(sayings.help.fire)
-        end
-
-        -- First get the ingredients right, then the color.
-        if not Are_ingredients_good_enough() then
-            self:give_ingredients_direction()
         else
-            self:give_stirring_direction()
+            -- First get the ingredients right, then the color.
+            if not Are_ingredients_good_enough() then
+                self:give_ingredients_direction()
+            else
+                self:give_stirring_direction()
+            end
         end
     end
 end
@@ -341,45 +348,43 @@ function Froggo:give_stirring_direction()
     -- clockwise makes it more 1
 
     -- check dir
+    local needs_to_stir_in_dir = DIR.need_more_of -- need more bright,  1
     if DIFF_TO_TARGET.color < 0.0 then
         needs_to_stir_in_dir = DIR.need_less_of -- need less bright,  2
-    else
-        needs_to_stir_in_dir = DIR.need_more_of -- need more bright,  1
     end
 
     -- check amount
+    local stirr_offset = 1
     if DIFF_TO_TARGET.color_abs < 0.3 then
         stirr_offset = 3
     elseif DIFF_TO_TARGET.color_abs < 0.75 then
         stirr_offset = 2
-    else
-        stirr_offset = 1
     end
 
+    print("giving stirring direction: dir "..needs_to_stir_in_dir.." amount "..stirr_offset)
     self:select_sentence(sayings.help.color[needs_to_stir_in_dir], stirr_offset)
 end
 
 
 function Froggo:give_ingredients_direction()
 
-    local rune_per_component_diff = DIFF_TO_TARGET.runes
+    local runes_abs_diff = {math.abs(DIFF_TO_TARGET.runes[1]), math.abs(DIFF_TO_TARGET.runes[2]), math.abs(DIFF_TO_TARGET.runes[3])}
 
-    if math.abs(rune_per_component_diff[1]) >= math.abs(rune_per_component_diff[2]) and math.abs(rune_per_component_diff[1]) >= math.abs(rune_per_component_diff[3]) then
-        current_rune_hint = RUNES.love
-    elseif math.abs(rune_per_component_diff[2]) >= math.abs(rune_per_component_diff[1]) and math.abs(rune_per_component_diff[2]) >= math.abs(rune_per_component_diff[3]) then
-        current_rune_hint = RUNES.doom
-    else
-        current_rune_hint = RUNES.weed
+    local rune_idx = RUNES.weed
+    if runes_abs_diff[1] >= runes_abs_diff[2] and runes_abs_diff[1] >= runes_abs_diff[3] then
+        rune_idx = RUNES.love
+    elseif runes_abs_diff[2] >= runes_abs_diff[1] and runes_abs_diff[2] >= runes_abs_diff[3] then
+        rune_idx = RUNES.doom
     end
 
     -- check dir
-    if rune_per_component_diff[current_rune_hint] < 0 then
+    local need_dir = DIR.need_less_of -- 2
+    if DIFF_TO_TARGET.runes[rune_idx] < 0 then
         need_dir = DIR.need_more_of -- 1
-    else
-        need_dir = DIR.need_less_of -- 2
     end
 
-    self:select_next_sentence(sayings.help.ingredient[current_rune_hint][need_dir])
+    print("giving runes direction: rune "..rune_idx.." dir: "..need_dir)
+    self:select_next_sentence(sayings.help.ingredient[rune_idx][need_dir])
 end
 
 
@@ -399,6 +404,7 @@ end
 
 
 function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
+    print("Frog says: idx "..sentence_cycle_idx.." TUT: "..self.tutorial_state)
     self.last_spoken_sentence_pool = sentence_pool
     self.last_spoken_sentence_cycle_idx = sentence_cycle_idx
     self.last_spoken_sentence_str = sentence_pool[sentence_cycle_idx]
