@@ -19,7 +19,8 @@ INGREDIENT_TYPES = {
 INGREDIENTS = {}
 DROPS = {}
 
-class('Ingredient').extends(Sprite)
+
+Ingredient = NewSubClass("Ingredient", Sprite)
 
 function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
     Ingredient.super.init(self)

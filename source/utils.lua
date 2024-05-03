@@ -28,3 +28,12 @@ function Sign(value)
   end
   return 0
 end
+
+
+-- Playdate Lua SDK patch
+-- Utility to avoid playdate's Sprite "extends" syntax to trigger warnings about an undefined global.
+-- See https://devforum.play.date/t/class-extends-could-return-the-class/5165/3
+function NewSubClass(name, parent)
+  class(name).extends(parent)
+  return _G[name]
+end

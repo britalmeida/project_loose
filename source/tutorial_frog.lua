@@ -102,6 +102,7 @@ local anim_tickleface_img, anim_tickleface_framerate = gfx.imagetable.new('image
 
 
 class('Froggo').extends(Sprite)
+Froggo = NewSubClass("Froggo", Sprite)
 
 function Froggo:init()
     Froggo.super.init(self)
