@@ -2,7 +2,16 @@ local gfx <const> = playdate.graphics
 local Sprite <const> = gfx.sprite
 local animloop <const> = playdate.graphics.animation.loop
 
+SHOWN_STRING = "" -- Content of the Frog speech bubble currently being displayed in draw_dialog_bubble()
+
+-- Froggo state machine
+--- The Action State indicates what the frog is currently doing, e.g. speaking or emoting/reacting.
+--- It ensures animations play to completion, and valid transitions (e.g. no emoting when already speaking).
+--- The Frog is always in one and only one state and changes state on events (e.g. player pressed B, time passed).
 local FROG_STATE = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
+
+-- Froggo content machine
+--- A separate multi-level state machine to select the sentence the frog says when speaking.
 local THINGS_TO_REMEMBER <const> = { none = 0, fire = 1, stir = 2, secret_ingredient = 3, grab = 4, shake = 5, fire2 = 6, stir_not_learned = 7 }
 
 local last_topic_hint = THINGS_TO_REMEMBER.none
@@ -13,7 +22,6 @@ local current_stirr_hint = 1
 local stirr_offset = 1
 local last_sentence = -1
 local current_sentence = -1
-SHOWN_STRING = ""
 
 local positive_acceptance <const> = "That'll do it!"
 local forgotten_topics_callouts <const> = {
@@ -59,6 +67,7 @@ local ingredient_tutorials_drop <const> = {
     "Shake, shake. Shake it off!!",
 }
 
+-- Animations
 local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
 local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
 local anim_happy_imgs, anim_happy_framerate = gfx.imagetable.new('images/frog/animation-excited'), 8
