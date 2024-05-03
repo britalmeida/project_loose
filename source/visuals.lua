@@ -3,6 +3,9 @@ local gfxi <const> = playdate.graphics.image
 local gfxit <const> = playdate.graphics.imagetable
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
+local inOutQuad <const> = playdate.easingFunctions.inOutQuad
+local animator <const> = playdate.graphics.animator
+
 
 -- Resources
 FONTS = {}
@@ -113,6 +116,20 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
     end
 end
 
+function add_rune_travel_anim()
+    -- add current rune ratio and new anim to table
+    local new_rune_ratio = {0, 0, 0}
+    new_rune_ratio = GAMEPLAY_STATE.rune_ratio
+    table.insert(rune_anim_table, {new_rune_ratio, animator.new(2*1000, 0.0, 1.0, inOutQuad)})
+end
+
+function getTableSize(t)
+    local count = 0
+    for _, __ in pairs(t) do
+        count = count + 1
+    end
+    return count
+end
 
 local function draw_symbols( x, y, width, position_params)
     local params = position_params
@@ -132,14 +149,41 @@ local function draw_symbols( x, y, width, position_params)
             local glyph_x = x + width * 0.5 * (a - 2)
             local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
             local wiggle = math.sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + math.pi * 0.3)
-            local glyph_y = y + wiggle
+            local glyph_y = y
 
             local target = TARGET_COCKTAIL.rune_ratio[a]
             local difference_weight = math.max(target, 1-target)
             local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
             local glow_strength = heat_response * 0.5
 
-            glyph_y = glyph_y - (GAMEPLAY_STATE.rune_ratio[a] - 0.5)* meter_height
+            -- Calculate current_rune_ratio
+            local current_rune_ratio = {0, 0, 0}
+            local sum_ratio = {0, 0, 0}
+            for anim_index, anim_content in pairs(rune_anim_table) do
+                local rune_ratio = anim_content[1]
+                local progress = anim_content[2]:progress()
+                for k, v in pairs(rune_ratio) do
+                    current_rune_ratio[k] = sum_ratio[k] * (1 - progress) + v * progress
+                    sum_ratio[k] += current_rune_ratio[k]
+                end
+            end
+
+            -- Update glyph positions
+            glyph_y = glyph_y - (current_rune_ratio[a] - 0.5) * meter_height
+            glyph_y += wiggle
+
+            -- Reset anim table if all animations are done
+            local rune_anim_progress_avg = 0
+            local rune_anim_table_count = getTableSize(rune_anim_table)
+            for anim_index, anim_content in pairs(rune_anim_table) do
+                rune_anim_progress_avg += anim_content[2]:progress() / rune_anim_table_count
+            end
+            if rune_anim_progress_avg == 1 then
+                local new_rune_ratio = {0, 0, 0}
+                new_rune_ratio = GAMEPLAY_STATE.rune_ratio
+                rune_anim_table = {}
+                table.insert(rune_anim_table, {new_rune_ratio, animator.new(0, 1.0, 1.0)})
+            end
 
             local target_y = y - (target - 0.5) * meter_height
 
@@ -160,6 +204,7 @@ local function draw_symbols( x, y, width, position_params)
                 local overlay = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
                 TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
             gfx.popContext()
+            ::continue::
         end
 
     gfx.popContext()
@@ -677,6 +722,31 @@ function Init_visuals()
     TEXTURES.bubble_table = gfxit.new("images/fx/bubble")
     TEXTURES.bubble_table2 = gfxit.new("images/fx/bubble2")
     TEXTURES.splish = gfxit.new("images/fx/splish")
+
+    -- Create animation timers.
+    ANIMS.speech_bubble = animloop.new(bubble_framerate * frame_ms, bubble_imgs, true)
+
+    -- Starting table of active animations for runes
+    rune_anim_table = {}
+    local start_rune_ratio = {0, 0, 0}
+    rune_anim_table[1] = {
+        start_rune_ratio,
+        animator.new(0, 1.0, 1.0)
+    }
+
+--[[     -- Debug test
+    local test_rune_ratio = {0.8, 0.3, 0.9}
+    local test2_rune_ratio = {0.2, 0.7, 0.5}
+    rune_anim_table[1] = {
+        start_rune_ratio,
+        animator.new(0*1000, 1.0, 1.0, inOutQuad)
+    }
+    rune_anim_table[2] = {
+        test_rune_ratio,
+        animator.new(6*1000, 0.0, 1.0, inOutQuad)
+    }
+    table.insert(rune_anim_table, {test2_rune_ratio, animator.new(15*1000, 0.0, 1.0, inOutQuad)}) ]]
+
 
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")
