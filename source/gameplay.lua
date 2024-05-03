@@ -3,7 +3,9 @@ local vec2d <const> = playdate.geometry.vector2D
 GYRO_X, GYRO_Y = 200, 120
 PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 
-NUM_RUNES = 3
+RUNES = { love = 1, doom = 2, weed = 3 }
+DIR = { need_more_of = 1, need_less_of = 2 }
+
 GAMEPLAY_STATE = {
     showing_cocktail = false,
     showing_instructions = false,
@@ -31,6 +33,7 @@ DIFF_TO_TARGET = {
     ingredients_abs = 1,
     runes = { 1, 1, 1},
 }
+GAME_ENDED = false
 
 TREND = 0
 
@@ -82,6 +85,7 @@ end
 function Reset_gameplay()
     -- Done on every (re)start of the play.
 
+    GAME_ENDED = false
     GAMEPLAY_STATE.game_tick = 0
     GAMEPLAY_STATE.showing_cocktail = false
     GAMEPLAY_STATE.showing_instructions = false
@@ -93,7 +97,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.potion_color = 0.5
     GAMEPLAY_STATE.potion_bubbliness = 0.0
     -- Reset current ingredient mix.
-    for a = 1, NUM_RUNES, 1 do
+    for a = 1, #RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_ratio[a] = 0
     end
@@ -119,17 +123,18 @@ end
 
 function Update_rune_count(difference)
     local sum = 0
-    for a = 1, NUM_RUNES, 1 do
+    for a = 1, #RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = GAMEPLAY_STATE.rune_count[a] * 0.9 + difference[a] * 0.1
         if GAMEPLAY_STATE.rune_count[a] < 0 then
             GAMEPLAY_STATE.rune_count[a] = 0
         end
         sum = sum + GAMEPLAY_STATE.rune_count[a]
     end
-    for a = 1, NUM_RUNES, 1 do
+    for a = 1, #RUNES, 1 do
         GAMEPLAY_STATE.rune_ratio[a] = GAMEPLAY_STATE.rune_count[a] / sum
     end
 end
+
 
 -- Update Loop
 --- `timeDelta` is the time in seconds since the last update.
@@ -343,8 +348,16 @@ end
 
 local tolerance = 0.1
 
+function Are_ingredients_good_enough()
+    return DIFF_TO_TARGET.ingredients_abs < tolerance
+end
+
+function Is_color_good_enough()
+    return DIFF_TO_TARGET.color_abs < tolerance
+end
+
 function Is_potion_good_enough()
-    return DIFF_TO_TARGET.color_abs < tolerance and DIFF_TO_TARGET.ingredients_abs < tolerance 
+    return Are_ingredients_good_enough() and Is_color_good_enough()
 end
 
 function Calculate_goodness()
