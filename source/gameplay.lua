@@ -3,6 +3,7 @@ local vec2d <const> = playdate.geometry.vector2D
 GYRO_X, GYRO_Y = 200, 120
 PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 
+NUM_RUNES = 3
 RUNES = { love = 1, doom = 2, weed = 3 }
 DIR = { need_more_of = 1, need_less_of = 2 }
 
@@ -97,7 +98,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.potion_color = 0.5
     GAMEPLAY_STATE.potion_bubbliness = 0.0
     -- Reset current ingredient mix.
-    for a = 1, #RUNES, 1 do
+    for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_ratio[a] = 0
     end
@@ -123,14 +124,14 @@ end
 
 function Update_rune_count(difference)
     local sum = 0
-    for a = 1, #RUNES, 1 do
+    for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = GAMEPLAY_STATE.rune_count[a] * 0.9 + difference[a] * 0.1
         if GAMEPLAY_STATE.rune_count[a] < 0 then
             GAMEPLAY_STATE.rune_count[a] = 0
         end
         sum = sum + GAMEPLAY_STATE.rune_count[a]
     end
-    for a = 1, #RUNES, 1 do
+    for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_ratio[a] = GAMEPLAY_STATE.rune_count[a] / sum
     end
 end
