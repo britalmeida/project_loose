@@ -66,6 +66,7 @@ local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/f
 local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
 local anim_tickleface_img, anim_tickleface_framerate = gfx.imagetable.new('images/frog/animation-tickleface'), 2.5
 
+
 class('Froggo').extends(Sprite)
 
 function Froggo:init()
@@ -97,7 +98,9 @@ function Froggo:reset()
 end
 
 
+
 -- Events for transition
+
 function Froggo:Ask_the_frog()
     if self.state == FROG_STATE.idle then
         -- Start speaking
@@ -123,10 +126,12 @@ function Froggo:Notify_the_frog()
     end
 end
 
+
 function Froggo:go_idle()
     self.state = FROG_STATE.idle
     self.anim_current = self.anim_idle
 end
+
 
 function Froggo:go_reacting()
     self.state = FROG_STATE.reacting
@@ -139,6 +144,7 @@ function Froggo:go_reacting()
 
 end
 
+
 function Froggo:froggo_tickleface()
     self.state = FROG_STATE.reacting
 
@@ -149,6 +155,7 @@ function Froggo:froggo_tickleface()
     end)
 end
 
+
 function Froggo:go_drinking()
     self.state = FROG_STATE.drinking
     self.anim_current = self.anim_cocktail
@@ -157,6 +164,7 @@ function Froggo:go_drinking()
         Enter_menu_start()
     end)
 end
+
 
 function Froggo:ask_for_cocktail()
     self.state = FROG_STATE.speaking
@@ -168,6 +176,8 @@ function Froggo:ask_for_cocktail()
         self:reset()
     end)
 end
+
+
 
 -- Actions
 
@@ -195,6 +205,7 @@ function Froggo:croak()
     end)
 end
 
+
 function Froggo:froggo_react()
     self.state = FROG_STATE.reacting
     
@@ -203,6 +214,7 @@ function Froggo:froggo_react()
         self:go_idle()
     end)
 end
+
 
 function froggo_reality_check()
     -- Match expectations with reality.
