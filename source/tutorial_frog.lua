@@ -8,7 +8,7 @@ local animloop <const> = playdate.graphics.animation.loop
 --- The Action State indicates what the frog is currently doing, e.g. speaking or emoting/reacting.
 --- It ensures animations play to completion, and valid transitions (e.g. no emoting when already speaking).
 --- The Frog is always in one and only one state and changes state on events (e.g. player pressed B, time passed).
-local ACTION_STATE = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
+local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
 
 -- Froggo content machine
 --- A separate multi-level state machine to select the sentence the frog says when speaking.
@@ -24,15 +24,18 @@ local fire_reminders <const> = {
     "hey... the fire is getting low",
     "Keep it warm to see the magic",
     "Fire is good, glow is good",
+    "9",
 }
 local fire_tutorials <const> = {
     "Blow to stoke up the fire\npuff puff puff!",
     "Just blow air onto the\nbottom of the cauldron",
     "For realz, blow air\non the mic.\nTryyyy it!",
+    "10",
 }
 local stir_tutorials <const> = {
     "Stir clockwise for brighter liquid\nthe other way for dark magic",
     "Stir the other way?",
+    "11", "12",
 }
 local need_more_bright <const> = {
     "Oh my eyes!\nLiquid is way too bright",
@@ -45,22 +48,22 @@ local need_less_bright <const> = {
     "Just a lil'bit too dark",
 }
 local need_more_love <const> = {
-    "Add some passion?",
+    "Add some passion?", "2",
 }
 local need_less_love <const> = {
-    "Too much love\ncan't stand it!",
+    "Too much love\ncan't stand it!", "1",
 }
 local need_more_doom <const> = {
-    "Missing doom and gloom",
+    "Missing doom and gloom", "4",
 }
 local need_less_doom <const> = {
-    "Definitely missing happy stuff",
+    "Definitely missing happy stuff",  "3",
 }
 local need_more_weed <const> = {
-    "Add some veggies",
+    "Add some veggies",  "5",
 }
 local need_less_weed <const> = {
-    "Too much organic in it",
+    "Too much organic in it", "6",
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient",
@@ -69,6 +72,7 @@ local grab_tutorials <const> = {
 local drop_tutorials <const> = {
     "Release the ingredient over\nthe cauldron and shake!",
     "Shake, shake. Shake it off!!",
+    "13",
 }
 
 local sayings <const> = {
@@ -86,10 +90,20 @@ local sayings <const> = {
 }
 
 SPEECH_BUBBLE_ANIM_IMGS = {
-    --                  need less                                      need more
-    love = { gfxit.new("images/speech/animation-lesslove"), gfxit.new("images/speech/animation-morelove") },
-    doom = { gfxit.new("images/speech/animation-lessdoom"), gfxit.new("images/speech/animation-moredoom") },
-    weed = { gfxit.new("images/speech/animation-lessweed"), gfxit.new("images/speech/animation-moreweed") },
+    -- The order of these need to match the string number used in the sentence categories.
+    gfxit.new("images/speech/animation-lesslove"),   -- "1"
+    gfxit.new("images/speech/animation-morelove"),   -- "2"
+    gfxit.new("images/speech/animation-lessdoom"),   -- "3"
+    gfxit.new("images/speech/animation-moredoom"),   -- "4"
+    gfxit.new("images/speech/animation-lessweed"),   -- "5"
+    gfxit.new("images/speech/animation-moreweed"),   -- "6"
+    gfxit.new("images/speech/animation-moredark"),   -- "7"
+    gfxit.new("images/speech/animation-morebright"), -- "8"
+    gfxit.new("images/speech/animation-morefire"),   -- "9"
+    gfxit.new("images/speech/animation-blow"),       -- "10"
+    gfxit.new("images/speech/animation-crankcw"),    -- "11"
+    gfxit.new("images/speech/animation-crankccw"),   -- "12"
+    gfxit.new("images/speech/animation-shake"),      -- "13"
 }
 
 -- Animations
@@ -423,7 +437,7 @@ function Froggo:start_speech_bubble()
     local anim_idx = tonumber(text)
     if anim_idx then
         local bubble_framerate = 8
-        local bubble_anim_imgs = SPEECH_BUBBLE_ANIM_IMGS.love[1] -- use anim_idx
+        local bubble_anim_imgs = SPEECH_BUBBLE_ANIM_IMGS[anim_idx]
         SPEECH_BUBBLE_ANIM = animloop.new(bubble_framerate * frame_ms, bubble_anim_imgs, true)
     else
         SPEECH_BUBBLE_TEXT = text
