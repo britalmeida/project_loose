@@ -8,7 +8,7 @@ local animloop <const> = playdate.graphics.animation.loop
 --- The Action State indicates what the frog is currently doing, e.g. speaking or emoting/reacting.
 --- It ensures animations play to completion, and valid transitions (e.g. no emoting when already speaking).
 --- The Frog is always in one and only one state and changes state on events (e.g. player pressed B, time passed).
-local FROG_STATE = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
+local ACTION_STATE = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
 
 -- Froggo content machine
 --- A separate multi-level state machine to select the sentence the frog says when speaking.
@@ -108,10 +108,17 @@ end
 
 
 function Froggo:reset()
+    -- Reset frog action state machine.
     self:go_idle()
 
-    Reset_frog()
-    -- Speech Bubble state used by draw_dialog_bubble().
+    -- Reset speech content state machine.
+    last_topic_hint = THINGS_TO_REMEMBER.none
+    current_topic_hint = THINGS_TO_REMEMBER.none
+    last_sentence = -1
+    current_sentence = -1
+    SHOWN_STRING = ""
+
+    -- Reset speech Bubble state used by draw_dialog_bubble().
     self:stop_speech_bubble()
 end
 
@@ -120,27 +127,36 @@ end
 -- Events for transition
 
 function Froggo:Ask_the_frog()
-    if self.state == FROG_STATE.idle then
+    if self.state == ACTION_STATE.idle then
         -- Start speaking
         set_current_sentence()
-        set_speech_bubble_content()    
+        set_speech_bubble_content()
         self:croak()
     end
 end
+
+
+function Froggo:Ask_for_cocktail()
+
+    SHOWN_STRING = string.format("One \"%s\", please!", COCKTAILS[TARGET_COCKTAIL.type_idx].name)
+    self:croak()
+end
+
 
 function Froggo:Click_the_frog()
     local bounds = self:getBoundsRect()
     -- Make it a bit smaller, so we don't accedentially click on the frog
     bounds:inset(15, 15)
-    if bounds:containsPoint(GYRO_X, GYRO_Y) and self.state == FROG_STATE.idle then
+    if bounds:containsPoint(GYRO_X, GYRO_Y) and self.state == ACTION_STATE.idle then
         self:froggo_tickleface()
 
     end
 end
 
+
 function Froggo:Notify_the_frog()
     -- notify the frog when significant change happened
-    if self.state == FROG_STATE.idle then
+    if self.state == ACTION_STATE.idle then
         -- React to a state change
         self:froggo_react()
     end
@@ -148,13 +164,13 @@ end
 
 
 function Froggo:go_idle()
-    self.state = FROG_STATE.idle
+    self.state = ACTION_STATE.idle
     self.anim_current = self.anim_idle
 end
 
 
 function Froggo:go_reacting()
-    self.state = FROG_STATE.reacting
+    self.state = ACTION_STATE.reacting
 
     if TREND > 0 then
         self.anim_current = self.anim_happy
@@ -166,7 +182,7 @@ end
 
 
 function Froggo:froggo_tickleface()
-    self.state = FROG_STATE.reacting
+    self.state = ACTION_STATE.reacting
 
     self.anim_current = self.anim_tickleface
     self.anim_current.frame = 1
@@ -177,7 +193,7 @@ end
 
 
 function Froggo:go_drinking()
-    self.state = FROG_STATE.drinking
+    self.state = ACTION_STATE.drinking
     self.anim_current = self.anim_cocktail
 
     playdate.timer.new(5*1000, function()
@@ -186,19 +202,12 @@ function Froggo:go_drinking()
 end
 
 
-function Froggo:Ask_for_cocktail()
-
-    SHOWN_STRING = string.format("One \"%s\", please!", COCKTAILS[TARGET_COCKTAIL.type_idx].name)
-    self:croak()
-end
-
-
 
 -- Actions
 
 function Froggo:croak()
     -- Speak!
-    self.state = FROG_STATE.speaking
+    self.state = ACTION_STATE.speaking
     self.anim_current = self.anim_blabla
 
     self:start_speech_bubble()
@@ -221,8 +230,8 @@ end
 
 
 function Froggo:froggo_react()
-    self.state = FROG_STATE.reacting
-    
+    self.state = ACTION_STATE.reacting
+
     self:go_reacting()
     playdate.timer.new(2*1000, function()
         self:go_idle()
@@ -375,16 +384,6 @@ function Froggo:stop_speech_bubble()
     -- Disable speech bubble.
     SPEECH_BUBBLE_TEXT = nil
     SPEECH_BUBBLE_ANIM = nil
-end
-
-
--- ><
-function Reset_frog()
-    last_topic_hint = THINGS_TO_REMEMBER.none
-    current_topic_hint = THINGS_TO_REMEMBER.none
-    last_sentence = -1
-    current_sentence = -1
-    SHOWN_STRING = ""
 end
 
 
