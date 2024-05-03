@@ -1,8 +1,8 @@
 local gfx <const> = playdate.graphics
+local gfxit <const> = playdate.graphics.imagetable
 local Sprite <const> = gfx.sprite
 local animloop <const> = playdate.graphics.animation.loop
 
-SHOWN_STRING = "" -- Content of the Frog speech bubble currently being displayed in draw_dialog_bubble()
 
 -- Froggo state machine
 --- The Action State indicates what the frog is currently doing, e.g. speaking or emoting/reacting.
@@ -22,6 +22,7 @@ local current_stirr_hint = 1
 local stirr_offset = 1
 local last_sentence = -1
 local current_sentence = -1
+local SHOWN_STRING = "" -- Content for the Frog speech bubble
 
 local positive_acceptance <const> = "That'll do it!"
 local forgotten_topics_callouts <const> = {
@@ -67,6 +68,12 @@ local ingredient_tutorials_drop <const> = {
     "Shake, shake. Shake it off!!",
 }
 
+SPEECH_BUBBLE_ANIM_IMGS = {
+    love = { gfxit.new("images/speech/animation-lesslove"), gfxit.new("images/speech/animation-morelove") },
+    doom = { gfxit.new("images/speech/animation-lessdoom"), gfxit.new("images/speech/animation-moredoom") },
+    weed = { gfxit.new("images/speech/animation-lessweed"), gfxit.new("images/speech/animation-moreweed") },
+}
+
 -- Animations
 local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
 local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
@@ -104,6 +111,8 @@ function Froggo:reset()
     self:go_idle()
 
     Reset_frog()
+    -- Speech Bubble state used by draw_dialog_bubble().
+    self:stop_speech_bubble()
 end
 
 
@@ -113,6 +122,8 @@ end
 function Froggo:Ask_the_frog()
     if self.state == FROG_STATE.idle then
         -- Start speaking
+        set_current_sentence()
+        set_speech_bubble_content()    
         self:croak()
     end
 end
@@ -175,15 +186,10 @@ function Froggo:go_drinking()
 end
 
 
-function Froggo:ask_for_cocktail()
-    self.state = FROG_STATE.speaking
-    self.anim_current = self.anim_blabla
+function Froggo:Ask_for_cocktail()
 
     SHOWN_STRING = string.format("One \"%s\", please!", COCKTAILS[TARGET_COCKTAIL.type_idx].name)
-
-    playdate.timer.new(2*1000, function()
-        self:reset()
-    end)
+    self:croak()
 end
 
 
@@ -195,12 +201,11 @@ function Froggo:croak()
     self.state = FROG_STATE.speaking
     self.anim_current = self.anim_blabla
 
-    set_current_sentence()
-    set_speech_bubble_content()
+    self:start_speech_bubble()
 
-    playdate.timer.new(4*1000, function()
+    playdate.timer.new(2*1000, function()
         -- Disable speech bubble after a short moment.
-        SHOWN_STRING = ""
+        self:stop_speech_bubble()
 
         -- Give the frog a short moment to breathe before speaking/drinking again.
         playdate.timer.new(0.1*1000, function()
@@ -328,7 +333,6 @@ end
 
 function set_speech_bubble_content()
     if current_sentence == -1 then
-        -- Disable speech bubble.
         SHOWN_STRING = ""
     else
         if current_sentence == 0 then
@@ -341,7 +345,7 @@ function set_speech_bubble_content()
             if current_topic_hint == THINGS_TO_REMEMBER.fire then
                 SHOWN_STRING = fire_tutorials[current_sentence]
             elseif current_topic_hint == THINGS_TO_REMEMBER.fire2 then
-                SHOWN_STRING = fire_reminders[current_sentence]
+                SHOWN_STRING = fire_reminders[current_sentence][1]
             elseif current_topic_hint == THINGS_TO_REMEMBER.grab then
                 SHOWN_STRING = ingredient_tutorials_grab[current_sentence]
             elseif current_topic_hint == THINGS_TO_REMEMBER.shake then
@@ -355,6 +359,22 @@ function set_speech_bubble_content()
             end
         end
     end
+end
+
+
+function Froggo:start_speech_bubble()
+    -- WIP animated icon speech
+    --local bubble_framerate = 8
+    --local bubble_anim_imgs = SPEECH_BUBBLE_ANIM_IMGS.love[1]
+    --SPEECH_BUBBLE_ANIM = animloop.new(bubble_framerate * frame_ms, bubble_anim_imgs, true)
+    SPEECH_BUBBLE_TEXT = SHOWN_STRING
+end
+
+
+function Froggo:stop_speech_bubble()
+    -- Disable speech bubble.
+    SPEECH_BUBBLE_TEXT = nil
+    SPEECH_BUBBLE_ANIM = nil
 end
 
 

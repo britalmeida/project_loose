@@ -7,7 +7,6 @@ local vec2d <const> = playdate.geometry.vector2D
 -- Resources
 FONTS = {}
 TEXTURES = {}
-ANIMS = {}
 
 -- Constants
 LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 170
@@ -91,6 +90,7 @@ local function draw_soft_circle(x_center, y_center, radius, steps, blend, alpha,
     end
 end
 
+
 local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend, alpha, color)
     for a = 1, steps, 1 do
         gfx.pushContext()
@@ -103,6 +103,7 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
         gfx.popContext()
     end
 end
+
 
 local function draw_symbols( x, y, width, position_params)
     local params = position_params
@@ -163,6 +164,7 @@ local function draw_symbols( x, y, width, position_params)
 
     gfx.popContext()
 end
+
 
 local function draw_parameter_diagram()
     local params = {}
@@ -248,6 +250,7 @@ local function draw_stirring_stick()
     gfx.popContext()
 end
 
+
 local function draw_liquid_glow()
 
     local target = TARGET_COCKTAIL.color
@@ -264,6 +267,7 @@ local function draw_liquid_glow()
         draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 10, glow_blend, light_strength, gfx.kColorWhite)
     gfx.popContext()
 end
+
 
 local function draw_liquid_surface()
     gfx.pushContext()
@@ -426,62 +430,63 @@ end
 
 
 local function draw_dialog_bubble()
-    local text = SHOWN_STRING
+    if SPEECH_BUBBLE_ANIM then
+        -- Should be displaying an animated speech bubble.
 
-    if text == "" then
-        return
-    end
-    if type(text) ~= "string" then
-        return
-    end
+        gfx.pushContext()
+            SPEECH_BUBBLE_ANIM:image():draw(0, 0)
+        gfx.popContext()
 
-    local no_love = false --text == "Too much love\ncan't stand it!"
+    elseif SPEECH_BUBBLE_TEXT then
+        -- Should be displaying a static speech bubble with text.
 
-    -- local text_lines = {"Just blow air onto", "the bottom of the cauldron"}
-    local text_lines = {}
-    for line in string.gmatch(text, "[^\n]+") do
-        table.insert(text_lines, line)
-    end
+        local text = SPEECH_BUBBLE_TEXT
 
-    -- Bounding box of the dialog bubble, within which it is safe to place text.
-    local x_min = 140
-    local y_min = 60
-    local width = 210
-    local height = 65
+        -- Split the given text by '\n' into multiple lines.
+        local text_lines = {}
+        for line in string.gmatch(text, "[^\n]+") do
+            table.insert(text_lines, line)
+        end
 
-    -- Vertical advance of the line, in pixels.
-    local line_height = 18
+        -- Bounding box of the dialog bubble, within which it is safe to place text.
+        local x_min = 140
+        local y_min = 60
+        local width = 210
+        local height = 65
 
-    local y_center =  y_min + height / 2
-    local current_line_y = y_center - line_height * #text_lines / 2
+        -- Vertical advance of the line, in pixels.
+        local line_height = 18
 
-    gfx.pushContext()
-    do
-        -- The buggle graphics itself.
-        if no_love then
-            ANIMS.speech_bubble:image():draw(0, 0)
-        else
+        local y_center =  y_min + height / 2
+        local current_line_y = y_center - line_height * #text_lines / 2
+
+        -- Draw the buggle graphics itself.
+        gfx.pushContext()
             if #text_lines > 1 then
                 TEXTURES.dialog_bubble_twolines:draw(0, 0)
             else
                 TEXTURES.dialog_bubble_oneline:draw(0, 0)
             end
-        end
+        gfx.popContext()
 
         -- Debug drawing of the safe area bounds.
-        -- gfx.drawRect(x_min, y_min, width, height)
+        -- gfx.pushContext()
+        --    gfx.setColor(gfx.kColorWhite)
+        --    gfx.drawRect(x_min, y_min, width, height)
+        -- gfx.popContext()
 
         -- Draw lines of the text.
-        if not no_love then
+        gfx.pushContext()
+            gfx.setFont(FONTS.speech_font)
             for i = 1, #text_lines, 1 do
-                gfx.setFont(FONTS.speech_font)
                 gfx.drawTextAligned(text_lines[i], x_min + width / 2, current_line_y, kTextAlignment.center)
                 current_line_y += line_height
             end
-       end
+        gfx.popContext()
+
     end
-    gfx.popContext()
 end
+
 
 local function draw_bg_lighting()
     local flicker_freq = {0.0023, 0.3, 5.2}
@@ -644,9 +649,6 @@ function Init_visuals()
     TEXTURES.instructions_prompt = gfxi.new("images/instructions_prompt")
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/dialog_bubble_oneline")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/dialog_bubble_twolines")
-    local bubble_framerate = 8
-    local bubble_imgs = gfx.imagetable.new('images/speech/animation-lesslove')
-    local bubble_num_imgs = bubble_imgs:getLength()
     TEXTURES.instructions = gfxi.new("images/instructions")
     -- Load images
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
@@ -661,10 +663,6 @@ function Init_visuals()
     TEXTURES.bubble_table = gfx.imagetable.new("images/fx/bubble")
     TEXTURES.bubble_table2 = gfx.imagetable.new("images/fx/bubble2")
     TEXTURES.splish = gfx.imagetable.new("images/fx/splish")
-
-    -- Create animation timers.
-    ANIMS.speech_bubble = animloop.new(bubble_framerate * frame_ms, bubble_imgs, true)
-
 
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")
