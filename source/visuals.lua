@@ -151,13 +151,9 @@ end
 function add_rune_travel_anim()
     -- add current rune ratio and new anim to table
     local rune_ratio_copy = {0, 0, 0}
-    --local new_rune_ratio = {0.6, 0.6, 0.6}
     local new_rune_ratio = GAMEPLAY_STATE.rune_ratio
     rune_ratio_copy = shallow_copy(new_rune_ratio)
-    --print(new_rune_ratio[1])
     table.insert(rune_anim_table, {rune_ratio_copy, animator.new(2*1000, 0.0, 1.0, inOutQuad)})
-    --local test_animation = rune_anim_table[2]
-    --print(test_animation[2]:progress())
 end
 
 
@@ -186,12 +182,6 @@ local function draw_symbols( x, y, width, position_params)
             local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
             local glow_strength = heat_response * 0.5
 
---[[             if debug_timer:ended() then
-                add_rune_travel_anim()
-                debug_timer:reset()
-            end ]]
-
-
             -- Calculate current_rune_ratio
             local animated_rune_ratio = {0, 0, 0}
             local avg_ratio = {0, 0, 0}
@@ -203,8 +193,6 @@ local function draw_symbols( x, y, width, position_params)
                     avg_ratio[k] = animated_rune_ratio[k]
                 end
             end
-
-            print(animated_rune_ratio[1])
 
             -- Update glyph positions
             glyph_y = glyph_y - (animated_rune_ratio[a] - 0.5) * meter_height
@@ -771,18 +759,6 @@ function Init_visuals()
         animator.new(0, 1.0, 1.0)
     }
 
---[[     -- Debug test
-    local test_rune_ratio = {0.8, 0.3, 0.9}
-    local test2_rune_ratio = {0.2, 0.7, 0.5}
-    rune_anim_table[1] = {
-        start_rune_ratio,
-        animator.new(0*1000, 1.0, 1.0, inOutQuad)
-    }
-    rune_anim_table[2] = {
-        test_rune_ratio,
-        animator.new(6*1000, 0.0, 1.0, inOutQuad)
-    }
-    table.insert(rune_anim_table, {test2_rune_ratio, animator.new(15*1000, 0.0, 1.0, inOutQuad)}) ]]
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")
 
