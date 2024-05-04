@@ -144,12 +144,14 @@ end
 
 function Ingredient:start_wiggle()
     if self.wiggle_timer then
-      self.wiggle_timer:remove()
+        self.wiggle_timer:remove()
     end
     self.is_wiggling = true
     self.wiggle_time = math.random(2, 8) / 10
     self.wiggle_timer = playdate.timer.new(self.wiggle_time * 1000, function ()
-        self:end_wiggle()
+        if self.state == INGREDIENT_STATE.is_over_cauldron then
+            self:end_wiggle()
+        end
     end)
 end
 
@@ -178,9 +180,9 @@ function Ingredient:end_wiggle()
   -- wiggle again after random pause
   local pause = math.random(2 * 1000, 4 * 1000)
   playdate.timer.new(pause, function ()
-    if not self.is_wiggling then
-      self:start_wiggle()
-    end
+      if self.state == INGREDIENT_STATE.is_over_cauldron then
+          self:start_wiggle()
+      end
   end)
 end
 
