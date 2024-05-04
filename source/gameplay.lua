@@ -140,6 +140,11 @@ end
 -- Update Loop
 function Handle_input()
 
+    -- When transitioning to end game, stop processing and reacting to new input.
+    if GAME_ENDED then
+        return
+    end
+
     -- Get values from gyro.
     local raw_gravity_x, raw_gravity_y, raw_gravity_z = playdate.readAccelerometer()
     -- Occasionally when simulator starts to upload the game to the actual
@@ -274,6 +279,7 @@ end
 
 function Tick_gameplay()
     GAMEPLAY_STATE.game_tick += 1
+
     -- Update ingredient animations.
     for _, ingredient in ipairs(INGREDIENTS) do
         if ingredient:isVisible() then
@@ -288,6 +294,14 @@ function Tick_gameplay()
         end
     end
 
+    update_fire()
+    update_liquid()
+
+    FROG:animation_tick()
+end
+
+
+function update_fire()
     if GAMEPLAY_STATE.flame_amount > 0.01 then
         local flame_decay = 0.99
         GAMEPLAY_STATE.flame_amount *= flame_decay
@@ -319,7 +333,10 @@ function Tick_gameplay()
             SOUND.fire_burn:stop()
         end
     end
+end
 
+
+function update_liquid()
     -- Update liquid color
     local color_change = 0.0005
     GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
@@ -334,13 +351,8 @@ function Tick_gameplay()
     GAMEPLAY_STATE.liquid_offset += GAMEPLAY_STATE.liquid_momentum
     GAMEPLAY_STATE.liquid_momentum *= GAMEPLAY_STATE.liquid_viscosity
     if math.abs(GAMEPLAY_STATE.liquid_momentum) < 1e-4 then
-      GAMEPLAY_STATE.liquid_momentum = 0
+        GAMEPLAY_STATE.liquid_momentum = 0
     end
-
-    -- Give the frog a chance to react
-    Calculate_goodness()
-
-    FROG:tick()
 end
 
 

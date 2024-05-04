@@ -461,7 +461,7 @@ end
 
 
 -- Update
-function Froggo:tick()
+function Froggo:animation_tick()
     -- Set the image frame to display.
     if self.anim_current then
         self:setImage(self.anim_current:image())
