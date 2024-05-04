@@ -81,8 +81,8 @@ function Ingredient:tick()
         if self.is_wiggling then
             self:wiggle()
         end
-        if SHAKE_VAL > 2 and self.can_drop then
-          self.can_drop = false
+        if SHAKE_VAL > 3 and self.can_drop then
+            self.can_drop = false
             self:trigger_drop()
         end
     elseif self.state == INGREDIENT_STATE.is_in_air then
