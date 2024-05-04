@@ -555,8 +555,13 @@ local function draw_cauldron_front()
     gfx.popContext()
 end
 
-local function draw_instructions_prompt()
-    -- Draw full screen background.
+
+local function draw_ui_prompts()
+    if GAME_ENDED then
+        -- Disappear button prompts when the game transitions to win!
+        return
+    end
+
     gfx.pushContext()
         TEXTURES.instructions_prompt:draw(0, 0)
     gfx.popContext()
@@ -687,17 +692,17 @@ function Init_visuals()
     Set_draw_pass(7, Draw_splash)
     Set_draw_pass(8, draw_cauldron_front)
     -- 10: frog
-    Set_draw_pass(11, draw_ingredient_place_hint)
     -- depth 20+: UI
-    -- 22: grabbed ingredients
-    Set_draw_pass(21, draw_instructions_prompt)
-    Set_draw_pass(22, draw_ingredient_grab_cursor)
-    Set_draw_pass(25, draw_dialog_bubble)
+    Set_draw_pass(21, draw_ui_prompts)
+    Set_draw_pass(23, draw_ingredient_place_hint)
+    -- 24: grabbed ingredients
+    Set_draw_pass(25, draw_ingredient_grab_cursor)
+    Set_draw_pass(27, draw_dialog_bubble)
     -- depth 30+: overlayed modal instructions
     Set_draw_pass(30, draw_overlayed_instructions)
     -- Development
-    --Set_draw_pass(20, draw_debug)
-    --Set_draw_pass(20, draw_test_dither_patterns)
+    --Set_draw_pass(50, draw_debug)
+    --Set_draw_pass(50, draw_test_dither_patterns)
 end
 
-Z_DEPTH = { frog=10, ingredients=-5, grabbed_ingredient = 21 }
+Z_DEPTH = { frog=10, ingredients=-5, grabbed_ingredient = 24 }
