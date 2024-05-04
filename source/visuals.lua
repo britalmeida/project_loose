@@ -23,6 +23,9 @@ MAGIC_TRIANGLE_SIZE = 100
 
 Splash_animating = false
 
+--[[ -- Debug timer
+debug_timer = animator.new(0.1*1000, 0.0, 1.0) ]]
+
 -- Debug / Development
 
 local function draw_test_dither_patterns()
@@ -128,9 +131,11 @@ end
 
 function add_rune_travel_anim()
     -- add current rune ratio and new anim to table
-    local new_rune_ratio = {0, 0, 0}
-    new_rune_ratio = GAMEPLAY_STATE.rune_ratio
+    local new_rune_ratio = GAMEPLAY_STATE.rune_ratio
+    --print(new_rune_ratio[1])
     table.insert(rune_anim_table, {new_rune_ratio, animator.new(2*1000, 0.0, 1.0, inOutQuad)})
+    --local test_animation = rune_anim_table[2]
+    --print(test_animation[2]:progress())
 end
 
 function getTableSize(t)
@@ -166,20 +171,26 @@ local function draw_symbols( x, y, width, position_params)
             local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
             local glow_strength = heat_response * 0.5
 
+--[[             if debug_timer:ended() then
+                add_rune_travel_anim()
+                debug_timer:reset()
+            end ]]
+
+
             -- Calculate current_rune_ratio
-            local current_rune_ratio = {0, 0, 0}
-            local sum_ratio = {0, 0, 0}
+            local animated_rune_ratio = {0, 0, 0}
+            local avg_ratio = {0, 0, 0}
             for anim_index, anim_content in pairs(rune_anim_table) do
                 local rune_ratio = anim_content[1]
                 local progress = anim_content[2]:progress()
                 for k, v in pairs(rune_ratio) do
-                    current_rune_ratio[k] = sum_ratio[k] * (1 - progress) + v * progress
-                    sum_ratio[k] += current_rune_ratio[k]
+                    animated_rune_ratio[k] = avg_ratio[k] * (1 - progress) + v * progress
+                    avg_ratio[k] = animated_rune_ratio[k]
                 end
             end
 
             -- Update glyph positions
-            glyph_y = glyph_y - (current_rune_ratio[a] - 0.5) * meter_height
+            glyph_y = glyph_y - (animated_rune_ratio[a] - 0.5) * meter_height
             glyph_y += wiggle
 
             -- Reset anim table if all animations are done
