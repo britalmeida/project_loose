@@ -57,7 +57,7 @@ function playdate.update()
     -- Intentionally check again (no else), the menu might have just started gameplay
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
         -- In gameplay.
-        Handle_input(timeDelta)
+        Handle_input()
         Tick_gameplay()
         Calculate_goodness()
         Check_player_learnings()
