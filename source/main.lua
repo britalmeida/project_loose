@@ -49,8 +49,6 @@ end
 
 function playdate.update()
     -- Called before every frame is drawn.
-    local timeDelta = playdate.getElapsedTime()
-    playdate.resetElapsedTime()
 
     if MENU_STATE.screen ~= MENU_SCREEN.gameplay then
         -- In Menu system.

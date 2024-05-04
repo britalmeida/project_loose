@@ -138,9 +138,7 @@ end
 
 
 -- Update Loop
---- `timeDelta` is the time in seconds since the last update.
----@param timeDelta number
-function Handle_input(timeDelta)
+function Handle_input()
 
     -- Get values from gyro.
     local raw_gravity_x, raw_gravity_y, raw_gravity_z = playdate.readAccelerometer()
@@ -249,9 +247,8 @@ function Handle_input(timeDelta)
     end
 
     -- Crank stirring
-    local angleDelta, _ = playdate.getCrankChange()
-    local revolutionsPerSecond = math.rad(angleDelta) / (timeDelta)
-    STIR_SPEED = revolutionsPerSecond
+    local angleDelta, acceleratedChange = playdate.getCrankChange()
+    STIR_SPEED = acceleratedChange
     -- Use the absolute position of the crank to drive the stick in the cauldorn
     STIR_POSITION = math.rad(playdate.getCrankPosition())
 
