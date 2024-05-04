@@ -177,7 +177,7 @@ function Handle_input()
         AVG_GRAVITY_Y = alpha * raw_gravity_y + (1 - alpha) * AVG_GRAVITY_Y
         AVG_GRAVITY_Z = alpha * raw_gravity_z + (1 - alpha) * AVG_GRAVITY_Z
 
-        len = math.sqrt(AVG_GRAVITY_X*AVG_GRAVITY_X + AVG_GRAVITY_Y*AVG_GRAVITY_Y + AVG_GRAVITY_Z*AVG_GRAVITY_Z)
+        local len = math.sqrt(AVG_GRAVITY_X*AVG_GRAVITY_X + AVG_GRAVITY_Y*AVG_GRAVITY_Y + AVG_GRAVITY_Z*AVG_GRAVITY_Z)
         AVG_GRAVITY_X /= len
         AVG_GRAVITY_Y /= len
         AVG_GRAVITY_Z /= len
@@ -217,9 +217,8 @@ function Handle_input()
     if playdate.buttonJustPressed( playdate.kButtonA ) then
         GAMEPLAY_STATE.cursor_hold = true
         for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient.is_over_cauldron then
-                ingredient.is_over_cauldron = false
-                ingredient.is_in_air = true
+            if ingredient.state == INGREDIENT_STATE.is_over_cauldron then
+                ingredient.state = INGREDIENT_STATE.is_in_air
                 ingredient:setZIndex(Z_DEPTH.ingredients)
             end
         end
@@ -234,7 +233,7 @@ function Handle_input()
     if playdate.buttonJustReleased(playdate.kButtonA) then
         GAMEPLAY_STATE.cursor_hold = false
         for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient.is_picked_up then
+            if ingredient.state == INGREDIENT_STATE.is_picked_up then
               ingredient:release()
             end
         end
