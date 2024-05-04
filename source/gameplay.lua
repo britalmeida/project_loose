@@ -142,6 +142,9 @@ function Handle_input()
 
     -- When transitioning to end game, stop processing and reacting to new input.
     if GAME_ENDED then
+        -- Put the hand off screen
+        GYRO_X = -50
+        GYRO_Y = -50
         return
     end
 
