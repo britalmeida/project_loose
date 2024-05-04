@@ -9,8 +9,8 @@ FONTS = {}
 TEXTURES = {}
 
 -- Constants
-LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 170
-LIQUID_WIDTH, LIQUID_HEIGHT = 65, 25
+LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 175
+LIQUID_WIDTH, LIQUID_HEIGHT = 66, 29
 LIQUID_AABB = geo.rect.new(
     LIQUID_CENTER_X-LIQUID_WIDTH,
     LIQUID_CENTER_Y-LIQUID_HEIGHT*0.5,
@@ -258,7 +258,7 @@ local function draw_liquid_glow()
     
     local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
     local light_strength = heat_response * (1 - math.abs((GAMEPLAY_STATE.potion_color - target) / difference_weight))
-    local glow_center_x = LIQUID_CENTER_X
+    local glow_center_x = LIQUID_CENTER_X + 2
     local glow_center_y = LIQUID_CENTER_Y
     local glow_width = LIQUID_WIDTH + 100 + light_strength * 20
     local glow_height = LIQUID_HEIGHT + 60 + light_strength * 10
@@ -522,7 +522,14 @@ end
 local function draw_cauldron()
     -- Draw cauldron image
     gfx.pushContext()
-        TEXTURES.cauldron:draw(0, 23)
+        TEXTURES.cauldron:draw(43, 128)
+    gfx.popContext()
+end
+
+local function draw_cauldron_front()
+    -- Draw cauldron foreground image
+    gfx.pushContext()
+        TEXTURES.cauldron_front:draw(43, 128)
     gfx.popContext()
 
     -- Draw flame animation
@@ -547,7 +554,6 @@ local function draw_cauldron()
         end
     gfx.popContext()
 end
-
 
 local function draw_instructions_prompt()
     -- Draw full screen background.
@@ -646,6 +652,7 @@ function Init_visuals()
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
+    TEXTURES.cauldron_front = gfxi.new("images/cauldron_front")
     TEXTURES.instructions_prompt = gfxi.new("images/instructions_prompt")
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/dialog_bubble_oneline")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/dialog_bubble_twolines")
@@ -678,6 +685,7 @@ function Init_visuals()
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
     Set_draw_pass(7, Draw_splash)
+    Set_draw_pass(8, draw_cauldron_front)
     -- 10: frog
     Set_draw_pass(11, draw_ingredient_place_hint)
     -- depth 20+: UI
