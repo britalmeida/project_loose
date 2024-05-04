@@ -24,7 +24,7 @@ MAGIC_TRIANGLE_SIZE = 100
 Splash_animating = false
 
 --[[ -- Debug timer
-debug_timer = animator.new(0.1*1000, 0.0, 1.0) ]]
+debug_timer = animator.new(1*1000, 0.0, 1.0) ]]
 
 -- Debug / Development
 
@@ -129,15 +129,6 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
     end
 end
 
-function add_rune_travel_anim()
-    -- add current rune ratio and new anim to table
-    local new_rune_ratio = GAMEPLAY_STATE.rune_ratio
-    --print(new_rune_ratio[1])
-    table.insert(rune_anim_table, {new_rune_ratio, animator.new(2*1000, 0.0, 1.0, inOutQuad)})
-    --local test_animation = rune_anim_table[2]
-    --print(test_animation[2]:progress())
-end
-
 function getTableSize(t)
     local count = 0
     for _, __ in pairs(t) do
@@ -145,6 +136,30 @@ function getTableSize(t)
     end
     return count
 end
+
+local new_rune_ratio = {0, 0, 0}
+
+function shallow_copy(t)
+    local t2 = {0, 0, 0}
+    for k,v in pairs(t) do
+        t2[k] = v
+    end
+    return t2
+end
+
+
+function add_rune_travel_anim()
+    -- add current rune ratio and new anim to table
+    local rune_ratio_copy = {0, 0, 0}
+    --local new_rune_ratio = {0.6, 0.6, 0.6}
+    local new_rune_ratio = GAMEPLAY_STATE.rune_ratio
+    rune_ratio_copy = shallow_copy(new_rune_ratio)
+    --print(new_rune_ratio[1])
+    table.insert(rune_anim_table, {rune_ratio_copy, animator.new(2*1000, 0.0, 1.0, inOutQuad)})
+    --local test_animation = rune_anim_table[2]
+    --print(test_animation[2]:progress())
+end
+
 
 local function draw_symbols( x, y, width, position_params)
     local params = position_params
@@ -189,6 +204,8 @@ local function draw_symbols( x, y, width, position_params)
                 end
             end
 
+            print(animated_rune_ratio[1])
+
             -- Update glyph positions
             glyph_y = glyph_y - (animated_rune_ratio[a] - 0.5) * meter_height
             glyph_y += wiggle
@@ -200,10 +217,12 @@ local function draw_symbols( x, y, width, position_params)
                 rune_anim_progress_avg += anim_content[2]:progress() / rune_anim_table_count
             end
             if rune_anim_progress_avg == 1 then
-                local true_rune_ratio = {0, 0, 0}
-                true_rune_ratio = GAMEPLAY_STATE.rune_ratio
+                local true_rune_ratio = GAMEPLAY_STATE.rune_ratio
+                local true_rune_ratio_copy
+                true_rune_ratio_copy = shallow_copy(true_rune_ratio)
+
                 rune_anim_table = {}
-                table.insert(rune_anim_table, {true_rune_ratio, animator.new(0, 1.0, 1.0)})
+                table.insert(rune_anim_table, {true_rune_ratio_copy, animator.new(0, 1.0, 1.0)})
             end
 
             local target_y = y - (target - 0.5) * meter_height
