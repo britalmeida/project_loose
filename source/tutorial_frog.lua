@@ -60,10 +60,10 @@ local need_less_doom <const> = {
     "Definitely missing happy stuff",  "3",
 }
 local need_more_weed <const> = {
-    "Add some veggies",  "5",
+    "Add some veggies",  "6",
 }
 local need_less_weed <const> = {
-    "Too much organic in it", "6",
+    "Too much organic in it", "5",
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient",
