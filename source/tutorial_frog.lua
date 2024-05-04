@@ -128,7 +128,7 @@ function Froggo:init()
     self.anim_happy = animloop.new(anim_happy_framerate * frame_ms, anim_happy_imgs, true)
     self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
     self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
-    self.anim_tickleface = animloop.new(anim_tickleface_framerate * frame_ms, anim_tickleface_img, true)
+    self.anim_tickleface = animloop.new(anim_tickleface_framerate * frame_ms, anim_tickleface_img, false)
 
     self:setZIndex(Z_DEPTH.frog)
     self:moveTo(350, 148)
@@ -154,6 +154,12 @@ function Froggo:reset()
 
     -- Reset speech Bubble state used by draw_dialog_bubble().
     self:stop_speech_bubble()
+end
+
+
+function Froggo:start_animation(anim_loop)
+    self.anim_current = anim_loop
+    self.anim_current.frame = 1  -- Restart the animation from the beggining
 end
 
 
@@ -197,7 +203,7 @@ end
 
 function Froggo:go_idle()
     self.state = ACTION_STATE.idle
-    self.anim_current = self.anim_idle
+    self:start_animation(self.anim_idle)
 end
 
 
@@ -205,9 +211,9 @@ function Froggo:go_reacting()
     self.state = ACTION_STATE.reacting
 
     if TREND > 0 then
-        self.anim_current = self.anim_happy
+        self:start_animation(self.anim_happy)
     elseif TREND < 0 then
-        self.anim_current = self.anim_headshake
+        self:start_animation(self.anim_headshake)
     end
 
 end
@@ -215,9 +221,8 @@ end
 
 function Froggo:froggo_tickleface()
     self.state = ACTION_STATE.reacting
+    self:start_animation(self.anim_tickleface)
 
-    self.anim_current = self.anim_tickleface
-    self.anim_current.frame = 1
     playdate.timer.new(2.9*1000, function()
         self:go_idle()
     end)
@@ -226,7 +231,7 @@ end
 
 function Froggo:go_drinking()
     self.state = ACTION_STATE.drinking
-    self.anim_current = self.anim_cocktail
+    self:start_animation(self.anim_cocktail)
 
     playdate.timer.new(5*1000, function()
         Enter_menu_start()
@@ -240,7 +245,7 @@ end
 function Froggo:croak()
     -- Speak!
     self.state = ACTION_STATE.speaking
-    self.anim_current = self.anim_blabla
+    self:start_animation(self.anim_blabla)
 
     self:start_speech_bubble()
 

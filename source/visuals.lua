@@ -1,6 +1,5 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
-local animloop <const> = playdate.graphics.animation.loop
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
 
