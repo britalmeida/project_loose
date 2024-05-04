@@ -292,7 +292,7 @@ function Froggo:think()
         end
     end
     if self.tutorial_state == TUTORIAL_STATE.stir then
-        if PLAYER_LEARNED.how_to_cw_for_brighter and PLAYER_LEARNED.how_to_ccw_for_darker and Is_color_good_enough() then
+        if Is_color_good_enough() then -- Skip the stirring when it's not needed even if it's never been done
             self.tutorial_state += 1
         end
     end
@@ -317,6 +317,7 @@ function Froggo:think()
 
             -- Stirring is complicated man!
             if not self.has_said_once_reminders[idx] and
+                -- Don't say "you forgot to stir" if any stirring has happened already.
                 not PLAYER_LEARNED.how_to_cw_for_brighter and
                 not PLAYER_LEARNED.how_to_ccw_for_darker then
                 self:select_sentence(sayings.once, idx)
@@ -353,6 +354,12 @@ function Froggo:think()
                 self:give_ingredients_direction()
             else
                 self:give_stirring_direction()
+                -- Move back to stirring tutorial if it hasn't been learned.
+                -- It will advance back to complete when it's learned or color got gud.
+                if not PLAYER_LEARNED.how_to_cw_for_brighter or
+                    not PLAYER_LEARNED.how_to_ccw_for_darker then
+                    self.tutorial_state = TUTORIAL_STATE.stir
+                end
             end
         end
     end
