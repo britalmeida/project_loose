@@ -130,7 +130,7 @@ end
 
 function Ingredient:wiggle()
   self.wiggle_tick += 1
-  local fps = math.ceil(playdate.getFPS())
+  local fps = 30 -- math.ceil(playdate.getFPS())
   local center = geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
   if self.wiggle_tick / fps >= self.wiggle_time then
     -- reset and wait
