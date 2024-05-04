@@ -214,7 +214,6 @@ local function draw_symbols( x, y, width, position_params)
                 local overlay = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
                 TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
             gfx.popContext()
-            ::continue::
         end
 
     gfx.popContext()
@@ -733,8 +732,6 @@ function Init_visuals()
     TEXTURES.bubble_table2 = gfxit.new("images/fx/bubble2")
     TEXTURES.splish = gfxit.new("images/fx/splish")
 
-    -- Create animation timers.
-    ANIMS.speech_bubble = animloop.new(bubble_framerate * frame_ms, bubble_imgs, true)
 
     -- Starting table of active animations for runes
     rune_anim_table = {}
@@ -756,8 +753,6 @@ function Init_visuals()
         animator.new(6*1000, 0.0, 1.0, inOutQuad)
     }
     table.insert(rune_anim_table, {test2_rune_ratio, animator.new(15*1000, 0.0, 1.0, inOutQuad)}) ]]
-
-
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")
 
