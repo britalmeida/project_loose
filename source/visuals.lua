@@ -1,5 +1,6 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
+local gfxit <const> = playdate.graphics.imagetable
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
 
@@ -563,6 +564,7 @@ local function draw_ui_prompts()
 
     gfx.pushContext()
         TEXTURES.instructions_prompt:draw(0, 0)
+        TEXTURES.b_prompt:drawImage(1, 362, 203)
     gfx.popContext()
 end
 
@@ -658,6 +660,7 @@ function Init_visuals()
     TEXTURES.cauldron = gfxi.new("images/cauldron")
     TEXTURES.cauldron_front = gfxi.new("images/cauldron_front")
     TEXTURES.instructions_prompt = gfxi.new("images/instructions_prompt")
+    TEXTURES.b_prompt = gfxit.new("images/animation-b")
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/dialog_bubble_oneline")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/dialog_bubble_twolines")
     TEXTURES.instructions = gfxi.new("images/instructions")
@@ -667,13 +670,13 @@ function Init_visuals()
     TEXTURES.place_hint = gfxi.new("images/cursor/empty_circle")
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
     -- Load fx
-    TEXTURES.low_flame_table = gfx.imagetable.new("images/fx/lowflame")
-    TEXTURES.medium_flame_table = gfx.imagetable.new("images/fx/mediumflame")
-    TEXTURES.high_flame_table = gfx.imagetable.new("images/fx/highflame")
-    TEXTURES.stir_flame_table = gfx.imagetable.new("images/fx/stirredflame")
-    TEXTURES.bubble_table = gfx.imagetable.new("images/fx/bubble")
-    TEXTURES.bubble_table2 = gfx.imagetable.new("images/fx/bubble2")
-    TEXTURES.splish = gfx.imagetable.new("images/fx/splish")
+    TEXTURES.low_flame_table = gfxit.new("images/fx/lowflame")
+    TEXTURES.medium_flame_table = gfxit.new("images/fx/mediumflame")
+    TEXTURES.high_flame_table = gfxit.new("images/fx/highflame")
+    TEXTURES.stir_flame_table = gfxit.new("images/fx/stirredflame")
+    TEXTURES.bubble_table = gfxit.new("images/fx/bubble")
+    TEXTURES.bubble_table2 = gfxit.new("images/fx/bubble2")
+    TEXTURES.splish = gfxit.new("images/fx/splish")
 
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")
