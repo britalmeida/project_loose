@@ -213,7 +213,7 @@ local function draw_symbols( x, y, width, position_params)
                 table.insert(rune_anim_table, {true_rune_ratio_copy, animator.new(0, 1.0, 1.0)})
             end
 
-            local target_y = y - (target - 0.5) * meter_height
+            local target_y = y - (target - 0.5) * meter_height + wiggle
 
             -- Rune circle
             gfx.setColor(gfx.kColorWhite)
@@ -223,7 +223,7 @@ local function draw_symbols( x, y, width, position_params)
             -- Target ring
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
-            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 8, 4, 0.5, glow_strength * 1.2 - 0.1, gfx.kColorWhite)
+            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 8, 4, 0.5, glow_strength * 1.5 - 0.1, gfx.kColorWhite)
 
 
             gfx.pushContext()
