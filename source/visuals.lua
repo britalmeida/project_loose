@@ -3,7 +3,7 @@ local gfxi <const> = playdate.graphics.image
 local gfxit <const> = playdate.graphics.imagetable
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
-local inOutQuad <const> = playdate.easingFunctions.inOutQuad
+local inOutQuad <const> = playdate.easingFunctions.inOutQuad --(0, 0, 1, 2*1000)
 local animator <const> = playdate.graphics.animator
 
 
@@ -200,10 +200,10 @@ local function draw_symbols( x, y, width, position_params)
                 rune_anim_progress_avg += anim_content[2]:progress() / rune_anim_table_count
             end
             if rune_anim_progress_avg == 1 then
-                local new_rune_ratio = {0, 0, 0}
-                new_rune_ratio = GAMEPLAY_STATE.rune_ratio
+                local true_rune_ratio = {0, 0, 0}
+                true_rune_ratio = GAMEPLAY_STATE.rune_ratio
                 rune_anim_table = {}
-                table.insert(rune_anim_table, {new_rune_ratio, animator.new(0, 1.0, 1.0)})
+                table.insert(rune_anim_table, {true_rune_ratio, animator.new(0, 1.0, 1.0)})
             end
 
             local target_y = y - (target - 0.5) * meter_height
