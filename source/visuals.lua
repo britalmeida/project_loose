@@ -138,7 +138,6 @@ local function draw_symbols( x, y, width, position_params)
             local difference_weight = math.max(target, 1-target)
             local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
             local glow_strength = heat_response * 0.5
-            print(glow_strength)
 
             glyph_y = glyph_y - (GAMEPLAY_STATE.rune_ratio[a] - 0.5)* meter_height
 
