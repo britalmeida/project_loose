@@ -1,10 +1,12 @@
 local gfxi <const> = playdate.graphics.image
 
 COCKTAILS = {
-  { name="Snailiva",  rune_composition={4, 1, 0}, color=0.8, img=gfxi.new('images/cocktails/snailiva') },
-  { name="Greentoe",  rune_composition={0, 3, 7}, color=0.2, img=gfxi.new('images/cocktails/greentoe') },
-  { name="Silkini",   rune_composition={0, 1, 2}, color=0.0, img=gfxi.new('images/cocktails/silkini') },
-  { name="Dicybrew",  rune_composition={1, 1, 1}, color=1,0, img=gfxi.new('images/cocktails/therandomizer_cocktail_sheet') },
+  { name="Snailiva",  rune_composition={1, 0, 0}, color=1.0, img=gfxi.new('images/cocktails/snailiva_sheet') }, --Intro 1 (Love)
+  { name="Silkini",  rune_composition={1, 2, 0}, color=0.0, img=gfxi.new('images/cocktails/silkini_sheet') }, -- Intro 2 (Love & Doom)
+  { name="Green Toe",  rune_composition={0, 3, 9}, color=0.25, img=gfxi.new('images/cocktails/green_toe_sheet') }, --Easy (Doom & Weeds but specific)
+  { name="Hodge Podge",   rune_composition={8, 2, 6}, color=0.8, img=gfxi.new('images/cocktails/hodge_podge_sheet') }, --Medium (3 Runes. Less clear art)
+  { name="Overdose",  rune_composition={1, 6, 3}, color=0.6, img=gfxi.new('images/cocktails/overdose_sheet') }, --Hard (3 runes and tricky combination)
+  { name="Dicybrew",  rune_composition={1, 1, 1}, color=1,0, img=gfxi.new('images/cocktails/dicey_brew_sheet') }, --Random
 }
 
 TARGET_COCKTAIL = {
