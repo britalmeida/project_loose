@@ -218,12 +218,12 @@ local function draw_symbols( x, y, width, position_params)
             -- Rune circle
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
-            draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 6, 4, 0.5, glow_strength, gfx.kColorWhite)
+            draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 7, 4, 0.5, glow_strength, gfx.kColorWhite)
 
             -- Target ring
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
-            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 8, 4, 0.5, glow_strength * 1.5 - 0.1, gfx.kColorWhite)
+            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 11, 4, 0.5, glow_strength * 1.5 - 0.1, gfx.kColorWhite)
 
 
             gfx.pushContext()
