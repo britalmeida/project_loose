@@ -4,8 +4,8 @@ COCKTAILS = {
   { name="Snailiva",  rune_composition={1, 0, 0}, color=1.0, img=gfxi.new('images/cocktails/snailiva_sheet') }, --Intro 1 (Love)
   { name="Silkini",  rune_composition={1, 2, 0}, color=0.0, img=gfxi.new('images/cocktails/silkini_sheet') }, -- Intro 2 (Love & Doom)
   { name="Green Toe",  rune_composition={0, 3, 9}, color=0.25, img=gfxi.new('images/cocktails/green_toe_sheet') }, --Easy (Doom & Weeds but specific)
-  { name="Hodge Podge",   rune_composition={8, 2, 6}, color=0.8, img=gfxi.new('images/cocktails/hodge_podge_sheet') }, --Medium (3 Runes. Less clear art)
-  { name="Overdose",  rune_composition={1, 6, 3}, color=0.15, img=gfxi.new('images/cocktails/overdose_sheet') }, --Hard (3 runes and tricky combination)
+  { name="Overdose",  rune_composition={1.5, 6, 4}, color=0.15, img=gfxi.new('images/cocktails/overdose_sheet') }, --Medium (3 runes and specific. Spamming = fine tuning)
+  { name="Hodge Podge",   rune_composition={1, 1, 1}, color=0.85, img=gfxi.new('images/cocktails/hodge_podge_sheet') }, --Hard (3 Runes. All equally balanced)
   { name="Dicybrew",  rune_composition={1, 1, 1}, color=1,0, img=gfxi.new('images/cocktails/dicey_brew_sheet') }, --Random
 }
 
