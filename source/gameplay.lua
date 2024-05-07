@@ -131,8 +131,10 @@ function Update_rune_count(difference)
         end
         sum = sum + GAMEPLAY_STATE.rune_count[a]
     end
-    for a = 1, NUM_RUNES, 1 do
-        GAMEPLAY_STATE.rune_ratio[a] = GAMEPLAY_STATE.rune_count[a] / sum
+    if sum > 0 then
+        for a = 1, NUM_RUNES, 1 do
+            GAMEPLAY_STATE.rune_ratio[a] = GAMEPLAY_STATE.rune_count[a] / sum
+        end
     end
     -- Trigger rune traveling animation
     if prev_rune_ratio ~= GAMEPLAY_STATE.rune_ratio then
