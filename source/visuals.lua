@@ -18,7 +18,7 @@ LIQUID_AABB = geo.rect.new(
     LIQUID_CENTER_X-LIQUID_WIDTH,
     LIQUID_CENTER_Y-LIQUID_HEIGHT*0.5,
     LIQUID_WIDTH*2, LIQUID_HEIGHT)
-MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 120
+MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 112
 MAGIC_TRIANGLE_SIZE = 100
 
 Splash_animating = false
@@ -739,7 +739,7 @@ function Init_visuals()
     -- Load images
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
-    TEXTURES.place_hint = gfxi.new("images/cursor/empty_circle")
+    TEXTURES.place_hint = gfxi.new("images/cursor/empty_jar")
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
     -- Load fx
     TEXTURES.low_flame_table = gfxit.new("images/fx/lowflame")
