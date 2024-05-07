@@ -80,15 +80,8 @@ local function draw_ui()
     -- Draw background screen image.
     MENU_STATE.active_screen_texture:draw(0, 0)
 
-    -- Start menu draws a selected option indicator.
-    if MENU_STATE.screen == MENU_SCREEN.start then
-        gfx.pushContext()
-                UI_TEXTURES.start_right_select:draw(0, 0)
-                UI_TEXTURES.start_left_select:draw(0, 0)
-        gfx.popContext()
-
     -- Draw mission selection options.
-    elseif MENU_STATE.screen == MENU_SCREEN.mission then
+    if MENU_STATE.screen == MENU_SCREEN.mission then
         gfx.pushContext()
             -- Fullscreen bg fill
             gfx.setColor(gfx.kColorBlack)
@@ -117,11 +110,11 @@ end
 function Handle_menu_input()
     if MENU_STATE.screen == MENU_SCREEN.start then
         -- Select an Option.
-        if playdate.buttonJustReleased( playdate.kButtonA ) then
+        if playdate.buttonJustReleased( playdate.kButtonRight ) then
             SOUND.menu_confirm:play()
             enter_menu_mission()
         end
-        if playdate.buttonJustReleased( playdate.kButtonB ) then
+        if playdate.buttonJustReleased( playdate.kButtonDown ) then
             SOUND.menu_confirm:play()
             enter_menu_credits()
         end
@@ -132,7 +125,8 @@ function Handle_menu_input()
             -- reset mystery potion
             Set_target_potion(MENU_STATE.focused_option + 1)
             Enter_gameplay()
-        elseif playdate.buttonJustReleased( playdate.kButtonB ) then
+        elseif playdate.buttonJustReleased( playdate.kButtonLeft ) and
+        MENU_STATE.focused_option < 1 then
             SOUND.menu_confirm:play()
             Enter_menu_start()
         end
@@ -164,7 +158,7 @@ function Handle_menu_input()
         end
 
     elseif MENU_STATE.screen == MENU_SCREEN.credits then
-        if playdate.buttonJustReleased( playdate.kButtonB ) then
+        if playdate.buttonJustReleased( playdate.kButtonUp ) then
             SOUND.menu_confirm:play()
             Enter_menu_start()
         end
@@ -177,9 +171,6 @@ function Init_menus()
     UI_TEXTURES.start = gfxi.new("images/menu_start")
     UI_TEXTURES.mission = gfxi.new(1,1)  -- unused
     UI_TEXTURES.credits = gfxi.new("images/menu_credits")
-
-    UI_TEXTURES.start_left_select = gfxi.new("images/menu_start_left")
-    UI_TEXTURES.start_right_select = gfxi.new("images/menu_start_right")
 
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.active_screen_texture = UI_TEXTURES.start
