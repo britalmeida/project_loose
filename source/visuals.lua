@@ -598,6 +598,8 @@ local function draw_cauldron()
     gfx.popContext()
 end
 
+local buildupflame_counter = 0
+
 local function draw_cauldron_front()
     -- Draw cauldron foreground image
     gfx.pushContext()
@@ -606,20 +608,34 @@ local function draw_cauldron_front()
 
     -- Draw flame animation
     local fmod = math.fmod
+
     gfx.pushContext()
         if GAMEPLAY_STATE.flame_amount > 0.8 then
             local table_size = TEXTURES.stir_flame_table:getLength()
-            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.stir_flame_table[anim_tick + 1]:draw(0, 0)
-        elseif GAMEPLAY_STATE.flame_amount > 0.6 then
-            local table_size = TEXTURES.high_flame_table:getLength()
-            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
-            TEXTURES.high_flame_table[anim_tick + 1]:draw(22, 160)
-        elseif GAMEPLAY_STATE.flame_amount > 0.3 then
-            local table_size = TEXTURES.high_flame_table:getLength()
-            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 3, table_size)
+            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
+            buildupflame_counter += 1
+            if buildupflame_counter < 5 then
+                TEXTURES.buildup_flame:draw(0, 0)
+            else
+                TEXTURES.stir_flame_table[anim_tick + 1]:draw(0, 0)
+            end
+        elseif GAMEPLAY_STATE.flame_amount > 0.5 then
+            buildupflame_counter = buildupflame_counter * 0.5
+            if buildupflame_counter > 2 then
+                local table_size = TEXTURES.stir_flame_table:getLength()
+                local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
+                TEXTURES.stir_flame_table[anim_tick + 1]:draw(0, 0)
+            else
+                local table_size = TEXTURES.high_flame_table:getLength()
+                local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
+                TEXTURES.high_flame_table[anim_tick + 1]:draw(22, 160)
+                buildupflame_counter = 0
+            end
+        elseif GAMEPLAY_STATE.heat_amount > 0.4 then
+            local table_size = TEXTURES.medium_flame_table:getLength()
+            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
             TEXTURES.medium_flame_table[anim_tick + 1]:draw(22, 160)
-        else
+        elseif GAMEPLAY_STATE.heat_amount > 0.05 then
             local table_size = TEXTURES.low_flame_table:getLength()
             local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
             TEXTURES.low_flame_table[anim_tick + 1]:draw(22, 160)
@@ -746,6 +762,7 @@ function Init_visuals()
     TEXTURES.medium_flame_table = gfxit.new("images/fx/mediumflame")
     TEXTURES.high_flame_table = gfxit.new("images/fx/highflame")
     TEXTURES.stir_flame_table = gfxit.new("images/fx/stirredflame")
+    TEXTURES.buildup_flame = gfxi.new("images/fx/buildupflame")
     TEXTURES.bubble_table = gfxit.new("images/fx/bubble")
     TEXTURES.bubble_table2 = gfxit.new("images/fx/bubble2")
     TEXTURES.splish = gfxit.new("images/fx/splish")
