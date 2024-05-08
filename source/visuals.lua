@@ -805,4 +805,4 @@ function Init_visuals()
     --Set_draw_pass(50, draw_test_dither_patterns)
 end
 
-Z_DEPTH = { frog=10, ingredients=9, grabbed_ingredient = 24 }
+Z_DEPTH = { frog=10, ingredients=-5, grabbed_ingredient = 24 }
