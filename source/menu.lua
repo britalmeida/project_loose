@@ -70,6 +70,8 @@ end
 
 -- Draw & Update
 
+local credits_y = 0
+
 local function draw_ui()
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
         return
@@ -104,8 +106,22 @@ local function draw_ui()
             gfx.drawRect(first_cocktail_x + cocktail_width * focus_relative_to_window, 0, 120, 240)
         gfx.popContext()
     end
+
+    if MENU_STATE.screen == MENU_SCREEN.credits then
+        gfx.pushContext()
+                -- Fullscreen bg fill
+                gfx.setColor(gfx.kColorBlack)
+                gfx.fillRect(0, 0, 400, 240)
+                -- Draw credit scroll
+                UI_TEXTURES.credit_scroll:draw(0, credits_y)
+        gfx.popContext()
+    end
 end
 
+local auto_scroll_enabled = true
+local auto_scroll = 1
+local wind_up_timer = playdate.timer.new(2*1000, function()
+    end)
 
 function Handle_menu_input()
     if MENU_STATE.screen == MENU_SCREEN.start then
@@ -158,7 +174,49 @@ function Handle_menu_input()
         end
 
     elseif MENU_STATE.screen == MENU_SCREEN.credits then
-        if playdate.buttonJustReleased( playdate.kButtonUp ) then
+        local scroll_speed = 1
+        local auto_scroll_max = 1
+        local auto_scroll_wind_up = 0.025
+        local acceleratedChange = playdate.getCrankChange()
+
+        -- Disable auto-scroll and start wind-up timer
+        if math.abs(acceleratedChange) > 10 or
+        playdate.buttonIsPressed( playdate.kButtonDown ) or
+        playdate.buttonIsPressed( playdate.kButtonUp )
+        then
+            auto_scroll_enabled = false
+            wind_up_timer:reset()
+            wind_up_timer = playdate.timer.new(1*1000, function()
+                auto_scroll_enabled = true
+                end)
+        end
+        if auto_scroll_enabled then
+            auto_scroll += auto_scroll_wind_up
+            if auto_scroll > auto_scroll_max then
+                auto_scroll = auto_scroll_max
+            end
+        else
+            auto_scroll = 0
+        end
+
+        -- Calculate credit scroll
+        local crankTicks = playdate.getCrankTicks(scroll_speed * 100)
+        credits_y += -crankTicks - auto_scroll
+        if playdate.buttonIsPressed( playdate.kButtonUp ) then
+            credits_y += scroll_speed
+        elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
+            credits_y += -scroll_speed
+        end
+
+        -- Limit scroll range
+        if credits_y < -900 then
+            credits_y = -900
+        end
+
+        -- Return to menu
+        if credits_y > 0 or playdate.buttonJustReleased( playdate.kButtonB ) then
+            credits_y = 0
+            auto_scroll_enabled = true
             SOUND.menu_confirm:play()
             Enter_menu_start()
         end
@@ -170,7 +228,8 @@ function Init_menus()
 
     UI_TEXTURES.start = gfxi.new("images/menu_start")
     UI_TEXTURES.mission = gfxi.new(1,1)  -- unused
-    UI_TEXTURES.credits = gfxi.new("images/menu_credits")
+    UI_TEXTURES.credits = gfxi.new(1,1)  -- unused
+    UI_TEXTURES.credit_scroll = gfxi.new("images/menu_credits")
 
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.active_screen_texture = UI_TEXTURES.start
