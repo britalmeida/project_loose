@@ -11,7 +11,7 @@ INGREDIENT_TYPES = {
     { name="Coffee Beans",   rune_composition={ 1,  0, 2},  x=33, y= 81, img=gfxi.new('images/ingredients/coffee'),        drop=gfx.image.new('images/ingredients/coffee_drop'), hold=nil  },
     { name="Toenails",       rune_composition={-3,  1,  0},  x= 20, y= 25, img=gfxi.new('images/ingredients/toenails'),     drop=gfx.image.new('images/ingredients/toenails_drop'), hold=nil  },
     { name="Salt",           rune_composition={ 0, -3, -1},  x= 64, y= 28, img=gfxi.new('images/ingredients/salt'),         drop=gfx.image.new('images/ingredients/salt_drop'), hold=nil  },
-    { name="Garlic",         rune_composition={0, -1,  3},  x=280, y= 95, img=gfxi.new('images/ingredients/garlic'),       drop=gfx.image.new('images/ingredients/garlic_drop'), hold=nil  },
+    { name="Garlic",         rune_composition={0, -1,  3},  x=280, y= 95, img=gfxi.new('images/ingredients/garlic'),       drop=gfx.image.new('images/ingredients/garlic_drop'), hold=gfx.image.new('images/ingredients/garlic_held')  },
     { name="Spiderweb",      rune_composition={ -1,  3,  0},  x=365, y= 105, img=gfxi.new('images/ingredients/spiderweb'),    drop=gfx.image.new('images/ingredients/spiderweb_drop'), hold=gfx.image.new('images/ingredients/spiderweb_held')  },
     { name="Snail Shells",   rune_composition={ 1,  0, -3},  x= 20, y=140, img=gfxi.new('images/ingredients/snailshells'),  drop=gfx.image.new('images/ingredients/snailshells_drop'), hold=gfx.image.new('images/ingredients/snailshells_held')  },
 }
