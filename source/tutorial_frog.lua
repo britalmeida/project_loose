@@ -29,8 +29,10 @@ local fire_reminders <const> = {
 local fire_tutorials <const> = {
     "Blow to stoke up the fire\npuff puff puff!",
     "Just blow air onto the\nbottom of the cauldron",
-    "For realz, blow air\non the mic.\nTryyyy it!",
     "10",
+    "For realz, blow air\non the mic.\nTryyyy it!",
+    "Thumb on top of the\nmicrophone?",
+    "Swipe your finger on the mic\nto strike the fire.\nLike lighting a match",
 }
 local stir_tutorials <const> = {
     "Stir clockwise for brighter liquid\nthe other way for dark magic",
