@@ -57,7 +57,7 @@ local need_more_doom <const> = {
     "Missing doom and gloom", "4",
 }
 local need_less_doom <const> = {
-    "Definitely missing happy stuff",  "3",
+    "Grim...\nDefinitely missing happy stuff",  "3",
 }
 local need_more_weed <const> = {
     "Add some veggies",  "6",
