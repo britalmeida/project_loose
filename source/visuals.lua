@@ -521,7 +521,7 @@ local function draw_dialog_bubble()
         end
 
         -- Bounding box of the dialog bubble, within which it is safe to place text.
-        local x_min = 143
+        local x_min = 141
         local y_min = 67
         local width = 210
         local height = 58
@@ -753,8 +753,8 @@ function Init_visuals()
     TEXTURES.cauldron_front = gfxi.new("images/cauldron_front")
     TEXTURES.instructions_prompt = gfxi.new("images/instructions_prompt")
     TEXTURES.b_prompt = gfxit.new("images/animation-b")
-    TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/dialog_bubble_oneline")
-    TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/dialog_bubble_twolines")
+    TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/speechbubble_oneline_wide")
+    TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/speechbubble_twolines_extrawide")
     TEXTURES.instructions = gfxi.new("images/instructions")
     -- Load images
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
