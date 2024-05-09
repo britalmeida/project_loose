@@ -91,19 +91,19 @@ local sayings <const> = {
 
 SPEECH_BUBBLE_ANIM_IMGS = {
     -- The order of these need to match the string number used in the sentence categories.
-    gfxit.new("images/speech/animation-lesslove"),   -- "1"
-    gfxit.new("images/speech/animation-morelove"),   -- "2"
-    gfxit.new("images/speech/animation-lessdoom"),   -- "3"
-    gfxit.new("images/speech/animation-moredoom"),   -- "4"
-    gfxit.new("images/speech/animation-lessweed"),   -- "5"
-    gfxit.new("images/speech/animation-moreweed"),   -- "6"
-    gfxit.new("images/speech/animation-moredark"),   -- "7"
-    gfxit.new("images/speech/animation-morebright"), -- "8"
-    gfxit.new("images/speech/animation-morefire"),   -- "9"
-    gfxit.new("images/speech/animation-blow"),       -- "10"
-    gfxit.new("images/speech/animation-crankcw"),    -- "11"
-    gfxit.new("images/speech/animation-crankccw"),   -- "12"
-    gfxit.new("images/speech/animation-shake"),      -- "13"
+    { gfxit.new("images/speech/animation-lesslove"),   8 }, -- "1"
+    { gfxit.new("images/speech/animation-morelove"),   8 }, -- "2"
+    { gfxit.new("images/speech/animation-lessdoom"),   8 }, -- "3"
+    { gfxit.new("images/speech/animation-moredoom"),   8 }, -- "4"
+    { gfxit.new("images/speech/animation-lessweed"),   8 }, -- "5"
+    { gfxit.new("images/speech/animation-moreweed"),   8 }, -- "6"
+    { gfxit.new("images/speech/animation-moredark"),   8 }, -- "7"
+    { gfxit.new("images/speech/animation-morebright"), 8 }, -- "8"
+    { gfxit.new("images/speech/animation-morefire"),   5 }, -- "9"
+    { gfxit.new("images/speech/animation-blow"),       5 }, -- "10"
+    { gfxit.new("images/speech/animation-crankcw"),    5 }, -- "11"
+    { gfxit.new("images/speech/animation-crankccw"),   5 }, -- "12"
+    { gfxit.new("images/speech/animation-shake"),      7 }, -- "13"
 }
 
 -- Animations
@@ -461,8 +461,8 @@ function Froggo:start_speech_bubble()
     local text = self.last_spoken_sentence_str
     local anim_idx = tonumber(text)
     if anim_idx then
-        local bubble_framerate = 8
-        local bubble_anim_imgs = SPEECH_BUBBLE_ANIM_IMGS[anim_idx]
+        local bubble_anim_imgs = SPEECH_BUBBLE_ANIM_IMGS[anim_idx][1]
+        local bubble_framerate = SPEECH_BUBBLE_ANIM_IMGS[anim_idx][2]
         SPEECH_BUBBLE_ANIM = animloop.new(bubble_framerate * frame_ms, bubble_anim_imgs, true)
     else
         SPEECH_BUBBLE_TEXT = text
