@@ -10,6 +10,7 @@ COCKTAILS = {
 }
 
 TARGET_COCKTAIL = {
+  name = '',
   type_idx = 1,
   rune_ratio = {1, 0, 0},
   color = 0.1,
@@ -29,6 +30,7 @@ end
 function Set_target_potion(chosen_cocktail_idx)  
   local chosen_cocktail = COCKTAILS[chosen_cocktail_idx]
 
+  TARGET_COCKTAIL.name = chosen_cocktail.name
   TARGET_COCKTAIL.type_idx = chosen_cocktail_idx
   TARGET_COCKTAIL.color = chosen_cocktail.color
 
@@ -41,4 +43,9 @@ function Set_target_potion(chosen_cocktail_idx)
   for a = 1, #TARGET_COCKTAIL.rune_ratio, 1 do
       TARGET_COCKTAIL.rune_ratio[a] = TARGET_COCKTAIL.rune_ratio[a] / sum
   end
+end
+
+function Score_of_recipe(recipe)
+  local score = #recipe
+  return score
 end

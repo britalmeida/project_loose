@@ -3,12 +3,18 @@ local gfxi <const> = playdate.graphics.image
 
 MENU_STATE = {}
 MENU_SCREEN = { gameplay = 0, start = 2, mission = 3, credits = 4 }
+
+FROGS_FAVES = {
+    accomplishments = {},
+    recipes = {}, 
+}
+
 local UI_TEXTURES = {}
 local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the mission selection, others are (half) clipped.
 
 -- System Menu
 
-local function add_system_menu_entries()
+local function add_system_menu_entries_gameplay()
 
     local menu = playdate.getSystemMenu()
     menu:removeAllMenuItems() -- ensure there's no duplicated entries.
@@ -23,10 +29,50 @@ local function add_system_menu_entries()
     end)
 end
 
+local function add_system_menu_entries_cocktails()
+
+    local menu = playdate.getSystemMenu()
+    menu:removeAllMenuItems() -- ensure there's no duplicated entries.
+
+    -- Add custom entries to system menu.
+    local menuItem, error = menu:addMenuItem("reset scores", function()
+        Reset_high_scores()
+    end)
+end
+
 local function remove_system_menu_entries()
     playdate.getSystemMenu():removeAllMenuItems()
 end
 
+-- High Score
+
+function Reset_high_scores()
+    local frogs_faves = {
+        accomplishments = {},
+        recipes = {}
+    }
+
+    for a = 1, #COCKTAILS, 1 do
+        frogs_faves.accomplishments[COCKTAILS[a].name] = false
+        frogs_faves.recipes[COCKTAILS[a].name] = {}
+    end
+
+    FROGS_FAVES = frogs_faves
+    playdate.datastore.write(frogs_faves, 'frogs_faves')
+end
+
+function Store_high_scores()
+    playdate.datastore.write(FROGS_FAVES, 'frogs_faves')
+end
+
+function Load_high_scores()
+    FROGS_FAVES = playdate.datastore.read('frogs_faves')
+    if FROGS_FAVES == nil then
+        Reset_high_scores()
+    elseif next(FROGS_FAVES) == nil then
+        Reset_high_scores()
+    end
+end
 
 -- Menu State Transitions
 
@@ -44,6 +90,8 @@ function Enter_menu_start()
 end
 
 local function enter_menu_mission()
+    Load_high_scores()
+    add_system_menu_entries_cocktails()
     MENU_STATE.screen = MENU_SCREEN.mission
     MENU_STATE.active_screen_texture = UI_TEXTURES.mission
 end
@@ -61,7 +109,7 @@ function Enter_gameplay()
         SOUND.bg_loop_gameplay:play(0)
     end
 
-    add_system_menu_entries()
+    add_system_menu_entries_gameplay()
     Reroll_mystery_potion()
     Reset_gameplay()
 end
@@ -96,7 +144,19 @@ local function draw_ui()
                 if (i-1) >= MENU_STATE.first_option_in_view - 1 and
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
-                    cocktail.img:draw(first_cocktail_x + cocktail_width * cocktail_relative_to_window, 0)
+                    local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window 
+                    cocktail.img:draw(cocktail_x, 0)
+                    
+                    -- draw badge of accomplishment
+                    local cocktail_done = ''
+                    if FROGS_FAVES.accomplishments[cocktail.name] then
+                        cocktail_done = 'SERVED'
+                    end
+                    gfx.pushContext()
+                        gfx.setFont(FONTS.speech_font)
+                        gfx.setImageDrawMode(gfx.kDrawModeInverted)
+                        gfx.drawText(cocktail_done, cocktail_x + 50, 214, gfx.font)
+                    gfx.popContext()
                 end
             end
             -- Draw current option indicator

@@ -57,6 +57,7 @@ function Ingredient:tick()
     -- Called during gameplay when self:isVisible == true
 
     if self.is_drop and self:getBoundsRect():intersects(LIQUID_AABB) then
+        CURRENT_RECIPE[#CURRENT_RECIPE+1] = self.ingredient_type_idx
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
         table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()

@@ -28,6 +28,8 @@ GAMEPLAY_STATE = {
     cursor_hold = false,
 }
 
+CURRENT_RECIPE = {}
+
 DIFF_TO_TARGET = {
     color = 1,
     color_abs = 1,
@@ -102,6 +104,7 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_ratio[a] = 0
     end
+    CURRENT_RECIPE = {}
 
     Calculate_goodness()
 
