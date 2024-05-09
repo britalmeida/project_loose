@@ -1,5 +1,6 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
+local gfxit <const> = playdate.graphics.imagetable
 
 MENU_STATE = {}
 MENU_SCREEN = { gameplay = 0, start = 2, mission = 3, credits = 4 }
@@ -119,9 +120,14 @@ end
 -- Draw & Update
 
 local credits_y = 0
+local credits_tick = 0
 
 local function draw_ui()
+    -- Timing to the music for credits animation
+    credits_tick += 1
+
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
+        credits_tick = 0
         return
     end
 
@@ -175,12 +181,16 @@ local function draw_ui()
     end
 
     if MENU_STATE.screen == MENU_SCREEN.credits then
+        local fmod = math.fmod
         gfx.pushContext()
                 -- Fullscreen bg fill
                 gfx.setColor(gfx.kColorBlack)
                 gfx.fillRect(0, 0, 400, 240)
                 -- Draw credit scroll
-                UI_TEXTURES.credit_scroll:draw(0, credits_y)
+                --UI_TEXTURES.credit_scroll:draw(0, credits_y)
+                local anim_length = UI_TEXTURES.credit_scroll:getLength()
+                local anim_tick = math.fmod(credits_tick // 9.1, anim_length)
+                UI_TEXTURES.credit_scroll[anim_tick + 1]:draw(0, credits_y)
         gfx.popContext()
     end
 end
@@ -277,8 +287,8 @@ function Handle_menu_input()
         end
 
         -- Limit scroll range
-        if credits_y < -900 then
-            credits_y = -900
+        if credits_y < -990 then
+            credits_y = -990
         end
 
         -- Return to menu
@@ -297,7 +307,7 @@ function Init_menus()
     UI_TEXTURES.start = gfxi.new("images/menu_start")
     UI_TEXTURES.mission = gfxi.new(1,1)  -- unused
     UI_TEXTURES.credits = gfxi.new(1,1)  -- unused
-    UI_TEXTURES.credit_scroll = gfxi.new("images/menu_credits")
+    UI_TEXTURES.credit_scroll = gfxit.new("images/credits")
 
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.active_screen_texture = UI_TEXTURES.start
