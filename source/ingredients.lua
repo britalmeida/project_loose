@@ -225,6 +225,7 @@ function Ingredient:drop()
   Splash_animating = true
   local drop = Ingredient(self.ingredient_type_idx, geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y), true)
   drop.state = INGREDIENT_STATE.is_in_air
+  PLAYER_LEARNED.how_to_release = true
   drop:setZIndex(Z_DEPTH.grabbed_ingredient)
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)

@@ -315,7 +315,7 @@ function Froggo:think()
         end
     end
     if self.tutorial_state == TUTORIAL_STATE.grab then
-        if PLAYER_LEARNED.how_to_grab then
+        if PLAYER_LEARNED.how_to_grab and PLAYER_LEARNED.how_to_release then
             self.tutorial_state += 1
         end
     end

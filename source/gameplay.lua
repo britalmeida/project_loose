@@ -116,6 +116,7 @@ function Reset_gameplay()
 
     PLAYER_LEARNED.how_to_fire = false
     PLAYER_LEARNED.how_to_grab = false
+    PLAYER_LEARNED.how_to_release = false
     PLAYER_LEARNED.how_to_shake = false
     PLAYER_LEARNED.how_to_cw_for_brighter = false
     PLAYER_LEARNED.how_to_ccw_for_darker = false
