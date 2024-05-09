@@ -193,7 +193,8 @@ local wind_up_timer = playdate.timer.new(2*1000, function()
 function Handle_menu_input()
     if MENU_STATE.screen == MENU_SCREEN.start then
         -- Select an Option.
-        if playdate.buttonJustReleased( playdate.kButtonRight ) then
+        if playdate.buttonJustReleased( playdate.kButtonRight ) or
+            playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
             enter_menu_mission()
         end
