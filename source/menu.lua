@@ -118,18 +118,18 @@ end
 
 -- Draw & Update
 
-local credits_tick = 0
+local music_tick = 0
 local side_scroll_direction = 1
 local side_scroll_speed = 40
 local side_scroll_x = 320
 
 local function draw_ui()
     -- Timing to the music for credits animation
-    credits_tick += 1
-    local music_tick = 9.1
+    music_tick += 1
+    local music_speed = 9.1
 
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
-        credits_tick = 0
+        music_tick = 0
         return
     end
 
@@ -169,7 +169,7 @@ local function draw_ui()
 
             -- Draw credit scroll
             local anim_length = UI_TEXTURES.credit_scroll:getLength()
-            local anim_tick = math.fmod(credits_tick // music_tick, anim_length)
+            local anim_tick = math.fmod(music_tick // music_speed, anim_length)
             UI_TEXTURES.credit_scroll[anim_tick + 1]:draw(global_origin[1], global_origin[2] + 240)
 
 
@@ -187,7 +187,13 @@ local function draw_ui()
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
-                    cocktail.img:draw(cocktail_x, global_origin[2])
+                    if (i-1) == MENU_STATE.focused_option and cocktail.anim ~= nil then
+                        local anim_length = cocktail.anim:getLength()
+                        local anim_tick = math.fmod(music_tick // (music_speed *2), anim_length)
+                    cocktail.anim[anim_tick + 1]:draw(cocktail_x, global_origin[2])
+                    else
+                        cocktail.img:draw(cocktail_x, global_origin[2])
+                    end
 
                     -- draw badge of accomplishment
                     local cocktail_done = ''
@@ -209,7 +215,7 @@ local function draw_ui()
             -- Draw current option indicator
             local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
             local anim_length = UI_TEXTURES.selection_highlight:getLength()
-            local anim_tick = math.fmod(credits_tick // (music_tick *2), anim_length)
+            local anim_tick = math.fmod(music_tick // (music_speed *2), anim_length)
             UI_TEXTURES.selection_highlight[anim_tick + 1]:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
 
         gfx.popContext()
