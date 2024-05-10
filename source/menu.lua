@@ -253,7 +253,7 @@ function Handle_menu_input()
         end
 
     elseif MENU_STATE.screen == MENU_SCREEN.credits then
-        local scroll_speed = 1
+        local scroll_speed = 1.8
         local auto_scroll_max = 1
         local auto_scroll_wind_up = 0.025
         local acceleratedChange = playdate.getCrankChange()
@@ -282,9 +282,9 @@ function Handle_menu_input()
         local crankTicks = playdate.getCrankTicks(scroll_speed * 100)
         credits_y += -crankTicks - auto_scroll
         if playdate.buttonIsPressed( playdate.kButtonUp ) then
-            credits_y += scroll_speed
+            credits_y += scroll_speed * 2
         elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
-            credits_y += -scroll_speed
+            credits_y += -scroll_speed * 2
         end
 
         -- Limit scroll range
