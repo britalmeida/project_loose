@@ -5,15 +5,15 @@ local Sprite <const> = gfx.sprite
 
 -- Ingredient types
 INGREDIENT_TYPES = {
-    { name="Peppermints",    rune_composition={ 2, -1,  0},  x= 375, y= 27, img=gfxi.new('images/ingredients/peppermints'),  drop=gfx.image.new('images/ingredients/peppermints_drop'), hold=nil },
-    { name="Perfume",        rune_composition={ 3, 0, -1},  x=330, y= 32, img=gfxi.new('images/ingredients/perfume'),      drop=gfx.image.new('images/ingredients/perfume_drop'), hold=nil  },
-    { name="Mushrooms",      rune_composition={ 0,  2,  1},  x=270, y= 28, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfx.image.new('images/ingredients/mushrooms_drop'), hold=nil  },
-    { name="Coffee Beans",   rune_composition={ 1,  0, 2},  x=33, y= 81, img=gfxi.new('images/ingredients/coffee'),        drop=gfx.image.new('images/ingredients/coffee_drop'), hold=nil  },
-    { name="Toenails",       rune_composition={-3,  1,  0},  x= 20, y= 25, img=gfxi.new('images/ingredients/toenails'),     drop=gfx.image.new('images/ingredients/toenails_drop'), hold=nil  },
-    { name="Salt",           rune_composition={ 0, -3, -1},  x= 64, y= 28, img=gfxi.new('images/ingredients/salt'),         drop=gfx.image.new('images/ingredients/salt_drop'), hold=nil  },
-    { name="Garlic",         rune_composition={0, -1,  3},  x=280, y= 95, img=gfxi.new('images/ingredients/garlic'),       drop=gfx.image.new('images/ingredients/garlic_drop'), hold=gfx.image.new('images/ingredients/garlic_held')  },
-    { name="Spiderweb",      rune_composition={ -1,  3,  0},  x=365, y= 105, img=gfxi.new('images/ingredients/spiderweb'),    drop=gfx.image.new('images/ingredients/spiderweb_drop'), hold=gfx.image.new('images/ingredients/spiderweb_held')  },
-    { name="Snail Shells",   rune_composition={ 1,  0, -3},  x= 20, y=140, img=gfxi.new('images/ingredients/snailshells'),  drop=gfx.image.new('images/ingredients/snailshells_drop'), hold=gfx.image.new('images/ingredients/snailshells_held')  },
+    { name="Peppermints",   drop_name="peppermint",   rune_composition={ 2, -1,  0},  x= 375, y= 27,  img=gfxi.new('images/ingredients/peppermints'),  drop=gfx.image.new('images/ingredients/peppermints_drop'), hold=nil },
+    { name="Perfume",       drop_name="perfume drop", rune_composition={ 3, 0, -1},   x=330,  y= 32,  img=gfxi.new('images/ingredients/perfume'),      drop=gfx.image.new('images/ingredients/perfume_drop'),     hold=nil  },
+    { name="Mushrooms",     drop_name="mushroom",     rune_composition={ 0,  2,  1},  x=270,  y= 28,  img=gfxi.new('images/ingredients/mushrooms'),    drop=gfx.image.new('images/ingredients/mushrooms_drop'),   hold=nil  },
+    { name="Coffee Beans",  drop_name="coffee bean",  rune_composition={ 1,  0, 2},   x=33,   y= 81,  img=gfxi.new('images/ingredients/coffee'),       drop=gfx.image.new('images/ingredients/coffee_drop'),      hold=nil  },
+    { name="Toenails",      drop_name="toenail",      rune_composition={-3,  1,  0},  x= 20,  y= 25,  img=gfxi.new('images/ingredients/toenails'),     drop=gfx.image.new('images/ingredients/toenails_drop'),    hold=nil  },
+    { name="Salt",          drop_name="salt grain",   rune_composition={ 0, -3, -1},  x= 64,  y= 28,  img=gfxi.new('images/ingredients/salt'),         drop=gfx.image.new('images/ingredients/salt_drop'),        hold=nil  },
+    { name="Garlic",        drop_name="garlic clove", rune_composition={0, -1,  3},   x=280,  y= 95,  img=gfxi.new('images/ingredients/garlic'),       drop=gfx.image.new('images/ingredients/garlic_drop'),      hold=gfx.image.new('images/ingredients/garlic_held')  },
+    { name="Spiderweb",     drop_name="spider",       rune_composition={ -1,  3,  0}, x=365,  y= 105, img=gfxi.new('images/ingredients/spiderweb'),    drop=gfx.image.new('images/ingredients/spiderweb_drop'),   hold=gfx.image.new('images/ingredients/spiderweb_held')  },
+    { name="Snail Shells",  drop_name="snail shell",  rune_composition={ 1,  0, -3},  x= 20,  y=140,  img=gfxi.new('images/ingredients/snailshells'),  drop=gfx.image.new('images/ingredients/snailshells_drop'), hold=gfx.image.new('images/ingredients/snailshells_held')  },
 }
 
 INGREDIENTS = {}
@@ -57,8 +57,11 @@ function Ingredient:tick()
     -- Called during gameplay when self:isVisible == true
 
     if self.is_drop and self:getBoundsRect():intersects(LIQUID_AABB) then
+        -- add ingredient to current recipe and update rune count
         CURRENT_RECIPE[#CURRENT_RECIPE+1] = self.ingredient_type_idx
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
+        Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE))
+
         table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()
         local num_floating_drops = 4

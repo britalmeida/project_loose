@@ -11,6 +11,7 @@ import "gameplay"
 import "visuals"
 import "menu"
 import "ingredients"
+import "recipe_book"
 import "cocktail_manager"
 import "tutorial_frog"
 
