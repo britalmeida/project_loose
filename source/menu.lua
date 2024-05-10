@@ -162,8 +162,6 @@ local function draw_ui()
                 side_scroll_x = 400
             end
 
-            print(side_scroll_x)
-
             -- Draw main menu
             UI_TEXTURES.start:draw(global_origin[1] + side_scroll_x - 400, global_origin[2])
 
@@ -257,8 +255,6 @@ end
 function Handle_menu_input()
     local acceleratedChange = playdate.getCrankChange()
 
-    print(global_origin[1])
-
     if MENU_STATE.screen == MENU_SCREEN.start then
 
         -- Select an Option.
@@ -301,6 +297,8 @@ function Handle_menu_input()
             SOUND.menu_confirm:play()
             -- reset mystery potion
             Set_target_potion(MENU_STATE.focused_option + 1)
+            MENU_STATE.focused_option = 0
+            side_scroll_x = 400
             Enter_gameplay()
         elseif playdate.buttonJustReleased( playdate.kButtonLeft ) and
         MENU_STATE.focused_option < 1 or
