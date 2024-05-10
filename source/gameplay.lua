@@ -10,6 +10,7 @@ DIR = { need_more_of = 1, need_less_of = 2 }
 GAMEPLAY_STATE = {
     showing_cocktail = false,
     showing_instructions = false,
+    showing_recipe = false,
     -- Fire!
     flame_amount = 0.0,
     heat_amount = 0.0,
@@ -267,6 +268,11 @@ function Handle_input()
     elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
         GAMEPLAY_STATE.showing_instructions = false
     end
+    if playdate.buttonJustPressed( playdate.kButtonDown ) then
+        GAMEPLAY_STATE.showing_recipe = true
+    elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
+        GAMEPLAY_STATE.showing_recipe = false
+    end
 
     
     
@@ -300,7 +306,7 @@ function Handle_input()
             else
                 CURRENT_RECIPE[#CURRENT_RECIPE+1] = -2
             end
-            Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE))
+            Recipe_update_current()
         end
     end
 

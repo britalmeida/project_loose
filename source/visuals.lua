@@ -500,6 +500,41 @@ local function draw_overlayed_instructions()
     end
 end
 
+local function draw_overlayed_recipe()
+
+    local recipe_x = 50
+    local recipe_y = 0
+    local text_x = 24
+    local text_y = 40
+    local line_height = 20
+    local flip_table = {"flipX", "flipY", "flipXY"}
+
+    -- figure out amount of insert pieces for the text
+    local insert_height = TEXTURES.recipe_middle[1].height
+    local number_of_lines = #RECIPE_TEXT
+    local number_of_inserts = math.max(0, math.ceil(((number_of_lines * line_height) + text_y - TEXTURES.recipe_top.height ) / insert_height))
+    if GAMEPLAY_STATE.showing_recipe then
+        math.randomseed(10)
+        gfx.setDitherPattern(0.6, gfxi.kDitherTypeBayer4x4)
+        gfx.fillRect(0, 0, 400, 240)
+        gfx.pushContext()
+            TEXTURES.recipe_top:draw(recipe_x, recipe_y)
+            for a = 1, number_of_inserts, 1 do
+               TEXTURES.recipe_middle[math.random(3)]:draw(recipe_x, recipe_y + TEXTURES.recipe_top.height + (a-1) * insert_height, flip_table[math.random(3)])
+            end
+            TEXTURES.recipe_bottom:draw(recipe_x, recipe_y + number_of_inserts * insert_height + TEXTURES.recipe_top.height)
+        gfx.popContext()
+
+        gfx.pushContext()
+            local y = recipe_y + text_y
+            gfx.setFont(FONTS.speech_font)
+            for a = 1, #RECIPE_TEXT, 1 do
+                gfx.drawText(RECIPE_TEXT[a], recipe_x + text_x, y)
+                y += line_height
+            end
+        gfx.popContext()
+    end
+end
 
 local function draw_dialog_bubble()
     if SPEECH_BUBBLE_ANIM then
@@ -756,6 +791,11 @@ function Init_visuals()
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/speechbubble_oneline_wide")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/speechbubble_twolines_extrawide")
     TEXTURES.instructions = gfxi.new("images/instructions")
+    TEXTURES.recipe_top = gfxi.new("images/recipes/recipe_top_section")
+    TEXTURES.recipe_bottom = gfxi.new("images/recipes/recipe_bottom_section")
+    TEXTURES.recipe_middle = {  gfxi.new("images/recipes/recipe_mid_1"),
+                                gfxi.new("images/recipes/recipe_mid_2"),
+                                gfxi.new("images/recipes/recipe_mid_3"),}
     -- Load images
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
@@ -805,6 +845,7 @@ function Init_visuals()
     Set_draw_pass(27, draw_dialog_bubble)
     -- depth 30+: overlayed modal instructions
     Set_draw_pass(30, draw_overlayed_instructions)
+    Set_draw_pass(35, draw_overlayed_recipe)
     -- Development
     --Set_draw_pass(50, draw_debug)
     --Set_draw_pass(50, draw_test_dither_patterns)

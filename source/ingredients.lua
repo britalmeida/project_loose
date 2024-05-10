@@ -60,7 +60,7 @@ function Ingredient:tick()
         -- add ingredient to current recipe and update rune count
         CURRENT_RECIPE[#CURRENT_RECIPE+1] = self.ingredient_type_idx
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
-        Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE))
+        Recipe_update_current()
 
         table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()

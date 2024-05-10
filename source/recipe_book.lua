@@ -1,6 +1,8 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
 
+RECIPE_TEXT = {}
+
 function Recipe_to_steps(recipe)
 
     local current_ingredient = recipe[1]
@@ -43,14 +45,11 @@ function Recipe_steps_to_text(recipe_steps)
         end
         text_lines[#text_lines+1] = line
     end
-
-    -- debug print on recipe change
-    print()
-    for a = 1, #text_lines, 1 do
-        print(text_lines[a])
-    end
-
     return text_lines
+end
+
+function Recipe_update_current()
+    RECIPE_TEXT = Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE))
 end
 
 function Recipe_draw_success(recipe)
