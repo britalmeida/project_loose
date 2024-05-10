@@ -126,6 +126,7 @@ local side_scroll_x = 320
 local function draw_ui()
     -- Timing to the music for credits animation
     credits_tick += 1
+    local music_tick = 9.1
 
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
         credits_tick = 0
@@ -168,7 +169,7 @@ local function draw_ui()
 
             -- Draw credit scroll
             local anim_length = UI_TEXTURES.credit_scroll:getLength()
-            local anim_tick = math.fmod(credits_tick // 9.1, anim_length)
+            local anim_tick = math.fmod(credits_tick // music_tick, anim_length)
             UI_TEXTURES.credit_scroll[anim_tick + 1]:draw(global_origin[1], global_origin[2] + 240)
 
 
@@ -208,7 +209,7 @@ local function draw_ui()
             -- Draw current option indicator
             local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
             local anim_length = UI_TEXTURES.selection_highlight:getLength()
-            local anim_tick = math.fmod(credits_tick // 4, anim_length)
+            local anim_tick = math.fmod(credits_tick // (music_tick *2), anim_length)
             UI_TEXTURES.selection_highlight[anim_tick + 1]:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
 
         gfx.popContext()
