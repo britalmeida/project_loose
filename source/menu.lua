@@ -220,7 +220,8 @@ function Handle_menu_input()
             Set_target_potion(MENU_STATE.focused_option + 1)
             Enter_gameplay()
         elseif playdate.buttonJustReleased( playdate.kButtonLeft ) and
-        MENU_STATE.focused_option < 1 then
+        MENU_STATE.focused_option < 1 or
+        playdate.buttonJustReleased( playdate.kButtonB )then
             SOUND.menu_confirm:play()
             Enter_menu_start()
         end
