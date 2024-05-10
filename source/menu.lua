@@ -88,6 +88,8 @@ function Enter_menu_start()
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
     end
+
+    global_origin = {0, 0}
 end
 
 local function enter_menu_mission()
