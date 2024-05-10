@@ -137,7 +137,7 @@ local function draw_ui()
     -- Draw background screen image.
     MENU_STATE.active_screen_texture:draw(0, 0)
 
-    -- Draw combined start and credits menus
+    -- Draw combined menus
     if MENU_STATE.screen == MENU_SCREEN.start or MENU_SCREEN.credits or MENU_SCREEN.mission then
         local fmod = math.fmod
         gfx.pushContext()
@@ -186,7 +186,7 @@ local function draw_ui()
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
-                    cocktail.img:draw(cocktail_x, 0)
+                    cocktail.img:draw(cocktail_x, global_origin[2])
 
                     -- draw badge of accomplishment
                     local cocktail_done = ''
