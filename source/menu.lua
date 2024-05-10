@@ -119,6 +119,9 @@ end
 -- Draw & Update
 
 local credits_tick = 0
+local side_scroll_direction = 1
+local side_scroll_speed = 40
+local side_scroll_x = 320
 
 local function draw_ui()
     -- Timing to the music for credits animation
@@ -135,31 +138,48 @@ local function draw_ui()
     MENU_STATE.active_screen_texture:draw(0, 0)
 
     -- Draw combined start and credits menus
-    if MENU_STATE.screen == MENU_SCREEN.start or MENU_SCREEN.credits then
+    if MENU_STATE.screen == MENU_SCREEN.start or MENU_SCREEN.credits or MENU_SCREEN.mission then
         local fmod = math.fmod
         gfx.pushContext()
 
+            -- Fullscreen bg fill
+            gfx.setColor(gfx.kColorBlack)
+            gfx.fillRect(0, 0, 400, 240)
+
+            -- Side_scroll to auto-scroll to the correct screen
+            if MENU_STATE.screen == MENU_SCREEN.mission then
+                side_scroll_direction = 1
+            else
+                side_scroll_direction = -1
+            end
+
+            side_scroll_x += -side_scroll_speed * side_scroll_direction
+
+            -- Cap side_scroll range
+            if side_scroll_x < 50 then
+                side_scroll_x = 50
+            elseif side_scroll_x > 400 then
+                side_scroll_x = 400
+            end
+
+            print(side_scroll_x)
+
             -- Draw main menu
-            UI_TEXTURES.start:draw(global_origin[1], global_origin[2])
+            UI_TEXTURES.start:draw(global_origin[1] + side_scroll_x - 400, global_origin[2])
+
 
             -- Draw credit scroll
             local anim_length = UI_TEXTURES.credit_scroll:getLength()
             local anim_tick = math.fmod(credits_tick // 9.1, anim_length)
             UI_TEXTURES.credit_scroll[anim_tick + 1]:draw(global_origin[1], global_origin[2] + 240)
 
-        gfx.popContext()
-    end
 
-    -- Draw mission selection options.
-    if MENU_STATE.screen == MENU_SCREEN.mission then
-        gfx.pushContext()
-            -- Fullscreen bg fill
-            gfx.setColor(gfx.kColorBlack)
-            gfx.fillRect(0, 0, 400, 240)
+            -- Draw cocktail selection
+
             -- Draw cocktails
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
             local cocktail_width = 130
-            local first_cocktail_x = -cocktail_width * 0.5
+            local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 70
 
             local badge_position_x = 10
             local badge_position_y = 10
@@ -167,9 +187,9 @@ local function draw_ui()
                 if (i-1) >= MENU_STATE.first_option_in_view - 1 and
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
-                    local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window 
+                    local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
                     cocktail.img:draw(cocktail_x, 0)
-                    
+
                     -- draw badge of accomplishment
                     local cocktail_done = ''
                     if FROGS_FAVES.accomplishments[cocktail.name] then
@@ -191,6 +211,7 @@ local function draw_ui()
             gfx.setLineWidth(3.0)
             local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
             gfx.drawRect(first_cocktail_x + cocktail_width * focus_relative_to_window, 0, 120, 240)
+
         gfx.popContext()
     end
 
@@ -236,6 +257,8 @@ end
 function Handle_menu_input()
     local acceleratedChange = playdate.getCrankChange()
 
+    print(global_origin[1])
+
     if MENU_STATE.screen == MENU_SCREEN.start then
 
         -- Select an Option.
@@ -261,7 +284,7 @@ function Handle_menu_input()
             global_origin[2] = 0
         end
 
-        -- Return to start
+        -- Switch to credits
         if acceleratedChange < 1 then
             crank_ccw = true
         elseif acceleratedChange > 1 then
@@ -283,6 +306,7 @@ function Handle_menu_input()
         MENU_STATE.focused_option < 1 or
         playdate.buttonJustReleased( playdate.kButtonB )then
             SOUND.menu_confirm:play()
+            MENU_STATE.focused_option = 0
             Enter_menu_start()
         end
 
