@@ -254,7 +254,7 @@ local function draw_parameter_diagram()
         end
     end
 
-    draw_symbols(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y - 70, 80, params)
+    draw_symbols(MAGIC_TRIANGLE_CENTER_X, 122 - 70, 80, params)
 end
 
 
