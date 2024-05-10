@@ -12,6 +12,7 @@ FROGS_FAVES = {
 
 local UI_TEXTURES = {}
 local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the mission selection, others are (half) clipped.
+local global_origin = {0, 0}
 
 -- System Menu
 
@@ -83,7 +84,6 @@ function Enter_menu_start()
     remove_system_menu_entries()
     Stop_gameplay()
 
-    MENU_STATE.active_screen_texture = UI_TEXTURES.start
     SOUND.bg_loop_gameplay:stop()
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
@@ -99,7 +99,6 @@ end
 
 local function enter_menu_credits()
     MENU_STATE.screen = MENU_SCREEN.credits
-    MENU_STATE.active_screen_texture = UI_TEXTURES.credits
 end
 
 function Enter_gameplay()
@@ -119,7 +118,6 @@ end
 
 -- Draw & Update
 
-local credits_y = 0
 local credits_tick = 0
 
 local function draw_ui()
@@ -135,6 +133,22 @@ local function draw_ui()
 
     -- Draw background screen image.
     MENU_STATE.active_screen_texture:draw(0, 0)
+
+    -- Draw combined start and credits menus
+    if MENU_STATE.screen == MENU_SCREEN.start or MENU_SCREEN.credits then
+        local fmod = math.fmod
+        gfx.pushContext()
+
+            -- Draw main menu
+            UI_TEXTURES.start:draw(global_origin[1], global_origin[2])
+
+            -- Draw credit scroll
+            local anim_length = UI_TEXTURES.credit_scroll:getLength()
+            local anim_tick = math.fmod(credits_tick // 9.1, anim_length)
+            UI_TEXTURES.credit_scroll[anim_tick + 1]:draw(global_origin[1], global_origin[2] + 240)
+
+        gfx.popContext()
+    end
 
     -- Draw mission selection options.
     if MENU_STATE.screen == MENU_SCREEN.mission then
@@ -180,36 +194,82 @@ local function draw_ui()
         gfx.popContext()
     end
 
-    if MENU_STATE.screen == MENU_SCREEN.credits then
-        local fmod = math.fmod
-        gfx.pushContext()
-                -- Fullscreen bg fill
-                gfx.setColor(gfx.kColorBlack)
-                gfx.fillRect(0, 0, 400, 240)
-                -- Draw credit scroll
-                --UI_TEXTURES.credit_scroll:draw(0, credits_y)
-                local anim_length = UI_TEXTURES.credit_scroll:getLength()
-                local anim_tick = math.fmod(credits_tick // 9.1, anim_length)
-                UI_TEXTURES.credit_scroll[anim_tick + 1]:draw(0, credits_y)
-        gfx.popContext()
+end
+
+local scroll_speed = 1.8
+local auto_scroll_enabled = true
+local auto_scroll = 1
+local auto_scroll_max = 1
+local auto_scroll_wind_up = 0.025
+local wind_up_timer = playdate.timer.new(2*1000, function()
+    end)
+local crank_ccw = false
+
+
+function Calculate_auto_scroll()
+
+    -- Disable auto-scroll and start wind-up timer
+    local acceleratedChange = playdate.getCrankChange()
+    if math.abs(acceleratedChange) > 10 or
+    playdate.buttonIsPressed( playdate.kButtonDown ) or
+    playdate.buttonIsPressed( playdate.kButtonUp ) then
+        auto_scroll_enabled = false
+        wind_up_timer:remove()
+        wind_up_timer = playdate.timer.new(1*1000, function()
+            auto_scroll_enabled = true
+            end)
+        if MENU_STATE.screen == MENU_SCREEN.start then
+            auto_scroll_enabled = true
+        end
+    end
+    if auto_scroll_enabled then
+        auto_scroll += auto_scroll_wind_up
+        if auto_scroll > auto_scroll_max then
+            auto_scroll = auto_scroll_max
+        end
+    else
+        auto_scroll = 0
     end
 end
 
-local auto_scroll_enabled = true
-local auto_scroll = 1
-local wind_up_timer = playdate.timer.new(2*1000, function()
-    end)
 
 function Handle_menu_input()
+    local acceleratedChange = playdate.getCrankChange()
+
     if MENU_STATE.screen == MENU_SCREEN.start then
+
         -- Select an Option.
         if playdate.buttonJustReleased( playdate.kButtonRight ) or
             playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
             enter_menu_mission()
         end
-        if playdate.buttonJustReleased( playdate.kButtonDown ) then
-            SOUND.menu_confirm:play()
+
+        Calculate_auto_scroll()
+
+        -- Calculate credit scroll
+        local crankTicks = playdate.getCrankTicks(scroll_speed * 100)
+        global_origin[2] += -crankTicks + auto_scroll
+        if playdate.buttonIsPressed( playdate.kButtonUp ) then
+            global_origin[2] += scroll_speed * 2
+        elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
+            global_origin[2] += -scroll_speed * 2
+        end
+
+        -- Limit scroll range
+        if global_origin[2] > 0 then
+            global_origin[2] = 0
+        end
+
+        -- Return to start
+        if acceleratedChange < 1 then
+            crank_ccw = true
+        elseif acceleratedChange > 1 then
+            crank_ccw = false
+        end
+        if global_origin[2] < -5 and playdate.buttonIsPressed( playdate.kButtonDown ) or
+            global_origin[2] < -5 and not crank_ccw then
+            auto_scroll_enabled = true
             enter_menu_credits()
         end
 
@@ -253,51 +313,37 @@ function Handle_menu_input()
         end
 
     elseif MENU_STATE.screen == MENU_SCREEN.credits then
-        local scroll_speed = 1.8
-        local auto_scroll_max = 1
-        local auto_scroll_wind_up = 0.025
-        local acceleratedChange = playdate.getCrankChange()
 
-        -- Disable auto-scroll and start wind-up timer
-        if math.abs(acceleratedChange) > 10 or
-        playdate.buttonIsPressed( playdate.kButtonDown ) or
-        playdate.buttonIsPressed( playdate.kButtonUp )
-        then
-            auto_scroll_enabled = false
-            wind_up_timer:reset()
-            wind_up_timer = playdate.timer.new(1*1000, function()
-                auto_scroll_enabled = true
-                end)
-        end
-        if auto_scroll_enabled then
-            auto_scroll += auto_scroll_wind_up
-            if auto_scroll > auto_scroll_max then
-                auto_scroll = auto_scroll_max
-            end
-        else
-            auto_scroll = 0
-        end
+        Calculate_auto_scroll()
 
         -- Calculate credit scroll
         local crankTicks = playdate.getCrankTicks(scroll_speed * 100)
-        credits_y += -crankTicks - auto_scroll
+        global_origin[2] += -crankTicks - auto_scroll
         if playdate.buttonIsPressed( playdate.kButtonUp ) then
-            credits_y += scroll_speed * 2
+            global_origin[2] += scroll_speed * 2
         elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
-            credits_y += -scroll_speed * 2
+            global_origin[2] += -scroll_speed * 2
         end
 
         -- Limit scroll range
-        if credits_y < -990 then
-            credits_y = -990
+        if global_origin[2] < -990 - 240 then
+            global_origin[2] = -990 - 240
         end
 
-        -- Return to menu
-        if credits_y > 0 or playdate.buttonJustReleased( playdate.kButtonB ) then
-            credits_y = 0
+        -- Return to start
+        if acceleratedChange < 0 then
+            crank_ccw = true
+        else
+            crank_ccw = false
+        end
+        if global_origin[2] > -60 and playdate.buttonIsPressed( playdate.kButtonUp ) or
+            global_origin[2] > -60 and crank_ccw
+            or playdate.buttonJustReleased( playdate.kButtonB ) then
             auto_scroll_enabled = true
-            SOUND.menu_confirm:play()
             Enter_menu_start()
+        end
+        if playdate.buttonJustReleased( playdate.kButtonB ) then
+            global_origin[2] = 0
         end
     end
 end
