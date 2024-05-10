@@ -319,9 +319,9 @@ function Handle_menu_input()
         end
         local crankTicks = playdate.getCrankTicks(3)
         if crankTicks == 1 then
-            MENU_STATE.focused_option += 1
+            --scroll top recipe list
         elseif crankTicks == -1 then
-            MENU_STATE.focused_option -= 1
+            --scroll top recipe list
         end
         -- Clamp so the option cycling doesn't wrap around.
         MENU_STATE.focused_option = math.max(MENU_STATE.focused_option, 0)
