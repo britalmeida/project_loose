@@ -334,6 +334,7 @@ end
 
 function Tick_gameplay()
     GAMEPLAY_STATE.game_tick += 1
+    local crankTicks = playdate.getCrankTicks(1) --Not really used, but resets the ticks before going back to start menu
 
     -- Update ingredient animations.
     for _, ingredient in ipairs(INGREDIENTS) do

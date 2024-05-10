@@ -88,8 +88,6 @@ function Enter_menu_start()
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
     end
-
-    global_origin = {0, 0}
 end
 
 local function enter_menu_mission()
@@ -221,21 +219,21 @@ local auto_scroll_enabled = true
 local auto_scroll = 1
 local auto_scroll_max = 1
 local auto_scroll_wind_up = 0.025
-local wind_up_timer = playdate.timer.new(2*1000, function()
+local wind_up_delay = 0.5
+local wind_up_timer = playdate.timer.new(wind_up_delay*1000, function()
     end)
 local crank_ccw = false
 
 
-function Calculate_auto_scroll()
+function Calculate_auto_scroll(direction_button)
 
     -- Disable auto-scroll and start wind-up timer
     local acceleratedChange = playdate.getCrankChange()
     if math.abs(acceleratedChange) > 10 or
-    playdate.buttonIsPressed( playdate.kButtonDown ) or
-    playdate.buttonIsPressed( playdate.kButtonUp ) then
+    playdate.buttonIsPressed( direction_button ) then
         auto_scroll_enabled = false
         wind_up_timer:remove()
-        wind_up_timer = playdate.timer.new(1*1000, function()
+        wind_up_timer = playdate.timer.new(wind_up_delay*1000, function()
             auto_scroll_enabled = true
             end)
         if MENU_STATE.screen == MENU_SCREEN.start then
@@ -265,7 +263,7 @@ function Handle_menu_input()
             enter_menu_mission()
         end
 
-        Calculate_auto_scroll()
+        Calculate_auto_scroll( playdate.kButtonDown )
 
         -- Calculate credit scroll
         local crankTicks = playdate.getCrankTicks(scroll_speed * 100)
@@ -287,13 +285,21 @@ function Handle_menu_input()
         elseif acceleratedChange > 1 then
             crank_ccw = false
         end
-        if global_origin[2] < -5 and playdate.buttonIsPressed( playdate.kButtonDown ) or
-            global_origin[2] < -5 and not crank_ccw then
+        if global_origin[2] < -2 and playdate.buttonIsPressed( playdate.kButtonDown ) or
+            global_origin[2] < -2 and not crank_ccw then
             auto_scroll_enabled = true
             enter_menu_credits()
         end
 
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
+
+        -- Makee sure global_y get's back to 0 position
+        global_origin[2] += 20
+        if global_origin[2] > 0 then
+            global_origin[2] = 0
+        end
+        print(global_origin[2])
+
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
             -- reset mystery potion
@@ -337,7 +343,7 @@ function Handle_menu_input()
 
     elseif MENU_STATE.screen == MENU_SCREEN.credits then
 
-        Calculate_auto_scroll()
+        Calculate_auto_scroll( playdate.kButtonUp )
 
         -- Calculate credit scroll
         local crankTicks = playdate.getCrankTicks(scroll_speed * 100)
