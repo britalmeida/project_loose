@@ -286,20 +286,7 @@ function Froggo:think()
 
     -- Check if the potion is approved and early out!
     if Is_potion_good_enough() then
-        GAME_ENDED = true
-        local new_high_score = false
-        if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
-            new_high_score = true
-        elseif Score_of_recipe(CURRENT_RECIPE) < Score_of_recipe(FROGS_FAVES.recipes[TARGET_COCKTAIL.name]) then
-            new_high_score = true
-        end
-        if new_high_score then
-            FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE
-        end
-
-        FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] = true
-        Store_high_scores()
-
+        Win_game()
         self.last_spoken_sentence_str = positive_acceptance
         return
     end

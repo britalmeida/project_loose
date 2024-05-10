@@ -155,6 +155,24 @@ function Update_rune_count(difference)
 end
 
 
+function Win_game()
+    GAME_ENDED = true
+
+    local new_high_score = false
+    if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
+        new_high_score = true
+    elseif Score_of_recipe(CURRENT_RECIPE) < Score_of_recipe(FROGS_FAVES.recipes[TARGET_COCKTAIL.name]) then
+        new_high_score = true
+    end
+    if new_high_score then
+        FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE
+    end
+
+    FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] = true
+    Store_high_scores()
+end
+
+
 -- Update Loop
 function Handle_input()
 
