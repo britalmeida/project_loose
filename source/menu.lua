@@ -204,10 +204,12 @@ local function draw_ui()
                     end
                 end
             end
+
             -- Draw current option indicator
             local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
-            UI_TEXTURES.selection_highlight:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
-            --gfx.drawRect(first_cocktail_x + cocktail_width * focus_relative_to_window, 0, 120, 240)
+            local anim_length = UI_TEXTURES.selection_highlight:getLength()
+            local anim_tick = math.fmod(credits_tick // 4, anim_length)
+            UI_TEXTURES.selection_highlight[anim_tick + 1]:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
 
         gfx.popContext()
     end
@@ -382,7 +384,7 @@ function Init_menus()
 
     UI_TEXTURES.start = gfxi.new("images/menu_start")
     UI_TEXTURES.mission = gfxi.new(1,1)  -- unused
-    UI_TEXTURES.selection_highlight = gfxi.new("images/cocktails/white_selection_border")
+    UI_TEXTURES.selection_highlight = gfxit.new("images/cocktails/white_selection_border")
     UI_TEXTURES.credits = gfxi.new(1,1)  -- unused
     UI_TEXTURES.credit_scroll = gfxit.new("images/credits")
 
