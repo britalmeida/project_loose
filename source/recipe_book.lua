@@ -23,15 +23,33 @@ end
 function Recipe_steps_to_text(recipe_steps)
     local text_lines = {}
     for step = 1, #recipe_steps, 1 do
+        local step_type = recipe_steps[step][1]
         local line = ""
         line = line .. tostring(step) .. ". " 
-        line = line .. "Add " .. recipe_steps[step][2]
-        line = line .. " " .. INGREDIENT_TYPES[recipe_steps[step][1]].drop_name
+        if step_type > 0 then
+            line = line .. "Add " .. recipe_steps[step][2]
+            line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
+        else
+            line = line .. "Stir "
+            if step_type == -1 then
+                line = line .. "light "
+            else
+                line = line .. "dark "
+            end
+            line = line .. recipe_steps[step][2] .. " time"
+        end
         if recipe_steps[step][2] > 1 then
             line = line .. "s"
         end
         text_lines[#text_lines+1] = line
     end
+
+    -- debug print on recipe change
+    print()
+    for a = 1, #text_lines, 1 do
+        print(text_lines[a])
+    end
+
     return text_lines
 end
 

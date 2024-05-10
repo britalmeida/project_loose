@@ -56,6 +56,10 @@ STIR_SPEED = 0
 -- Stir position is an angle in radians
 STIR_POSITION = 0
 
+STIR_DIRECTION = 0
+STIR_REVOLUTION = 0
+STIR_COUNT = 0
+
 IS_GYRO_INITIALZIED = false
 AVG_GRAVITY_X = 0
 AVG_GRAVITY_Y = 0
@@ -264,11 +268,41 @@ function Handle_input()
         GAMEPLAY_STATE.showing_instructions = false
     end
 
+    
+    
+    -- Track crank changes
+    local prev_stir_position = STIR_POSITION
+    local prev_stir_direction = STIR_DIRECTION
+
     -- Crank stirring
     local angleDelta, acceleratedChange = playdate.getCrankChange()
     STIR_SPEED = acceleratedChange
     -- Use the absolute position of the crank to drive the stick in the cauldorn
     STIR_POSITION = math.rad(playdate.getCrankPosition())
+
+    -- Count crank revolutions
+    if math.abs(STIR_SPEED) > 1 then
+        STIR_DIRECTION = Sign(STIR_SPEED)
+    end
+    if Sign(prev_stir_direction) * Sign(STIR_DIRECTION) < 0 or prev_stir_direction == 0 then
+        STIR_REVOLUTION = 0
+        STIR_COUNT = 0
+    else
+        local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
+        if delta_stir > 0.5 then
+            delta_stir = 1 - delta_stir
+        end
+        STIR_REVOLUTION += delta_stir
+        if STIR_REVOLUTION - STIR_COUNT > 0.2 then
+            STIR_COUNT += 1
+            if STIR_DIRECTION > 0 then
+                CURRENT_RECIPE[#CURRENT_RECIPE+1] = -1
+            else
+                CURRENT_RECIPE[#CURRENT_RECIPE+1] = -2
+            end
+            Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE))
+        end
+    end
 
     if math.abs(angleDelta) > 5 and not SOUND.stir_sound:isPlaying() then
         SOUND.stir_sound:play()
