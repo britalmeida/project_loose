@@ -156,8 +156,8 @@ local function draw_ui()
             side_scroll_x += -side_scroll_speed * side_scroll_direction
 
             -- Cap side_scroll range
-            if side_scroll_x < 50 then
-                side_scroll_x = 50
+            if side_scroll_x < 30 then
+                side_scroll_x = 30
             elseif side_scroll_x > 400 then
                 side_scroll_x = 400
             end
@@ -176,8 +176,8 @@ local function draw_ui()
 
             -- Draw cocktails
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
-            local cocktail_width = 130
-            local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 70
+            local cocktail_width = 142
+            local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 80
 
             local badge_position_x = 10
             local badge_position_y = 10
@@ -205,10 +205,9 @@ local function draw_ui()
                 end
             end
             -- Draw current option indicator
-            gfx.setColor(gfx.kColorWhite)
-            gfx.setLineWidth(3.0)
             local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
-            gfx.drawRect(first_cocktail_x + cocktail_width * focus_relative_to_window, 0, 120, 240)
+            UI_TEXTURES.selection_highlight:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
+            --gfx.drawRect(first_cocktail_x + cocktail_width * focus_relative_to_window, 0, 120, 240)
 
         gfx.popContext()
     end
@@ -375,6 +374,7 @@ function Init_menus()
 
     UI_TEXTURES.start = gfxi.new("images/menu_start")
     UI_TEXTURES.mission = gfxi.new(1,1)  -- unused
+    UI_TEXTURES.selection_highlight = gfxi.new("images/cocktails/white_selection_border")
     UI_TEXTURES.credits = gfxi.new(1,1)  -- unused
     UI_TEXTURES.credit_scroll = gfxit.new("images/credits")
 
