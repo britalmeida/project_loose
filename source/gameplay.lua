@@ -97,6 +97,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.game_tick = 0
     GAMEPLAY_STATE.showing_cocktail = false
     GAMEPLAY_STATE.showing_instructions = false
+    GAMEPLAY_STATE.showing_recipe = false
     GAMEPLAY_STATE.flame_amount = 0.0
     GAMEPLAY_STATE.heat_amount = 0.0
     GAMEPLAY_STATE.liquid_offset = 0.0
@@ -110,6 +111,7 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_ratio[a] = 0
     end
     CURRENT_RECIPE = {}
+    RECIPE_TEXT = {}
 
     Calculate_goodness()
 
