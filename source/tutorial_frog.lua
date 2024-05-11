@@ -258,7 +258,7 @@ function Froggo:go_drinking()
     self:start_animation(self.anim_cocktail)
 
     playdate.timer.new(5*1000, function()
-        Enter_menu_start()
+        Enter_menu_start(0, 0)
     end)
 end
 

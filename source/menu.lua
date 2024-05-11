@@ -30,7 +30,7 @@ local function add_system_menu_entries_gameplay()
         Reset_gameplay()
     end)
     local menuItem, error = menu:addMenuItem("main menu", function()
-        Enter_menu_start()
+        Enter_menu_start(0, 0)
     end)
 end
 
@@ -81,7 +81,7 @@ end
 
 -- Menu State Transitions
 
-function Enter_menu_start()
+function Enter_menu_start(new_global_x, new_global_y)
     MENU_STATE.screen = MENU_SCREEN.start
 
     remove_system_menu_entries()
@@ -91,6 +91,9 @@ function Enter_menu_start()
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
     end
+
+    -- Reset menu positions if needed
+    global_origin[1], global_origin[2] = new_global_x, new_global_y
 end
 
 local function enter_menu_mission()
@@ -303,7 +306,7 @@ function Handle_menu_input()
 
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
 
-        -- Makee sure global_y get's back to 0 position
+        -- Make sure global_y get's back to 0 position
         global_origin[2] += 20
         if global_origin[2] > 0 then
             global_origin[2] = 0
@@ -322,7 +325,7 @@ function Handle_menu_input()
         playdate.buttonJustReleased( playdate.kButtonB )then
             SOUND.menu_confirm:play()
             MENU_STATE.focused_option = 0
-            Enter_menu_start()
+            Enter_menu_start(global_origin[1], global_origin[2])
         end
 
         -- Cycle Options.
@@ -376,13 +379,12 @@ function Handle_menu_input()
             crank_ccw = false
         end
         if global_origin[2] > -60 and playdate.buttonIsPressed( playdate.kButtonUp ) or
-            global_origin[2] > -60 and crank_ccw
-            or playdate.buttonJustReleased( playdate.kButtonB ) then
-            auto_scroll_enabled = true
-            Enter_menu_start()
+            global_origin[2] > -60 and crank_ccw then
+                auto_scroll_enabled = true
+                Enter_menu_start(global_origin[1], global_origin[2])
         end
         if playdate.buttonJustReleased( playdate.kButtonB ) then
-            global_origin[2] = 0
+            Enter_menu_start(0, 0)
         end
     end
 end
