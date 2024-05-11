@@ -1,47 +1,54 @@
 local gfxi <const> = playdate.graphics.image
 local gfxit <const> = playdate.graphics.imagetable
 
+
 COCKTAILS = {
   { name="Snailiva",
     rune_composition={1, 0, 0},
     color=1.0,
     img=gfxi.new('images/cocktails/snailiva_sheet'),
-    anim=gfxit.new('images/cocktails/snailiva_cocktail') },
+    table= gfxit.new('images/cocktails/snailiva_cocktail'),
+    framerate= 16 },
     --Intro 1 (Love)
 
   { name="Silkini",
     rune_composition={1, 2, 0},
     color=0.0,
     img=gfxi.new('images/cocktails/silkini_sheet'),
-    anim=gfxit.new('images/cocktails/silkini_cocktail') },
+    table= gfxit.new('images/cocktails/silkini_cocktail'),
+    framerate= 16 },
     -- Intro 2 (Love & Doom)
 
   { name="Green Toe",
     rune_composition={0, 3, 9},
     color=0.25,
     img=gfxi.new('images/cocktails/green_toe_sheet'),
-    anim=gfxit.new('images/cocktails/green_toe_cocktail') },
+    table= gfxit.new('images/cocktails/green_toe_cocktail'),
+    framerate= 16 },
     --Easy (Doom & Weeds but specific)
 
   { name="Overdose",
     rune_composition={1.5, 6, 4},
     color=0.15,
     img=gfxi.new('images/cocktails/overdose_sheet'),
-    anim=gfxit.new('images/cocktails/overdose_cocktail') },
+    table= gfxit.new('images/cocktails/overdose_cocktail'),
+    framerate= 16 },
     --Medium (3 runes and specific. Spamming = fine tuning)
 
   { name="Hodge Podge",
     rune_composition={1, 1, 1},
     color=0.85,
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
-    anim=gfxit.new('images/cocktails/hodge_podge_cocktail') },
+    table= gfxit.new('images/cocktails/hodge_podge_cocktail'),
+    framerate= 16 },
     --Hard (3 Runes. All equally balanced)
 
   { name="Diceybrew",
     rune_composition={1, 1, 1},
     color=1,0,
     img=gfxi.new('images/cocktails/dicey_brew_sheet'),
-    anim=gfxit.new('images/cocktails/dicey_brew_cocktail') },
+    table= gfxit.new('images/cocktails/dicey_brew_cocktail'),
+    framerate= 16 },
     --Random
 }
 

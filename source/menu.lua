@@ -1,6 +1,7 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
 local gfxit <const> = playdate.graphics.imagetable
+local animloop <const> = playdate.graphics.animation.loop
 
 MENU_STATE = {}
 MENU_SCREEN = { gameplay = 0, start = 2, mission = 3, credits = 4 }
@@ -13,6 +14,8 @@ FROGS_FAVES = {
 local UI_TEXTURES = {}
 local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the mission selection, others are (half) clipped.
 local global_origin = {0, 0}
+local music_speed = 1.13  -- Extra factor to synch to music
+local cocktail_anims = {}
 
 -- System Menu
 
@@ -163,14 +166,9 @@ local function draw_ui()
                 side_scroll_x = 400
             end
 
-            -- Draw main menu
-            UI_TEXTURES.start:draw(global_origin[1] + side_scroll_x - 400, global_origin[2])
-
 
             -- Draw credit scroll
-            local anim_length = UI_TEXTURES.credit_scroll:getLength()
-            local anim_tick = math.fmod(music_tick // music_speed, anim_length)
-            UI_TEXTURES.credit_scroll[anim_tick + 1]:draw(global_origin[1], global_origin[2] + 240)
+            UI_TEXTURES.credit_scroll:draw(global_origin[1], global_origin[2] + 240)
 
 
             -- Draw cocktail selection
@@ -182,17 +180,15 @@ local function draw_ui()
 
             local badge_position_x = 10
             local badge_position_y = 10
-            for i, cocktail in pairs(COCKTAILS) do
+            for i, cocktail in pairs(cocktail_anims) do
                 if (i-1) >= MENU_STATE.first_option_in_view - 1 and
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
-                    if (i-1) == MENU_STATE.focused_option and cocktail.anim ~= nil then
-                        local anim_length = cocktail.anim:getLength()
-                        local anim_tick = math.fmod(music_tick // (music_speed *2), anim_length)
-                    cocktail.anim[anim_tick + 1]:draw(cocktail_x, global_origin[2])
+                    if (i-1) == MENU_STATE.focused_option then
+                        cocktail:draw(cocktail_x, global_origin[2])
                     else
-                        cocktail.img:draw(cocktail_x, global_origin[2])
+                        COCKTAILS[i].img:draw(cocktail_x, global_origin[2])
                     end
 
                     -- draw badge of accomplishment
@@ -214,9 +210,11 @@ local function draw_ui()
 
             -- Draw current option indicator
             local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
-            local anim_length = UI_TEXTURES.selection_highlight:getLength()
-            local anim_tick = math.fmod(music_tick // (music_speed *2), anim_length)
-            UI_TEXTURES.selection_highlight[anim_tick + 1]:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
+            UI_TEXTURES.selection_highlight:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
+
+
+            -- Draw main menu
+            UI_TEXTURES.start:draw(global_origin[1] + side_scroll_x - 400, global_origin[2])
 
         gfx.popContext()
     end
@@ -389,14 +387,23 @@ end
 
 function Init_menus()
 
-    UI_TEXTURES.start = gfxi.new("images/menu_start")
+    -- Create animation loops
+    local start_anim_table, start_anim_framerate = gfxit.new("images/menu_start"), 16
+    local selection_highlight_table, selection_highlight_framerate = gfxit.new("images/cocktails/white_selection_border"), 16
+    local credit_scroll_table, credit_scroll_framerate = gfxit.new("images/credits"), 16
+
+    for i in pairs(COCKTAILS) do
+        table.insert(cocktail_anims, animloop.new(COCKTAILS[i].framerate * frame_ms * music_speed, COCKTAILS[i].table, true))
+    end
+
+
+    UI_TEXTURES.start = animloop.new(start_anim_framerate * frame_ms * music_speed, start_anim_table, true)
     UI_TEXTURES.mission = gfxi.new(1,1)  -- unused
-    UI_TEXTURES.selection_highlight = gfxit.new("images/cocktails/white_selection_border")
+    UI_TEXTURES.selection_highlight = animloop.new(selection_highlight_framerate * frame_ms * music_speed, selection_highlight_table, true)
     UI_TEXTURES.credits = gfxi.new(1,1)  -- unused
-    UI_TEXTURES.credit_scroll = gfxit.new("images/credits")
+    UI_TEXTURES.credit_scroll = animloop.new(credit_scroll_framerate * frame_ms * music_speed, credit_scroll_table, true)
 
     MENU_STATE.screen = MENU_SCREEN.start
-    MENU_STATE.active_screen_texture = UI_TEXTURES.start
     MENU_STATE.focused_option = 0
     MENU_STATE.first_option_in_view = 0
 
