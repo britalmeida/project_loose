@@ -148,9 +148,9 @@ local function draw_ui()
 
             -- Side_scroll to auto-scroll to the correct screen
             if MENU_STATE.screen == MENU_SCREEN.mission then
-                side_scroll_direction = 1
+                side_scroll_direction = 1.2
             else
-                side_scroll_direction = -1
+                side_scroll_direction = -1.2
             end
 
             side_scroll_x += -side_scroll_speed * side_scroll_direction
@@ -167,12 +167,16 @@ local function draw_ui()
             UI_TEXTURES.credit_scroll:draw(global_origin[1], global_origin[2] + 240)
 
 
+            -- Draw main menu
+            UI_TEXTURES.start:draw(global_origin[1] + side_scroll_x - 400, global_origin[2])
+
+
             -- Draw cocktail selection
 
             -- Draw cocktails
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
             local cocktail_width = 142
-            local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 80
+            local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 73
 
             local badge_position_x = 10
             local badge_position_y = 10
@@ -207,10 +211,6 @@ local function draw_ui()
             -- Draw current option indicator
             local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
             UI_TEXTURES.selection_highlight:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
-
-
-            -- Draw main menu
-            UI_TEXTURES.start:draw(global_origin[1] + side_scroll_x - 400, global_origin[2])
 
 
             -- FPS debugging
