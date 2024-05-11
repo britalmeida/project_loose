@@ -16,14 +16,14 @@ local TUTORIAL_STATE <const> = { start = 1, fire = 1, stir = 2, grab = 3, shake 
 
 local positive_acceptance <const> = "That'll do it!"
 local forgotten_topics_callouts <const> = {
-    "Magical brews need fire\nto reveal their magic",
-    "Hey, you forgot to stir",
-    "Hey, you forgot an ingredient",
+    "Magical brews need fire\nto reveal their magic.",
+    "Hey, you forgot to stir.",
+    "Hey, you forgot an ingredient.",
 }
 local fire_reminders <const> = {
-    "hey... the fire is getting low",
-    "Keep it warm to see the magic",
-    "Fire is good, glow is good",
+    "Hey... the fire is getting low.",
+    "Keep it warm to see \nthe magic.",
+    "Fire is good, glow is good.",
     "9",
 }
 local fire_tutorials <const> = {
@@ -31,45 +31,43 @@ local fire_tutorials <const> = {
     "Just blow air onto the\nbottom of the cauldron",
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
-    "Thumb on top of the\nmicrophone?",
-    "Swipe your finger on the mic\nto strike the fire.\nLike lighting a match",
 }
 local stir_tutorials <const> = {
-    "Stir clockwise for brighter liquid\nthe other way for dark magic",
-    "Stir the other way?",
+    "Remember the importance of\nthe stirring direction.",
+    "Use the crank to stir?",
     "11", "12",
 }
 local need_more_bright <const> = {
     "Oh my eyes!\nLiquid is way too bright",
-    "The liquid looks too bright\nstirr!",
-    "Just a lil'bit too light",
+    "The liquid looks too bright.\nStirr!",
+    "Just a lil'bit too light.",
 }
 local need_less_bright <const> = {
-    "Waaaaay too dark\ncrank it the other way",
+    "Waaaaay too dark!\nCrank it the other way.",
     "The liquid looks too dark\nstirr!",
-    "Just a lil'bit too dark",
+    "Just a lil'bit too dark.",
 }
 local need_more_love <const> = {
-    "Add some passion?", "2",
+    "Put some heart into it!", "2",
 }
 local need_less_love <const> = {
     "Too much love\ncan't stand it!", "1",
 }
 local need_more_doom <const> = {
-    "Missing doom and gloom", "4",
+    "Missing doom and gloom.", "4",
 }
 local need_less_doom <const> = {
-    "Grim...\nDefinitely missing happy stuff",  "3",
+    "Too grim...\nThis makes me depressed.",  "3",
 }
 local need_more_weed <const> = {
-    "Add some veggies",  "6",
+    "Could use some plant matter.",  "6",
 }
 local need_less_weed <const> = {
-    "Too much organic in it", "5",
+    "Too many veggies in this!", "5",
 }
 local grab_tutorials <const> = {
-    "Try grabbing an ingredient",
-    "Tilt to hover an ingredient\nHold (A) to grab",
+    "Try grabbing an ingredient.",
+    "Tilt to hover an ingredient.\nHold (A) to grab.",
 }
 local drop_tutorials <const> = {
     "Release the ingredient over\nthe cauldron and shake!",
@@ -273,7 +271,7 @@ function Froggo:croak()
 
     self:start_speech_bubble()
 
-    playdate.timer.new(2*1000, function()
+    playdate.timer.new(3*1000, function()
         -- Disable speech bubble after a short moment.
         self:stop_speech_bubble()
 
