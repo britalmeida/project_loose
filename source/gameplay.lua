@@ -382,6 +382,7 @@ function update_fire()
         if (GAMEPLAY_STATE.flame_amount > 0.4) then
             if not SOUND.fire_blow:isPlaying() then
                 SOUND.fire_blow:play()
+                FROG:fire_reaction()
             end
         end
     else
