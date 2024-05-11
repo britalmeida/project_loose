@@ -708,6 +708,11 @@ local function draw_debug()
         gfx.drawRect(LIQUID_AABB)
     gfx.popContext()
 
+end
+
+
+local function draw_debug_fps()
+
     -- FPS
     gfx.pushContext()
         gfx.setColor(gfx.kColorWhite)
@@ -837,7 +842,8 @@ function Init_visuals()
     Set_draw_pass(30, draw_overlayed_instructions)
     Set_draw_pass(35, draw_overlayed_recipe)
     -- Development
-    Set_draw_pass(50, draw_debug)
+    --Set_draw_pass(50, draw_debug)
+    Set_draw_pass(50, draw_debug_fps)
     --Set_draw_pass(50, draw_test_dither_patterns)
 end
 

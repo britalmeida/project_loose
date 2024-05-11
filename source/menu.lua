@@ -97,7 +97,6 @@ local function enter_menu_mission()
     Load_high_scores()
     add_system_menu_entries_cocktails()
     MENU_STATE.screen = MENU_SCREEN.mission
-    MENU_STATE.active_screen_texture = UI_TEXTURES.mission
 end
 
 local function enter_menu_credits()
@@ -137,9 +136,6 @@ local function draw_ui()
     end
 
     -- In menus. The gameplay is inactive.
-
-    -- Draw background screen image.
-    MENU_STATE.active_screen_texture:draw(0, 0)
 
     -- Draw combined menus
     if MENU_STATE.screen == MENU_SCREEN.start or MENU_SCREEN.credits or MENU_SCREEN.mission then
@@ -215,6 +211,13 @@ local function draw_ui()
 
             -- Draw main menu
             UI_TEXTURES.start:draw(global_origin[1] + side_scroll_x - 400, global_origin[2])
+
+
+            -- FPS debugging
+            gfx.pushContext()
+            gfx.setColor(gfx.kColorWhite)
+            playdate.drawFPS(200,0)
+            gfx.popContext()
 
         gfx.popContext()
     end
