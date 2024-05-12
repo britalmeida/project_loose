@@ -233,11 +233,9 @@ function Ingredient:drop()
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
 
-  local drops = {SOUND.drop_01, SOUND.drop_02, SOUND.drop_03}
+  local drop_sounds = {SOUND.drop_01, SOUND.drop_02, SOUND.drop_03}
   local r = math.random(1, 3)
-  if not drops[r]:isPlaying() then
-    drops[r]:play()
-  end
+  drop_sounds[r]:playAt(0) -- Always play the sound, even if it was already playing.
 
   playdate.timer.new(500, function ()
       self.can_drop = true
