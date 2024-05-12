@@ -205,12 +205,12 @@ local function draw_symbols( x, y, width, position_params)
             -- Rune circle
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
-            draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 7, 4, 0.5, glow_strength, gfx.kColorWhite)
+            draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 7, 3, 0.5, glow_strength, gfx.kColorWhite)
 
             -- Target ring
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
-            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 11, 4, 0.5, glow_strength * 1.5 - 0.1, gfx.kColorWhite)
+            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 11, 3, 0.5, glow_strength * 1.5 - 0.1, gfx.kColorWhite)
 
 
             gfx.pushContext()
@@ -323,7 +323,7 @@ local function draw_liquid_glow()
     local glow_height = LIQUID_HEIGHT + 60 + light_strength * 10
     local glow_blend = math.max(0.25, light_strength) * 0.3
     gfx.pushContext()
-        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 10, glow_blend, light_strength, gfx.kColorWhite)
+        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 3, glow_blend, light_strength, gfx.kColorWhite)
     gfx.popContext()
 end
 
@@ -571,7 +571,7 @@ local function draw_bg_lighting()
     local glow_blend = math.max(0.25, light_strength) * 0.8
 
     gfx.pushContext()
-        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 10, glow_blend, light_strength * 0.5, gfx.kColorWhite)
+        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 6, glow_blend, light_strength * 0.5, gfx.kColorWhite)
     gfx.popContext()
 end
 
