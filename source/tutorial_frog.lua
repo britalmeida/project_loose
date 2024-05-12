@@ -107,16 +107,16 @@ SPEECH_BUBBLE_ANIM_IMGS = {
 }
 
 -- Animations
-local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/animation-idle'), 16
-local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
-local anim_happy_imgs, anim_happy_framerate = gfx.imagetable.new('images/frog/animation-excited'), 8
-local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/frog/animation-cocktail'), 8
-local anim_burp_imgs, anim_burp_framerate = gfx.imagetable.new('images/frog/animation-burp'), 8
-local anim_burptalk_imgs, anim_burptalk_framerate = gfx.imagetable.new('images/frog/animation-burptalk'), 8
-local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
-local anim_tickleface_img, anim_tickleface_framerate = gfx.imagetable.new('images/frog/animation-tickleface'), 2.5
-local anim_eyeball_img, anim_eyeball_framerate = gfx.imagetable.new('images/frog/animation-eyeball'), 4
-local anim_frogfire_img, anim_frogfire_framerate = gfx.imagetable.new('images/frog/animation-frogfire'), 4
+local anim_idle_imgs, anim_idle_framerate = gfxit.new('images/frog/animation-idle'), 16
+local anim_headshake_imgs, anim_headshake_framerate = gfxit.new('images/frog/animation-headshake'), 8
+local anim_happy_imgs, anim_happy_framerate = gfxit.new('images/frog/animation-excited'), 8
+local anim_cocktail_imgs, anim_cocktail_framerate = gfxit.new('images/frog/animation-cocktail'), 8
+local anim_burp_imgs, anim_burp_framerate = gfxit.new('images/frog/animation-burp'), 8
+local anim_burptalk_imgs, anim_burptalk_framerate = gfxit.new('images/frog/animation-burptalk'), 8
+local anim_blabla_imgs, anim_blabla_framerate = gfxit.new('images/frog/animation-blabla'), 8
+local anim_tickleface_img, anim_tickleface_framerate = gfxit.new('images/frog/animation-tickleface'), 2.5
+local anim_eyeball_img, anim_eyeball_framerate = gfxit.new('images/frog/animation-eyeball'), 4
+local anim_frogfire_img, anim_frogfire_framerate = gfxit.new('images/frog/animation-frogfire'), 4
 
 
 class('Froggo').extends(Sprite)
