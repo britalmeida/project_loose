@@ -269,6 +269,8 @@ function Handle_menu_input()
 
     if MENU_STATE.screen == MENU_SCREEN.start then
 
+        Calculate_auto_scroll( playdate.kButtonDown )
+
         -- Select an Option.
         if playdate.buttonJustReleased( playdate.kButtonRight ) or
             playdate.buttonJustReleased( playdate.kButtonA ) then
@@ -276,11 +278,9 @@ function Handle_menu_input()
             enter_menu_mission()
         end
 
-        Calculate_auto_scroll( playdate.kButtonDown )
-
-        -- Calculate credit scroll
+        -- Calculate scrolling
         local crankTicks = playdate.getCrankTicks(scroll_speed * 100)
-        global_origin[2] += -crankTicks + auto_scroll
+        global_origin[2] += -crankTicks + (auto_scroll * 6)
         if playdate.buttonIsPressed( playdate.kButtonUp ) then
             global_origin[2] += scroll_speed * 2
         elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
@@ -293,15 +293,15 @@ function Handle_menu_input()
         end
 
         -- Switch to credits
-        if acceleratedChange < 1 then
+        if acceleratedChange < 3 then
             crank_ccw = true
-        elseif acceleratedChange > 1 then
+        elseif acceleratedChange > 3 then
             crank_ccw = false
         end
-        if global_origin[2] < -2 and playdate.buttonIsPressed( playdate.kButtonDown ) or
-            global_origin[2] < -2 and not crank_ccw then
-            auto_scroll_enabled = true
-            enter_menu_credits()
+        if playdate.buttonIsPressed( playdate.kButtonDown ) or
+            not crank_ccw then
+                auto_scroll_enabled = true
+                enter_menu_credits()
         end
 
     elseif MENU_STATE.screen == MENU_SCREEN.mission then
@@ -311,7 +311,6 @@ function Handle_menu_input()
         if global_origin[2] > 0 then
             global_origin[2] = 0
         end
-        print(global_origin[2])
 
         if playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
