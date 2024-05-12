@@ -103,13 +103,14 @@ function Recipe_draw_success(y)
     local text_x = 24
     local text_y = 165
     local line_height = 20
+    local extra_lines = 3
     local flip_table = {"flipX", "flipY", "flipXY"}
 
     local header_img = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_img
 
     -- figure out amount of insert pieces for the text
     local insert_height = TEXTURES.recipe_middle[1].height
-    local number_of_lines = #RECIPE_TEXT
+    local number_of_lines = #RECIPE_TEXT + extra_lines
     local number_of_inserts = math.max(0, math.ceil(((number_of_lines * line_height) + text_y - TEXTURES.recipe_top.height ) / insert_height))
     math.randomseed(10)
     gfx.setDitherPattern(0.6, gfxi.kDitherTypeBayer4x4)
@@ -129,26 +130,31 @@ function Recipe_draw_success(y)
         header_img:draw(recipe_x-40, recipe_y)
         local y = recipe_y + text_y
         gfx.setFont(FONTS.speech_font)
+        gfx.drawText("Just follow these steps:", recipe_x + text_x, y)
+        y += line_height * 1.5
         for a = 1, #RECIPE_TEXT, 1 do
             gfx.drawText(RECIPE_TEXT[a], recipe_x + text_x, y)
             y += line_height
         end
+        y += line_height
+        gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " steps . . .", recipe_x + text_x, y)
     gfx.popContext()
 end
 
-function Recipe_draw_menu(x, y, recipe_text, step_types, cocktail_name)
+function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw scrollable top recipe in menu
     local text_x = 10
     local text_y = 50
     local line_height = 20
-    
+    local extra_lines = 3
+
     -- figure out number of middle inserts
     local insert_height = TEXTURES.recipe_small_middle.height
     local top_height = TEXTURES.recipe_small_top.height
-    local number_of_lines = #recipe_text
+    local number_of_lines = #recipe_text + extra_lines
     local number_of_inserts = math.max(0, math.ceil(((number_of_lines * line_height) + text_y - top_height ) / insert_height))
     RECIPE_MAX_HEIGHT = top_height + number_of_inserts * insert_height + TEXTURES.recipe_small_bottom.height
-    
+
     -- draw recipe background
     gfx.pushContext()
         TEXTURES.recipe_small_top:draw(x, y)
@@ -162,9 +168,6 @@ function Recipe_draw_menu(x, y, recipe_text, step_types, cocktail_name)
     gfx.pushContext()
         local y = y + text_y
         gfx.setFont(FONTS.speech_font)
-        
-        gfx.drawText(cocktail_name, x + text_x, y)
-        y += line_height * 1.5
 
         for a = 1, #recipe_text, 1 do
             gfx.drawText(recipe_text[a], x + text_x, y)

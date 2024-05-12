@@ -199,10 +199,13 @@ function Handle_input()
             end
 
             -- Cap scrollable range
+            local line_height = 20
+            local extra_lines = 3
+            local recipe_scroll_range = #RECIPE_TEXT * line_height + (extra_lines * line_height) -- Line height from recipe_book.lua
             if end_recipe_y > 0 then
                 end_recipe_y = 0
-            elseif end_recipe_y < -900 then --This needs to read the amount of lines in the recipe score
-                end_recipe_y = -900
+            elseif end_recipe_y < -recipe_scroll_range then
+                end_recipe_y = -recipe_scroll_range
             end
 
             -- Back to menus

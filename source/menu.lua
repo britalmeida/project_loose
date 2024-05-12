@@ -251,6 +251,12 @@ local function draw_ui()
                     TOP_RECIPE_OFFSET += recipe_popup_speed
                 else
                     local crank_change = playdate.getCrankChange()
+                    local button_speed = 8
+                    if playdate.buttonIsPressed(playdate.kButtonUp) then
+                        crank_change += -button_speed
+                    elseif playdate.buttonIsPressed(playdate.kButtonDown) then
+                        crank_change += button_speed
+                    end
                     if math.abs(crank_change) > 0.01 and TOP_RECIPE_OFFSET >= recipe_min_height then
                         TOP_RECIPE_OFFSET += crank_change * recipe_scroll_speed
                         if TOP_RECIPE_OFFSET > recipe_max_height then
@@ -275,7 +281,7 @@ local function draw_ui()
             local recipe_steps = FROGS_FAVES_STEPS[recipe_cocktail_name]
 
             if FROGS_FAVES_TEXT[recipe_cocktail_name] ~= nil then
-                Recipe_draw_menu(recipe_x, 240 - TOP_RECIPE_OFFSET, recipe_text, recipe_steps, recipe_cocktail_name) 
+                Recipe_draw_menu(recipe_x, 240 - TOP_RECIPE_OFFSET, recipe_text, recipe_steps)
             end
 
             -- FPS debugging
@@ -398,11 +404,6 @@ function Handle_menu_input()
             SOUND.menu_confirm:play()
         end
         local crankTicks = playdate.getCrankTicks(3)
-        if crankTicks == 1 then
-            --scroll top recipe list
-        elseif crankTicks == -1 then
-            --scroll top recipe list
-        end
         -- Clamp so the option cycling doesn't wrap around.
         MENU_STATE.focused_option = math.max(MENU_STATE.focused_option, 0)
         MENU_STATE.focused_option = math.min(MENU_STATE.focused_option, #COCKTAILS - 1)
