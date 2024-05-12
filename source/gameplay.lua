@@ -351,7 +351,7 @@ function check_crank_to_stir()
         end
     end
 
-    if math.abs(STIR_SPEED) > 0 then
+    if math.abs(STIR_SPEED) > 3 then
         if not SOUND.stir_sound:isPlaying() then
             SOUND.stir_sound:play()
 
