@@ -1,6 +1,7 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
 local gfxit <const> = playdate.graphics.imagetable
+local animloop <const> = playdate.graphics.animation.loop
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
 local inOutQuad <const> = playdate.easingFunctions.inOutQuad --(0, 0, 1, 2*1000)
@@ -636,38 +637,26 @@ local function draw_cauldron_front()
 
     gfx.pushContext()
         if GAMEPLAY_STATE.flame_amount > 0.8 then
-            local table_size = TEXTURES.stir_flame_table:getLength()
-            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
             buildupflame_counter += 1
             if buildupflame_counter < 5 then
                 TEXTURES.buildup_flame:draw(-1, 0)
             else
-                TEXTURES.stir_flame_table[anim_tick + 1]:draw(-1, 0)
+                TEXTURES.stir_flame_table:draw(-1, 0)
             end
         elseif GAMEPLAY_STATE.flame_amount > 0.5 then
             buildupflame_counter = buildupflame_counter * 0.5
             if buildupflame_counter > 2 then
-                local table_size = TEXTURES.stir_flame_table:getLength()
-                local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-                TEXTURES.stir_flame_table[anim_tick + 1]:draw(-1, 0)
+                TEXTURES.stir_flame_table:draw(-1, 0)
             else
-                local table_size = TEXTURES.high_flame_table:getLength()
-                local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-                TEXTURES.high_flame_table[anim_tick + 1]:draw(-1, 0)
+                TEXTURES.high_flame_table:draw(-1, 0)
                 buildupflame_counter = 0
             end
         elseif GAMEPLAY_STATE.heat_amount > 0.4 then
-            local table_size = TEXTURES.medium_flame_table:getLength()
-            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-            TEXTURES.medium_flame_table[anim_tick + 1]:draw(-1, 0)
+            TEXTURES.medium_flame_table:draw(-1, 0)
         elseif GAMEPLAY_STATE.heat_amount > 0.2 then
-            local table_size = TEXTURES.low_flame_table:getLength()
-            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-            TEXTURES.low_flame_table[anim_tick + 1]:draw(-1, 0)
+            TEXTURES.low_flame_table:draw(-1, 0)
         elseif GAMEPLAY_STATE.heat_amount > 0.08 then
-            local table_size = TEXTURES.ember_table:getLength()
-            local anim_tick = fmod(GAMEPLAY_STATE.game_tick // 4, table_size)
-            TEXTURES.ember_table[anim_tick + 1]:draw(-1, 0)
+            TEXTURES.ember_table:draw(-1, 0)
         end
     gfx.popContext()
 end
@@ -777,6 +766,13 @@ end
 
 function Init_visuals()
 
+    -- Anim loop data
+    local ember_table, ember_framerate = gfxit.new("images/fx/ember"), 8
+    local low_flame_table, low_flame_framerate = gfxit.new("images/fx/lowflame"), 8
+    local medium_flame_table, medium_flame_framerate = gfxit.new("images/fx/mediumflame"), 8
+    local high_flame_table, high_flame_framerate = gfxit.new("images/fx/highflame"), 8
+    local stir_flame_table, stir_flame_framerate = gfxit.new("images/fx/stirredflame"), 8
+
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
@@ -797,11 +793,11 @@ function Init_visuals()
     TEXTURES.place_hint = gfxi.new("images/cursor/empty_jar")
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
     -- Load fx
-    TEXTURES.ember_table = gfxit.new("images/fx/ember")
-    TEXTURES.low_flame_table = gfxit.new("images/fx/lowflame")
-    TEXTURES.medium_flame_table = gfxit.new("images/fx/mediumflame")
-    TEXTURES.high_flame_table = gfxit.new("images/fx/highflame")
-    TEXTURES.stir_flame_table = gfxit.new("images/fx/stirredflame")
+    TEXTURES.ember_table = animloop.new(ember_framerate * frame_ms, ember_table, true)
+    TEXTURES.low_flame_table = animloop.new(low_flame_framerate * frame_ms, low_flame_table, true)
+    TEXTURES.medium_flame_table = animloop.new(medium_flame_framerate * frame_ms, medium_flame_table, true)
+    TEXTURES.high_flame_table = animloop.new(high_flame_framerate * frame_ms, high_flame_table, true)
+    TEXTURES.stir_flame_table = animloop.new(stir_flame_framerate * frame_ms, stir_flame_table, true)
     TEXTURES.buildup_flame = gfxi.new("images/fx/buildupflame")
     TEXTURES.bubble_table = gfxit.new("images/fx/bubble")
     TEXTURES.bubble_table2 = gfxit.new("images/fx/bubble2")
