@@ -219,66 +219,66 @@ function Handle_input()
     else
         check_gyro_and_gravity()
 
-    -- Check the crank to update the stirring.
-    check_crank_to_stir()
+        -- Check the crank to update the stirring.
+        check_crank_to_stir()
 
-    -- Microphone level check.
-    local mic_lvl = playdate.sound.micinput.getLevel()
-    if mic_lvl > GAMEPLAY_STATE.flame_amount then
-        GAMEPLAY_STATE.flame_amount = mic_lvl
-    end
+        -- Microphone level check.
+        local mic_lvl = playdate.sound.micinput.getLevel()
+        if mic_lvl > GAMEPLAY_STATE.flame_amount then
+            GAMEPLAY_STATE.flame_amount = mic_lvl
+        end
 
-    -- Check for pressed buttons.
-    if playdate.buttonJustPressed( playdate.kButtonA ) then
-        GAMEPLAY_STATE.cursor_hold = true
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient.state == INGREDIENT_STATE.is_over_cauldron then
-                ingredient.state = INGREDIENT_STATE.is_in_air
-                ingredient:setZIndex(Z_DEPTH.ingredients)
+        -- Check for pressed buttons.
+        if playdate.buttonJustPressed( playdate.kButtonA ) then
+            GAMEPLAY_STATE.cursor_hold = true
+            for i, ingredient in pairs(INGREDIENTS) do
+                if ingredient.state == INGREDIENT_STATE.is_over_cauldron then
+                    ingredient.state = INGREDIENT_STATE.is_in_air
+                    ingredient:setZIndex(Z_DEPTH.ingredients)
+                end
+            end
+            for i, ingredient in pairs(INGREDIENTS) do
+                if ingredient:try_pickup() then
+                    PLAYER_LEARNED.how_to_grab = true
+                    break
+                end
+            end
+            FROG:Click_the_frog()
+        end
+        if playdate.buttonJustReleased(playdate.kButtonA) then
+            GAMEPLAY_STATE.cursor_hold = false
+            for i, ingredient in pairs(INGREDIENTS) do
+                if ingredient.state == INGREDIENT_STATE.is_picked_up then
+                    ingredient:release()
+                end
             end
         end
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient:try_pickup() then
-                PLAYER_LEARNED.how_to_grab = true
-                break
-            end
-        end
-        FROG:Click_the_frog()
-    end
-    if playdate.buttonJustReleased(playdate.kButtonA) then
-        GAMEPLAY_STATE.cursor_hold = false
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient.state == INGREDIENT_STATE.is_picked_up then
-              ingredient:release()
-            end
-        end
-    end
 
-    if playdate.buttonIsPressed( playdate.kButtonB ) then
-        FROG:Ask_the_frog()
-    end
+        if playdate.buttonIsPressed( playdate.kButtonB ) then
+            FROG:Ask_the_frog()
+        end
 
-    -- Modal instruction overlays.
-    if playdate.buttonJustPressed( playdate.kButtonLeft ) then
-        GAMEPLAY_STATE.showing_cocktail = true
-    elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
-        GAMEPLAY_STATE.showing_cocktail = false
-    end
-    if playdate.buttonJustPressed( playdate.kButtonRight ) then
-        GAMEPLAY_STATE.showing_instructions = true
-    elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
-        GAMEPLAY_STATE.showing_instructions = false
-    end
-    if playdate.buttonJustPressed( playdate.kButtonDown ) then
-        GAMEPLAY_STATE.showing_recipe = true
-    elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
-        GAMEPLAY_STATE.showing_recipe = false
+        -- Modal instruction overlays.
+        if playdate.buttonJustPressed( playdate.kButtonLeft ) then
+            GAMEPLAY_STATE.showing_cocktail = true
+        elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
+            GAMEPLAY_STATE.showing_cocktail = false
+        end
+        if playdate.buttonJustPressed( playdate.kButtonRight ) then
+            GAMEPLAY_STATE.showing_instructions = true
+        elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
+            GAMEPLAY_STATE.showing_instructions = false
+        end
+        if playdate.buttonJustPressed( playdate.kButtonDown ) then
+            GAMEPLAY_STATE.showing_recipe = true
+        elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
+            GAMEPLAY_STATE.showing_recipe = false
+        end
     end
 end
 
 
 function check_gyro_and_gravity()
-
     -- Get values from gyro.
     local raw_gravity_x, raw_gravity_y, raw_gravity_z = playdate.readAccelerometer()
     -- Occasionally when simulator starts to upload the game to the actual
@@ -344,6 +344,7 @@ function check_gyro_and_gravity()
         GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
     end
 end
+
 
 function check_crank_to_stir()
     -- Track crank changes
