@@ -324,6 +324,7 @@ function Froggo:think()
     -- Check if the potion is approved and early out!
     if Is_potion_good_enough() then
         Win_game()
+        Reset_ingredients()
         self.last_spoken_sentence_str = positive_acceptance
         return
     end

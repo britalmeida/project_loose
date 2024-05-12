@@ -130,6 +130,7 @@ function Recipe_draw_success(y)
         header_img:draw(recipe_x-40, recipe_y)
         local y = recipe_y + text_y
         gfx.setFont(FONTS.speech_font)
+        gfx.drawText(win_text, recipe_x + 25, recipe_y + 120)
         gfx.drawText("Just follow these steps:", recipe_x + text_x, y)
         y += line_height * 1.5
         for a = 1, #RECIPE_TEXT, 1 do

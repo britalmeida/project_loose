@@ -156,6 +156,7 @@ function Update_rune_count(difference)
     local prev_rune_ratio = GAMEPLAY_STATE.rune_ratio
 end
 
+win_text = ""
 
 function Win_game()
     GAME_ENDED = true
@@ -165,8 +166,12 @@ function Win_game()
     local new_high_score = false
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
         new_high_score = true
+        win_text = "RECIPE \nDONE!"
     elseif Score_of_recipe(CURRENT_RECIPE) < Score_of_recipe(FROGS_FAVES.recipes[TARGET_COCKTAIL.name]) then
         new_high_score = true
+        win_text = "NEW \nHIGHSCORE!"
+    else
+        win_text = "GOOD \nENOUGH!"
     end
     if new_high_score then
         FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE
