@@ -639,7 +639,7 @@ local function draw_ui_prompts()
     end
 
     gfx.pushContext()
-        TEXTURES.instructions_prompt:draw(0, 0)
+        TEXTURES.instructions_prompt:draw(0, 240-TEXTURES.instructions_prompt.height, 0)
         TEXTURES.b_prompt:drawImage(1, 362, 203)
     gfx.popContext()
 end
