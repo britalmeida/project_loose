@@ -737,11 +737,11 @@ end
 function Init_visuals()
 
     -- Anim loop data
-    local ember_table, ember_framerate = gfxit.new("images/fx/ember"), 8
-    local low_flame_table, low_flame_framerate = gfxit.new("images/fx/lowflame"), 8
-    local medium_flame_table, medium_flame_framerate = gfxit.new("images/fx/mediumflame"), 8
-    local high_flame_table, high_flame_framerate = gfxit.new("images/fx/highflame"), 8
-    local stir_flame_table, stir_flame_framerate = gfxit.new("images/fx/stirredflame"), 8
+    local ember_table, ember_framerate = gfxit.new("images/fx/ember"), 4
+    local low_flame_table, low_flame_framerate = gfxit.new("images/fx/lowflame"), 4
+    local medium_flame_table, medium_flame_framerate = gfxit.new("images/fx/mediumflame"), 4
+    local high_flame_table, high_flame_framerate = gfxit.new("images/fx/highflame"), 4
+    local stir_flame_table, stir_flame_framerate = gfxit.new("images/fx/stirredflame"), 3.33
 
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
