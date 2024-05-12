@@ -492,7 +492,9 @@ local function draw_overlayed_instructions()
 end
 
 local function draw_overlayed_recipe()
-    Recipe_draw_success(0)
+    if GAMEPLAY_STATE.showing_recipe then
+        Recipe_draw_success(0)
+    end
 end
 
 local function draw_dialog_bubble()

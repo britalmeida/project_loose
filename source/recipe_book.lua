@@ -55,38 +55,42 @@ end
 function Recipe_draw_success(y)
     -- draw full scrollable recipe on success
 
-    local recipe_x = 50
+    local recipe_x = 40
     local recipe_y = y
     local text_x = 24
-    local text_y = 40
+    local text_y = 165
     local line_height = 20
     local flip_table = {"flipX", "flipY", "flipXY"}
+
+    local header_img = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_img
 
     -- figure out amount of insert pieces for the text
     local insert_height = TEXTURES.recipe_middle[1].height
     local number_of_lines = #RECIPE_TEXT
     local number_of_inserts = math.max(0, math.ceil(((number_of_lines * line_height) + text_y - TEXTURES.recipe_top.height ) / insert_height))
-    if GAMEPLAY_STATE.showing_recipe then
-        math.randomseed(10)
-        gfx.setDitherPattern(0.6, gfxi.kDitherTypeBayer4x4)
-        gfx.fillRect(0, 0, 400, 240)
-        gfx.pushContext()
-            TEXTURES.recipe_top:draw(recipe_x, recipe_y)
-            for a = 1, number_of_inserts, 1 do
-               TEXTURES.recipe_middle[math.random(3)]:draw(recipe_x, recipe_y + TEXTURES.recipe_top.height + (a-1) * insert_height, flip_table[math.random(3)])
-            end
-            TEXTURES.recipe_bottom:draw(recipe_x, recipe_y + number_of_inserts * insert_height + TEXTURES.recipe_top.height)
-        gfx.popContext()
+    math.randomseed(10)
+    gfx.setDitherPattern(0.6, gfxi.kDitherTypeBayer4x4)
+    gfx.fillRect(0, 0, 400, 240)
 
-        gfx.pushContext()
-            local y = recipe_y + text_y
-            gfx.setFont(FONTS.speech_font)
-            for a = 1, #RECIPE_TEXT, 1 do
-                gfx.drawText(RECIPE_TEXT[a], recipe_x + text_x, y)
-                y += line_height
-            end
-        gfx.popContext()
-    end
+    -- Draw recipe background
+    gfx.pushContext()
+        TEXTURES.recipe_top:draw(recipe_x, recipe_y)
+        for a = 1, number_of_inserts, 1 do
+            TEXTURES.recipe_middle[math.random(3)]:draw(recipe_x, recipe_y + TEXTURES.recipe_top.height + (a-1) * insert_height, flip_table[math.random(3)])
+        end
+        TEXTURES.recipe_bottom:draw(recipe_x, recipe_y + number_of_inserts * insert_height + TEXTURES.recipe_top.height)
+    gfx.popContext()
+
+    -- Draw recipe content
+    gfx.pushContext()
+        header_img:draw(recipe_x-40, recipe_y)
+        local y = recipe_y + text_y
+        gfx.setFont(FONTS.speech_font)
+        for a = 1, #RECIPE_TEXT, 1 do
+            gfx.drawText(RECIPE_TEXT[a], recipe_x + text_x, y)
+            y += line_height
+        end
+    gfx.popContext()
 end
 
 function Recipe_draw_menu(recipe, x, y)

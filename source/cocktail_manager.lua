@@ -8,6 +8,7 @@ COCKTAILS = {
     color=1.0,
     img=gfxi.new('images/cocktails/snailiva_sheet'),
     table= gfxit.new('images/cocktails/snailiva_sheet'),
+    recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
     framerate= 16 },
     --Intro 1 (Love)
 
@@ -16,6 +17,7 @@ COCKTAILS = {
     color=0.0,
     img=gfxi.new('images/cocktails/silkini_sheet'),
     table= gfxit.new('images/cocktails/silkini_sheet'),
+    recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
     framerate= 16 },
     -- Intro 2 (Love & Doom)
 
@@ -24,6 +26,7 @@ COCKTAILS = {
     color=0.25,
     img=gfxi.new('images/cocktails/green_toe_sheet'),
     table= gfxit.new('images/cocktails/green_toe_sheet'),
+    recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
     framerate= 16 },
     --Easy (Doom & Weeds but specific)
 
@@ -32,6 +35,7 @@ COCKTAILS = {
     color=0.15,
     img=gfxi.new('images/cocktails/overdose_sheet'),
     table= gfxit.new('images/cocktails/overdose_sheet'),
+    recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
     framerate= 16 },
     --Medium (3 runes and specific. Spamming = fine tuning)
 
@@ -40,6 +44,7 @@ COCKTAILS = {
     color=0.85,
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
     table= gfxit.new('images/cocktails/hodge_podge_sheet'),
+    recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
     framerate= 16 },
     --Hard (3 Runes. All equally balanced)
 
@@ -48,6 +53,7 @@ COCKTAILS = {
     color=1,0,
     img=gfxi.new('images/cocktails/dicey_brew_sheet'),
     table= gfxit.new('images/cocktails/dicey_brew_sheet'),
+    recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
     framerate= 16 },
     --Random
 }
