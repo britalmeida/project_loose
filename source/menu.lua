@@ -221,7 +221,7 @@ local function draw_ui()
                     -- draw badge of accomplishment
                     if cocktail_done then
                         gfx.pushContext()
-                            COCKTAILS[i].sticker:drawAnchored(cocktail_x + COCKTAILS[i].sticker_pos[1] , COCKTAILS[i].sticker_pos[2], 0.5, 0.5)
+                            COCKTAILS[i].sticker:drawAnchored(cocktail_x + COCKTAILS[i].sticker_pos[1] , COCKTAILS[i].sticker_pos[2] - 10, 0.5, 0.5)
                         gfx.popContext()
                     end
                 end
