@@ -489,7 +489,7 @@ end
 
 local function draw_overlayed_recipe()
     if GAMEPLAY_STATE.showing_recipe then
-        Recipe_draw_success(0)
+        Recipe_draw_success(end_recipe_y)
     end
 end
 

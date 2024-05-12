@@ -176,6 +176,8 @@ function Win_game()
     Store_high_scores()
 end
 
+end_recipe_y = 0
+local scroll_speed = 1.8
 
 -- Update Loop
 function Handle_input()
@@ -185,194 +187,198 @@ function Handle_input()
         -- Put the hand off screen
         GYRO_X = -50
         GYRO_Y = -50
-        return
-    end
 
-    check_gyro_and_gravity()
+        -- Wait for recipe to show up before handling more input
+        if GAMEPLAY_STATE.showing_recipe == true then
+            local crankTicks = playdate.getCrankTicks(100)
+            end_recipe_y += -crankTicks
+            if playdate.buttonIsPressed( playdate.kButtonUp ) then
+                end_recipe_y += scroll_speed * 2
+            elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
+                end_recipe_y += -scroll_speed * 2
+            end
 
-    -- Check the crank to update the stirring.
-    check_crank_to_stir()
+            -- Cap scrollable range
+            if end_recipe_y > 0 then
+                end_recipe_y = 0
+            elseif end_recipe_y < -900 then --This needs to read the amount of lines in the recipe score
+                end_recipe_y = -900
+            end
 
-    -- Microphone level check.
-    local mic_lvl = playdate.sound.micinput.getLevel()
-    if mic_lvl > GAMEPLAY_STATE.flame_amount then
-        GAMEPLAY_STATE.flame_amount = mic_lvl
-    end
-
-    -- Check for pressed buttons.
-    if playdate.buttonJustPressed( playdate.kButtonA ) then
-        GAMEPLAY_STATE.cursor_hold = true
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient.state == INGREDIENT_STATE.is_over_cauldron then
-                ingredient.state = INGREDIENT_STATE.is_in_air
-                ingredient:setZIndex(Z_DEPTH.ingredients)
+            -- Back to menus
+            if playdate.buttonJustReleased( playdate.kButtonB ) or
+            playdate.buttonJustReleased( playdate.kButtonA ) then
+                -- A few ticks timer so it doesn't overap with the mission menu controlls
+                playdate.timer.new(5, function ()
+                    enter_menu_mission(true)
+                    remove_system_menu_entries()
+                    Stop_gameplay()
+                end)
             end
         end
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient:try_pickup() then
-                PLAYER_LEARNED.how_to_grab = true
-                break
-            end
-        end
-        FROG:Click_the_frog()
-    end
-    if playdate.buttonJustReleased(playdate.kButtonA) then
-        GAMEPLAY_STATE.cursor_hold = false
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient.state == INGREDIENT_STATE.is_picked_up then
-              ingredient:release()
-            end
-        end
-    end
-
-    if playdate.buttonIsPressed( playdate.kButtonB ) then
-        FROG:Ask_the_frog()
-    end 
-
-    -- Modal instruction overlays.
-    if playdate.buttonJustPressed( playdate.kButtonLeft ) then
-        GAMEPLAY_STATE.showing_cocktail = true
-    elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
-        GAMEPLAY_STATE.showing_cocktail = false
-    end
-    if playdate.buttonJustPressed( playdate.kButtonRight ) then
-        GAMEPLAY_STATE.showing_instructions = true
-    elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
-        GAMEPLAY_STATE.showing_instructions = false
-    end
-    if playdate.buttonJustPressed( playdate.kButtonDown ) then
-        GAMEPLAY_STATE.showing_recipe = true
-    elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
-        GAMEPLAY_STATE.showing_recipe = false
-    end
-end
-
-
-function check_gyro_and_gravity()
-    -- Get values from gyro.
-    local raw_gravity_x, raw_gravity_y, raw_gravity_z = playdate.readAccelerometer()
-    -- Occasionally when simulator starts to upload the game to the actual
-    -- device the gyro returns nil as results.
-    if raw_gravity_x == nil then
-        return
-    end
-
-    -- Calculate G's (length of acceleration vector)
-    SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
-
-    if IS_GYRO_INITIALZIED == false then
-        -- For the initial vlaue use the gyro at the start of the game, so that
-        -- it calibrates as quickly as possible to the current device orientation.
-        AVG_GRAVITY_X = raw_gravity_x
-        AVG_GRAVITY_Y = raw_gravity_y
-        AVG_GRAVITY_Z = raw_gravity_z
-        IS_GYRO_INITIALZIED = true
     else
-        -- Exponential moving average:
-        --   https://en.wikipedia.org/wiki/Exponential_smoothing
-        --
-        -- The weight from the number of samples can be estimated as `2 / (n + 1)`.
-        -- See the Relationship between SMA and EMA section of the
-        --   https://en.wikipedia.org/wiki/Moving_average
-        local num_smooth_samples = 120
-        local alpha = 2 / (num_smooth_samples + 1)
+        -- Get values from gyro.
+        local raw_gravity_x, raw_gravity_y, raw_gravity_z = playdate.readAccelerometer()
+        -- Occasionally when simulator starts to upload the game to the actual
+        -- device the gyro returns nil as results.
+        if raw_gravity_x == nil then
+            return
+        end
 
-        AVG_GRAVITY_X = alpha * raw_gravity_x + (1 - alpha) * AVG_GRAVITY_X
-        AVG_GRAVITY_Y = alpha * raw_gravity_y + (1 - alpha) * AVG_GRAVITY_Y
-        AVG_GRAVITY_Z = alpha * raw_gravity_z + (1 - alpha) * AVG_GRAVITY_Z
+        -- Calculate G's (length of acceleration vector)
+        SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
 
-        local len = math.sqrt(AVG_GRAVITY_X*AVG_GRAVITY_X + AVG_GRAVITY_Y*AVG_GRAVITY_Y + AVG_GRAVITY_Z*AVG_GRAVITY_Z)
-        AVG_GRAVITY_X /= len
-        AVG_GRAVITY_Y /= len
-        AVG_GRAVITY_Z /= len
-    end
+        if IS_GYRO_INITIALZIED == false then
+            -- For the initial vlaue use the gyro at the start of the game, so that
+            -- it calibrates as quickly as possible to the current device orientation.
+            AVG_GRAVITY_X = raw_gravity_x
+            AVG_GRAVITY_Y = raw_gravity_y
+            AVG_GRAVITY_Z = raw_gravity_z
+            IS_GYRO_INITIALZIED = true
+        else
+            -- Exponential moving average:
+            --   https://en.wikipedia.org/wiki/Exponential_smoothing
+            --
+            -- The weight from the number of samples can be estimated as `2 / (n + 1)`.
+            -- See the Relationship between SMA and EMA section of the
+            --   https://en.wikipedia.org/wiki/Moving_average
+            local num_smooth_samples = 120
+            local alpha = 2 / (num_smooth_samples + 1)
 
-    local v1 = vec2d.new(0, 1)
-    local v2 = vec2d.new(AVG_GRAVITY_Y, AVG_GRAVITY_Z)
-    local angle = v2:angleBetween(v1) / 180 * math.pi
+            AVG_GRAVITY_X = alpha * raw_gravity_x + (1 - alpha) * AVG_GRAVITY_X
+            AVG_GRAVITY_Y = alpha * raw_gravity_y + (1 - alpha) * AVG_GRAVITY_Y
+            AVG_GRAVITY_Z = alpha * raw_gravity_z + (1 - alpha) * AVG_GRAVITY_Z
 
-    local co = math.cos(angle)
-    local si = math.sin(angle)
+            local len = math.sqrt(AVG_GRAVITY_X*AVG_GRAVITY_X + AVG_GRAVITY_Y*AVG_GRAVITY_Y + AVG_GRAVITY_Z*AVG_GRAVITY_Z)
+            AVG_GRAVITY_X /= len
+            AVG_GRAVITY_Y /= len
+            AVG_GRAVITY_Z /= len
+        end
 
-    GRAVITY_X = raw_gravity_x
+        local v1 = vec2d.new(0, 1)
+        local v2 = vec2d.new(AVG_GRAVITY_Y, AVG_GRAVITY_Z)
+        local angle = v2:angleBetween(v1) / 180 * math.pi
 
-    GRAVITY_Y = raw_gravity_y*co - raw_gravity_z*si
-    GRAVITY_Z = raw_gravity_y*si + raw_gravity_z*co
+        local co = math.cos(angle)
+        local si = math.sin(angle)
 
-    local axis_sign = 0
-    if raw_gravity_z < 0 then
-        axis_sign = -1
-    else
-        axis_sign = 1
-    end
+        GRAVITY_X = raw_gravity_x
 
-    local gyroSpeed = 60
-    if SHAKE_VAL < 1.1 then
+        GRAVITY_Y = raw_gravity_y*co - raw_gravity_z*si
+        GRAVITY_Z = raw_gravity_y*si + raw_gravity_z*co
+
+        local axis_sign = 0
+        if raw_gravity_z < 0 then
+            axis_sign = -1
+        else
+            axis_sign = 1
+        end
+
+        local gyroSpeed = 60
+        if SHAKE_VAL < 1.1 then
         PREV_GYRO_X = GYRO_X
         PREV_GYRO_Y = GYRO_Y
         GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
         GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
-    end
-end
-
-
-function check_crank_to_stir()
-    -- Track crank changes
-    local prev_stir_position = STIR_POSITION
-    local prev_stir_direction = STIR_DIRECTION
-
-    -- Crank stirring
-    local angleDelta, acceleratedChange = playdate.getCrankChange()
-    STIR_SPEED = acceleratedChange
-    -- Use the absolute position of the crank to drive the stick in the cauldorn
-    STIR_POSITION = math.rad(playdate.getCrankPosition())
-
-    -- Count crank revolutions
-    if math.abs(STIR_SPEED) > 1 then
-        STIR_DIRECTION = Sign(STIR_SPEED)
-    end
-    if Sign(prev_stir_direction) * Sign(STIR_DIRECTION) < 0 or prev_stir_direction == 0 then
-        STIR_REVOLUTION = 0
-        STIR_COUNT = 0
-    else
-        local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
-        if delta_stir > 0.5 then
-            delta_stir = 1 - delta_stir
         end
-        STIR_REVOLUTION += delta_stir
-        if STIR_REVOLUTION - STIR_COUNT > 0.2 then
-            STIR_COUNT += 1
-            if STIR_DIRECTION > 0 then
-                CURRENT_RECIPE[#CURRENT_RECIPE+1] = -1
-            else
-                CURRENT_RECIPE[#CURRENT_RECIPE+1] = -2
+
+        -- Check for pressed buttons.
+        if playdate.buttonIsPressed( playdate.kButtonB ) then
+            FROG:Ask_the_frog()
+        end
+        if playdate.buttonJustPressed( playdate.kButtonA ) then
+            GAMEPLAY_STATE.cursor_hold = true
+            for i, ingredient in pairs(INGREDIENTS) do
+                if ingredient.state == INGREDIENT_STATE.is_over_cauldron then
+                    ingredient.state = INGREDIENT_STATE.is_in_air
+                    ingredient:setZIndex(Z_DEPTH.ingredients)
+                end
             end
-            Recipe_update_current()
+            for i, ingredient in pairs(INGREDIENTS) do
+                if ingredient:try_pickup() then
+                    PLAYER_LEARNED.how_to_grab = true
+                    break
+                end
+            end
+            FROG:Click_the_frog()
         end
-    end
+        if playdate.buttonJustReleased(playdate.kButtonA) then
+            GAMEPLAY_STATE.cursor_hold = false
+            for i, ingredient in pairs(INGREDIENTS) do
+                if ingredient.state == INGREDIENT_STATE.is_picked_up then
+                ingredient:release()
+                end
+            end
+        end
+        -- Modal instruction overlays.
+        if playdate.buttonJustPressed( playdate.kButtonLeft ) then
+            GAMEPLAY_STATE.showing_cocktail = true
+        elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
+            GAMEPLAY_STATE.showing_cocktail = false
+        end
+        if playdate.buttonJustPressed( playdate.kButtonRight ) then
+            GAMEPLAY_STATE.showing_instructions = true
+        elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
+            GAMEPLAY_STATE.showing_instructions = false
+        end
+        if playdate.buttonJustPressed( playdate.kButtonDown ) then
+            GAMEPLAY_STATE.showing_recipe = true
+        elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
+            GAMEPLAY_STATE.showing_recipe = false
+        end
 
-    if math.abs(STIR_SPEED) > 3 then
-        if not SOUND.stir_sound:isPlaying() then
+        
+        
+        -- Track crank changes
+        local prev_stir_position = STIR_POSITION
+        local prev_stir_direction = STIR_DIRECTION
+
+        -- Crank stirring
+        local angleDelta, acceleratedChange = playdate.getCrankChange()
+        STIR_SPEED = acceleratedChange
+        -- Use the absolute position of the crank to drive the stick in the cauldorn
+        STIR_POSITION = math.rad(playdate.getCrankPosition())
+
+        -- Count crank revolutions
+        if math.abs(STIR_SPEED) > 1 then
+            STIR_DIRECTION = Sign(STIR_SPEED)
+        end
+        if Sign(prev_stir_direction) * Sign(STIR_DIRECTION) < 0 or prev_stir_direction == 0 then
+            STIR_REVOLUTION = 0
+            STIR_COUNT = 0
+        else
+            local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
+            if delta_stir > 0.5 then
+                delta_stir = 1 - delta_stir
+            end
+            STIR_REVOLUTION += delta_stir
+            if STIR_REVOLUTION - STIR_COUNT > 0.2 then
+                STIR_COUNT += 1
+                if STIR_DIRECTION > 0 then
+                    CURRENT_RECIPE[#CURRENT_RECIPE+1] = -1
+                else
+                    CURRENT_RECIPE[#CURRENT_RECIPE+1] = -2
+                end
+                Recipe_update_current()
+            end
+        end
+
+        if math.abs(angleDelta) > 5 and not SOUND.stir_sound:isPlaying() then
             SOUND.stir_sound:play()
-
+        elseif math.abs(angleDelta) < 5 and SOUND.stir_sound:isPlaying() then
             -- Stop the sound with a bit of delay when stirring stops.
-            -- There is one timer to count a delay of time after stopping stirring.
-            delay_to_stop_timer = playdate.timer.new(0.4 * 1000)
-            -- There is a second timer that ticks a function while the sound plays.
-            sfx_dur = SOUND.stir_sound:getLength() * 1000
-            sound_effect_timer = playdate.timer.new(sfx_dur)
-            sound_effect_timer.updateCallback = function()
-                -- If the player is still cranking, reset the delay count after stopping to stir,
-                -- because stirring hasn't stopped yet.
-                if math.abs(STIR_SPEED) > 0 then
-                    delay_to_stop_timer:reset()
-                end
-                -- After the time without stirring, stop the stirring sound.
-                if delay_to_stop_timer.timeLeft == 0 and SOUND.stir_sound:isPlaying() then
+            playdate.timer.new(0.2*1000, function()
+                -- Re-test if we should still stop the sound or maybe it stopped on its own or player cranks again.
+                if math.abs(angleDelta) < 5 and SOUND.stir_sound:isPlaying() then
                     SOUND.stir_sound:stop()
-                    sound_effect_timer.active = false
                 end
-            end
+            end)
+        end
+
+        -- Microphone level check.
+        local mic_lvl = playdate.sound.micinput.getLevel()
+        if mic_lvl > GAMEPLAY_STATE.flame_amount then
+            GAMEPLAY_STATE.flame_amount = mic_lvl
         end
     end
 end

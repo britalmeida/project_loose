@@ -50,7 +50,7 @@ local function add_system_menu_entries_cocktails()
     end)
 end
 
-local function remove_system_menu_entries()
+function remove_system_menu_entries()
     playdate.getSystemMenu():removeAllMenuItems()
 end
 
@@ -108,10 +108,21 @@ function Enter_menu_start(new_global_x, new_global_y)
     global_origin[1], global_origin[2] = new_global_x, new_global_y
 end
 
-local function enter_menu_mission()
+function enter_menu_mission(enter_from_gameplay)
+
     Load_high_scores()
     add_system_menu_entries_cocktails()
     MENU_STATE.screen = MENU_SCREEN.mission
+
+    -- Side scroll amount if coming directly from gameplay
+    if enter_from_gameplay == true then
+        side_scroll_x = 30
+    else
+        side_scroll_x = 400
+    end
+    -- Reset menu positions if needed
+    global_origin[1], global_origin[2] = 0, 0
+
 end
 
 local function enter_menu_credits()
@@ -138,9 +149,10 @@ end
 local music_tick = 0
 local side_scroll_direction = 1
 local side_scroll_speed = 40
-local side_scroll_x = 320
+local side_scroll_x = 400
 
 local function draw_ui()
+
     -- Timing to the music for credits animation
     music_tick += 1
     local music_speed = 9.1
@@ -325,7 +337,7 @@ function Handle_menu_input()
         if playdate.buttonJustReleased( playdate.kButtonRight ) or
             playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
-            enter_menu_mission()
+            enter_menu_mission(false)
         end
 
         -- Calculate scrolling
@@ -367,7 +379,6 @@ function Handle_menu_input()
             -- reset mystery potion
             Set_target_potion(MENU_STATE.focused_option + 1)
             MENU_STATE.focused_option = 0
-            side_scroll_x = 400
             Enter_gameplay()
         elseif playdate.buttonJustReleased( playdate.kButtonLeft ) and
         MENU_STATE.focused_option < 1 or

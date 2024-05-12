@@ -258,7 +258,7 @@ end
 function Froggo:go_drinking()
     local cocktail_runtime = frame_ms * anim_cocktail_framerate * anim_cocktail_imgs:getLength()
     local burp_runtime = frame_ms * anim_burp_framerate * anim_burp_imgs:getLength()
-    
+
     self.state = ACTION_STATE.drinking
     self:start_animation(self.anim_cocktail)
 
@@ -271,7 +271,9 @@ function Froggo:go_drinking()
 
             playdate.timer.new(2*1000, function() -- 4224 ms
                 -- Disable speech bubble after a short moment.
-                Enter_menu_start(0, 0)
+                self:stop_speech_bubble()
+                self:start_animation(self.anim_cocktail)
+                GAMEPLAY_STATE.showing_recipe = true
             end)
         end)
     end)
@@ -298,10 +300,6 @@ function Froggo:croak()
             -- Disable speech bubble after a short moment.
             self:stop_speech_bubble()
 
-            -- Give the frog a short moment to breathe before speaking again.
-            playdate.timer.new(0.1*1000, function()
-                self:go_idle()
-            end)
         end)
     end
 end
