@@ -22,10 +22,6 @@ LIQUID_AABB = geo.rect.new(
 MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 112
 MAGIC_TRIANGLE_SIZE = 100
 
-Splash_animating = false
-
---[[ -- Debug timer
-debug_timer = animator.new(1*1000, 0.0, 1.0) ]]
 
 -- Debug / Development
 
@@ -721,16 +717,6 @@ function Set_draw_pass(z, drawCallback)
     return sprite
 end
 
-function Draw_splash()
-    if Splash_animating then
-        local anim_length = TEXTURES.splish:getLength()
-        local anim_tick = math.fmod(GAMEPLAY_STATE.game_tick // 3, anim_length)
-        TEXTURES.splish[anim_tick + 1]:draw(5,20)
-        if (anim_tick + 1) == anim_length then
-            Splash_animating = false
-        end
-    end
-end
 
 -- Load resources and initialize draw passes
 
@@ -771,7 +757,6 @@ function Init_visuals()
     TEXTURES.buildup_flame = gfxi.new("images/fx/buildupflame")
     TEXTURES.bubble_table = gfxit.new("images/fx/bubble")
     TEXTURES.bubble_table2 = gfxit.new("images/fx/bubble2")
-    TEXTURES.splish = gfxit.new("images/fx/splish")
 
 
     -- Starting table of active animations for runes
@@ -795,7 +780,6 @@ function Init_visuals()
     Set_draw_pass(4, draw_liquid_bubbles)
     Set_draw_pass(5, draw_parameter_diagram)
     Set_draw_pass(6, draw_stirring_stick)
-    Set_draw_pass(7, Draw_splash)
     Set_draw_pass(8, draw_cauldron_front)
     -- 10: frog
     -- depth 20+: UI
@@ -813,4 +797,9 @@ function Init_visuals()
     --Set_draw_pass(50, draw_test_dither_patterns)
 end
 
-Z_DEPTH = { frog=10, ingredients=-5, grabbed_ingredient = 24 }
+Z_DEPTH = {
+    frog = 10,
+    ingredients = -5,
+    ingredient_drop_splash = 7,
+    grabbed_ingredient = 24
+}

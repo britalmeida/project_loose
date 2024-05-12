@@ -1,9 +1,13 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
+local gfxit <const> = playdate.graphics.imagetable
 local geo <const> = playdate.geometry
 local Sprite <const> = gfx.sprite
+local animloop <const> = playdate.graphics.animation.loop
 
--- Ingredient types
+
+local splish_imgs, splish_framerate = gfxit.new("images/fx/splish"), 3
+
 INGREDIENT_TYPES = {
     { name="Peppermints",   drop_name="peppermint",   rune_composition={ 2, -1,  0},  x= 375, y= 27,  img=gfxi.new('images/ingredients/peppermints'),  drop=gfx.image.new('images/ingredients/peppermints_drop'), hold=nil },
     { name="Perfume",       drop_name="perfume drop", rune_composition={ 3, 0, -1},   x=330,  y= 32,  img=gfxi.new('images/ingredients/perfume'),      drop=gfx.image.new('images/ingredients/perfume_drop'),     hold=nil  },
@@ -225,7 +229,7 @@ function Ingredient:release()
 end
 
 function Ingredient:drop()
-  Splash_animating = true
+
   local drop = Ingredient(self.ingredient_type_idx, geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y), true)
   drop.state = INGREDIENT_STATE.is_in_air
   PLAYER_LEARNED.how_to_release = true
@@ -233,6 +237,7 @@ function Ingredient:drop()
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
 
+  INGREDIENT_SPLASH:play()
   local drop_sounds = {SOUND.drop_01, SOUND.drop_02, SOUND.drop_03}
   local r = math.random(1, 3)
   drop_sounds[r]:playAt(0) -- Always play the sound, even if it was already playing.
@@ -269,4 +274,44 @@ function Reset_ingredients()
   for a=1, #INGREDIENT_TYPES, 1 do
     table.insert(INGREDIENTS, Ingredient(a, geo.point.new(INGREDIENT_TYPES[a].x, INGREDIENT_TYPES[a].y), false))
   end
+end
+
+
+
+TEXTURES.splish = gfxit.new("images/fx/splish")
+
+IngredientSplash = NewSubClass("IngredientSplash", Sprite)
+
+function IngredientSplash:init()
+    IngredientSplash.super.init(self)
+
+    self.anim = animloop.new(splish_framerate * frame_ms, splish_imgs, false)
+
+    self:moveTo(LIQUID_CENTER_X+60, LIQUID_CENTER_Y-35)
+    self:setZIndex(Z_DEPTH.ingredient_drop_splash)
+
+    self:reset()
+
+    self:addSprite()
+end
+
+
+function IngredientSplash:reset()
+  self:setVisible(true)
+end
+
+
+IngredientSplash.update = function(self)
+  self:setImage(self.anim:image())
+
+  -- Hide when done.
+  if not self.anim:isValid() then
+    self:setVisible(false)
+  end
+end
+
+
+function IngredientSplash:play()
+  self.anim.frame = 1
+  self:setVisible(true)
 end

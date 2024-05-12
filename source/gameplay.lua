@@ -81,6 +81,7 @@ function Init_gameplay()
     playdate.startAccelerometer()
 
     FROG = Froggo()
+    INGREDIENT_SPLASH = IngredientSplash()
 end
 
 
@@ -116,6 +117,7 @@ function Reset_gameplay()
     Calculate_goodness()
 
     Reset_ingredients()
+    INGREDIENT_SPLASH:reset()
     FROG:reset()
     playdate.timer.new(1000, function ()
       FROG:Ask_for_cocktail()
