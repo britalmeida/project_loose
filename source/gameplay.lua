@@ -158,6 +158,8 @@ end
 function Win_game()
     GAME_ENDED = true
 
+    STIR_SPEED = 0 -- Stop liquid and stirring sounds.
+
     local new_high_score = false
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
         new_high_score = true
@@ -184,6 +186,67 @@ function Handle_input()
         return
     end
 
+    check_gyro_and_gravity()
+
+    -- Check the crank to update the stirring.
+    check_crank_to_stir()
+
+    -- Microphone level check.
+    local mic_lvl = playdate.sound.micinput.getLevel()
+    if mic_lvl > GAMEPLAY_STATE.flame_amount then
+        GAMEPLAY_STATE.flame_amount = mic_lvl
+    end
+
+    -- Check for pressed buttons.
+    if playdate.buttonJustPressed( playdate.kButtonA ) then
+        GAMEPLAY_STATE.cursor_hold = true
+        for i, ingredient in pairs(INGREDIENTS) do
+            if ingredient.state == INGREDIENT_STATE.is_over_cauldron then
+                ingredient.state = INGREDIENT_STATE.is_in_air
+                ingredient:setZIndex(Z_DEPTH.ingredients)
+            end
+        end
+        for i, ingredient in pairs(INGREDIENTS) do
+            if ingredient:try_pickup() then
+                PLAYER_LEARNED.how_to_grab = true
+                break
+            end
+        end
+        FROG:Click_the_frog()
+    end
+    if playdate.buttonJustReleased(playdate.kButtonA) then
+        GAMEPLAY_STATE.cursor_hold = false
+        for i, ingredient in pairs(INGREDIENTS) do
+            if ingredient.state == INGREDIENT_STATE.is_picked_up then
+              ingredient:release()
+            end
+        end
+    end
+
+    if playdate.buttonIsPressed( playdate.kButtonB ) then
+        FROG:Ask_the_frog()
+    end 
+
+    -- Modal instruction overlays.
+    if playdate.buttonJustPressed( playdate.kButtonLeft ) then
+        GAMEPLAY_STATE.showing_cocktail = true
+    elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
+        GAMEPLAY_STATE.showing_cocktail = false
+    end
+    if playdate.buttonJustPressed( playdate.kButtonRight ) then
+        GAMEPLAY_STATE.showing_instructions = true
+    elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
+        GAMEPLAY_STATE.showing_instructions = false
+    end
+    if playdate.buttonJustPressed( playdate.kButtonDown ) then
+        GAMEPLAY_STATE.showing_recipe = true
+    elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
+        GAMEPLAY_STATE.showing_recipe = false
+    end
+end
+
+
+function check_gyro_and_gravity()
     -- Get values from gyro.
     local raw_gravity_x, raw_gravity_y, raw_gravity_z = playdate.readAccelerometer()
     -- Occasionally when simulator starts to upload the game to the actual
@@ -191,7 +254,7 @@ function Handle_input()
     if raw_gravity_x == nil then
         return
     end
-    
+
     -- Calculate G's (length of acceleration vector)
     SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
 
@@ -243,59 +306,15 @@ function Handle_input()
 
     local gyroSpeed = 60
     if SHAKE_VAL < 1.1 then
-      PREV_GYRO_X = GYRO_X
-      PREV_GYRO_Y = GYRO_Y
-      GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
-      GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
+        PREV_GYRO_X = GYRO_X
+        PREV_GYRO_Y = GYRO_Y
+        GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
+        GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
     end
+end
 
-    -- Check for pressed buttons.
-    if playdate.buttonIsPressed( playdate.kButtonB ) then
-        FROG:Ask_the_frog()
-    end
-    if playdate.buttonJustPressed( playdate.kButtonA ) then
-        GAMEPLAY_STATE.cursor_hold = true
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient.state == INGREDIENT_STATE.is_over_cauldron then
-                ingredient.state = INGREDIENT_STATE.is_in_air
-                ingredient:setZIndex(Z_DEPTH.ingredients)
-            end
-        end
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient:try_pickup() then
-                PLAYER_LEARNED.how_to_grab = true
-                break
-            end
-        end
-        FROG:Click_the_frog()
-    end
-    if playdate.buttonJustReleased(playdate.kButtonA) then
-        GAMEPLAY_STATE.cursor_hold = false
-        for i, ingredient in pairs(INGREDIENTS) do
-            if ingredient.state == INGREDIENT_STATE.is_picked_up then
-              ingredient:release()
-            end
-        end
-    end
-    -- Modal instruction overlays.
-    if playdate.buttonJustPressed( playdate.kButtonLeft ) then
-        GAMEPLAY_STATE.showing_cocktail = true
-    elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
-        GAMEPLAY_STATE.showing_cocktail = false
-    end
-    if playdate.buttonJustPressed( playdate.kButtonRight ) then
-        GAMEPLAY_STATE.showing_instructions = true
-    elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
-        GAMEPLAY_STATE.showing_instructions = false
-    end
-    if playdate.buttonJustPressed( playdate.kButtonDown ) then
-        GAMEPLAY_STATE.showing_recipe = true
-    elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
-        GAMEPLAY_STATE.showing_recipe = false
-    end
 
-    
-    
+function check_crank_to_stir()
     -- Track crank changes
     local prev_stir_position = STIR_POSITION
     local prev_stir_direction = STIR_DIRECTION
@@ -330,22 +349,29 @@ function Handle_input()
         end
     end
 
-    if math.abs(angleDelta) > 5 and not SOUND.stir_sound:isPlaying() then
-        SOUND.stir_sound:play()
-    elseif math.abs(angleDelta) < 5 and SOUND.stir_sound:isPlaying() then
-        -- Stop the sound with a bit of delay when stirring stops.
-        playdate.timer.new(0.2*1000, function()
-            -- Re-test if we should still stop the sound or maybe it stopped on its own or player cranks again.
-            if math.abs(angleDelta) < 5 and SOUND.stir_sound:isPlaying() then
-                SOUND.stir_sound:stop()
-            end
-        end)
-    end
+    if math.abs(STIR_SPEED) > 0 then
+        if not SOUND.stir_sound:isPlaying() then
+            SOUND.stir_sound:play()
 
-    -- Microphone level check.
-    local mic_lvl = playdate.sound.micinput.getLevel()
-    if mic_lvl > GAMEPLAY_STATE.flame_amount then
-        GAMEPLAY_STATE.flame_amount = mic_lvl
+            -- Stop the sound with a bit of delay when stirring stops.
+            -- There is one timer to count a delay of time after stopping stirring.
+            delay_to_stop_timer = playdate.timer.new(0.4 * 1000)
+            -- There is a second timer that ticks a function while the sound plays.
+            sfx_dur = SOUND.stir_sound:getLength() * 1000
+            sound_effect_timer = playdate.timer.new(sfx_dur)
+            sound_effect_timer.updateCallback = function()
+                -- If the player is still cranking, reset the delay count after stopping to stir,
+                -- because stirring hasn't stopped yet.
+                if math.abs(STIR_SPEED) > 0 then
+                    delay_to_stop_timer:reset()
+                end
+                -- After the time without stirring, stop the stirring sound.
+                if delay_to_stop_timer.timeLeft == 0 and SOUND.stir_sound:isPlaying() then
+                    SOUND.stir_sound:stop()
+                    sound_effect_timer.active = false
+                end
+            end
+        end
     end
 end
 
