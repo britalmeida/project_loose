@@ -111,6 +111,8 @@ local anim_idle_imgs, anim_idle_framerate = gfx.imagetable.new('images/frog/anim
 local anim_headshake_imgs, anim_headshake_framerate = gfx.imagetable.new('images/frog/animation-headshake'), 8
 local anim_happy_imgs, anim_happy_framerate = gfx.imagetable.new('images/frog/animation-excited'), 8
 local anim_cocktail_imgs, anim_cocktail_framerate = gfx.imagetable.new('images/frog/animation-cocktail'), 8
+local anim_burp_imgs, anim_burp_framerate = gfx.imagetable.new('images/frog/animation-burp'), 8
+local anim_burptalk_imgs, anim_burptalk_framerate = gfx.imagetable.new('images/frog/animation-burptalk'), 8
 local anim_blabla_imgs, anim_blabla_framerate = gfx.imagetable.new('images/frog/animation-blabla'), 8
 local anim_tickleface_img, anim_tickleface_framerate = gfx.imagetable.new('images/frog/animation-tickleface'), 2.5
 local anim_eyeball_img, anim_eyeball_framerate = gfx.imagetable.new('images/frog/animation-eyeball'), 4
@@ -129,6 +131,8 @@ function Froggo:init()
     self.anim_headshake = animloop.new(anim_headshake_framerate * frame_ms, anim_headshake_imgs, true)
     self.anim_happy = animloop.new(anim_happy_framerate * frame_ms, anim_happy_imgs, true)
     self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
+    self.anim_burp = animloop.new(anim_burp_framerate * frame_ms, anim_burp_imgs, false)
+    self.anim_burptalk = animloop.new(anim_burptalk_framerate * frame_ms, anim_burptalk_imgs, true)
     self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
     self.anim_tickleface = animloop.new(anim_tickleface_framerate * frame_ms, anim_tickleface_img, false)
     self.anim_eyeball = animloop.new(anim_eyeball_framerate * frame_ms, anim_eyeball_img, true)
@@ -252,12 +256,26 @@ end
 
 
 function Froggo:go_drinking()
+    local cocktail_runtime = frame_ms * anim_cocktail_framerate * anim_cocktail_imgs:getLength()
+    local burp_runtime = frame_ms * anim_burp_framerate * anim_burp_imgs:getLength()
+    
     self.state = ACTION_STATE.drinking
     self:start_animation(self.anim_cocktail)
 
-    playdate.timer.new(5*1000, function()
-        Enter_menu_start(0, 0)
+    playdate.timer.new(cocktail_runtime, function() -- 3168 ms
+        self:start_animation(self.anim_burp)
+
+        playdate.timer.new(burp_runtime, function() -- 4224 ms
+            self:start_animation(self.anim_burptalk)
+            self:start_speech_bubble()
+
+            playdate.timer.new(2*1000, function() -- 4224 ms
+                -- Disable speech bubble after a short moment.
+                Enter_menu_start(0, 0)
+            end)
+        end)
     end)
+
 end
 
 
@@ -267,24 +285,25 @@ end
 function Froggo:croak()
     -- Speak!
     self.state = ACTION_STATE.speaking
-    self:start_animation(self.anim_blabla)
 
-    self:start_speech_bubble()
+    if GAME_ENDED then
+        -- The potion is correct!
+        self:go_drinking()
+    else
+        self:start_animation(self.anim_blabla)
 
-    playdate.timer.new(3*1000, function()
-        -- Disable speech bubble after a short moment.
-        self:stop_speech_bubble()
+        self:start_speech_bubble()
 
-        -- Give the frog a short moment to breathe before speaking/drinking again.
-        playdate.timer.new(0.1*1000, function()
-            if GAME_ENDED then
-                -- The potion is correct!
-                self:go_drinking()
-            else
+        playdate.timer.new(3*1000, function()
+            -- Disable speech bubble after a short moment.
+            self:stop_speech_bubble()
+
+            -- Give the frog a short moment to breathe before speaking again.
+            playdate.timer.new(0.1*1000, function()
                 self:go_idle()
-            end
+            end)
         end)
-    end)
+    end
 end
 
 
