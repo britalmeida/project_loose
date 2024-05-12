@@ -374,17 +374,26 @@ function Tick_gameplay()
     FROG:animation_tick()
 end
 
+-- The amount of time before the next blow sound can play
+local blow_sound_timer = playdate.timer.new(0.5 * 1000, 0, 1)
 
 function update_fire()
+    print(blow_sound_timer.value)
     if GAMEPLAY_STATE.flame_amount > 0.01 then
         local flame_decay = 0.99
         GAMEPLAY_STATE.flame_amount *= flame_decay
-        if (GAMEPLAY_STATE.flame_amount > 0.4) then
-            if not SOUND.fire_blow:isPlaying() then
-                SOUND.fire_blow:play()
-                FROG:fire_reaction()
+
+        if (GAMEPLAY_STATE.flame_amount > 0.8) then
+            if not SOUND.fire_blow:isPlaying() or blow_sound_timer.value == 1 then
+                SOUND.fire_blow:playAt(1)
+                blow_sound_timer:remove()
+                blow_sound_timer = playdate.timer.new(1.5 * 1000, 0, 1)
+                    if GAMEPLAY_STATE.heat_amount < 0.2 then
+                        FROG:fire_reaction()
+                    end
             end
         end
+
     else
         if SOUND.fire_blow:isPlaying() then
             SOUND.fire_blow:stop()
