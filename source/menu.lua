@@ -10,12 +10,17 @@ FROGS_FAVES = {
     accomplishments = {},
     recipes = {}, 
 }
+FROGS_FAVES_TEXT = {}
+FROGS_FAVES_STEPS = {}
 
 local UI_TEXTURES = {}
 local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the mission selection, others are (half) clipped.
 local global_origin = {0, 0}
 local music_speed = 1.13  -- Extra factor to synch to music
 local cocktail_anims = {}
+
+TOP_RECIPE_OFFSET = 0
+RECIPE_COCKTAIL = 1
 
 -- System Menu
 
@@ -76,6 +81,13 @@ function Load_high_scores()
         Reset_high_scores()
     elseif next(FROGS_FAVES) == nil then
         Reset_high_scores()
+    end
+    
+    -- Generate text version of high score recipes
+    for a = 1, #COCKTAILS, 1 do
+        local cocktail_name = COCKTAILS[a].name
+        FROGS_FAVES_STEPS[cocktail_name] = Recipe_to_steps(FROGS_FAVES.recipes[cocktail_name])
+        FROGS_FAVES_TEXT[cocktail_name] = Recipe_steps_to_text_menu(FROGS_FAVES_STEPS[cocktail_name])
     end
 end
 
@@ -180,20 +192,22 @@ local function draw_ui()
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
             local cocktail_width = 142
             local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 73
+            local selected_cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[MENU_STATE.focused_option+1].name]
 
             for i, cocktail in pairs(cocktail_anims) do
+                local cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[i].name]
                 if (i-1) >= MENU_STATE.first_option_in_view - 1 and
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
-                    if (i-1) == MENU_STATE.focused_option then
+                    if (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
                         cocktail:draw(cocktail_x, global_origin[2])
                     else
                         COCKTAILS[i].img:draw(cocktail_x, global_origin[2])
                     end
 
                     -- draw badge of accomplishment
-                    if FROGS_FAVES.accomplishments[COCKTAILS[i].name] then
+                    if cocktail_done then
                         gfx.pushContext()
                             COCKTAILS[i].sticker:drawAnchored(cocktail_x + COCKTAILS[i].sticker_pos[1] , COCKTAILS[i].sticker_pos[2], 0.5, 0.5)
                         gfx.popContext()
@@ -203,8 +217,54 @@ local function draw_ui()
 
             -- Draw current option indicator
             local focus_relative_to_window = MENU_STATE.focused_option - MENU_STATE.first_option_in_view +1
-            UI_TEXTURES.selection_highlight:draw(first_cocktail_x + cocktail_width * focus_relative_to_window, global_origin[2])
+            local selected_cocktail_x = first_cocktail_x + cocktail_width * focus_relative_to_window
+            UI_TEXTURES.selection_highlight:draw(selected_cocktail_x, global_origin[2])
 
+
+            -- draw top recipe
+            local recipe_popup_speed = 3
+            local recipe_hide_speed = 0.2
+            local recipe_scroll_speed = 1
+            local recipe_min_height = 44
+            local recipe_max_height = RECIPE_MAX_HEIGHT
+
+            local recipe_offset_x = (RECIPE_COCKTAIL - MENU_STATE.focused_option - 1) * cocktail_width
+            local recipe_x = selected_cocktail_x - 14 + recipe_offset_x
+            if TOP_RECIPE_OFFSET <= 0 then
+                RECIPE_COCKTAIL = MENU_STATE.focused_option + 1
+            end
+
+            if RECIPE_COCKTAIL == MENU_STATE.focused_option + 1 and MENU_STATE.screen == 3 then
+                if selected_cocktail_done and TOP_RECIPE_OFFSET < recipe_min_height then
+                    TOP_RECIPE_OFFSET += recipe_popup_speed
+                else
+                    local crank_change = playdate.getCrankChange()
+                    if math.abs(crank_change) > 0.01 and TOP_RECIPE_OFFSET >= recipe_min_height then
+                        TOP_RECIPE_OFFSET += crank_change * recipe_scroll_speed
+                        if TOP_RECIPE_OFFSET > recipe_max_height then
+                            TOP_RECIPE_OFFSET = recipe_max_height
+                        elseif TOP_RECIPE_OFFSET < recipe_min_height then
+                            TOP_RECIPE_OFFSET = recipe_min_height
+                        end
+                    end
+                end
+
+            else
+                if TOP_RECIPE_OFFSET > -1 then
+                    TOP_RECIPE_OFFSET -= math.ceil(TOP_RECIPE_OFFSET * recipe_hide_speed)
+                    if TOP_RECIPE_OFFSET < 1 then
+                        TOP_RECIPE_OFFSET = -1
+                    end
+                end
+            end
+
+            local recipe_cocktail_name = COCKTAILS[RECIPE_COCKTAIL].name
+            local recipe_text = FROGS_FAVES_TEXT[recipe_cocktail_name]
+            local recipe_steps = FROGS_FAVES_STEPS[recipe_cocktail_name]
+
+            if FROGS_FAVES_TEXT[recipe_cocktail_name] ~= nil then
+                Recipe_draw_menu(recipe_x, 240 - TOP_RECIPE_OFFSET, recipe_text, recipe_steps, recipe_cocktail_name) 
+            end
 
             -- FPS debugging
             gfx.pushContext()

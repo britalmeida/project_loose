@@ -743,6 +743,9 @@ function Init_visuals()
     TEXTURES.recipe_middle = {  gfxi.new("images/recipes/recipe_mid_1"),
                                 gfxi.new("images/recipes/recipe_mid_2"),
                                 gfxi.new("images/recipes/recipe_mid_3"),}
+    TEXTURES.recipe_small_top = gfxi.new("images/recipes/recipe__small_top_section")
+    TEXTURES.recipe_small_middle = gfxi.new("images/recipes/recipe__small_mid")
+    TEXTURES.recipe_small_bottom = gfxi.new("images/recipes/recipe_small_bottom_section")
     -- Load images
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")

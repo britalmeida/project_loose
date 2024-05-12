@@ -2,8 +2,14 @@ local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
 
 RECIPE_TEXT = {}
+RECIPE_MAX_HEIGHT = 0
 
 function Recipe_to_steps(recipe)
+    if recipe == nil then
+        return {}
+    elseif next(recipe) == nil then
+        return {}
+    end
 
     local current_ingredient = recipe[1]
     local ingredient_stack = 0
@@ -22,7 +28,12 @@ function Recipe_to_steps(recipe)
     return recipe_steps
 end
 
-function Recipe_steps_to_text(recipe_steps)
+function Recipe_steps_to_text_success(recipe_steps)
+    if recipe_steps == nil then
+        return {}
+    elseif next(recipe_steps) == nil then
+        return {}
+    end
     local text_lines = {}
     for step = 1, #recipe_steps, 1 do
         local step_type = recipe_steps[step][1]
@@ -48,8 +59,40 @@ function Recipe_steps_to_text(recipe_steps)
     return text_lines
 end
 
+function Recipe_steps_to_text_menu(recipe_steps)
+    if recipe_steps == nil then
+        return {}
+    elseif next(recipe_steps) == nil then
+        return {}
+    end
+    local text_lines = {}
+    for step = 1, #recipe_steps, 1 do
+        local test = recipe_steps[step]
+        local step_type = recipe_steps[step][1]
+        local line = ""
+        line = line .. tostring(step) .. ". " 
+        if step_type > 0 then
+            line = line .. "Add " .. recipe_steps[step][2]
+            line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
+            if recipe_steps[step][2] > 1 then
+                line = line .. "s"
+            end
+        else
+            line = line .. "Stir "
+            if step_type == -1 then
+                line = line .. "light "
+            else
+                line = line .. "dark "
+            end
+            line = line .. recipe_steps[step][2] .. "x"
+        end
+        text_lines[#text_lines+1] = line
+    end
+    return text_lines
+end
+
 function Recipe_update_current()
-    RECIPE_TEXT = Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE))
+    RECIPE_TEXT = Recipe_steps_to_text_success(Recipe_to_steps(CURRENT_RECIPE))
 end
 
 function Recipe_draw_success(y)
@@ -93,6 +136,39 @@ function Recipe_draw_success(y)
     gfx.popContext()
 end
 
-function Recipe_draw_menu(recipe, x, y)
+function Recipe_draw_menu(x, y, recipe_text, step_types, cocktail_name)
     -- draw scrollable top recipe in menu
+    local text_x = 10
+    local text_y = 50
+    local line_height = 20
+    
+    -- figure out number of middle inserts
+    local insert_height = TEXTURES.recipe_small_middle.height
+    local top_height = TEXTURES.recipe_small_top.height
+    local number_of_lines = #recipe_text
+    local number_of_inserts = math.max(0, math.ceil(((number_of_lines * line_height) + text_y - top_height ) / insert_height))
+    RECIPE_MAX_HEIGHT = top_height + number_of_inserts * insert_height + TEXTURES.recipe_small_bottom.height
+    
+    -- draw recipe background
+    gfx.pushContext()
+        TEXTURES.recipe_small_top:draw(x, y)
+        for a = 1, number_of_inserts, 1 do
+            TEXTURES.recipe_small_middle:draw(x, y + top_height + (a-1) * insert_height)
+        end
+        TEXTURES.recipe_small_bottom:draw(x, y + top_height + number_of_inserts * insert_height)
+    gfx.popContext()
+
+    -- draw recipe content
+    gfx.pushContext()
+        local y = y + text_y
+        gfx.setFont(FONTS.speech_font)
+        
+        gfx.drawText(cocktail_name, x + text_x, y)
+        y += line_height * 1.5
+
+        for a = 1, #recipe_text, 1 do
+            gfx.drawText(recipe_text[a], x + text_x, y)
+            y += line_height
+        end
+    gfx.popContext()
 end
