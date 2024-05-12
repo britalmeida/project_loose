@@ -181,8 +181,6 @@ local function draw_ui()
             local cocktail_width = 142
             local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 73
 
-            local badge_position_x = 10
-            local badge_position_y = 10
             for i, cocktail in pairs(cocktail_anims) do
                 if (i-1) >= MENU_STATE.first_option_in_view - 1 and
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
@@ -195,17 +193,9 @@ local function draw_ui()
                     end
 
                     -- draw badge of accomplishment
-                    local cocktail_done = ''
-                    if FROGS_FAVES.accomplishments[cocktail.name] then
-                        cocktail_done = 'SERVED'
+                    if FROGS_FAVES.accomplishments[COCKTAILS[i].name] then
                         gfx.pushContext()
-                            math.randomseed(i*1000)
-                            local offset_x = math.random(9) - 5
-                            local offset_y = math.random(13) - 7
-                            gfxi.new('images/cocktails/success_sticker'):draw(cocktail_x + badge_position_x + offset_x, badge_position_y + offset_y)
-                            gfx.setFont(FONTS.speech_font)
-                            gfx.setImageDrawMode(gfx.kDrawModeInverted)
-                            gfx.drawText(cocktail_done, cocktail_x + 50, 214, gfx.font)
+                            COCKTAILS[i].sticker:drawAnchored(cocktail_x + COCKTAILS[i].sticker_pos[1] , COCKTAILS[i].sticker_pos[2], 0.5, 0.5)
                         gfx.popContext()
                     end
                 end

@@ -9,7 +9,9 @@ COCKTAILS = {
     img=gfxi.new('images/cocktails/snailiva_sheet'),
     table= gfxit.new('images/cocktails/snailiva_sheet'),
     recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
-    framerate= 16 },
+    framerate= 16,
+    sticker= gfxi.new('images/cocktails/success_sticker'),
+    sticker_pos= {50, 50} },
     --Intro 1 (Love)
 
   { name="Silkini",
@@ -18,7 +20,9 @@ COCKTAILS = {
     img=gfxi.new('images/cocktails/silkini_sheet'),
     table= gfxit.new('images/cocktails/silkini_sheet'),
     recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
-    framerate= 16 },
+    framerate= 16,
+    sticker= gfxi.new('images/cocktails/sticker_b'),
+    sticker_pos= {109, 116} },
     -- Intro 2 (Love & Doom)
 
   { name="Green Toe",
@@ -27,7 +31,9 @@ COCKTAILS = {
     img=gfxi.new('images/cocktails/green_toe_sheet'),
     table= gfxit.new('images/cocktails/green_toe_sheet'),
     recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
-    framerate= 16 },
+    framerate= 16,
+    sticker= gfxi.new('images/cocktails/sticker_c'),
+    sticker_pos= {114, 79} },
     --Easy (Doom & Weeds but specific)
 
   { name="Overdose",
@@ -36,7 +42,9 @@ COCKTAILS = {
     img=gfxi.new('images/cocktails/overdose_sheet'),
     table= gfxit.new('images/cocktails/overdose_sheet'),
     recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
-    framerate= 16 },
+    framerate= 16,
+    sticker= gfxi.new('images/cocktails/success_sticker'),
+    sticker_pos= {50, 50} },
     --Medium (3 runes and specific. Spamming = fine tuning)
 
   { name="Hodge Podge",
@@ -45,7 +53,9 @@ COCKTAILS = {
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
     table= gfxit.new('images/cocktails/hodge_podge_sheet'),
     recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
-    framerate= 16 },
+    framerate= 16,
+    sticker= gfxi.new('images/cocktails/success_sticker'),
+    sticker_pos= {50, 50} },
     --Hard (3 Runes. All equally balanced)
 
   { name="Diceybrew",
@@ -54,7 +64,9 @@ COCKTAILS = {
     img=gfxi.new('images/cocktails/dicey_brew_sheet'),
     table= gfxit.new('images/cocktails/dicey_brew_sheet'),
     recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
-    framerate= 16 },
+    framerate= 16,
+    sticker= gfxi.new('images/cocktails/success_sticker'),
+    sticker_pos= {50, 50} },
     --Random
 }
 
