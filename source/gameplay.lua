@@ -378,7 +378,6 @@ end
 local blow_sound_timer = playdate.timer.new(0.5 * 1000, 0, 1)
 
 function update_fire()
-    print(blow_sound_timer.value)
     if GAMEPLAY_STATE.flame_amount > 0.01 then
         local flame_decay = 0.99
         GAMEPLAY_STATE.flame_amount *= flame_decay
