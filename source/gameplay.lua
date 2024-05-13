@@ -557,7 +557,7 @@ function Is_color_good_enough()
 end
 
 function Is_potion_good_enough()
-    return Are_ingredients_good_enough() and Is_color_good_enough()
+    return Are_ingredients_good_enough()
 end
 
 function Calculate_goodness()
