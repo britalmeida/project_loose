@@ -4,7 +4,8 @@ local gfxit <const> = playdate.graphics.imagetable
 local animloop <const> = playdate.graphics.animation.loop
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
-local inOutQuad <const> = playdate.easingFunctions.inOutQuad --(0, 0, 1, 2*1000)
+local inOutQuad <const> = playdate.easingFunctions.inOutQuad
+local outBack <const> = playdate.easingFunctions.outBack
 local animator <const> = playdate.graphics.animator
 
 

@@ -523,12 +523,14 @@ end
 
 function update_liquid()
     -- Update liquid color
-    local color_change = 0.0005
+    local stir_change = 0.002
+    local stir_decay = 0.005
     -- GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
-    STIR_FACTOR += math.abs(STIR_SPEED) * 0.0005
-    -- print(STIR_FACTOR)
+    STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change) - stir_decay
     if STIR_FACTOR > 1 then
         STIR_FACTOR = 1
+    elseif STIR_FACTOR < 0 then
+        STIR_FACTOR = 0
     end
     if GAMEPLAY_STATE.potion_color < 0 then
         GAMEPLAY_STATE.potion_color = 0
