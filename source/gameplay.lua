@@ -56,6 +56,8 @@ FROG = nil
 
 -- Stir speed is the speed of cranking in revolutions per seconds
 STIR_SPEED = 0
+-- Effect stirring has on the potion
+STIR_FACTOR = 0
 
 -- Stir position is an angle in radians
 STIR_POSITION = 0
@@ -107,7 +109,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.liquid_offset = 0.0
     GAMEPLAY_STATE.liquid_momentum = 0.0
     GAMEPLAY_STATE.liquid_viscosity = 0.9
-    GAMEPLAY_STATE.potion_color = 0.5
+    GAMEPLAY_STATE.potion_color = 0.0
     GAMEPLAY_STATE.potion_bubbliness = 0.0
     -- Reset current ingredient mix.
     for a = 1, NUM_RUNES, 1 do
@@ -522,7 +524,12 @@ end
 function update_liquid()
     -- Update liquid color
     local color_change = 0.0005
-    GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
+    -- GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
+    STIR_FACTOR += math.abs(STIR_SPEED) * 0.0005
+    -- print(STIR_FACTOR)
+    if STIR_FACTOR > 1 then
+        STIR_FACTOR = 1
+    end
     if GAMEPLAY_STATE.potion_color < 0 then
         GAMEPLAY_STATE.potion_color = 0
     elseif GAMEPLAY_STATE.potion_color > 1 then

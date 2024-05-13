@@ -118,12 +118,14 @@ end
 
 local new_rune_count = {0, 0, 0}
 
-
 function add_rune_travel_anim()
+
     -- add current rune count and new anim to table
     local rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
-    table.insert(rune_anim_table, {rune_count, animator.new(2*1000, 0.0, 1.0, inOutQuad)})
+    table.insert(rune_anim_table, {rune_count, animator.new(1.5*1000, 0.0, 1.0, inOutQuad), animator.new(10*1000, 0.0, 1.0, inOutQuad)})
+
 end
+
 
 
 local function draw_symbols( x, y, width, position_params)
@@ -155,10 +157,13 @@ local function draw_symbols( x, y, width, position_params)
             local animated_rune_count = {0, 0, 0}
             local avg_count = {0, 0, 0}
             for anim_index, anim_content in pairs(rune_anim_table) do
+
                 local rune_count = anim_content[1]
-                local progress = anim_content[2]:progress()
+                local progress_fast = anim_content[2]:progress()
+                local progress_slow = anim_content[3]:progress()
+                local progress_stirred = progress_fast * STIR_FACTOR + progress_slow * (1 - STIR_FACTOR)
                 for k, v in pairs(rune_count) do
-                    animated_rune_count[k] = avg_count[k] * (1 - progress) + v * progress
+                    animated_rune_count[k] = avg_count[k] * (1 - progress_stirred) + v * progress_stirred
                     avg_count[k] = animated_rune_count[k]
                 end
             end
@@ -171,13 +176,17 @@ local function draw_symbols( x, y, width, position_params)
             local rune_anim_progress_avg = 0
             local rune_anim_table_count = getTableSize(rune_anim_table)
             for anim_index, anim_content in pairs(rune_anim_table) do
-                rune_anim_progress_avg += anim_content[2]:progress() / rune_anim_table_count
+                local progress_fast = anim_content[2]:progress()
+                local progress_slow = anim_content[3]:progress()
+                local progress_stirred = progress_fast * STIR_FACTOR + progress_slow * (1 - STIR_FACTOR)
+                rune_anim_progress_avg += progress_stirred / rune_anim_table_count
             end
             if rune_anim_progress_avg == 1 then
                 local true_rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
 
                 rune_anim_table = {}
-                table.insert(rune_anim_table, {true_rune_count, animator.new(0, 1.0, 1.0)})
+                table.insert(rune_anim_table, {true_rune_count, animator.new(0, 1.0, 1.0), animator.new(0, 1.0, 1.0)})
+                STIR_FACTOR = 0
             end
 
             local target_y = y - (target - 0.5) * meter_height + wiggle
@@ -425,6 +434,7 @@ local function draw_liquid_bubbles()
             local anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, anim_length)
 
             if Bubbles_types[x] > 0 then
+                -- This is the spot for adding a factor. Might need to split the bubble sinking time from drop sprites.
                 local sink = math.sin(GAMEPLAY_STATE.game_tick / (2 * math.pi) * 0.7 + Bubbles_tick_offset[x]) * 0.3 + (anim_tick / anim_length)
                 local drop_sprite = INGREDIENT_TYPES[Bubbles_types[x]].drop
                 local offset_y = drop_sprite.height * sink
@@ -745,10 +755,7 @@ function Init_visuals()
     -- Starting table of active animations for runes
     rune_anim_table = {}
     local start_rune_count = {0, 0, 0}
-    rune_anim_table[1] = {
-        start_rune_count,
-        animator.new(0, 1.0, 1.0)
-    }
+    table.insert(rune_anim_table, {start_rune_count, animator.new(0, 1.0, 1.0), animator.new(0, 1.0, 1.0)})
 
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")
