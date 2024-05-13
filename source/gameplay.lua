@@ -28,6 +28,8 @@ GAMEPLAY_STATE = {
     game_tick = 0,
     -- The cursor is held down
     cursor_hold = false,
+    -- Ingredients were not stirred in
+    drops_dissolved = false
 }
 
 CURRENT_RECIPE = {}
