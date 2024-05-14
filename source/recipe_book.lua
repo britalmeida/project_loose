@@ -93,6 +93,7 @@ end
 
 function Recipe_update_current()
     RECIPE_TEXT = Recipe_steps_to_text_success(Recipe_to_steps(CURRENT_RECIPE))
+    RECIPE_TEXT_SMALL = (Recipe_to_steps(CURRENT_RECIPE))
 end
 
 function Recipe_draw_success(y)
@@ -148,7 +149,7 @@ end
 
 function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw scrollable top recipe in menu
-    local text_x = 10
+    local text_x = 12
     local text_y = 50
     local line_height = 20
     local extra_lines = 3
@@ -174,8 +175,10 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         local y = y + text_y
         gfx.setFont(FONTS.speech_font)
 
+        gfx.drawText("Just " .. tostring(#recipe_text) .. " steps!", x + text_x, y)
+
         for a = 1, #recipe_text, 1 do
-            gfx.drawText(recipe_text[a], x + text_x, y)
+            gfx.drawText(recipe_text[a], x + text_x, y + 20)
             y += line_height
         end
     gfx.popContext()

@@ -155,6 +155,41 @@ function Enter_gameplay()
     Reset_gameplay()
 end
 
+local recipe_hover_time = 20
+local recipe_is_hovering = false
+local recipe_hover_tick = 0
+
+function Small_recipe_hover(TOP_RECIPE_OFFSET)
+
+    --local bounds = self:getBoundsRect()
+    if TOP_RECIPE_OFFSET < 50 then
+        recipe_is_hovering = true
+        recipe_hover_tick += 1
+    else
+        recipe_hover_tick -= 1
+    end
+
+    recipe_hover_tick = math.max(recipe_hover_tick, 0)
+    recipe_hover_tick = math.min(recipe_hover_tick, recipe_hover_time)
+
+    if recipe_hover_tick > 0 then
+      -- Move sprite to the front
+      local time = playdate.getElapsedTime()
+      local wiggle_freq = 1
+      local x_offset = math.sin(time * 1 * math.pi * (wiggle_freq + 0.1))
+      local y_offset = math.sin(time * 2 * math.pi * (wiggle_freq + 0.1))
+      local x_hover = x_offset * 2.5 * recipe_hover_tick / (recipe_hover_time)
+      local y_hover = y_offset * 2.5 * recipe_hover_tick / recipe_hover_time
+
+      return {math.floor(x_hover), math.floor(y_hover + TOP_RECIPE_OFFSET)}
+    else
+      if recipe_is_hovering then
+        recipe_is_hovering = false
+        return {0, TOP_RECIPE_OFFSET}
+      end
+    end
+    return {0, TOP_RECIPE_OFFSET}
+  end
 
 
 -- Draw & Update
@@ -163,6 +198,7 @@ local music_tick = 0
 local side_scroll_direction = 1
 local side_scroll_speed = 40
 local side_scroll_x = 400
+local credits_return = false
 
 local function draw_ui()
 
@@ -311,8 +347,10 @@ local function draw_ui()
             local recipe_text = FROGS_FAVES_TEXT[recipe_cocktail_name]
             local recipe_steps = FROGS_FAVES_STEPS[recipe_cocktail_name]
 
+            local x_hover, y_hover = Small_recipe_hover(TOP_RECIPE_OFFSET)[1], Small_recipe_hover(TOP_RECIPE_OFFSET)[2]
+            print(y_hover)
             if FROGS_FAVES_TEXT[recipe_cocktail_name] ~= nil then
-                Recipe_draw_menu(recipe_x, 240 - TOP_RECIPE_OFFSET, recipe_text, recipe_steps)
+                Recipe_draw_menu(recipe_x - x_hover, 240 - y_hover + 6, recipe_text, recipe_steps)
             end
 
             -- FPS debugging
