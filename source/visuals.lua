@@ -311,7 +311,7 @@ local function draw_liquid_glow()
     local difference_weight = math.max(target, 1-target)
     
     local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
-    local light_strength = heat_response * (1 - math.abs((GAMEPLAY_STATE.potion_color - target) / difference_weight))
+    local light_strength = STIR_FACTOR * 0.6
     local glow_center_x = LIQUID_CENTER_X + 2
     local glow_center_y = LIQUID_CENTER_Y
     local glow_width = LIQUID_WIDTH + 100 + light_strength * 20
@@ -770,7 +770,7 @@ function Init_visuals()
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
     Set_draw_pass(-2, draw_bg_lighting)
-    -- Set_draw_pass(-1, draw_liquid_glow)
+    Set_draw_pass(-1, draw_liquid_glow)
     Set_draw_pass(0, draw_cauldron)
     Set_draw_pass(3, draw_liquid_surface)
     Set_draw_pass(4, draw_liquid_bubbles)

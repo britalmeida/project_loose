@@ -523,9 +523,9 @@ end
 
 
 function update_liquid()
-    -- Update liquid color
-    local stir_change = 0.005
-    local stir_decay = 0.005
+    -- Update liquid color & stir effect
+    local stir_change = 0.001
+    local stir_decay = 0.01
     -- GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
     STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change) - stir_decay
     if STIR_FACTOR > 1 then
@@ -533,11 +533,7 @@ function update_liquid()
     elseif STIR_FACTOR < 0 then
         STIR_FACTOR = 0
     end
-    if GAMEPLAY_STATE.potion_color < 0 then
-        GAMEPLAY_STATE.potion_color = 0
-    elseif GAMEPLAY_STATE.potion_color > 1 then
-        GAMEPLAY_STATE.potion_color = 1
-    end
+    GAMEPLAY_STATE.potion_color = STIR_FACTOR
 
     -- Update liquid state
     GAMEPLAY_STATE.liquid_momentum += Clamp(STIR_SPEED, -8, 8) / 10
@@ -553,10 +549,6 @@ local tolerance = 0.1
 
 function Are_ingredients_good_enough()
     return DIFF_TO_TARGET.ingredients_abs < tolerance
-end
-
-function Is_color_good_enough()
-    return DIFF_TO_TARGET.color_abs < tolerance
 end
 
 function Is_potion_good_enough()
