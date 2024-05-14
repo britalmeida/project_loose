@@ -123,7 +123,7 @@ function add_rune_travel_anim()
 
     -- add current rune count and new anim to table
     local rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
-    table.insert(rune_anim_table, {rune_count, animator.new(1.5*1000, 0.0, 1.0, inOutQuad), animator.new(10*1000, 0.0, 1.0, inOutQuad)})
+    table.insert(rune_anim_table, {rune_count, animator.new(3*1000, 0.0, 1.0, inOutQuad), animator.new(12*1000, 0.0, 1.0, inOutQuad)})
 
 end
 
