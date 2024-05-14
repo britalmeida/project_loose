@@ -50,8 +50,7 @@ PLAYER_LEARNED = {
     how_to_fire = false,
     how_to_grab = false,
     how_to_shake = false,
-    how_to_cw_for_brighter = false,
-    how_to_ccw_for_darker = false,
+    how_to_stir = false,
 }
 
 FROG = nil
@@ -136,8 +135,7 @@ function Reset_gameplay()
     PLAYER_LEARNED.how_to_grab = false
     PLAYER_LEARNED.how_to_release = false
     PLAYER_LEARNED.how_to_shake = false
-    PLAYER_LEARNED.how_to_cw_for_brighter = false
-    PLAYER_LEARNED.how_to_ccw_for_darker = false
+    PLAYER_LEARNED.how_to_stir = false
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -526,7 +524,7 @@ end
 
 function update_liquid()
     -- Update liquid color
-    local stir_change = 0.002
+    local stir_change = 0.005
     local stir_decay = 0.005
     -- GAMEPLAY_STATE.potion_color = GAMEPLAY_STATE.potion_color + color_change * STIR_SPEED
     STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change) - stir_decay
@@ -621,9 +619,7 @@ function Check_player_learnings()
         PLAYER_LEARNED.how_to_fire = true
     end
 
-    if STIR_SPEED > 7.5 then
-        PLAYER_LEARNED.how_to_cw_for_brighter = true
-    elseif STIR_SPEED < -7.5 then
-        PLAYER_LEARNED.how_to_ccw_for_darker = true
+    if STIR_SPEED > 7.5 or STIR_SPEED < -7.5 then
+        PLAYER_LEARNED.how_to_stir = true
     end
 end

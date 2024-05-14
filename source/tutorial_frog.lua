@@ -32,7 +32,7 @@ local fire_tutorials <const> = {
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
 }
-local stir_tutorials <const> = {
+local stir_tutorials_color <const> = {
     "Remember the importance of\nthe stirring direction.",
     "Use the crank to stir?",
     "11", "12",
@@ -46,6 +46,19 @@ local need_less_bright <const> = {
     "Waaaaay too dark!\nCrank it the other way.",
     "The liquid looks too dark\nstirr!",
     "Just a lil'bit too dark.",
+}
+local stir_tutorials <const> = {
+    "Stirring helps after\nusing ingredients.",
+    "Stir to see if you've\ngot it right.",
+    "Use the crank to stir.",
+    "11",
+}
+local stir_reminders <const> = {
+    "Remember to stir next time!",
+}
+local need_more_stir <const> = {
+    "I can't tell yet.\nTry stirring!",
+    "You've got a laddle\nfor a reason!",
 }
 local need_more_love <const> = {
     "Put some heart into it!", "2",
@@ -85,7 +98,8 @@ local sayings <const> = {
             { need_less_doom, need_more_doom },
             { need_less_weed, need_more_weed },
         },
-        color = { need_less_bright, need_more_bright } -- too_dark, too_bright
+        color = { need_less_bright, need_more_bright }, -- too_dark, too_bright
+        stir = { need_more_stir, stir_reminders }
     }
 }
 
@@ -337,7 +351,7 @@ function Froggo:think()
         end
     end
     if self.tutorial_state == TUTORIAL_STATE.stir then
-        if Is_color_good_enough() then -- Skip the stirring when it's not needed even if it's never been done
+        if PLAYER_LEARNED.how_to_stir then
             self.tutorial_state += 1
         end
     end
@@ -360,23 +374,17 @@ function Froggo:think()
 
         if self.tutorial_state == TUTORIAL_STATE.stir then
 
-            -- Stirring is complicated man!
+            -- Stirring can be easier man!
             if not self.has_said_once_reminders[idx] and
                 -- Don't say "you forgot to stir" if any stirring has happened already.
-                not PLAYER_LEARNED.how_to_cw_for_brighter and
-                not PLAYER_LEARNED.how_to_ccw_for_darker then
+                not PLAYER_LEARNED.how_to_stir then
                 self:select_sentence(sayings.once, idx)
                 self.has_said_once_reminders[idx] = true
             else
-                if not PLAYER_LEARNED.how_to_cw_for_brighter then
+                if not PLAYER_LEARNED.how_to_stir then
                     self:select_next_sentence(sayings.tutorial[idx])
-                elseif not PLAYER_LEARNED.how_to_ccw_for_darker then
-                    self:select_next_sentence(sayings.tutorial[idx])
-                else
-                    self:give_stirring_direction()
                 end
             end
-
         else
             -- Say things like "You forgot an ingredient!" first and only once.
             if idx < #sayings.once and not self.has_said_once_reminders[idx] then
@@ -397,12 +405,12 @@ function Froggo:think()
             -- First get the ingredients right, then the color.
             if not Are_ingredients_good_enough() then
                 self:give_ingredients_direction()
-            else
-                self:give_stirring_direction()
-                -- Move back to stirring tutorial if it hasn't been learned.
-                -- It will advance back to complete when it's learned or color got gud.
-                if not PLAYER_LEARNED.how_to_cw_for_brighter or
-                    not PLAYER_LEARNED.how_to_ccw_for_darker then
+
+            elseif #rune_anim_table > 1 then
+                self.give_stirring_direction(false)
+            elseif GAMEPLAY_STATE.drops_dissolved then
+                self.give_stirring_direction(true)
+                if not PLAYER_LEARNED.how_to_stir then
                     self.tutorial_state = TUTORIAL_STATE.stir
                 end
             end
@@ -411,7 +419,7 @@ function Froggo:think()
 end
 
 
-function Froggo:give_stirring_direction()
+function Froggo:give_color_direction()
     -- clockwise makes it more 1
 
     -- check dir
@@ -430,6 +438,19 @@ function Froggo:give_stirring_direction()
 
     print("giving stirring direction: dir "..needs_to_stir_in_dir.." amount "..stirr_offset)
     self:select_sentence(sayings.help.color[needs_to_stir_in_dir], stirr_offset)
+end
+
+function Froggo:give_stirring_direction(forgot_last_time)
+
+    if forgot_last_time then
+        print("giving stirring reminder for next time")
+        self:select_sentence(sayings.help.stir[2])
+        GAMEPLAY_STATE.drops_dissolved = false
+    else
+        print("giving stirring reminder for NOW")
+        self:select_sentence(sayings.help.stir[1])
+    end
+
 end
 
 
