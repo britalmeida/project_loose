@@ -113,6 +113,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.liquid_viscosity = 0.9
     GAMEPLAY_STATE.potion_color = 0.0
     GAMEPLAY_STATE.potion_bubbliness = 0.0
+    GAMEPLAY_STATE.drops_dissolved = false
     -- Reset current ingredient mix.
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0

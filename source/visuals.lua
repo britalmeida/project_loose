@@ -183,12 +183,10 @@ local function draw_symbols( x, y, width, position_params)
                 rune_anim_progress_avg += progress_stirred / rune_anim_table_count
             end
             if rune_anim_progress_avg == 1 then
-                if STIR_FACTOR < 0.2 then
+                if STIR_FACTOR < 0.2 and #rune_anim_table > 1 then
                     -- The drops dissolved bby themselves. They were never stirred.
                     -- Frog should give a reminder
                     GAMEPLAY_STATE.drops_dissolved = true
-                else
-                    GAMEPLAY_STATE.drops_dissolved = false
                 end
                 local true_rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
 
