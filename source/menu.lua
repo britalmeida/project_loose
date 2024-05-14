@@ -48,6 +48,9 @@ local function add_system_menu_entries_cocktails()
     local menuItem, error = menu:addMenuItem("reset scores", function()
         Reset_high_scores()
     end)
+    local menuItem, error = menu:addMenuItem("unlock all", function()
+        Unlock_all_cocktails()
+    end)
 end
 
 function remove_system_menu_entries()
@@ -56,7 +59,7 @@ end
 
 -- High Score
 
-function Reset_high_scores()
+function Reset_high_scores() -- Should be removed in final game
     local frogs_faves = {
         accomplishments = {},
         recipes = {}
@@ -69,6 +72,10 @@ function Reset_high_scores()
 
     FROGS_FAVES = frogs_faves
     playdate.datastore.write(frogs_faves, 'frogs_faves')
+end
+
+function Unlock_all_cocktails() -- Should be removed in final game + any references
+    debug_cocktail_unlock = true
 end
 
 function Store_high_scores()
@@ -212,13 +219,31 @@ local function draw_ui()
             local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 73
             local selected_cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[MENU_STATE.focused_option+1].name]
 
+            -- Locking/Unlocking cocktails
+            local intro_completed = false
+            local dicey_unlocked = false
+            if (FROGS_FAVES.accomplishments[COCKTAILS[1].name] and
+            FROGS_FAVES.accomplishments[COCKTAILS[2].name]) or
+            debug_cocktail_unlock then
+                intro_completed = true
+            end
+            if (FROGS_FAVES.accomplishments[COCKTAILS[3].name] and
+            FROGS_FAVES.accomplishments[COCKTAILS[4].name] and
+            FROGS_FAVES.accomplishments[COCKTAILS[5].name]) or
+            debug_cocktail_unlock then
+                dicey_unlocked = true
+            end
             for i, cocktail in pairs(cocktail_anims) do
                 local cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[i].name]
+
                 if (i-1) >= MENU_STATE.first_option_in_view - 1 and
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
-                    if (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
+                    if (i > 2 and not intro_completed) or
+                    i == 6 and not dicey_unlocked then
+                        COCKTAILS[i].locked_img:draw(cocktail_x, global_origin[2])
+                    elseif (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
                         cocktail:draw(cocktail_x, global_origin[2])
                     else
                         COCKTAILS[i].img:draw(cocktail_x, global_origin[2])
