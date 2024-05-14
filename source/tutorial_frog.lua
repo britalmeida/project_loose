@@ -299,6 +299,7 @@ function Froggo:croak()
         playdate.timer.new(3*1000, function()
             -- Disable speech bubble after a short moment.
             self:stop_speech_bubble()
+            self:go_idle()
 
         end)
     end
