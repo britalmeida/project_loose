@@ -580,18 +580,11 @@ function Calculate_goodness()
     DIFF_TO_TARGET.runes = runes_diff
 
     -- calculate state change
-    local diff_change_color = DIFF_TO_TARGET.color_abs - prev_diff.color_abs
     local diff_change_runes = DIFF_TO_TARGET.ingredients_abs - prev_diff.ingredients_abs
-    if math.abs(diff_change_color) <= 0.001 then
-        diff_change_color = 0
-    end
-
-    local diff_change_overall = diff_change_color + diff_change_runes
-
-    local color_trend = -Sign(diff_change_color)
+    local diff_change_overall = diff_change_runes
     local rune_trend = -Sign(diff_change_runes)
 
-    local new_trend = color_trend + rune_trend
+    local new_trend = rune_trend
     if new_trend ~= 0 then
         TREND = new_trend
     end
