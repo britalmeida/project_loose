@@ -166,7 +166,7 @@ function Small_recipe_hover(TOP_RECIPE_OFFSET)
         recipe_is_hovering = true
         recipe_hover_tick += 1
     else
-        recipe_hover_tick -= 1
+        recipe_hover_tick -= 3
     end
 
     recipe_hover_tick = math.max(recipe_hover_tick, 0)
