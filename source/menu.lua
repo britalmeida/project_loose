@@ -98,6 +98,7 @@ function Enter_menu_start(new_global_x, new_global_y)
 
     remove_system_menu_entries()
     Stop_gameplay()
+    MENU_STATE.focused_option = 0
 
     SOUND.bg_loop_gameplay:stop()
     if not SOUND.bg_loop_menu:isPlaying() then
@@ -113,6 +114,11 @@ function enter_menu_mission(enter_from_gameplay)
     Load_high_scores()
     add_system_menu_entries_cocktails()
     MENU_STATE.screen = MENU_SCREEN.mission
+
+    SOUND.bg_loop_gameplay:stop()
+    if not SOUND.bg_loop_menu:isPlaying() then
+        SOUND.bg_loop_menu:play(0)
+    end
 
     -- Side scroll amount if coming directly from gameplay
     if enter_from_gameplay == true then
@@ -384,7 +390,6 @@ function Handle_menu_input()
             SOUND.menu_confirm:play()
             -- reset mystery potion
             Set_target_potion(MENU_STATE.focused_option + 1)
-            MENU_STATE.focused_option = 0
             Enter_gameplay()
         elseif playdate.buttonJustReleased( playdate.kButtonLeft ) and
         MENU_STATE.focused_option < 1 or
