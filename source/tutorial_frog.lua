@@ -223,7 +223,7 @@ end
 
 function Froggo:go_idle()
     self.state = ACTION_STATE.idle
-    if Is_potion_good_enough() then
+    if Is_potion_good_enough() and #rune_anim_table <= 1 then
         self:start_animation(self.anim_eyeball)
         self.x_offset = -11
     else
@@ -322,7 +322,7 @@ end
 function Froggo:think()
 
     -- Check if the potion is approved and early out!
-    if Is_potion_good_enough() then
+    if Is_potion_good_enough() and #rune_anim_table <= 1 then
         Win_game()
         Reset_ingredients()
         self.last_spoken_sentence_str = positive_acceptance
