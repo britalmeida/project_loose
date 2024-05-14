@@ -18,6 +18,7 @@ local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the missi
 local global_origin = {0, 0}
 local music_speed = 1.13  -- Extra factor to synch to music
 local cocktail_anims = {}
+local cocktail_anims_locked = {}
 
 TOP_RECIPE_OFFSET = 0
 RECIPE_COCKTAIL = 1
@@ -276,13 +277,20 @@ local function draw_ui()
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
-                    if (i > 2 and not intro_completed) or
-                    i == 6 and not dicey_unlocked then
-                        COCKTAILS[i].locked_img:draw(cocktail_x, global_origin[2])
-                    elseif (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
-                        cocktail:draw(cocktail_x, global_origin[2])
+                    if (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
+                        if (i > 2 and not intro_completed) or
+                            i == 6 and not dicey_unlocked then
+                                cocktail_anims_locked[i]:draw(cocktail_x, global_origin[2])
+                        else
+                            cocktail:draw(cocktail_x, global_origin[2])
+                        end
                     else
-                        COCKTAILS[i].img:draw(cocktail_x, global_origin[2])
+                        if (i > 2 and not intro_completed) or
+                            i == 6 and not dicey_unlocked then
+                                COCKTAILS[i].locked_img:draw(cocktail_x, global_origin[2])
+                        else
+                            COCKTAILS[i].img:draw(cocktail_x, global_origin[2])
+                        end
                     end
 
                     -- draw badge of accomplishment
@@ -526,6 +534,10 @@ function Init_menus()
 
     for i in pairs(COCKTAILS) do
         table.insert(cocktail_anims, animloop.new(COCKTAILS[i].framerate * frame_ms * music_speed, COCKTAILS[i].table, true))
+    end
+
+    for i in pairs(COCKTAILS) do
+        table.insert(cocktail_anims_locked, animloop.new(COCKTAILS[i].framerate * frame_ms * music_speed, COCKTAILS[i].locked_table, true))
     end
 
 
