@@ -28,7 +28,7 @@ local fire_reminders <const> = {
 }
 local fire_tutorials <const> = {
     "Blow to stoke up the fire\npuff puff puff!",
-    "Just blow air onto the\nbottom of the cauldron",
+    "Just blow air onto the\nbottom of the cauldron.",
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
 }
@@ -38,7 +38,7 @@ local stir_tutorials <const> = {
     "11", "12",
 }
 local need_more_bright <const> = {
-    "Oh my eyes!\nLiquid is way too bright",
+    "Oh my eyes!\nLiquid is way too bright.",
     "The liquid looks too bright.\nStirr!",
     "Just a lil'bit too light.",
 }

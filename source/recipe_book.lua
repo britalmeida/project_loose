@@ -138,7 +138,11 @@ function Recipe_draw_success(y)
             y += line_height
         end
         y += line_height
-        gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " steps . . .", recipe_x + text_x, y)
+        if #RECIPE_TEXT > 1 then
+            gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " steps . . .", recipe_x + text_x, y)
+        else
+            gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " step . . .", recipe_x + text_x, y)
+        end
     gfx.popContext()
 end
 

@@ -461,7 +461,7 @@ function Init_menus()
     -- Create animation loops
     local start_anim_table, start_anim_framerate = gfxit.new("images/menu_start"), 16
     local selection_highlight_table, selection_highlight_framerate = gfxit.new("images/cocktails/white_selection_border"), 16
-    local credit_scroll_table, credit_scroll_framerate = gfxit.new("images/credits"), 16
+    local credit_scroll_table, credit_scroll_framerate = gfxit.new("images/credits"), 8
 
     for i in pairs(COCKTAILS) do
         table.insert(cocktail_anims, animloop.new(COCKTAILS[i].framerate * frame_ms * music_speed, COCKTAILS[i].table, true))
