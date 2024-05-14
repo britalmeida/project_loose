@@ -772,7 +772,7 @@ function Init_visuals()
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
     Set_draw_pass(-2, draw_bg_lighting)
-    Set_draw_pass(-1, draw_liquid_glow)
+    -- Set_draw_pass(-1, draw_liquid_glow)
     Set_draw_pass(0, draw_cauldron)
     Set_draw_pass(3, draw_liquid_surface)
     Set_draw_pass(4, draw_liquid_bubbles)
