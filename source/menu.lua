@@ -348,7 +348,6 @@ local function draw_ui()
             local recipe_steps = FROGS_FAVES_STEPS[recipe_cocktail_name]
 
             local x_hover, y_hover = Small_recipe_hover(TOP_RECIPE_OFFSET)[1], Small_recipe_hover(TOP_RECIPE_OFFSET)[2]
-            print(y_hover)
             if FROGS_FAVES_TEXT[recipe_cocktail_name] ~= nil then
                 Recipe_draw_menu(recipe_x - x_hover, 240 - y_hover + 6, recipe_text, recipe_steps)
             end
