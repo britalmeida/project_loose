@@ -132,6 +132,9 @@ function Reset_gameplay()
 
     -- Reset time delta
     playdate.resetElapsedTime()
+
+    -- Reset highscore recipe scroll
+    end_recipe_y = 0
 end
 
 
@@ -166,12 +169,12 @@ function Win_game()
     local new_high_score = false
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
         new_high_score = true
-        win_text = "RECIPE \nDONE!"
+        win_text = "RECIPE\nDONE!"
     elseif Score_of_recipe(CURRENT_RECIPE) < Score_of_recipe(FROGS_FAVES.recipes[TARGET_COCKTAIL.name]) then
         new_high_score = true
-        win_text = "NEW \nHIGHSCORE!"
+        win_text = "RECIPE\nIMPROVED!"
     else
-        win_text = "GOOD \nENOUGH!"
+        win_text = "GOOD\nENOUGH!"
     end
     if new_high_score then
         FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE

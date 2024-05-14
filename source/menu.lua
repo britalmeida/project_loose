@@ -95,10 +95,10 @@ end
 
 function Enter_menu_start(new_global_x, new_global_y)
     MENU_STATE.screen = MENU_SCREEN.start
+    MENU_STATE.focused_option = 0
 
     remove_system_menu_entries()
     Stop_gameplay()
-    MENU_STATE.focused_option = 0
 
     SOUND.bg_loop_gameplay:stop()
     if not SOUND.bg_loop_menu:isPlaying() then
@@ -395,7 +395,6 @@ function Handle_menu_input()
         MENU_STATE.focused_option < 1 or
         playdate.buttonJustReleased( playdate.kButtonB )then
             SOUND.menu_confirm:play()
-            MENU_STATE.focused_option = 0
             Enter_menu_start(global_origin[1], global_origin[2])
         end
 

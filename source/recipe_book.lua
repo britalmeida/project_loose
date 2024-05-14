@@ -101,7 +101,7 @@ function Recipe_draw_success(y)
     local recipe_x = 40
     local recipe_y = y
     local text_x = 24
-    local text_y = 165
+    local text_y = 180
     local line_height = 20
     local extra_lines = 3
     local flip_table = {"flipX", "flipY", "flipXY"}
@@ -130,7 +130,7 @@ function Recipe_draw_success(y)
         header_img:draw(recipe_x-40, recipe_y)
         local y = recipe_y + text_y
         gfx.setFont(FONTS.speech_font)
-        gfx.drawText(win_text, recipe_x + 25, recipe_y + 120)
+        gfx.drawTextAligned(win_text, recipe_x + 66, recipe_y + 118, kTextAlignment.center)
         gfx.drawText("Just follow these steps:", recipe_x + text_x, y)
         y += line_height * 1.5
         for a = 1, #RECIPE_TEXT, 1 do
