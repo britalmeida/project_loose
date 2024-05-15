@@ -45,6 +45,7 @@ GAME_ENDED = false
 TREND = 0
 PREV_RUNE_RATIO = {0, 0, 0}
 PREV_RUNE_COUNT = {0, 0, 0}
+DELICIOUS_CHECK = false
 
 PLAYER_LEARNED = {
     how_to_fire = false,
@@ -592,6 +593,8 @@ function Calculate_goodness()
     if math.abs(TREND - prev_trend) == 2 then
         FROG:Notify_the_frog()
     elseif math.abs(diff_change_overall) > 0.01 then
+        FROG:Notify_the_frog()
+    elseif DELICIOUS_CHECK then
         FROG:Notify_the_frog()
     end
 

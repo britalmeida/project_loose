@@ -219,8 +219,16 @@ end
 function Froggo:Notify_the_frog()
     -- notify the frog when significant change happened
     if self.state == ACTION_STATE.idle then
-        -- React to a state change
-        self:froggo_react()
+        -- continueously lick eyeballs or react
+        if Is_potion_good_enough() and DELICIOUS_CHECK then
+            print("is_delicious")
+            self:start_animation(self.anim_eyeball)
+            self.x_offset = -11
+            DELICIOUS_CHECK = false
+        else
+            -- React to a state change
+            self:froggo_react()
+        end
     end
 end
 
@@ -237,12 +245,7 @@ end
 
 function Froggo:go_idle()
     self.state = ACTION_STATE.idle
-    if Is_potion_good_enough() and #rune_anim_table <= 1 then
-        self:start_animation(self.anim_eyeball)
-        self.x_offset = -11
-    else
-        self:start_animation(self.anim_idle)
-    end
+    self:start_animation(self.anim_idle)
 end
 
 
@@ -251,8 +254,10 @@ function Froggo:go_reacting()
 
     if TREND > 0 then
         self:start_animation(self.anim_happy)
+        DELICIOUS_CHECK = false
     elseif TREND < 0 then
         self:start_animation(self.anim_headshake)
+        DELICIOUS_CHECK = false
     end
 
 end

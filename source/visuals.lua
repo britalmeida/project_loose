@@ -23,6 +23,8 @@ LIQUID_AABB = geo.rect.new(
 MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 112
 MAGIC_TRIANGLE_SIZE = 100
 
+-- check for the fog if conditions are correct at the right time
+DELICIOUS_CHECK = false
 
 -- Debug / Development
 
@@ -183,6 +185,10 @@ local function draw_symbols( x, y, width, position_params)
                 rune_anim_progress_avg += progress_stirred / rune_anim_table_count
             end
             if rune_anim_progress_avg == 1 then
+                if #rune_anim_table > 1 then
+                    print("make delicious")
+                    DELICIOUS_CHECK = true
+                end
                 if STIR_FACTOR < 0.2 and #rune_anim_table > 1 then
                     -- The drops dissolved bby themselves. They were never stirred.
                     -- Frog should give a reminder
