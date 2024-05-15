@@ -22,6 +22,7 @@ local cocktail_anims_locked = {}
 
 TOP_RECIPE_OFFSET = 0
 RECIPE_COCKTAIL = 1
+SIDE_SCROLL_X = 400
 
 -- System Menu
 
@@ -104,6 +105,7 @@ end
 function Enter_menu_start(new_global_x, new_global_y)
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0
+    SIDE_SCROLL_X = 400
 
     remove_system_menu_entries()
     Stop_gameplay()
@@ -130,9 +132,9 @@ function enter_menu_mission(enter_from_gameplay)
 
     -- Side scroll amount if coming directly from gameplay
     if enter_from_gameplay == true then
-        side_scroll_x = 30
+        SIDE_SCROLL_X = 30
     else
-        side_scroll_x = 400
+        SIDE_SCROLL_X = 400
     end
     -- Reset menu positions if needed
     global_origin[1], global_origin[2] = 0, 0
@@ -198,7 +200,6 @@ function Small_recipe_hover(TOP_RECIPE_OFFSET)
 local music_tick = 0
 local side_scroll_direction = 1
 local side_scroll_speed = 40
-local side_scroll_x = 400
 local credits_return = false
 
 local function draw_ui()
@@ -230,13 +231,13 @@ local function draw_ui()
                 side_scroll_direction = -1.2
             end
 
-            side_scroll_x += -side_scroll_speed * side_scroll_direction
+            SIDE_SCROLL_X += -side_scroll_speed * side_scroll_direction
 
             -- Cap side_scroll range
-            if side_scroll_x < 30 then
-                side_scroll_x = 30
-            elseif side_scroll_x > 400 then
-                side_scroll_x = 400
+            if SIDE_SCROLL_X < 30 then
+                SIDE_SCROLL_X = 30
+            elseif SIDE_SCROLL_X > 400 then
+                SIDE_SCROLL_X = 400
             end
 
 
@@ -245,7 +246,7 @@ local function draw_ui()
 
 
             -- Draw main menu
-            UI_TEXTURES.start:draw(global_origin[1] + side_scroll_x - 400, global_origin[2])
+            UI_TEXTURES.start:draw(global_origin[1] + SIDE_SCROLL_X - 400, global_origin[2])
 
 
             -- Draw cocktail selection
@@ -253,7 +254,7 @@ local function draw_ui()
             -- Draw cocktails
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
             local cocktail_width = 142
-            local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + side_scroll_x - 73
+            local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + SIDE_SCROLL_X - 73
             local selected_cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[MENU_STATE.focused_option+1].name]
 
             -- Locking/Unlocking cocktails
