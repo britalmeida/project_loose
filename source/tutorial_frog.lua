@@ -12,13 +12,13 @@ local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, drinking = 
 
 -- Froggo content machine
 --- A separate multi-level state machine to select the sentence the frog says when speaking.
-local TUTORIAL_STATE <const> = { start = 1, fire = 1, stir = 2, grab = 3, shake = 4, complete = 5 }
+local TUTORIAL_STATE <const> = { start = 1, fire = 1, grab = 2, shake = 3, stir = 4, complete = 5 }
 
 local positive_acceptance <const> = "That'll do it!"
 local forgotten_topics_callouts <const> = {
     "Magical brews need fire\nto reveal their magic.",
-    "Hey, you forgot to stir.",
     "Hey, you forgot an ingredient.",
+    "Hey, you forgot to stir.",
 }
 local fire_reminders <const> = {
     "Hey... the fire is getting low.",
@@ -89,7 +89,7 @@ local drop_tutorials <const> = {
 }
 
 local sayings <const> = {
-    tutorial = { fire_tutorials, stir_tutorials, grab_tutorials, drop_tutorials }, -- fire, stir, grab, shake
+    tutorial = { fire_tutorials, grab_tutorials, drop_tutorials, stir_tutorials }, -- fires, grab, shake, stir
     once = forgotten_topics_callouts,
     help = {
         fire = fire_reminders,
@@ -355,11 +355,6 @@ function Froggo:think()
             self.tutorial_state += 1
         end
     end
-    if self.tutorial_state == TUTORIAL_STATE.stir then
-        if PLAYER_LEARNED.how_to_stir then
-            self.tutorial_state += 1
-        end
-    end
     if self.tutorial_state == TUTORIAL_STATE.grab then
         if PLAYER_LEARNED.how_to_grab and PLAYER_LEARNED.how_to_release then
             self.tutorial_state += 1
@@ -370,6 +365,11 @@ function Froggo:think()
             self.tutorial_state += 1
         end
     end
+    if self.tutorial_state == TUTORIAL_STATE.stir then
+        if PLAYER_LEARNED.how_to_stir then
+            self.tutorial_state += 1
+        end
+    end
 
 
     if self.tutorial_state ~= TUTORIAL_STATE.complete then
@@ -377,28 +377,13 @@ function Froggo:think()
 
         local idx = self.tutorial_state
 
-        if self.tutorial_state == TUTORIAL_STATE.stir then
-
-            -- Stirring can be easier man!
-            if not self.has_said_once_reminders[idx] and
-                -- Don't say "you forgot to stir" if any stirring has happened already.
-                not PLAYER_LEARNED.how_to_stir then
-                self:select_sentence(sayings.once, idx)
-                self.has_said_once_reminders[idx] = true
-            else
-                if not PLAYER_LEARNED.how_to_stir then
-                    self:select_next_sentence(sayings.tutorial[idx])
-                end
-            end
+        -- Say things like "You forgot an ingredient!" first and only once.
+        if idx < #sayings.once and not self.has_said_once_reminders[idx] then
+            self:select_sentence(sayings.once, idx)
+            self.has_said_once_reminders[idx] = true
         else
-            -- Say things like "You forgot an ingredient!" first and only once.
-            if idx < #sayings.once and not self.has_said_once_reminders[idx] then
-                self:select_sentence(sayings.once, idx)
-                self.has_said_once_reminders[idx] = true
-            else
-                -- Loop throught the sentences for this tutorial step.
-                self:select_next_sentence(sayings.tutorial[idx])
-            end
+            -- Loop throught the sentences for this tutorial step.
+            self:select_next_sentence(sayings.tutorial[idx])
         end
 
     else -- Normal help loop.
@@ -415,9 +400,6 @@ function Froggo:think()
                 self.give_stirring_direction(false)
             elseif GAMEPLAY_STATE.drops_dissolved then
                 self.give_stirring_direction(true)
-                if not PLAYER_LEARNED.how_to_stir then
-                    self.tutorial_state = TUTORIAL_STATE.stir
-                end
             end
         end
     end
