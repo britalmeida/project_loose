@@ -65,7 +65,7 @@ COCKTAILS = {
     recipe_img = gfxi.new('images/recipes/recipe_hodge_podge'),
     framerate= 16,
     sticker= gfxi.new('images/cocktails/sticker_c'),
-    sticker_pos= {109, 116} },
+    sticker_pos= {112, 134} },
     --Hard (3 Runes. All equally balanced)
 
   { name="Dicey Brew",
