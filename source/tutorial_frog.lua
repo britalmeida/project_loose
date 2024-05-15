@@ -392,14 +392,13 @@ function Froggo:think()
         if GAMEPLAY_STATE.heat_amount < 0.3 then
             self:select_next_sentence(sayings.help.fire)
         else
-            -- First get the ingredients right, then the color.
-            if not Are_ingredients_good_enough() then
+            -- First check if drops need to be stirred in or they forgot last time
+            if #rune_anim_table > 1 then
+                self:give_stirring_direction()
+            -- Then give hints on next ingredient
+            elseif not Are_ingredients_good_enough() then
                 self:give_ingredients_direction()
 
-            elseif #rune_anim_table > 1 then
-                self.give_stirring_direction(false)
-            elseif GAMEPLAY_STATE.drops_dissolved then
-                self.give_stirring_direction(true)
             end
         end
     end
@@ -427,15 +426,17 @@ function Froggo:give_color_direction()
     self:select_sentence(sayings.help.color[needs_to_stir_in_dir], stirr_offset)
 end
 
-function Froggo:give_stirring_direction(forgot_last_time)
+local stir_offset = 1
 
-    if forgot_last_time then
+function Froggo:give_stirring_direction()
+
+    if GAMEPLAY_STATE.drops_dissolved then
         print("giving stirring reminder for next time")
-        self:select_sentence(sayings.help.stir[2])
+        self:select_sentence(sayings.help.stir[2], 1)
         GAMEPLAY_STATE.drops_dissolved = false
     else
         print("giving stirring reminder for NOW")
-        self:select_sentence(sayings.help.stir[1])
+        self:select_next_sentence(sayings.help.stir[1])
     end
 
 end
