@@ -12,7 +12,7 @@
             },
             "windows": {
                 "command": "cmd",
-                "args": ["/C"]//, "if not exist ${workspaceFolder}\\builds mkdir ${workspaceFolder}\\builds"]
+                "args": ["/C", "if not exist ${workspaceFolder}\\builds mkdir ${workspaceFolder}\\builds"]
             }
         },
         {
