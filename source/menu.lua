@@ -108,6 +108,7 @@ end
 function Enter_menu_start(new_global_x, new_global_y)
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0
+    MENU_STATE.first_option_in_view = 0
     SIDE_SCROLL_X = 400
 
     remove_system_menu_entries()
