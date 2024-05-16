@@ -91,7 +91,7 @@ TARGET_COCKTAIL = {
 
 function Reroll_mystery_potion()
     for a = 1, #COCKTAILS, 1 do
-      if COCKTAILS[a].name == "Diceybrew" then
+      if COCKTAILS[a].name == "Dicey Brew" then
           COCKTAILS[a].color = math.random(100)/100
           for b = 1, 3, 1 do
             COCKTAILS[a].rune_composition[b] = math.random(9)
