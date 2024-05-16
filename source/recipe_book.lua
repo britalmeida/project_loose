@@ -70,7 +70,7 @@ function Recipe_steps_to_text_menu(recipe_steps)
         local test = recipe_steps[step]
         local step_type = recipe_steps[step][1]
         local line = ""
-        line = line .. tostring(step) .. ". " 
+        line = ""
         if step_type > 0 then
             line = line .. "Add " .. recipe_steps[step][2]
             line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
@@ -175,10 +175,10 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         local y = y + text_y
         gfx.setFont(FONTS.speech_font)
 
-        gfx.drawText("Just " .. tostring(#recipe_text) .. " steps!", x + text_x, y)
+        gfx.drawText("Just " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
 
         for a = 1, #recipe_text, 1 do
-            gfx.drawText(recipe_text[a], x + text_x, y + 25)
+            gfx.drawText(recipe_text[a], x + text_x, y + 28)
             y += line_height
         end
     gfx.popContext()
