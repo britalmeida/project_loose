@@ -199,6 +199,7 @@ function Win_game()
     GAME_ENDED = true
 
     STIR_SPEED = 0 -- Stop liquid and stirring sounds.
+    STIR_FACTOR = 0
 
     local new_high_score = false
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
