@@ -103,7 +103,7 @@ function Recipe_draw_success(y)
     local recipe_y = y
     local text_x = 24
     local text_y = 180
-    local line_height = 20
+    local line_height = 23
     local extra_lines = 3
     local flip_table = {"flipX", "flipY", "flipXY"}
 
@@ -151,8 +151,8 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw scrollable top recipe in menu
     local text_x = 12
     local text_y = 50
-    local line_height = 20
-    local extra_lines = 3
+    local line_height = 23
+    local extra_lines = 4
 
     -- figure out number of middle inserts
     local insert_height = TEXTURES.recipe_small_middle.height
@@ -178,7 +178,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         gfx.drawText("Just " .. tostring(#recipe_text) .. " steps!", x + text_x, y)
 
         for a = 1, #recipe_text, 1 do
-            gfx.drawText(recipe_text[a], x + text_x, y + 20)
+            gfx.drawText(recipe_text[a], x + text_x, y + 25)
             y += line_height
         end
     gfx.popContext()

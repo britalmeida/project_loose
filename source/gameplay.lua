@@ -207,8 +207,8 @@ function Handle_input()
             end
 
             -- Cap scrollable range
-            local line_height = 20
-            local extra_lines = 3
+            local line_height = 23
+            local extra_lines = 4
             local recipe_scroll_range = #RECIPE_TEXT * line_height + (extra_lines * line_height) -- Line height from recipe_book.lua
             if end_recipe_y > 0 then
                 end_recipe_y = 0
