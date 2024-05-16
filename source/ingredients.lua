@@ -109,9 +109,8 @@ function Ingredient:fall()
 end
 
 function Ingredient:trigger_drop()
-    PLAYER_LEARNED.how_to_shake = true
     self:start_wiggle()
-    
+
     -- Do the drop with a delay
     playdate.timer.new(200, function ()
         self:drop()
@@ -223,6 +222,8 @@ function Ingredient:release()
         --start wiggling
         self:start_wiggle()
         self.state = INGREDIENT_STATE.is_over_cauldron
+        PLAYER_LEARNED.how_to_release = true
+        print("learned how to release")
     elseif bounds:containsPoint(self.start_pos) then
         self:respawn()
     end
@@ -232,7 +233,6 @@ function Ingredient:drop()
 
   local drop = Ingredient(self.ingredient_type_idx, geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y), true)
   drop.state = INGREDIENT_STATE.is_in_air
-  PLAYER_LEARNED.how_to_release = true
   drop:setZIndex(Z_DEPTH.grabbed_ingredient)
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
@@ -245,6 +245,9 @@ function Ingredient:drop()
   playdate.timer.new(500, function ()
       self.can_drop = true
   end)
+
+  PLAYER_LEARNED.how_to_shake = true
+  print("Learned how to shake")
 end
 
 function Ingredient:respawn()

@@ -251,6 +251,7 @@ function Handle_input()
             for i, ingredient in pairs(INGREDIENTS) do
                 if ingredient:try_pickup() then
                     PLAYER_LEARNED.how_to_grab = true
+                    print('Learned how to grab.')
                     break
                 end
             end
@@ -571,6 +572,7 @@ end
 function Check_player_learnings()
     if GAMEPLAY_STATE.heat_amount > 0.3 then
         PLAYER_LEARNED.how_to_fire = true
+        print("Learned how to stoke fire.")
     end
 
     if STIR_SPEED > 7.5 then
