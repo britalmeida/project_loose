@@ -280,11 +280,6 @@ function Handle_input()
         elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
             GAMEPLAY_STATE.showing_instructions = false
         end
-        if playdate.buttonJustPressed( playdate.kButtonDown ) then
-            GAMEPLAY_STATE.showing_recipe = true
-        elseif playdate.buttonJustReleased( playdate.kButtonDown ) then
-            GAMEPLAY_STATE.showing_recipe = false
-        end
     end
 end
 
