@@ -572,7 +572,6 @@ end
 function Check_player_learnings()
     if GAMEPLAY_STATE.heat_amount > 0.3 then
         PLAYER_LEARNED.how_to_fire = true
-        print("Learned how to stoke fire.")
     end
 
     if STIR_SPEED > 7.5 then
