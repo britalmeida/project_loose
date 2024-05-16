@@ -464,12 +464,11 @@ function Handle_menu_input()
         end
 
         if playdate.buttonJustReleased( playdate.kButtonA ) then
-            print(MENU_STATE.focused_option)
             if MENU_STATE.focused_option > 1 and
             MENU_STATE.focused_option < 5 and not INTRO_COMPLETED then
                 print("Intro not completed yet!")
             elseif MENU_STATE.focused_option == 5 and not DICEY_UNLOCKED then
-                print(print("Dicey not unlocked yet!"))
+                print("Dicey not unlocked yet!")
             else
                 SOUND.menu_confirm:play()
                 -- reset mystery potion

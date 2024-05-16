@@ -72,7 +72,7 @@ function Recipe_steps_to_text_menu(recipe_steps)
         local line = ""
         line = ""
         if step_type > 0 then
-            line = line .. "Add " .. recipe_steps[step][2]
+            line = line .. recipe_steps[step][2]
             line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
             if recipe_steps[step][2] > 1 then
                 line = line .. "s"
