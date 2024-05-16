@@ -418,11 +418,7 @@ function check_crank_to_stir()
         STIR_REVOLUTION += delta_stir
         if STIR_REVOLUTION - STIR_COUNT > 0.2 then
             STIR_COUNT += 1
-            if STIR_DIRECTION > 0 then
-                CURRENT_RECIPE[#CURRENT_RECIPE+1] = -1
-            else
-                CURRENT_RECIPE[#CURRENT_RECIPE+1] = -2
-            end
+            CURRENT_RECIPE[#CURRENT_RECIPE+1] = -1
             Recipe_update_current()
         end
     end
