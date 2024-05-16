@@ -24,6 +24,9 @@ TOP_RECIPE_OFFSET = 0
 RECIPE_COCKTAIL = 1
 SIDE_SCROLL_X = 400
 
+INTRO_COMPLETED = false
+DICEY_UNLOCKED = false
+
 -- System Menu
 
 local function add_system_menu_entries_gameplay()
@@ -128,6 +131,17 @@ function enter_menu_mission(enter_from_gameplay)
     SOUND.bg_loop_gameplay:stop()
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
+    end
+
+    -- Locking/Unlocking cocktails
+    if (FROGS_FAVES.accomplishments[COCKTAILS[1].name] and
+    FROGS_FAVES.accomplishments[COCKTAILS[2].name]) then
+        INTRO_COMPLETED = true
+    end
+    if (FROGS_FAVES.accomplishments[COCKTAILS[3].name] and
+    FROGS_FAVES.accomplishments[COCKTAILS[4].name] and
+    FROGS_FAVES.accomplishments[COCKTAILS[5].name]) then
+        DICEY_UNLOCKED = true
     end
 
     -- Side scroll amount if coming directly from gameplay
@@ -251,26 +265,17 @@ local function draw_ui()
 
             -- Draw cocktail selection
 
+            if debug_cocktail_unlock then
+                INTRO_COMPLETED = true
+                DICEY_UNLOCKED = true
+            end
+
             -- Draw cocktails
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
             local cocktail_width = 142
             local first_cocktail_x = -cocktail_width * 0.5 + global_origin[1] + SIDE_SCROLL_X - 73
             local selected_cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[MENU_STATE.focused_option+1].name]
 
-            -- Locking/Unlocking cocktails
-            local intro_completed = false
-            local dicey_unlocked = false
-            if (FROGS_FAVES.accomplishments[COCKTAILS[1].name] and
-            FROGS_FAVES.accomplishments[COCKTAILS[2].name]) or
-            debug_cocktail_unlock then
-                intro_completed = true
-            end
-            if (FROGS_FAVES.accomplishments[COCKTAILS[3].name] and
-            FROGS_FAVES.accomplishments[COCKTAILS[4].name] and
-            FROGS_FAVES.accomplishments[COCKTAILS[5].name]) or
-            debug_cocktail_unlock then
-                dicey_unlocked = true
-            end
             for i, cocktail in pairs(cocktail_anims) do
                 local cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[i].name]
 
@@ -279,15 +284,15 @@ local function draw_ui()
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
                     if (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
-                        if (i > 2 and not intro_completed) or
-                            i == 6 and not dicey_unlocked then
+                        if (i > 2 and not INTRO_COMPLETED) or
+                            i == 6 and not DICEY_UNLOCKED then
                                 cocktail_anims_locked[i]:draw(cocktail_x, global_origin[2])
                         else
                             cocktail:draw(cocktail_x, global_origin[2])
                         end
                     else
-                        if (i > 2 and not intro_completed) or
-                            i == 6 and not dicey_unlocked then
+                        if (i > 2 and not INTRO_COMPLETED) or
+                            i == 6 and not DICEY_UNLOCKED then
                                 COCKTAILS[i].locked_img:draw(cocktail_x, global_origin[2])
                         else
                             COCKTAILS[i].img:draw(cocktail_x, global_origin[2])
@@ -458,10 +463,18 @@ function Handle_menu_input()
         end
 
         if playdate.buttonJustReleased( playdate.kButtonA ) then
-            SOUND.menu_confirm:play()
-            -- reset mystery potion
-            Set_target_potion(MENU_STATE.focused_option + 1)
-            Enter_gameplay()
+            print(MENU_STATE.focused_option)
+            if MENU_STATE.focused_option > 1 and
+            MENU_STATE.focused_option < 5 and not INTRO_COMPLETED then
+                print("Intro not completed yet!")
+            elseif MENU_STATE.focused_option == 5 and not DICEY_UNLOCKED then
+                print(print("Dicey not unlocked yet!"))
+            else
+                SOUND.menu_confirm:play()
+                -- reset mystery potion
+                Set_target_potion(MENU_STATE.focused_option + 1)
+                Enter_gameplay()
+            end
         elseif playdate.buttonJustReleased( playdate.kButtonLeft ) and
         MENU_STATE.focused_option < 1 or
         playdate.buttonJustReleased( playdate.kButtonB )then
