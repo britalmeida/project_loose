@@ -84,11 +84,6 @@ function Recipe_steps_to_text_menu(recipe_steps)
             end
         else
             line = line .. "Stir "
-            if step_type == -1 then
-                line = line .. "light "
-            else
-                line = line .. "dark "
-            end
             line = line .. recipe_steps[step][2] .. "x"
         end
         text_lines[#text_lines+1] = line
