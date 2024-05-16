@@ -221,7 +221,6 @@ function Froggo:Notify_the_frog()
     if self.state == ACTION_STATE.idle then
         -- continueously lick eyeballs or react
         if Is_potion_good_enough() and DELICIOUS_CHECK then
-            print("is_delicious")
             self:start_animation(self.anim_eyeball)
             self.x_offset = -11
             DELICIOUS_CHECK = false

@@ -125,7 +125,7 @@ function add_rune_travel_anim()
 
     -- add current rune count and new anim to table
     local rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
-    table.insert(rune_anim_table, {rune_count, animator.new(3*1000, 0.0, 1.0, inOutQuad), animator.new(12*1000, 0.0, 1.0, inOutQuad)})
+    table.insert(rune_anim_table, {rune_count, animator.new(3*1000, 0.0, 1.0, inOutQuad), animator.new(30*1000, 0.0, 1.0, inOutQuad)})
 
 end
 
@@ -186,7 +186,6 @@ local function draw_symbols( x, y, width, position_params)
             end
             if rune_anim_progress_avg == 1 then
                 if #rune_anim_table > 1 then
-                    print("make delicious")
                     DELICIOUS_CHECK = true
                 end
                 if STIR_FACTOR < 0.2 and #rune_anim_table > 1 then
@@ -431,19 +430,22 @@ local function draw_liquid_bubbles()
             local bubble_tab = TEXTURES.bubble_table
             local bub_off_x, bub_off_y = 5, 12
 
+            -- Check if they are bubbles
             if Bubbles_types[x] < 0 then
                 bubble_tab = TEXTURES.bubble_table2
                 bub_off_x, bub_off_y = 12, 12
             end
 
             local anim_length = 0
+            -- Check if they are ingredient drops
             if Bubbles_types[x] <= 0 then
-              anim_length = bubble_tab:getLength()
-            else 
-              anim_length = 30
+                anim_length = bubble_tab:getLength()
+                anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, anim_length)
+            else
+                anim_length = 30
+                anim_tick = STIR_FACTOR * (anim_length -1)
             end
 
-            local anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, anim_length)
 
             if Bubbles_types[x] > 0 then
                 -- This is the spot for adding a factor. Might need to split the bubble sinking time from drop sprites.
