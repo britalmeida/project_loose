@@ -49,11 +49,6 @@ function Recipe_steps_to_text_success(recipe_steps)
             line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
         else
             line = line .. "Stir "
-            if step_type == -1 then
-                line = line .. "light "
-            else
-                line = line .. "dark "
-            end
             line = line .. recipe_steps[step][2] .. " time"
         end
         if recipe_steps[step][2] > 1 then --and not INGREDIENT_TYPES[step_type].drop_name == "salt"
@@ -142,7 +137,7 @@ function Recipe_draw_success(y)
         local y = recipe_y + text_y
         gfx.setFont(FONTS.speech_font)
         gfx.drawTextAligned(win_text, recipe_x + 66, recipe_y + 118, kTextAlignment.center)
-        gfx.drawText("Just follow these steps:", recipe_x + text_x, y)
+        gfx.drawText("Just add these ingredients:", recipe_x + text_x, y)
         y += line_height * 1.5
         for a = 1, #RECIPE_TEXT, 1 do
             gfx.drawText(RECIPE_TEXT[a], recipe_x + text_x, y)
@@ -150,9 +145,9 @@ function Recipe_draw_success(y)
         end
         y += line_height
         if #RECIPE_TEXT > 1 then
-            gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " steps . . .", recipe_x + text_x, y)
+            gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " ingredients . . .", recipe_x + text_x, y)
         else
-            gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " step . . .", recipe_x + text_x, y)
+            gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " ingredients . . .", recipe_x + text_x, y)
         end
     gfx.popContext()
 end
@@ -186,6 +181,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         gfx.setFont(FONTS.speech_font)
 
         gfx.drawText("Just " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+        gfx.drawText("Just " .. tostring(#recipe_text) .. " ingredients!", x + text_x, y)
 
         for a = 1, #recipe_text, 1 do
             gfx.drawText(recipe_text[a], x + text_x + 8, y + 28)
