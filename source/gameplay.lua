@@ -526,40 +526,33 @@ local liquid_darkening = 0
 
 function update_liquid()
     -- Update liquid color & stir effect
+
+
     local stir_change = 0.001
     local floating_drops = #rune_anim_table
     local color_change = 0.005
     local max_darkness = 0.2 * floating_drops
 
-    if max_darkness > 1 then
-        max_darkness = 1
-    end
+    max_darkness = math.min(max_darkness, 1)
 
     -- Calculate current base color of liquid
     if floating_drops > 1 then
         liquid_darkening += color_change * floating_drops
+        STIR_FACTOR += STIR_FACTOR * 0.002
+        STIR_FACTOR = math.min(STIR_FACTOR, 1)
     elseif floating_drops <= 1 then
         floating_drops = 1
-        liquid_darkening -= color_change * 3
-        STIR_FACTOR -= color_change * 3
+        liquid_darkening -= color_change * 8
+        STIR_FACTOR -= color_change * 8
+        --STIR_FACTOR = math.min(STIR_FACTOR, 0)
     end
-    if liquid_darkening > max_darkness then
-        liquid_darkening = max_darkness
-    elseif liquid_darkening < 0 then
-        liquid_darkening = 0
-    end
+    liquid_darkening = Clamp(liquid_darkening, 0, max_darkness)
     -- Calculate current stirring effect
     STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change)
-    if STIR_FACTOR > 1 then
-        STIR_FACTOR = 1
-    elseif STIR_FACTOR < 0 then
-        STIR_FACTOR = 0
-    end
-
-    print(liquid_darkening)
-
+    STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
     -- Total mixed color of liquid
     GAMEPLAY_STATE.potion_color = (1 - liquid_darkening) + (STIR_FACTOR * max_darkness)
+    print(STIR_FACTOR)
 
     -- Update liquid state
     GAMEPLAY_STATE.liquid_momentum += Clamp(STIR_SPEED, -8, 8) / 10
