@@ -17,7 +17,7 @@ COCKTAILS = {
     --Intro 1 (Love)
 
   { name="Silkini",
-    rune_composition={1, 2, 0},
+    rune_composition={0.5, 1, 0},
     color=0.0,
     img=gfxi.new('images/cocktails/silkini_sheet'),
     table= gfxit.new('images/cocktails/silkini_sheet'),
@@ -30,7 +30,7 @@ COCKTAILS = {
     -- Intro 2 (Love & Doom)
 
   { name="Green Toe",
-    rune_composition={0, 3, 9},
+    rune_composition={0, 0.33, 1},
     color=0.25,
     img=gfxi.new('images/cocktails/green_toe_sheet'),
     table= gfxit.new('images/cocktails/green_toe_sheet'),
@@ -43,7 +43,7 @@ COCKTAILS = {
     --Easy (Doom & Weeds but specific)
 
   { name="Overdose",
-    rune_composition={1.5, 6, 4},
+    rune_composition={0.25, 1, 0.66},
     color=0.15,
     img=gfxi.new('images/cocktails/overdose_sheet'),
     table= gfxit.new('images/cocktails/overdose_sheet'),
@@ -86,6 +86,7 @@ TARGET_COCKTAIL = {
   name = '',
   type_idx = 1,
   rune_ratio = {1, 0, 0},
+  rune_count = {0, 0, 0},
   color = 0.1,
 }
 
@@ -94,7 +95,7 @@ function Reroll_mystery_potion()
       if COCKTAILS[a].name == "Dicey Brew" then
           COCKTAILS[a].color = math.random(100)/100
           for b = 1, 3, 1 do
-            COCKTAILS[a].rune_composition[b] = math.random(9)
+            COCKTAILS[a].rune_composition[b] = math.random()
           end
       end
   end
@@ -111,6 +112,8 @@ function Set_target_potion(chosen_cocktail_idx)
   local sum = 0
   for a = 1, NUM_RUNES, 1 do
     TARGET_COCKTAIL.rune_ratio[a] = chosen_cocktail.rune_composition[a]
+    TARGET_COCKTAIL.rune_count[a] = chosen_cocktail.rune_composition[a]
+    
       sum = sum + TARGET_COCKTAIL.rune_ratio[a]
   end
   for a = 1, #TARGET_COCKTAIL.rune_ratio, 1 do

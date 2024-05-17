@@ -23,6 +23,7 @@ GAMEPLAY_STATE = {
     potion_bubbliness = 0.0,
     rune_count = {0, 0, 0},
     rune_ratio = {0, 0, 0},
+    rune_saturation = 0,
     -- ??
     game_tick = 0,
     -- The cursor is held down
@@ -40,6 +41,8 @@ DIFF_TO_TARGET = {
 GAME_ENDED = false
 
 TREND = 0
+PREV_RUNE_RATIO = {0, 0, 0}
+PREV_RUNE_COUNT = {0, 0, 0}
 
 PLAYER_LEARNED = {
     how_to_fire = false,
@@ -111,6 +114,7 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_ratio[a] = 0
     end
+    GAMEPLAY_STATE.rune_saturation = 0
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
 
@@ -137,11 +141,13 @@ function Reset_gameplay()
     end_recipe_y = 0
 end
 
-
-function Update_rune_count(difference)
+function Update_rune_count(drop_rune_count)
     local sum = 0
+    local saturation = GAMEPLAY_STATE.rune_saturation
+
+    -- Calculate new rune count
     for a = 1, NUM_RUNES, 1 do
-        GAMEPLAY_STATE.rune_count[a] = GAMEPLAY_STATE.rune_count[a] * 0.9 + difference[a] * 0.1
+        GAMEPLAY_STATE.rune_count[a] = GAMEPLAY_STATE.rune_count[a] + ((drop_rune_count[a] * ( 1 - 0.6 * saturation)) * 0.3)
         if GAMEPLAY_STATE.rune_count[a] < 0 then
             GAMEPLAY_STATE.rune_count[a] = 0
         end
@@ -152,11 +158,35 @@ function Update_rune_count(difference)
             GAMEPLAY_STATE.rune_ratio[a] = GAMEPLAY_STATE.rune_count[a] / sum
         end
     end
-    -- Trigger rune traveling animation
-    if prev_rune_ratio ~= GAMEPLAY_STATE.rune_ratio then
-        add_rune_travel_anim()
+
+      -- Cap rune count
+      for a = 1, NUM_RUNES, 1 do
+        if GAMEPLAY_STATE.rune_count[a] > 1 then
+            GAMEPLAY_STATE.rune_count[a] = 1
+        end
     end
-    local prev_rune_ratio = GAMEPLAY_STATE.rune_ratio
+
+    -- Trigger rune traveling animation
+    if PREV_RUNE_RATIO ~= GAMEPLAY_STATE.rune_ratio then
+        add_rune_travel_anim()
+        print("added anim for rune travel")
+    end
+
+    local prev_rune_avg = (PREV_RUNE_COUNT[1] + PREV_RUNE_COUNT[2] + PREV_RUNE_COUNT[3]) /3
+    local current_rune_avg = (GAMEPLAY_STATE.rune_count[1] + GAMEPLAY_STATE.rune_count[2] + GAMEPLAY_STATE.rune_count[3]) / 3
+
+    -- Increase/decrease saturation
+    if prev_rune_avg < current_rune_avg then
+        GAMEPLAY_STATE.rune_saturation = math.min(GAMEPLAY_STATE.rune_saturation + 0.1, 1)
+    elseif prev_rune_avg > current_rune_avg then
+        GAMEPLAY_STATE.rune_saturation = math.max(GAMEPLAY_STATE.rune_saturation - 0.1, 0)
+    end
+
+    PREV_RUNE_COUNT = shallow_copy(GAMEPLAY_STATE.rune_count)
+    PREV_RUNE_RATIO = shallow_copy(GAMEPLAY_STATE.rune_ratio)
+
+    --print("Rune Count = " .. tostring(GAMEPLAY_STATE.rune_count[1] .. ", " .. tostring(GAMEPLAY_STATE.rune_count[2]) .. ", " .. tostring(GAMEPLAY_STATE.rune_count[3])))
+    --print("Saturation =" .. GAMEPLAY_STATE.rune_saturation)
 end
 
 win_text = ""
@@ -535,9 +565,9 @@ function Calculate_goodness()
     DIFF_TO_TARGET.color_abs = math.abs(DIFF_TO_TARGET.color)
 
     local runes_diff = {
-        TARGET_COCKTAIL.rune_ratio[1] - GAMEPLAY_STATE.rune_ratio[1],
-        TARGET_COCKTAIL.rune_ratio[2] - GAMEPLAY_STATE.rune_ratio[2],
-        TARGET_COCKTAIL.rune_ratio[3] - GAMEPLAY_STATE.rune_ratio[3],
+        TARGET_COCKTAIL.rune_count[1] - GAMEPLAY_STATE.rune_count[1],
+        TARGET_COCKTAIL.rune_count[2] - GAMEPLAY_STATE.rune_count[2],
+        TARGET_COCKTAIL.rune_count[3] - GAMEPLAY_STATE.rune_count[3],
     }
     DIFF_TO_TARGET.ingredients_abs = (
         math.abs(runes_diff[1]) + math.abs(runes_diff[2]) + math.abs(runes_diff[3])

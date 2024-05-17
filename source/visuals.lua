@@ -116,31 +116,13 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
     end
 end
 
-function getTableSize(t)
-    local count = 0
-    for _, __ in pairs(t) do
-        count = count + 1
-    end
-    return count
-end
-
-local new_rune_ratio = {0, 0, 0}
-
-function shallow_copy(t)
-    local t2 = {0, 0, 0}
-    for k,v in pairs(t) do
-        t2[k] = v
-    end
-    return t2
-end
+local new_rune_count = {0, 0, 0}
 
 
 function add_rune_travel_anim()
-    -- add current rune ratio and new anim to table
-    local rune_ratio_copy = {0, 0, 0}
-    local new_rune_ratio = GAMEPLAY_STATE.rune_ratio
-    rune_ratio_copy = shallow_copy(new_rune_ratio)
-    table.insert(rune_anim_table, {rune_ratio_copy, animator.new(2*1000, 0.0, 1.0, inOutQuad)})
+    -- add current rune count and new anim to table
+    local rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
+    table.insert(rune_anim_table, {rune_count, animator.new(2*1000, 0.0, 1.0, inOutQuad)})
 end
 
 
@@ -164,25 +146,25 @@ local function draw_symbols( x, y, width, position_params)
             local wiggle = math.sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + math.pi * 0.3)
             local glyph_y = y
 
-            local target = TARGET_COCKTAIL.rune_ratio[a]
+            local target = TARGET_COCKTAIL.rune_count[a]
             local difference_weight = math.max(target, 1-target)
             local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
             local glow_strength = heat_response * 0.5
 
-            -- Calculate current_rune_ratio
-            local animated_rune_ratio = {0, 0, 0}
-            local avg_ratio = {0, 0, 0}
+            -- Calculate current_rune_count
+            local animated_rune_count = {0, 0, 0}
+            local avg_count = {0, 0, 0}
             for anim_index, anim_content in pairs(rune_anim_table) do
-                local rune_ratio = anim_content[1]
+                local rune_count = anim_content[1]
                 local progress = anim_content[2]:progress()
-                for k, v in pairs(rune_ratio) do
-                    animated_rune_ratio[k] = avg_ratio[k] * (1 - progress) + v * progress
-                    avg_ratio[k] = animated_rune_ratio[k]
+                for k, v in pairs(rune_count) do
+                    animated_rune_count[k] = avg_count[k] * (1 - progress) + v * progress
+                    avg_count[k] = animated_rune_count[k]
                 end
             end
 
             -- Update glyph positions
-            glyph_y = glyph_y - (animated_rune_ratio[a] - 0.5) * meter_height
+            glyph_y = glyph_y - (animated_rune_count[a] - 0.5) * meter_height
             glyph_y += wiggle
 
             -- Reset anim table if all animations are done
@@ -192,12 +174,10 @@ local function draw_symbols( x, y, width, position_params)
                 rune_anim_progress_avg += anim_content[2]:progress() / rune_anim_table_count
             end
             if rune_anim_progress_avg == 1 then
-                local true_rune_ratio = GAMEPLAY_STATE.rune_ratio
-                local true_rune_ratio_copy
-                true_rune_ratio_copy = shallow_copy(true_rune_ratio)
+                local true_rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
 
                 rune_anim_table = {}
-                table.insert(rune_anim_table, {true_rune_ratio_copy, animator.new(0, 1.0, 1.0)})
+                table.insert(rune_anim_table, {true_rune_count, animator.new(0, 1.0, 1.0)})
             end
 
             local target_y = y - (target - 0.5) * meter_height + wiggle
@@ -764,9 +744,9 @@ function Init_visuals()
 
     -- Starting table of active animations for runes
     rune_anim_table = {}
-    local start_rune_ratio = {0, 0, 0}
+    local start_rune_count = {0, 0, 0}
     rune_anim_table[1] = {
-        start_rune_ratio,
+        start_rune_count,
         animator.new(0, 1.0, 1.0)
     }
 
