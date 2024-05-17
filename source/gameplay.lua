@@ -250,8 +250,10 @@ function Handle_input()
             end
             for i, ingredient in pairs(INGREDIENTS) do
                 if ingredient:try_pickup() then
+                    if not PLAYER_LEARNED.how_to_grab then
+                        print('Learned how to grab.')
+                    end
                     PLAYER_LEARNED.how_to_grab = true
-                    print('Learned how to grab.')
                     break
                 end
             end

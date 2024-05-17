@@ -222,8 +222,10 @@ function Ingredient:release()
         --start wiggling
         self:start_wiggle()
         self.state = INGREDIENT_STATE.is_over_cauldron
+        if not PLAYER_LEARNED.how_to_release then
+          print("learned how to release")
+        end
         PLAYER_LEARNED.how_to_release = true
-        print("learned how to release")
     elseif bounds:containsPoint(self.start_pos) then
         self:respawn()
     end
@@ -246,8 +248,10 @@ function Ingredient:drop()
       self.can_drop = true
   end)
 
+  if not PLAYER_LEARNED.how_to_shake then
+    print("Learned how to shake")
+  end
   PLAYER_LEARNED.how_to_shake = true
-  print("Learned how to shake")
 end
 
 function Ingredient:respawn()
