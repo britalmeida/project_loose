@@ -154,7 +154,10 @@ local function draw_symbols( x, y, width, position_params)
             local target = TARGET_COCKTAIL.rune_count[a]
             local difference_weight = math.max(target, 1-target)
             local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
-            local glow_strength = heat_response * 0.5
+            local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
+            local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
+            local glow_strength = (lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response)
+            glow_strength = Clamp(glow_strength, 0, 1) * 0.75
 
             -- Calculate current_rune_count
             local animated_rune_count = {0, 0, 0}
@@ -199,12 +202,12 @@ local function draw_symbols( x, y, width, position_params)
             -- Rune circle
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
-            draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 7, 3, 0.5, glow_strength, gfx.kColorWhite)
+            draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 3, 3, 0.5, glow_strength, gfx.kColorWhite)
 
             -- Target ring
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
-            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 11, 3, 0.5, glow_strength * 1.5 - 0.3, gfx.kColorWhite)
+            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 7, 3, 0.5, glow_strength, gfx.kColorWhite)
 
 
             gfx.pushContext()

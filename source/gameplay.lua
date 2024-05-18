@@ -502,10 +502,10 @@ function update_fire()
 
     if GAMEPLAY_STATE.heat_amount > GAMEPLAY_STATE.flame_amount then
         -- Slowly decay the heat
-        GAMEPLAY_STATE.heat_amount -= 0.0005
+        GAMEPLAY_STATE.heat_amount -= 0.0004
     else
         -- The flame heats up the cauldron
-        GAMEPLAY_STATE.heat_amount += 0.01 * GAMEPLAY_STATE.flame_amount
+        GAMEPLAY_STATE.heat_amount += 0.015 * GAMEPLAY_STATE.flame_amount
     end
     if GAMEPLAY_STATE.heat_amount > 0.1 then
         if not SOUND.fire_burn:isPlaying() then
