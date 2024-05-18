@@ -197,7 +197,6 @@ local function draw_symbols( x, y, width, position_params)
 
                 rune_anim_table = {}
                 table.insert(rune_anim_table, {true_rune_count, animator.new(0, 1.0, 1.0), animator.new(0, 1.0, 1.0)})
-                STIR_FACTOR = 0
             end
 
             local target_y = y - (target - 0.5) * meter_height + wiggle

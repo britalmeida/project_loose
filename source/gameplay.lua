@@ -138,6 +138,8 @@ function Reset_gameplay()
     PLAYER_LEARNED.how_to_shake = false
     PLAYER_LEARNED.how_to_stir = false
 
+    STIR_FACTOR = 1 -- sink and despawn all drops
+
     -- Reset time delta
     playdate.resetElapsedTime()
 
@@ -199,7 +201,7 @@ function Win_game()
     GAME_ENDED = true
 
     STIR_SPEED = 0 -- Stop liquid and stirring sounds.
-    STIR_FACTOR = 0
+    STIR_FACTOR = 1 -- sink and despawn all drops
 
     local new_high_score = false
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
@@ -541,7 +543,7 @@ function update_liquid()
         floating_drops = 1
         liquid_darkening -= color_change * 8
         STIR_FACTOR -= color_change * 8
-        --STIR_FACTOR = math.min(STIR_FACTOR, 0)
+        STIR_FACTOR = math.min(STIR_FACTOR, 0)
     end
     liquid_darkening = Clamp(liquid_darkening, 0, max_darkness)
     -- Calculate current stirring effect
