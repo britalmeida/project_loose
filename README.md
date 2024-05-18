@@ -1,8 +1,12 @@
-# ???
+# Froggotten Recipes
 
 *Game submission for the [PlayJam5](https://itch.io/jam/playjam-5)!*
 
 Theme was: You Forgot Something
+
+
+## Running the Game
+See instructions in the [project page](https://iralmeida.itch.io/froggotten-recipes) to run the game package in the playdate or simulator.
 
 
 ## Dev Setup
