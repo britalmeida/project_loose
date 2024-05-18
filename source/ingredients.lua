@@ -66,8 +66,17 @@ function Ingredient:tick()
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
         Recipe_update_current()
 
+        -- Unregister this ingredient drop.
         table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()
+
+        -- Play SFX for hitting the liquid.
+        INGREDIENT_SPLASH:play(self.x, self.y)
+        local drop_sounds = {SOUND.drop_01, SOUND.drop_02, SOUND.drop_03}
+        local r = math.random(1, 3)
+        drop_sounds[r]:playAt(0) -- Always play the sound, even if it was already playing.
+
+        -- Show the drop as floating in the liquid.
         local num_floating_drops = 4
         for _ = 1, num_floating_drops do
           for x = 1, NUM_BUBBLES, 1 do
@@ -239,11 +248,6 @@ function Ingredient:drop()
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
 
-  INGREDIENT_SPLASH:play()
-  local drop_sounds = {SOUND.drop_01, SOUND.drop_02, SOUND.drop_03}
-  local r = math.random(1, 3)
-  drop_sounds[r]:playAt(0) -- Always play the sound, even if it was already playing.
-
   playdate.timer.new(500, function ()
       self.can_drop = true
   end)
@@ -294,7 +298,7 @@ function IngredientSplash:init()
 
     self.anim = animloop.new(splish_framerate * frame_ms, splish_imgs, false)
 
-    self:moveTo(LIQUID_CENTER_X+60, LIQUID_CENTER_Y-35)
+    self:moveTo(LIQUID_CENTER_X+5, LIQUID_CENTER_Y-10)
     self:setZIndex(Z_DEPTH.ingredient_drop_splash)
 
     self:reset()
@@ -304,7 +308,7 @@ end
 
 
 function IngredientSplash:reset()
-  self:setVisible(true)
+  self:setVisible(false)
 end
 
 
@@ -318,7 +322,8 @@ IngredientSplash.update = function(self)
 end
 
 
-function IngredientSplash:play()
+function IngredientSplash:play(x, y)
+  self:moveTo(x, y)
   self.anim.frame = 1
   self:setVisible(true)
 end
