@@ -190,7 +190,7 @@ local function draw_symbols( x, y, width, position_params)
             -- Target ring
             gfx.setColor(gfx.kColorWhite)
             gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
-            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 11, 3, 0.5, glow_strength * 1.5 - 0.1, gfx.kColorWhite)
+            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 11, 3, 0.5, glow_strength * 1.5 - 0.3, gfx.kColorWhite)
 
 
             gfx.pushContext()
