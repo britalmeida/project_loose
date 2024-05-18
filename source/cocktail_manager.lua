@@ -56,7 +56,7 @@ COCKTAILS = {
     --Medium (3 runes and specific. Spamming = fine tuning)
 
   { name="Hodge Podge",
-    rune_composition={1, 1, 1},
+    rune_composition={0.5, 0.5, 0.5},
     color=0.85,
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
     table= gfxit.new('images/cocktails/hodge_podge_sheet'),
