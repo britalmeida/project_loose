@@ -57,7 +57,7 @@ local need_more_doom <const> = {
     "Missing doom and gloom.", "4",
 }
 local need_less_doom <const> = {
-    "Too grim...\nThis makes me depressed.",  "3",
+    "Too grim...",  "3",
 }
 local need_more_weed <const> = {
     "Could use some plant matter.",  "6",
@@ -70,7 +70,7 @@ local grab_tutorials <const> = {
     "Tilt to hover an ingredient.\nHold (A) to grab.",
 }
 local drop_tutorials <const> = {
-    "Release the ingredient over\nthe cauldron and shake!",
+    "Place the ingredient over\nthe cauldron and shake!",
     "Shake, shake. Shake it off!!",
     "13",
 }
