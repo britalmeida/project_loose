@@ -53,9 +53,6 @@ local stir_tutorials <const> = {
     "Use the crank to stir.",
     "11",
 }
-local stir_reminders <const> = {
-    "Remember to stir next time!",
-}
 local need_more_stir <const> = {
     "I can't tell yet.\nTry stirring!",
     "You've got a laddle\nfor a reason!",
@@ -99,7 +96,7 @@ local sayings <const> = {
             { need_less_weed, need_more_weed },
         },
         color = { need_less_bright, need_more_bright }, -- too_dark, too_bright
-        stir = { need_more_stir, stir_reminders }
+        stir = need_more_stir
     }
 }
 
@@ -429,14 +426,8 @@ local stir_offset = 1
 
 function Froggo:give_stirring_direction()
 
-    if GAMEPLAY_STATE.drops_dissolved then
-        print("giving stirring reminder for next time")
-        self:select_sentence(sayings.help.stir[2], 1)
-        GAMEPLAY_STATE.drops_dissolved = false
-    else
-        print("giving stirring reminder for NOW")
-        self:select_next_sentence(sayings.help.stir[1])
-    end
+    print("giving stirring reminder for NOW")
+    self:select_next_sentence(sayings.help.stir)
 
 end
 

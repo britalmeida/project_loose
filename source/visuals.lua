@@ -188,11 +188,6 @@ local function draw_symbols( x, y, width, position_params)
                 if #rune_anim_table > 1 then
                     DELICIOUS_CHECK = true
                 end
-                if STIR_FACTOR < 0.2 and #rune_anim_table > 1 then
-                    -- The drops dissolved bby themselves. They were never stirred.
-                    -- Frog should give a reminder
-                    GAMEPLAY_STATE.drops_dissolved = true
-                end
                 local true_rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
 
                 rune_anim_table = {}
