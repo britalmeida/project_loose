@@ -211,12 +211,19 @@ local function draw_symbols( x, y, width, position_params)
 
 
             gfx.pushContext()
-                TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
+            local tolerance = 0.1
+            local rune_graphic = nil
+            if math.abs(DIFF_TO_TARGET.runes[a]) < tolerance and #rune_anim_table <= 1 then
+                TEXTURES.rune_correct[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
+            else
+                    TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
+                end
                 gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
                 local overlay = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
                 TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
-            gfx.popContext()
-        end
+                gfx.popContext()
+            end
+        print(math.abs(DIFF_TO_TARGET.runes[1]))
 
     gfx.popContext()
 end
@@ -729,6 +736,10 @@ function Init_visuals()
     local medium_flame_table, medium_flame_framerate = gfxit.new("images/fx/mediumflame"), 4
     local high_flame_table, high_flame_framerate = gfxit.new("images/fx/highflame"), 4
     local stir_flame_table, stir_flame_framerate = gfxit.new("images/fx/stirredflame"), 3.33
+    local love_correct_table, love__correct_framerate = gfxit.new("images/love_correct"), 8
+    local doom_correct_table, doom_correct_framerate = gfxit.new("images/doom_correct"), 8
+    local weed_correct_table, weed_correct_framerate = gfxit.new("images/weeds_correct"), 8
+
 
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
@@ -752,6 +763,9 @@ function Init_visuals()
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
     TEXTURES.place_hint = gfxi.new("images/cursor/empty_jar")
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
+    TEXTURES.rune_correct = {animloop.new(love__correct_framerate * frame_ms, love_correct_table, true),
+                            animloop.new(doom_correct_framerate * frame_ms, doom_correct_table, true),
+                            animloop.new(weed_correct_framerate * frame_ms, weed_correct_table, true)}
     -- Load fx
     TEXTURES.ember_table = animloop.new(ember_framerate * frame_ms, ember_table, true)
     TEXTURES.low_flame_table = animloop.new(low_flame_framerate * frame_ms, low_flame_table, true)
