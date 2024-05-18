@@ -22,9 +22,8 @@ local forgotten_topics_callouts <const> = {
     "Hey, you forgot an ingredient",
 }
 local fire_reminders <const> = {
-    --{"hey... the fire is getting low"},
-    {"Keep it warm to see the magic"},
-    {"Fire is good, glow is good"},
+    "Keep it warm to see the magic",
+    "Fire is good, glow is good",
 }
 
 local fire_tutorials <const> = {

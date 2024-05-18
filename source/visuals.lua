@@ -402,8 +402,8 @@ local function draw_dialog_bubble()
     end
 
     -- Bounding box of the dialog bubble, within which it is safe to place text.
-    local x_min = 140
-    local y_min = 60
+    local x_min = 142
+    local y_min = 65
     local width = 210
     local height = 65
 
