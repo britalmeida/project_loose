@@ -1,7 +1,7 @@
 name=Froggotten Recipes
 author=Team Froggo
 description=PlayJam 5 game
-bundleID=com.playjam.frogotten
-version=1.0.0
-buildNumber=1
+bundleID=com.playjam.froggotten
+version=1.0.1
+buildNumber=2
 imagePath=images/launcher
