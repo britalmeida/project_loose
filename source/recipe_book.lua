@@ -56,7 +56,7 @@ function Recipe_steps_to_text_success(recipe_steps)
             end
             line = line .. recipe_steps[step][2] .. " time"
         end
-        if recipe_steps[step][2] > 1 and not INGREDIENT_TYPES[step_type].drop_name == "salt" then
+        if recipe_steps[step][2] > 1 then --and not INGREDIENT_TYPES[step_type].drop_name == "salt"
             line = line .. "s"
         end
         text_lines[#text_lines+1] = line
