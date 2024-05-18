@@ -40,7 +40,7 @@ local function add_system_menu_entries_gameplay()
         Reset_gameplay()
     end)
     local menuItem, error = menu:addMenuItem("main menu", function()
-        Enter_menu_start(0, 0)
+        Enter_menu_start(0, 0, true)
     end)
 end
 
@@ -105,11 +105,13 @@ end
 
 -- Menu State Transitions
 
-function Enter_menu_start(new_global_x, new_global_y)
+function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0
     MENU_STATE.first_option_in_view = 0
-    SIDE_SCROLL_X = 400
+    if side_scroll_reset then
+        SIDE_SCROLL_X = 400
+    end
 
     remove_system_menu_entries()
     Stop_gameplay()
@@ -479,7 +481,7 @@ function Handle_menu_input()
         MENU_STATE.focused_option < 1 or
         playdate.buttonJustReleased( playdate.kButtonB )then
             SOUND.menu_confirm:play()
-            Enter_menu_start(global_origin[1], global_origin[2])
+            Enter_menu_start(global_origin[1], global_origin[2], false)
         end
 
         -- Cycle Options.
@@ -533,7 +535,7 @@ function Handle_menu_input()
                 Enter_menu_start(global_origin[1], global_origin[2])
         end
         if playdate.buttonJustReleased( playdate.kButtonB ) then
-            Enter_menu_start(0, 0)
+            Enter_menu_start(0, 0, true)
         end
     end
 end

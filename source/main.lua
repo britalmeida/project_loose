@@ -37,7 +37,7 @@ end
 
 -- Start the game: initialize resources and enter the menu or gameplay.
 initialize()
-Enter_menu_start(0, 0)
+Enter_menu_start(0, 0, true)
 --Enter_gameplay() -- For testing, enter gameplay directly.
 
 
