@@ -178,7 +178,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         gfx.drawText("Just " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
 
         for a = 1, #recipe_text, 1 do
-            gfx.drawText(recipe_text[a], x + text_x, y + 28)
+            gfx.drawText(recipe_text[a], x + text_x + 8, y + 28)
             y += line_height
         end
     gfx.popContext()
