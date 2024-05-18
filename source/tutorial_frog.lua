@@ -216,14 +216,18 @@ end
 function Froggo:Notify_the_frog()
     -- notify the frog when significant change happened
     if self.state == ACTION_STATE.idle then
+            -- React to a state change
+            self:froggo_react()
+    end
+end
+
+function Froggo:Lick_eyeballs()
+    if self.state == ACTION_STATE.idle then
         -- continueously lick eyeballs or react
         if Is_potion_good_enough() and DELICIOUS_CHECK then
             self:start_animation(self.anim_eyeball)
             self.x_offset = -11
             DELICIOUS_CHECK = false
-        else
-            -- React to a state change
-            self:froggo_react()
         end
     end
 end
@@ -235,6 +239,7 @@ function Froggo:fire_reaction()
 
         playdate.timer.new(2*1000, function()
         self:go_idle()
+        DELICIOUS_CHECK = true
     end)
 end
 
@@ -265,6 +270,7 @@ function Froggo:froggo_tickleface()
 
     playdate.timer.new(2.9*1000, function()
         self:go_idle()
+        DELICIOUS_CHECK = true
     end)
 end
 
@@ -337,7 +343,7 @@ end
 function Froggo:think()
 
     -- Check if the potion is approved and early out!
-    if Is_potion_good_enough() and #rune_anim_table <= 1 then
+    if Is_potion_good_enough() then
         Win_game()
         Reset_ingredients()
         self.last_spoken_sentence_str = positive_acceptance

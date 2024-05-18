@@ -563,7 +563,7 @@ end
 local tolerance = 0.1
 
 function Are_ingredients_good_enough()
-    return DIFF_TO_TARGET.ingredients_abs < tolerance
+    return DIFF_TO_TARGET.ingredients_abs < tolerance and #rune_anim_table <= 1
 end
 
 function Is_potion_good_enough()
@@ -609,7 +609,7 @@ function Calculate_goodness()
     elseif math.abs(diff_change_overall) > 0.01 then
         FROG:Notify_the_frog()
     elseif DELICIOUS_CHECK then
-        FROG:Notify_the_frog()
+        FROG:Lick_eyeballs()
     end
 
     -- print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
