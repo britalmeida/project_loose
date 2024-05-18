@@ -198,7 +198,6 @@ function Froggo:Click_the_frog()
     bounds:inset(15, 15)
     if bounds:containsPoint(GYRO_X, GYRO_Y) and self.state == ACTION_STATE.idle then
         self:froggo_tickleface()
-
     end
 end
 

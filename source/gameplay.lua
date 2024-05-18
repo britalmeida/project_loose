@@ -296,6 +296,7 @@ function Handle_input()
                     ingredient:release()
                 end
             end
+            FROG:Click_the_frog()
         end
 
         if playdate.buttonIsPressed( playdate.kButtonB ) then
