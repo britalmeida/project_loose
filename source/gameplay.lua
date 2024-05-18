@@ -547,7 +547,7 @@ function update_liquid()
     STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change)
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
     -- Total mixed color of liquid
-    GAMEPLAY_STATE.potion_color = (1 - liquid_darkening) + (STIR_FACTOR * max_darkness)
+    --GAMEPLAY_STATE.potion_color = (1 - liquid_darkening) + (STIR_FACTOR * max_darkness)
     -- print(STIR_FACTOR)
 
     -- Update liquid state
