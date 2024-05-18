@@ -271,20 +271,22 @@ function Handle_input()
 
         -- Check for pressed buttons.
         if playdate.buttonJustPressed( playdate.kButtonA ) then
+            local picked_up = false
             GAMEPLAY_STATE.cursor_hold = true
             for i, ingredient in pairs(INGREDIENTS) do
-                if ingredient.state == INGREDIENT_STATE.is_over_cauldron then
-                    ingredient.state = INGREDIENT_STATE.is_in_air
-                    ingredient:setZIndex(Z_DEPTH.ingredients)
-                end
-            end
-            for i, ingredient in pairs(INGREDIENTS) do
                 if ingredient:try_pickup() then
+                    picked_up = true
                     if not PLAYER_LEARNED.how_to_grab then
                         print('Learned how to grab.')
                     end
                     PLAYER_LEARNED.how_to_grab = true
                     break
+                end
+            end
+            for i, ingredient in pairs(INGREDIENTS) do
+                if ingredient.state == INGREDIENT_STATE.is_over_cauldron and picked_up then
+                    ingredient.state = INGREDIENT_STATE.is_in_air
+                    ingredient:setZIndex(Z_DEPTH.ingredients)
                 end
             end
             FROG:Click_the_frog()
