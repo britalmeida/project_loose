@@ -41,6 +41,11 @@ function Recipe_steps_to_text_success(recipe_steps)
         line = line .. tostring(step) .. ". " 
         if step_type > 0 then
             line = line .. "Add " .. recipe_steps[step][2]
+            if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
+                line = line .. " pinches of "
+            elseif INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] == 1 then
+                line = line .. " pinch of "
+            end
             line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
         else
             line = line .. "Stir "
@@ -51,7 +56,7 @@ function Recipe_steps_to_text_success(recipe_steps)
             end
             line = line .. recipe_steps[step][2] .. " time"
         end
-        if recipe_steps[step][2] > 1 then
+        if recipe_steps[step][2] > 1 and not INGREDIENT_TYPES[step_type].drop_name == "salt" then
             line = line .. "s"
         end
         text_lines[#text_lines+1] = line
@@ -73,8 +78,13 @@ function Recipe_steps_to_text_menu(recipe_steps)
         line = ""
         if step_type > 0 then
             line = line .. recipe_steps[step][2]
+            if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
+                line = line .. " pinches of "
+            elseif INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] == 1 then
+                line = line .. " pinch of "
+            end
             line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
-            if recipe_steps[step][2] > 1 then
+            if recipe_steps[step][2] > 1 and not INGREDIENT_TYPES[step_type].drop_name == "salt" then
                 line = line .. "s"
             end
         else
