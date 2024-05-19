@@ -55,25 +55,26 @@ local stir_tutorials <const> = {
 }
 local need_more_stir <const> = {
     "I can't tell yet.\nTry stirring!",
-    "You've got a laddle\nfor a reason!",
+    "The ingredients need\nto be fully stirred in!",
+    "11",
 }
 local need_more_love <const> = {
-    "Put some heart into it!", "2",
+    "That bew needs more heart!", "2",
 }
 local need_less_love <const> = {
-    "Too much love\ncan't stand it!", "1",
+    "Can't stand the love!\nThrow something vile in!", "1",
 }
 local need_more_doom <const> = {
     "Missing doom and gloom.", "4",
 }
 local need_less_doom <const> = {
-    "Too grim...",  "3",
+    "Too grim...\nEvil repellent may work?",  "3",
 }
 local need_more_weed <const> = {
-    "Could use some plant matter.",  "6",
+    "Could use some veggies.",  "6",
 }
 local need_less_weed <const> = {
-    "Too many veggies in this!", "5",
+    "Too many plants in there!\nBetter get rid of that.", "5",
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",

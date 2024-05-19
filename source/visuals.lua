@@ -223,7 +223,6 @@ local function draw_symbols( x, y, width, position_params)
                 TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
                 gfx.popContext()
             end
-        print(math.abs(DIFF_TO_TARGET.runes[1]))
 
     gfx.popContext()
 end
