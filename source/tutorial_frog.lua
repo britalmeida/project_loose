@@ -32,6 +32,10 @@ local fire_tutorials <const> = {
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
 }
+local fire_tips <const> = {
+    "No need to stoke\nthe fire this often.",
+    "Save your breath!\nLeave it for a bit.",
+}
 local stir_tutorials_color <const> = {
     "Remember the importance of\nthe stirring direction.",
     "Use the crank to stir?",
@@ -52,6 +56,10 @@ local stir_tutorials <const> = {
     "Stir to see if you've\ngot it right.",
     "Use the crank to stir.",
     "11",
+}
+local stir_tips <const> = {
+    "That's way too much stirring ...",
+    "The ingredients already sank in.",
 }
 local need_more_stir <const> = {
     "I can't tell yet.\nTry stirring!",
@@ -85,6 +93,13 @@ local drop_tutorials <const> = {
     "Shake, shake. Shake it off!!",
     "13",
 }
+local drop_tips <const> = {
+    "Seems a bit excessive ...\nLess shaking is also fine.",
+}
+local recipe_struggle <const> = {
+    "That's quite a brew ...\nThe magical steam should help.",
+    "Think how the ingredients\nmatch the three magical aspects.",
+}
 
 local sayings <const> = {
     tutorial = { fire_tutorials, grab_tutorials, drop_tutorials, stir_tutorials }, -- fires, grab, shake, stir
@@ -98,6 +113,12 @@ local sayings <const> = {
         },
         color = { need_less_bright, need_more_bright }, -- too_dark, too_bright
         stir = need_more_stir
+    },
+    struggle = {
+        fire = { fire_tutorials, fire_tips},
+        drop = { drop_tutorials, drop_tips},
+        stir = { stir_tutorials, stir_tips},
+        recipe = recipe_struggle,
     }
 }
 
@@ -389,20 +410,38 @@ function Froggo:think()
             self:select_next_sentence(sayings.tutorial[idx])
         end
 
-    else -- Normal help loop.
+    else
+        -- Frustration checks:
 
-        -- Reminder to keep the heat up whenever it goes low.
-        if GAMEPLAY_STATE.heat_amount < 0.3 then
+        if PLAYER_STRUGGLES.no_fire then
+            self:select_next_sentence(sayings.struggle.fire[1])
+        elseif PLAYER_STRUGGLES.too_much_fire then
+            self:select_next_sentence(sayings.struggle.fire[2])
+        elseif PLAYER_STRUGGLES.no_shake then
+            self:select_next_sentence(sayings.struggle.drop[1])
+        elseif PLAYER_STRUGGLES.too_much_shaking then
+            self:select_sentence(sayings.struggle.drop[2], 1)
+            PLAYER_STRUGGLES.too_much_shaking = false -- Single reminder is fine
+        elseif PLAYER_STRUGGLES.no_stir then
+            self:select_next_sentence(sayings.struggle.stir[1])
+        elseif PLAYER_STRUGGLES.too_much_stir then
+            self:select_next_sentence(sayings.struggle.stir[2])
+        elseif PLAYER_STRUGGLES.recipe_struggle then
+            -- Random factor needs to be in the recipe update
+            self:select_next_sentence(sayings.struggle.recipe)
+
+        -- Normal help loop:
+
+        elseif GAMEPLAY_STATE.heat_amount < 0.3 then
+            -- Reminder to keep the heat up whenever it goes low.
             self:select_next_sentence(sayings.help.fire)
-        else
-            -- First check if drops need to be stirred in or they forgot last time
-            if #rune_anim_table > 1 then
-                self:give_stirring_direction()
+        elseif
+            -- First check if drops need to be stirred in
+            #rune_anim_table > 1 then
+            self:give_stirring_direction()
+        elseif not Are_ingredients_good_enough() then
             -- Then give hints on next ingredient
-            elseif not Are_ingredients_good_enough() then
-                self:give_ingredients_direction()
-
-            end
+            self:give_ingredients_direction()
         end
     end
 end

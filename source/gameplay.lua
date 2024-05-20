@@ -52,6 +52,16 @@ PLAYER_LEARNED = {
     how_to_stir = false,
 }
 
+PLAYER_STRUGGLES = {
+    no_fire = false,
+    too_much_fire = false,
+    no_shake = false,
+    too_much_shaking = false,
+    no_stir = false,
+    too_much_stir = false,
+    recipe_struggle = false,
+}
+
 FROG = nil
 
 -- Stir speed is the speed of cranking in revolutions per seconds
@@ -135,6 +145,14 @@ function Reset_gameplay()
     PLAYER_LEARNED.how_to_shake = false
     PLAYER_LEARNED.how_to_stir = false
 
+    PLAYER_STRUGGLES.no_fire = false
+    PLAYER_STRUGGLES.too_much_fire = false
+    PLAYER_STRUGGLES.no_shake = false
+    PLAYER_STRUGGLES.too_much_shaking = false
+    PLAYER_STRUGGLES.no_stir = false
+    PLAYER_STRUGGLES.too_much_stir = false
+    PLAYER_STRUGGLES.recipe_struggle = false
+
     STIR_FACTOR = 1 -- sink and despawn all drops
 
     -- Reset time delta
@@ -172,7 +190,6 @@ function Update_rune_count(drop_rune_count)
     -- Trigger rune traveling animation
     if PREV_RUNE_RATIO ~= GAMEPLAY_STATE.rune_ratio then
         add_rune_travel_anim()
-        print("added anim for rune travel")
     end
 
     local prev_rune_avg = (PREV_RUNE_COUNT[1] + PREV_RUNE_COUNT[2] + PREV_RUNE_COUNT[3]) /3
@@ -621,7 +638,61 @@ function Check_player_learnings()
         PLAYER_LEARNED.how_to_fire = true
     end
 
-    if STIR_SPEED > 7.5 or STIR_SPEED < -7.5 then
+    if math.abs(STIR_SPEED) > 7.5 then
         PLAYER_LEARNED.how_to_stir = true
     end
+end
+
+local critical_drops_without_stirring = 6
+local unnecessary_stirring_factor = 0.01
+
+local no_stir_timeout = nil
+local stir_amount_tracking = 0
+local too_much_stir_timeout = nil
+
+function Check_player_struggle()
+    -- Fire logic here
+
+    -- No stirring
+    if PLAYER_LEARNED.how_to_release and #rune_anim_table >= critical_drops_without_stirring and STIR_FACTOR < 0.3
+    and not PLAYER_STRUGGLES.no_stir then
+        print("Player is struggling with stir")
+        PLAYER_STRUGGLES.no_stir = true
+        no_stir_timeout = playdate.timer.new(5*1000, function ()
+            PLAYER_STRUGGLES.no_stir = false
+          end)
+    elseif PLAYER_LEARNED.how_to_release and #rune_anim_table >= critical_drops_without_stirring and STIR_FACTOR > 0.3
+    and PLAYER_STRUGGLES.no_stir then
+        print("Player struggle with stir resolved")
+        PLAYER_STRUGGLES.no_stir = false
+        if no_stir_timeout ~= nil then
+            no_stir_timeout:remove()
+        end
+    end
+
+    -- Too much stirring
+    if PLAYER_LEARNED.how_to_release and #rune_anim_table <=1 and math.abs(STIR_SPEED) > 7.5 then
+        -- Start tracking stirring
+        stir_amount_tracking += unnecessary_stirring_factor
+        -- Stirring reached struggling amount
+        if stir_amount_tracking > 1 then
+            --print("Tracking completed.") -- tmp
+            PLAYER_STRUGGLES.too_much_stir = true
+            too_much_stir_timeout = playdate.timer.new(6*1000, function ()
+                PLAYER_STRUGGLES.too_much_stir = false
+                end)
+            stir_amount_tracking = 0
+        end
+    elseif PLAYER_LEARNED.how_to_release and #rune_anim_table <=1 and math.abs(STIR_SPEED) < 7.5 then
+        -- No stirring detected
+    elseif PLAYER_LEARNED.how_to_release and #rune_anim_table > 1 then
+        -- New ingredients dropped in. Reset tracked stirring and timeout
+        stir_amount_tracking = 0
+        if too_much_stir_timeout ~= nil then
+            too_much_stir_timeout:remove()
+        end
+    end
+
+    --print(stir_amount_tracking)
+
 end
