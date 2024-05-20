@@ -16,7 +16,7 @@ local TUTORIAL_STATE <const> = { start = 1, fire = 1, grab = 2, shake = 3, stir 
 
 local positive_acceptance <const> = "That'll do it!"
 local forgotten_topics_callouts <const> = {
-    "Magical brews need fire\nto reveal their magic.",
+    "Blow to stoke up the fire\npuff puff puff!",
     "Hey, you forgot an ingredient.",
     "Hey, you forgot to stir.",
 }
@@ -27,7 +27,7 @@ local fire_reminders <const> = {
     "9",
 }
 local fire_tutorials <const> = {
-    "Blow to stoke up the fire\npuff puff puff!",
+    "Magical brews need fire\nto reveal their magic.",
     "Just blow air onto the\nbottom of the cauldron.",
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
