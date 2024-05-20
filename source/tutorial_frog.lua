@@ -58,7 +58,7 @@ local stir_tutorials <const> = {
     "11",
 }
 local stir_tips <const> = {
-    "That's way too much stirring ...",
+    "That's way too much stirring.",
     "The ingredients already sank in.",
 }
 local need_more_stir <const> = {
@@ -76,7 +76,7 @@ local need_more_doom <const> = {
     "Missing doom and gloom.", "4",
 }
 local need_less_doom <const> = {
-    "Too grim...\nEvil repellent may work?",  "3",
+    "Too grim . . .\nEvil repellent may work?",  "3",
 }
 local need_more_weed <const> = {
     "Could use some veggies.",  "6",
@@ -94,10 +94,12 @@ local drop_tutorials <const> = {
     "13",
 }
 local drop_tips <const> = {
-    "Seems a bit excessive ...\nLess shaking is also fine.",
+    "Seems a bit excessive . . .\nLess shaking is also fine.",
+    "Remember to stir ingredients in.",
+    "11",
 }
 local recipe_struggle <const> = {
-    "That's quite a brew ...\nThe magical steam should help.",
+    "That's quite a brew . . .\nLook above the cauldron for help.",
     "Think how the ingredients\nmatch the three magical aspects.",
 }
 
@@ -412,21 +414,28 @@ function Froggo:think()
 
     else
         -- Frustration checks:
+        -- PLAYER_STRUGGLES are usually on a timer before set to false again
 
         if PLAYER_STRUGGLES.no_fire then
+            print("Reminding fire tutorial.")
             self:select_next_sentence(sayings.struggle.fire[1])
         elseif PLAYER_STRUGGLES.too_much_fire then
+            print("Giving fire hint.")
             self:select_next_sentence(sayings.struggle.fire[2])
         elseif PLAYER_STRUGGLES.no_shake then
+            print("Reminding drop tutorial.")
             self:select_next_sentence(sayings.struggle.drop[1])
         elseif PLAYER_STRUGGLES.too_much_shaking then
+            print("Giving drop hint.")
             self:select_sentence(sayings.struggle.drop[2], 1)
-            PLAYER_STRUGGLES.too_much_shaking = false -- Single reminder is fine
         elseif PLAYER_STRUGGLES.no_stir then
+            print("Reminding stir tutorial.")
             self:select_next_sentence(sayings.struggle.stir[1])
         elseif PLAYER_STRUGGLES.too_much_stir then
+            print("Giving stir hint.")
             self:select_next_sentence(sayings.struggle.stir[2])
         elseif PLAYER_STRUGGLES.recipe_struggle then
+            print("Giving hints on rune meaning.")
             -- Random factor needs to be in the recipe update
             self:select_next_sentence(sayings.struggle.recipe)
 

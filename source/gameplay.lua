@@ -643,56 +643,72 @@ function Check_player_learnings()
     end
 end
 
-local critical_drops_without_stirring = 6
-local unnecessary_stirring_factor = 0.01
+-- Values to detect struggle
+local min_drops_without_stirring = 6
+local excess_stirring_factor = 0.01
 
+-- Timout values and timers fore stopping struggle dialogue
+local struggle_reminder_timout = 10*1000
 local no_stir_timeout = nil
 local stir_amount_tracking = 0
 local too_much_stir_timeout = nil
 
 function Check_player_struggle()
-    -- Fire logic here
+    -- No Fire here ...
+
+    -- Too much fire here ...
+
+    -- No shaking here ...
 
     -- No stirring
-    if PLAYER_LEARNED.how_to_release and #rune_anim_table >= critical_drops_without_stirring and STIR_FACTOR < 0.3
-    and not PLAYER_STRUGGLES.no_stir then
-        print("Player is struggling with stir")
-        PLAYER_STRUGGLES.no_stir = true
-        no_stir_timeout = playdate.timer.new(5*1000, function ()
-            PLAYER_STRUGGLES.no_stir = false
+    if PLAYER_LEARNED.how_to_release and #rune_anim_table >= min_drops_without_stirring then
+        Check_no_stirring()
+    end
+
+    -- Too much stirring
+    if PLAYER_LEARNED.how_to_release then
+        Check_too_much_stirring()
+        --print(stir_amount_tracking)
+    end
+
+    -- Recipe struggle here ...
+end
+
+function Check_no_stirring()
+    if  STIR_FACTOR < 0.3 and not PLAYER_STRUGGLES.no_stir then
+        --print("Player is struggling with stir")
+        PLAYER_STRUGGLES.too_much_shaking = true
+        no_stir_timeout = playdate.timer.new(struggle_reminder_timout, function ()
+            PLAYER_STRUGGLES.too_much_shaking = false
           end)
-    elseif PLAYER_LEARNED.how_to_release and #rune_anim_table >= critical_drops_without_stirring and STIR_FACTOR > 0.3
-    and PLAYER_STRUGGLES.no_stir then
-        print("Player struggle with stir resolved")
-        PLAYER_STRUGGLES.no_stir = false
+    elseif STIR_FACTOR > 0.3 and PLAYER_STRUGGLES.no_stir then
+        --print("Player struggle with stir resolved")
+        PLAYER_STRUGGLES.too_much_shaking = false
         if no_stir_timeout ~= nil then
             no_stir_timeout:remove()
         end
     end
+end
 
-    -- Too much stirring
-    if PLAYER_LEARNED.how_to_release and #rune_anim_table <=1 and math.abs(STIR_SPEED) > 7.5 then
+function Check_too_much_stirring()
+    if #rune_anim_table <=1 and math.abs(STIR_SPEED) > 7.5 then
         -- Start tracking stirring
-        stir_amount_tracking += unnecessary_stirring_factor
-        -- Stirring reached struggling amount
+        stir_amount_tracking += excess_stirring_factor
         if stir_amount_tracking > 1 then
-            --print("Tracking completed.") -- tmp
+            --print("Stirring reached struggling amount.") -- tmp
             PLAYER_STRUGGLES.too_much_stir = true
-            too_much_stir_timeout = playdate.timer.new(6*1000, function ()
+            too_much_stir_timeout = playdate.timer.new(struggle_reminder_timout, function ()
                 PLAYER_STRUGGLES.too_much_stir = false
                 end)
             stir_amount_tracking = 0
         end
-    elseif PLAYER_LEARNED.how_to_release and #rune_anim_table <=1 and math.abs(STIR_SPEED) < 7.5 then
+    elseif #rune_anim_table <=1 and math.abs(STIR_SPEED) < 7.5 then
         -- No stirring detected
-    elseif PLAYER_LEARNED.how_to_release and #rune_anim_table > 1 then
+    elseif #rune_anim_table > 1 then
         -- New ingredients dropped in. Reset tracked stirring and timeout
         stir_amount_tracking = 0
         if too_much_stir_timeout ~= nil then
             too_much_stir_timeout:remove()
         end
     end
-
-    --print(stir_amount_tracking)
-
 end
