@@ -227,7 +227,7 @@ function Ingredient:release()
     local triangle_bounds = geo.rect.new(center.x - size/2, center.y - size/2, size, size)
     if bounds:intersects(triangle_bounds) then
         self:moveTo(center:unpack())
-        self:setZIndex(5)
+        self:setZIndex(Z_DEPTH.ingredient_slotted_over_cauldron)
         --start wiggling
         self:start_wiggle()
         self.state = INGREDIENT_STATE.is_over_cauldron
@@ -244,7 +244,7 @@ function Ingredient:drop()
 
   local drop = Ingredient(self.ingredient_type_idx, geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y), true)
   drop.state = INGREDIENT_STATE.is_in_air
-  drop:setZIndex(Z_DEPTH.grabbed_ingredient)
+  drop:setZIndex(Z_DEPTH.indredient_drops)
   drop.vel.dx, drop.vel.dy = math.random(-4, 4), math.random(-15, 0)
   table.insert(DROPS, drop)
 

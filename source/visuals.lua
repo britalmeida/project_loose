@@ -313,6 +313,22 @@ local function draw_stirring_stick()
 end
 
 
+local function draw_stirring_stick_back()
+    -- Draw the laddle only if it's on the farther side of the cauldron
+    if STIR_POSITION >= math.pi and STIR_POSITION < 2*math.pi then
+        draw_stirring_stick()
+    end
+end
+
+
+local function draw_stirring_stick_front()
+    -- Draw the laddle only if it's on the front side of the cauldron
+    if STIR_POSITION > 0 and STIR_POSITION < math.pi then
+        draw_stirring_stick()
+    end
+end
+
+
 local function draw_liquid_glow()
 
     local target = TARGET_COCKTAIL.color
@@ -775,7 +791,6 @@ function Init_visuals()
     TEXTURES.bubble_table = gfxit.new("images/fx/bubble")
     TEXTURES.bubble_table2 = gfxit.new("images/fx/bubble2")
 
-
     -- Starting table of active animations for runes
     rune_anim_table = {}
     local start_rune_count = {0, 0, 0}
@@ -784,16 +799,22 @@ function Init_visuals()
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")
 
+
     -- Set the multiple things in their Z order of what overlaps what.
+
     Set_draw_pass(-40, draw_game_background)
     -- -5: shelved ingredients
     Set_draw_pass(-2, draw_bg_lighting)
     --Set_draw_pass(-1, draw_liquid_glow)
     Set_draw_pass(0, draw_cauldron)
-    Set_draw_pass(3, draw_liquid_surface)
+    Set_draw_pass(2, draw_liquid_surface)
+    Set_draw_pass(3, draw_stirring_stick_back) -- draw ladle when on farther side
     Set_draw_pass(4, draw_liquid_bubbles)
-    Set_draw_pass(5, draw_parameter_diagram)
-    Set_draw_pass(6, draw_stirring_stick)
+    -- 4: ingredient drops floating in the liquid
+    -- 5: ingredient drop splash
+    -- 5: ingredient slotted over cauldron
+    Set_draw_pass(6, draw_parameter_diagram)
+    Set_draw_pass(7, draw_stirring_stick_front) -- draw ladle when on front side
     Set_draw_pass(8, draw_cauldron_front)
     -- 10: frog
     -- depth 20+: UI
@@ -814,6 +835,8 @@ end
 Z_DEPTH = {
     frog = 10,
     ingredients = -5,
-    ingredient_drop_splash = 7,
+    indredient_drops = 4,
+    ingredient_slotted_over_cauldron = 5,
+    ingredient_drop_splash = 5,
     grabbed_ingredient = 24
 }
