@@ -314,20 +314,20 @@ end
 
 
 function Froggo:go_drinking()
-    local cocktail_runtime = frame_ms * anim_cocktail_framerate * anim_cocktail_imgs:getLength()
-    local burp_runtime = frame_ms * anim_burp_framerate * anim_burp_imgs:getLength()
+    local cocktail_runtime = self.anim_cocktail.delay * self.anim_cocktail.endFrame
+    local burp_runtime = self.anim_burp.delay * self.anim_burp.endFrame
 
     self.state = ACTION_STATE.drinking
     self:start_animation(self.anim_cocktail)
 
-    playdate.timer.new(cocktail_runtime, function() -- 3168 ms
+    playdate.timer.new(cocktail_runtime, function() -- 3200 ms
         self:start_animation(self.anim_burp)
 
-        playdate.timer.new(burp_runtime, function() -- 4224 ms
+        playdate.timer.new(burp_runtime, function() -- 4266.(6) ms
             self:start_animation(self.anim_burptalk)
             self:start_speech_bubble()
 
-            playdate.timer.new(2*1000, function() -- 4224 ms
+            playdate.timer.new(2*1000, function()
                 -- Disable speech bubble after a short moment.
                 self:stop_speech_bubble()
                 self:start_animation(self.anim_cocktail)
