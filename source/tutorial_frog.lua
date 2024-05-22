@@ -58,8 +58,8 @@ local stir_tutorials <const> = {
     "11",
 }
 local stir_tips <const> = {
-    "That's way too much stirring.",
-    "The ingredients already sank in.",
+    "No need to stir that much.",
+    "The ingredients already sank.",
 }
 local need_more_stir <const> = {
     "I can't tell yet.\nTry stirring!",
@@ -67,7 +67,7 @@ local need_more_stir <const> = {
     "11",
 }
 local need_more_love <const> = {
-    "That bew needs more heart!", "2",
+    "That brew needs more heart!", "2",
 }
 local need_less_love <const> = {
     "Can't stand the love!\nThrow something vile in!", "1",
@@ -99,8 +99,10 @@ local drop_tips <const> = {
     "11",
 }
 local recipe_struggle <const> = {
-    "That's quite a brew . . .\nLook above the cauldron for help.",
-    "Think how the ingredients\nmatch the three magical aspects.",
+    "Maybe double check how\nthe cocktail looks like?",
+    "There's no such thing as\ntoo many ingredients.",
+    "That's quite a brew . . .\nMagical symbols can guide you.",
+    "Imagine how the ingredients\nmatch the three magical aspects.",
 }
 
 local sayings <const> = {
@@ -413,10 +415,16 @@ function Froggo:think()
         end
 
     else
+        local struggle_lvl = PLAYER_STRUGGLES.recipe_struggle_lvl
+
+        PLAYER_LEARNED.complete = true
         -- Frustration checks:
         -- PLAYER_STRUGGLES are usually on a timer before set to false again
 
-        if PLAYER_STRUGGLES.no_fire then
+        if PLAYER_STRUGGLES.recipe_struggle then
+            print("Giving gameplay hint Nr. " .. struggle_lvl)
+            self:select_sentence(sayings.struggle.recipe, struggle_lvl)
+        elseif PLAYER_STRUGGLES.no_fire then
             print("Reminding fire tutorial.")
             self:select_next_sentence(sayings.struggle.fire[1])
         elseif PLAYER_STRUGGLES.too_much_fire then
@@ -434,10 +442,6 @@ function Froggo:think()
         elseif PLAYER_STRUGGLES.too_much_stir then
             print("Giving stir hint.")
             self:select_next_sentence(sayings.struggle.stir[2])
-        elseif PLAYER_STRUGGLES.recipe_struggle then
-            print("Giving hints on rune meaning.")
-            -- Random factor needs to be in the recipe update
-            self:select_next_sentence(sayings.struggle.recipe)
 
         -- Normal help loop:
 

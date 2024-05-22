@@ -23,7 +23,11 @@ INGREDIENT_TYPES = {
 INGREDIENTS = {}
 DROPS = {}
 
-INGREDIENT_STATE = { is_in_shelf = 0, is_picked_up = 2, is_in_air = 3, is_over_cauldron = 4 } 
+INGREDIENT_STATE = { is_in_shelf = 0, is_picked_up = 2, is_in_air = 3, is_over_cauldron = 4 }
+
+CAULDRON_INGREDIENT = nil
+LAST_SHAKEN_INGREDIENT = nil
+CALUDRON_SWAP_COUNT = 0
 
 Ingredient = NewSubClass("Ingredient", Sprite)
 
@@ -65,6 +69,8 @@ function Ingredient:tick()
         CURRENT_RECIPE[#CURRENT_RECIPE+1] = self.ingredient_type_idx
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
         Recipe_update_current()
+        LAST_SHAKEN_INGREDIENT = self.ingredient_type_idx
+        CALUDRON_SWAP_COUNT = 0
 
         -- Unregister this ingredient drop.
         table.remove(DROPS, table.indexOfElement(DROPS, self))
@@ -94,10 +100,16 @@ function Ingredient:tick()
         self.vel.dx, self.vel.dy = GYRO_X - PREV_GYRO_X, GYRO_Y - PREV_GYRO_Y
         -- Follow the gyro
         self:moveTo(GYRO_X, GYRO_Y)
+        CAULDRON_INGREDIENT = nil
+        LAST_SHAKEN_INGREDIENT = nil
     elseif self.state == INGREDIENT_STATE.is_over_cauldron then
         if self.is_wiggling then
             self:wiggle()
         end
+        if CAULDRON_INGREDIENT == nil then
+          CALUDRON_SWAP_COUNT += 1
+        end
+        CAULDRON_INGREDIENT = self.ingredient_type_idx
         if SHAKE_VAL > 3 and self.can_drop then
             self.can_drop = false
             self:trigger_drop()
