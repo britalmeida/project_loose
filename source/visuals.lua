@@ -526,13 +526,7 @@ local function draw_dialog_bubble()
     elseif SPEECH_BUBBLE_TEXT then
         -- Should be displaying a static speech bubble with text.
 
-        local text = SPEECH_BUBBLE_TEXT
-
-        -- Split the given text by '\n' into multiple lines.
-        local text_lines = {}
-        for line in string.gmatch(text, "[^\n]+") do
-            table.insert(text_lines, line)
-        end
+        local text_lines = SPEECH_BUBBLE_TEXT
 
         -- Bounding box of the dialog bubble, within which it is safe to place text.
         local x_min = 141

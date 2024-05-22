@@ -352,13 +352,12 @@ function Froggo:croak()
     else
         self:start_animation(self.anim_blabla)
 
-        self:start_speech_bubble()
+        local dialog_display_time = self:start_speech_bubble()
 
-        playdate.timer.new(3*1000, function()
-            -- Disable speech bubble after a short moment.
+        playdate.timer.new(dialog_display_time, function()
+            -- Disable speech bubble and stop the speaking animation.
             self:stop_speech_bubble()
             self:go_idle()
-
         end)
     end
 end
@@ -555,14 +554,29 @@ end
 
 
 function Froggo:start_speech_bubble()
+    -- Set the text or animation to be displayed in a dialog bubble.
+    -- Return the time in ms for which it should be displayed.
+
     local text = self.last_spoken_sentence_str
     local anim_idx = tonumber(text)
     if anim_idx then
+        -- Select the dialog bubble animation corresponding to anim_idx.
         local bubble_anim_imgs = SPEECH_BUBBLE_ANIM_IMGS[anim_idx][1]
         local bubble_framerate = SPEECH_BUBBLE_ANIM_IMGS[anim_idx][2]
+        -- Set the dialog visuals to be picked up in draw_dialog_bubble().
         SPEECH_BUBBLE_ANIM = animloop.new(bubble_framerate * frame_ms, bubble_anim_imgs, true)
+        -- Return the time that the animation should be displayed.
+        return SPEECH_BUBBLE_ANIM.endFrame * SPEECH_BUBBLE_ANIM.delay
     else
-        SPEECH_BUBBLE_TEXT = text
+        -- Split text into lines.
+        local text_lines = {}
+        for line in string.gmatch(text, "[^\n]+") do
+            table.insert(text_lines, line)
+        end
+        -- Set the dialog visuals to be picked up in draw_dialog_bubble().
+        SPEECH_BUBBLE_TEXT = text_lines
+        -- Return the time that the speech bubble should be displayed.
+        return #text_lines*1000
     end
 end
 
