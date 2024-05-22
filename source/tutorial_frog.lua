@@ -144,6 +144,9 @@ SPEECH_BUBBLE_ANIM_IMGS = {
 }
 
 
+-- B button / poke the frog prompt
+-- e.g. time since last prompt.
+
 
 class('Froggo').extends(Sprite)
 Froggo = NewSubClass("Froggo", Sprite)
@@ -190,6 +193,11 @@ function Froggo:reset()
 
     -- Reset speech Bubble state used by draw_dialog_bubble().
     self:stop_speech_bubble()
+
+    -- Ensure the B button prompt is not flashing.
+    if ANIMATIONS.b_prompt then
+        ANIMATIONS.b_prompt.paused = true
+    end
 end
 
 
@@ -199,6 +207,16 @@ function Froggo:start_animation(anim_loop)
     self.anim_current.frame = 1  -- Restart the animation from the beggining
 end
 
+
+function Froggo:flash_b_prompt()
+    ANIMATIONS.b_prompt.frame = 1  -- Restart the animation from the beggining
+    ANIMATIONS.b_prompt.paused = false
+
+    -- Stop flashing.
+    playdate.timer.new(1000, function ()
+        ANIMATIONS.b_prompt.paused = true
+    end)
+end
 
 
 -- Events for transition
@@ -215,6 +233,11 @@ end
 function Froggo:Ask_for_cocktail()
     self.last_spoken_sentence_str = string.format("One \"%s\", please!", COCKTAILS[TARGET_COCKTAIL.type_idx].name)
     self:croak()
+
+    -- Temp: flash B button some time after starting a cocktail
+    playdate.timer.new(4000, function ()
+        self:flash_b_prompt()
+    end)
 end
 
 

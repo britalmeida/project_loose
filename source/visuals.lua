@@ -658,7 +658,7 @@ local function draw_ui_prompts()
 
     gfx.pushContext()
         TEXTURES.instructions_prompt:draw(-10, 240-TEXTURES.instructions_prompt.height, 0)
-        ANIMATIONS.b_prompt:drawImage(1, 362, 203)
+        ANIMATIONS.b_prompt:draw(362, 203)
     gfx.popContext()
 end
 
@@ -778,8 +778,8 @@ function Init_visuals()
         high   = animloop.new(4 * frame_ms, gfxit.new("images/fx/highflame"), true),
         stir   = animloop.new(3.33 * frame_ms, gfxit.new("images/fx/stirredflame"), true)
     }
-    --ANIMATIONS.b_prompt     = animloop.new(8 * frame_ms, gfxit.new("images/animation-b"), true)
-    ANIMATIONS.b_prompt     = gfxit.new("images/animation-b")
+    ANIMATIONS.b_prompt     = animloop.new(8 * frame_ms, gfxit.new("images/animation-b"), true)
+    ANIMATIONS.b_prompt.paused = true
 
     -- Starting table of active animations for runes
     rune_anim_table = {}
