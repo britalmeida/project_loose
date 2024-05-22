@@ -19,6 +19,9 @@
         "./playdate-luacats"
     ],
     "diagnostics.disable": [
-        "need-check-nil"
+        "need-check-nil",
+        "lowercase-global",
+        "undefined-global",
+        "undefined-field"
     ]
 }
