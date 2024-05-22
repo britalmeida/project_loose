@@ -335,7 +335,7 @@ function Handle_input()
             FROG:Click_the_frog()
         end
 
-        if playdate.buttonIsPressed( playdate.kButtonB ) then
+        if playdate.buttonJustReleased( playdate.kButtonB ) then
             FROG:Ask_the_frog()
         end
 

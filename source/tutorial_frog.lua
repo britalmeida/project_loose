@@ -167,7 +167,12 @@ function Froggo:init()
     self.anim_eyeball    = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
     self.anim_frogfire   = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-frogfire'), true)
 
-    self.x_offset = 0
+    -- Create timer for disabling the speech bubble and transition out of speaking.
+    self.speech_timer = playdate.timer.new(100, function()
+        self:stop_speech_bubble()
+        self:go_idle()
+    end)
+    self.speech_timer.discardOnCompletion = false
 
     self:setZIndex(Z_DEPTH.frog)
 
@@ -193,6 +198,7 @@ function Froggo:reset()
 
     -- Reset speech Bubble state used by draw_dialog_bubble().
     self:stop_speech_bubble()
+    self.speech_timer.paused = true
 
     -- Ensure the B button prompt is not flashing.
     if ANIMATIONS.b_prompt then
@@ -222,8 +228,17 @@ end
 -- Events for transition
 
 function Froggo:Ask_the_frog()
-    if self.state == ACTION_STATE.idle then
-        -- Start speaking
+    if self.state == ACTION_STATE.idle or self.state == ACTION_STATE.reacting then
+        -- Possibly interrupt an emoting animation.
+        -- Start speaking.
+        self:think()
+        self:croak()
+    elseif self.state == ACTION_STATE.speaking then
+        -- Prevent speech bubble kill and transition to idle from the previous sentence.
+        self.speech_timer.paused = true
+        -- Clear the previous text or animated icon graphic. (bc text/icon isn't guaranteed to be replaced)
+        self:stop_speech_bubble()
+        -- Run a new sentence.
         self:think()
         self:croak()
     end
@@ -354,11 +369,9 @@ function Froggo:croak()
 
         local dialog_display_time = self:start_speech_bubble()
 
-        playdate.timer.new(dialog_display_time, function()
-            -- Disable speech bubble and stop the speaking animation.
-            self:stop_speech_bubble()
-            self:go_idle()
-        end)
+        self.speech_timer.duration = dialog_display_time
+        self.speech_timer:reset()
+        self.speech_timer:start()
     end
 end
 
@@ -576,7 +589,7 @@ function Froggo:start_speech_bubble()
         -- Set the dialog visuals to be picked up in draw_dialog_bubble().
         SPEECH_BUBBLE_TEXT = text_lines
         -- Return the time that the speech bubble should be displayed.
-        return #text_lines*1000
+        return math.max(1500, #text_lines*1000)
     end
 end
 
