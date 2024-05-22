@@ -143,17 +143,6 @@ SPEECH_BUBBLE_ANIM_IMGS = {
     { gfxit.new("images/speech/animation-shake"),      7 }, -- "13"
 }
 
--- Animations
-local anim_idle_imgs, anim_idle_framerate = gfxit.new('images/frog/animation-idle'), 16
-local anim_headshake_imgs, anim_headshake_framerate = gfxit.new('images/frog/animation-headshake'), 8
-local anim_happy_imgs, anim_happy_framerate = gfxit.new('images/frog/animation-excited'), 8
-local anim_cocktail_imgs, anim_cocktail_framerate = gfxit.new('images/frog/animation-cocktail'), 8
-local anim_burp_imgs, anim_burp_framerate = gfxit.new('images/frog/animation-burp'), 8
-local anim_burptalk_imgs, anim_burptalk_framerate = gfxit.new('images/frog/animation-burptalk'), 8
-local anim_blabla_imgs, anim_blabla_framerate = gfxit.new('images/frog/animation-blabla'), 8
-local anim_tickleface_img, anim_tickleface_framerate = gfxit.new('images/frog/animation-tickleface'), 2.5
-local anim_eyeball_img, anim_eyeball_framerate = gfxit.new('images/frog/animation-eyeball'), 4
-local anim_frogfire_img, anim_frogfire_framerate = gfxit.new('images/frog/animation-frogfire'), 4
 
 
 class('Froggo').extends(Sprite)
@@ -162,18 +151,18 @@ Froggo = NewSubClass("Froggo", Sprite)
 function Froggo:init()
     Froggo.super.init(self)
 
-    -- Initialize animation state
+    -- Load animation images and initialize animation state.
     self.anim_current = nil
-    self.anim_idle = animloop.new(anim_idle_framerate * frame_ms, anim_idle_imgs, true)
-    self.anim_headshake = animloop.new(anim_headshake_framerate * frame_ms, anim_headshake_imgs, true)
-    self.anim_happy = animloop.new(anim_happy_framerate * frame_ms, anim_happy_imgs, true)
-    self.anim_cocktail = animloop.new(anim_cocktail_framerate * frame_ms, anim_cocktail_imgs, true)
-    self.anim_burp = animloop.new(anim_burp_framerate * frame_ms, anim_burp_imgs, false)
-    self.anim_burptalk = animloop.new(anim_burptalk_framerate * frame_ms, anim_burptalk_imgs, true)
-    self.anim_blabla = animloop.new(anim_blabla_framerate * frame_ms, anim_blabla_imgs, true)
-    self.anim_tickleface = animloop.new(anim_tickleface_framerate * frame_ms, anim_tickleface_img, false)
-    self.anim_eyeball = animloop.new(anim_eyeball_framerate * frame_ms, anim_eyeball_img, true)
-    self.anim_frogfire = animloop.new(anim_frogfire_framerate * frame_ms, anim_frogfire_img, true)
+    self.anim_idle       = animloop.new(16 * frame_ms, gfxit.new('images/frog/animation-idle'), true)
+    self.anim_headshake  = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-headshake'), true)
+    self.anim_happy      = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-excited'), true)
+    self.anim_cocktail   = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-cocktail'), true)
+    self.anim_burp       = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-burp'), false)
+    self.anim_burptalk   = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-burptalk'), true)
+    self.anim_blabla     = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-blabla'), true)
+    self.anim_tickleface = animloop.new(2.5 * frame_ms, gfxit.new('images/frog/animation-tickleface'), false)
+    self.anim_eyeball    = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
+    self.anim_frogfire   = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-frogfire'), true)
 
     self.x_offset = 0
 

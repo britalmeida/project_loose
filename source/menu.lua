@@ -543,11 +543,7 @@ end
 
 function Init_menus()
 
-    -- Create animation loops
-    local start_anim_table, start_anim_framerate = gfxit.new("images/menu_start"), 16
-    local selection_highlight_table, selection_highlight_framerate = gfxit.new("images/cocktails/white_selection_border"), 16
-    local credit_scroll_table, credit_scroll_framerate = gfxit.new("images/credits"), 8
-
+    -- Create animation loops for the cocktails.
     for i in pairs(COCKTAILS) do
         table.insert(cocktail_anims, animloop.new(COCKTAILS[i].framerate * frame_ms * music_speed, COCKTAILS[i].table, true))
     end
@@ -556,12 +552,10 @@ function Init_menus()
         table.insert(cocktail_anims_locked, animloop.new(COCKTAILS[i].framerate * frame_ms * music_speed, COCKTAILS[i].locked_table, true))
     end
 
-
-    UI_TEXTURES.start = animloop.new(start_anim_framerate * frame_ms * music_speed, start_anim_table, true)
-    UI_TEXTURES.mission = gfxi.new(1,1)  -- unused
-    UI_TEXTURES.selection_highlight = animloop.new(selection_highlight_framerate * frame_ms * music_speed, selection_highlight_table, true)
-    UI_TEXTURES.credits = gfxi.new(1,1)  -- unused
-    UI_TEXTURES.credit_scroll = animloop.new(credit_scroll_framerate * frame_ms * music_speed, credit_scroll_table, true)
+    -- Create animation loops for the menu backgrounds
+    UI_TEXTURES.start = animloop.new(16 * frame_ms * music_speed, gfxit.new("images/menu_start"), true)
+    UI_TEXTURES.selection_highlight = animloop.new(16 * frame_ms * music_speed, gfxit.new("images/cocktails/white_selection_border"), true)
+    UI_TEXTURES.credit_scroll = animloop.new(8 * frame_ms * music_speed, gfxit.new("images/credits"), true)
 
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0

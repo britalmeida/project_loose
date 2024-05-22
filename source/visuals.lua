@@ -5,13 +5,13 @@ local animloop <const> = playdate.graphics.animation.loop
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
 local inOutQuad <const> = playdate.easingFunctions.inOutQuad
-local outBack <const> = playdate.easingFunctions.outBack
 local animator <const> = playdate.graphics.animator
 
 
 -- Resources
 FONTS = {}
 TEXTURES = {}
+ANIMATIONS = {}
 
 -- Constants
 LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 175
@@ -213,7 +213,7 @@ local function draw_symbols( x, y, width, position_params)
             local tolerance = 0.1
             local rune_graphic = nil
             if math.abs(DIFF_TO_TARGET.runes[a]) < tolerance and #rune_anim_table <= 1 then
-                TEXTURES.rune_correct[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
+                ANIMATIONS.rune_correct[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
             else
                     TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
                 end
@@ -445,12 +445,12 @@ local function draw_liquid_bubbles()
             local b_x = bubble_amp * math.cos(bubble_rad) * ellipse_bottom_width + LIQUID_CENTER_X
             local b_y = bubble_amp * math.sin(bubble_rad) * ellipse_height + LIQUID_CENTER_Y - bot_offset
 
-            local bubble_tab = TEXTURES.bubble_table
+            local bubble_tab = ANIMATIONS.bubble
             local bub_off_x, bub_off_y = 5, 12
 
             -- Check if they are bubbles
             if Bubbles_types[x] < 0 then
-                bubble_tab = TEXTURES.bubble_table2
+                bubble_tab = ANIMATIONS.bubble2
                 bub_off_x, bub_off_y = 12, 12
             end
 
@@ -627,24 +627,24 @@ local function draw_cauldron_front()
         if GAMEPLAY_STATE.flame_amount > 0.8 then
             buildupflame_counter += 1
             if buildupflame_counter < 5 then
-                TEXTURES.buildup_flame:draw(-1, 0)
+                TEXTURES.flame_buildup:draw(-1, 0)
             else
-                TEXTURES.stir_flame_table:draw(-1, 0)
+                ANIMATIONS.flame.stir:draw(-1, 0)
             end
         elseif GAMEPLAY_STATE.flame_amount > 0.5 then
             buildupflame_counter = buildupflame_counter * 0.5
             if buildupflame_counter > 2 then
-                TEXTURES.stir_flame_table:draw(-1, 0)
+                ANIMATIONS.flame.stir:draw(-1, 0)
             else
-                TEXTURES.high_flame_table:draw(-1, 0)
+                ANIMATIONS.flame.high:draw(-1, 0)
                 buildupflame_counter = 0
             end
         elseif GAMEPLAY_STATE.heat_amount > 0.4 then
-            TEXTURES.medium_flame_table:draw(-1, 0)
+            ANIMATIONS.flame.medium:draw(-1, 0)
         elseif GAMEPLAY_STATE.heat_amount > 0.2 then
-            TEXTURES.low_flame_table:draw(-1, 0)
+            ANIMATIONS.flame.low:draw(-1, 0)
         elseif GAMEPLAY_STATE.heat_amount > 0.08 then
-            TEXTURES.ember_table:draw(-1, 0)
+            ANIMATIONS.flame.ember:draw(-1, 0)
         end
     gfx.popContext()
 end
@@ -658,7 +658,7 @@ local function draw_ui_prompts()
 
     gfx.pushContext()
         TEXTURES.instructions_prompt:draw(-10, 240-TEXTURES.instructions_prompt.height, 0)
-        TEXTURES.b_prompt:drawImage(1, 362, 203)
+        ANIMATIONS.b_prompt:drawImage(1, 362, 203)
     gfx.popContext()
 end
 
@@ -741,23 +741,11 @@ end
 
 function Init_visuals()
 
-    -- Anim loop data
-    local ember_table, ember_framerate = gfxit.new("images/fx/ember"), 4
-    local low_flame_table, low_flame_framerate = gfxit.new("images/fx/lowflame"), 4
-    local medium_flame_table, medium_flame_framerate = gfxit.new("images/fx/mediumflame"), 4
-    local high_flame_table, high_flame_framerate = gfxit.new("images/fx/highflame"), 4
-    local stir_flame_table, stir_flame_framerate = gfxit.new("images/fx/stirredflame"), 3.33
-    local love_correct_table, love__correct_framerate = gfxit.new("images/love_correct"), 8
-    local doom_correct_table, doom_correct_framerate = gfxit.new("images/doom_correct"), 8
-    local weed_correct_table, weed_correct_framerate = gfxit.new("images/weeds_correct"), 8
-
-
     -- Load image layers.
     TEXTURES.bg = gfxi.new("images/bg")
     TEXTURES.cauldron = gfxi.new("images/cauldron")
     TEXTURES.cauldron_front = gfxi.new("images/cauldron_front")
     TEXTURES.instructions_prompt = gfxi.new("images/instructions_prompt")
-    TEXTURES.b_prompt = gfxit.new("images/animation-b")
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/speechbubble_oneline_wide")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/speechbubble_twolines_extrawide")
     TEXTURES.instructions = gfxi.new("images/instructions")
@@ -774,18 +762,24 @@ function Init_visuals()
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
     TEXTURES.place_hint = gfxi.new("images/cursor/empty_jar")
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
-    TEXTURES.rune_correct = {animloop.new(love__correct_framerate * frame_ms, love_correct_table, true),
-                            animloop.new(doom_correct_framerate * frame_ms, doom_correct_table, true),
-                            animloop.new(weed_correct_framerate * frame_ms, weed_correct_table, true)}
+    ANIMATIONS.rune_correct = {
+        animloop.new(8 * frame_ms, gfxit.new("images/love_correct"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/doom_correct"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/weeds_correct"), true)}
     -- Load fx
-    TEXTURES.ember_table = animloop.new(ember_framerate * frame_ms, ember_table, true)
-    TEXTURES.low_flame_table = animloop.new(low_flame_framerate * frame_ms, low_flame_table, true)
-    TEXTURES.medium_flame_table = animloop.new(medium_flame_framerate * frame_ms, medium_flame_table, true)
-    TEXTURES.high_flame_table = animloop.new(high_flame_framerate * frame_ms, high_flame_table, true)
-    TEXTURES.stir_flame_table = animloop.new(stir_flame_framerate * frame_ms, stir_flame_table, true)
-    TEXTURES.buildup_flame = gfxi.new("images/fx/buildupflame")
-    TEXTURES.bubble_table = gfxit.new("images/fx/bubble")
-    TEXTURES.bubble_table2 = gfxit.new("images/fx/bubble2")
+    -- Load animation images and initialize animation loop timers.
+    ANIMATIONS.bubble = gfxit.new("images/fx/bubble")
+    ANIMATIONS.bubble2 = gfxit.new("images/fx/bubble2")
+    TEXTURES.flame_buildup = gfxi.new("images/fx/buildupflame")
+    ANIMATIONS.flame = {
+        ember  = animloop.new(4 * frame_ms, gfxit.new("images/fx/ember"), true),
+        low    = animloop.new(4 * frame_ms, gfxit.new("images/fx/lowflame"), true),
+        medium = animloop.new(4 * frame_ms, gfxit.new("images/fx/mediumflame"), true),
+        high   = animloop.new(4 * frame_ms, gfxit.new("images/fx/highflame"), true),
+        stir   = animloop.new(3.33 * frame_ms, gfxit.new("images/fx/stirredflame"), true)
+    }
+    --ANIMATIONS.b_prompt     = animloop.new(8 * frame_ms, gfxit.new("images/animation-b"), true)
+    ANIMATIONS.b_prompt     = gfxit.new("images/animation-b")
 
     -- Starting table of active animations for runes
     rune_anim_table = {}

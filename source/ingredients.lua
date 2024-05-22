@@ -301,14 +301,12 @@ end
 
 
 
-TEXTURES.splish = gfxit.new("images/fx/splish")
-
 IngredientSplash = NewSubClass("IngredientSplash", Sprite)
 
 function IngredientSplash:init()
     IngredientSplash.super.init(self)
 
-    self.anim = animloop.new(splish_framerate * frame_ms, splish_imgs, false)
+    self.anim = animloop.new(splish_framerate * frame_ms, gfxit.new("images/fx/splish"), false)
 
     self:moveTo(LIQUID_CENTER_X+5, LIQUID_CENTER_Y-10)
     self:setZIndex(Z_DEPTH.ingredient_drop_splash)
