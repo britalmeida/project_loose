@@ -130,7 +130,6 @@ function add_rune_travel_anim()
 end
 
 
-
 local function draw_symbols( x, y, width, position_params)
     local params = position_params
     if params == nil then
@@ -690,7 +689,6 @@ end
 
 
 local function draw_debug_fps()
-
     -- FPS
     gfx.pushContext()
         gfx.setColor(gfx.kColorWhite)
@@ -706,11 +704,9 @@ local function draw_ingredient_grab_cursor()
         else
             TEXTURES.cursor:drawCentered(GYRO_X, GYRO_Y)
         end
-
-        -- Draw FPS
-        -- playdate.drawFPS(200,0)
     gfx.popContext()
 end
+
 
 local function draw_ingredient_place_hint()
     gfx.pushContext()
