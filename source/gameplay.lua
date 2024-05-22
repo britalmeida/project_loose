@@ -336,20 +336,24 @@ function Handle_input()
         end
 
         if playdate.buttonIsPressed( playdate.kButtonB ) then
-            FROG:Ask_the_frog()
+            -- FROG:Ask_the_frog()
+            SHAKE_VAL = 3
+        end
+        if playdate.buttonJustReleased( playdate.kButtonB ) then
+            SHAKE_VAL = 0
         end
 
         -- Modal instruction overlays.
-        if playdate.buttonJustPressed( playdate.kButtonLeft ) then
-            GAMEPLAY_STATE.showing_cocktail = true
-        elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
-            GAMEPLAY_STATE.showing_cocktail = false
-        end
-        if playdate.buttonJustPressed( playdate.kButtonRight ) then
-            GAMEPLAY_STATE.showing_instructions = true
-        elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
-            GAMEPLAY_STATE.showing_instructions = false
-        end
+        -- if playdate.buttonJustPressed( playdate.kButtonLeft ) then
+        --     GAMEPLAY_STATE.showing_cocktail = true
+        -- elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
+        --     GAMEPLAY_STATE.showing_cocktail = false
+        -- end
+        -- if playdate.buttonJustPressed( playdate.kButtonRight ) then
+        --     GAMEPLAY_STATE.showing_instructions = true
+        -- elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
+        --     GAMEPLAY_STATE.showing_instructions = false
+        -- end
     end
 end
 
@@ -364,7 +368,7 @@ function check_gyro_and_gravity()
     end
 
     -- Calculate G's (length of acceleration vector)
-    SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
+    -- SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
 
     if IS_GYRO_INITIALZIED == false then
         -- For the initial vlaue use the gyro at the start of the game, so that
@@ -416,8 +420,20 @@ function check_gyro_and_gravity()
     if SHAKE_VAL < 1.1 then
         PREV_GYRO_X = GYRO_X
         PREV_GYRO_Y = GYRO_Y
-        GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
-        GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
+        -- GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
+        -- GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
+        if playdate.buttonIsPressed( playdate.kButtonLeft ) then
+          GYRO_X -= 5
+        end
+        if playdate.buttonIsPressed( playdate.kButtonRight ) then
+          GYRO_X += 5
+        end
+        if playdate.buttonIsPressed( playdate.kButtonUp ) then
+          GYRO_Y -= 5
+        end
+        if playdate.buttonIsPressed( playdate.kButtonDown ) then
+          GYRO_Y += 5
+        end
     end
 end
 
