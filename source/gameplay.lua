@@ -91,6 +91,7 @@ GRAVITY_Y = 0
 GRAVITY_Z = 0
 
 SHAKE_VAL = 0
+IS_SIMULATING_SHAKE = false -- Simulator only control to mimic shaking the playdate.
 
 -- Resource Management
 
@@ -350,6 +351,38 @@ function Handle_input()
         elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
             GAMEPLAY_STATE.showing_instructions = false
         end
+    end
+end
+
+
+-- When playing on the simulator, allow the keyboard to override the Gyro and mic.
+function playdate.keyPressed(key)
+    -- Note: do not use keys that the simulator might use.
+    -- No: arrows, WASD, B, space, esc, [, ], ., , =, -, or OEV for Dvorak.
+    -- Check Simulator>Controls and https://help.play.date/manual/simulator/#keyboard-shortcuts
+
+    -- Alternative Gyro: shake in ingredients.
+    if key == 'm' then
+        IS_SIMULATING_SHAKE = true
+    -- Alternative Gyro: arrow like controls to position the cursor hand.
+    elseif key == 'j' then
+      GYRO_X -= 15
+    elseif key == 'l' then
+      GYRO_X += 15
+    elseif key == 'i' then
+      GYRO_Y -= 15
+    elseif key == 'k' then
+      GYRO_Y += 15
+    end
+end
+
+function playdate.keyReleased(key)
+    -- Microphone alternative for Fire.
+    if key == 'f' then
+        GAMEPLAY_STATE.flame_amount = math.min(1.0, GAMEPLAY_STATE.flame_amount + 0.2)
+    -- Alternative Gyro: shake in ingredients
+    elseif key == 'm' then
+        IS_SIMULATING_SHAKE = false
     end
 end
 

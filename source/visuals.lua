@@ -658,13 +658,23 @@ end
 
 
 local function draw_debug()
-    -- Heat amount indication.
+    -- Fire meters.
     local x = 10
     local y = 10
     local border = 3
     local width = 22
     local height = 150
-    local meter = ( GAMEPLAY_STATE.heat_amount ) * (height - border * 2)
+    -- Flame amount meter.
+    local meter = ( GAMEPLAY_STATE.flame_amount ) * (height - border * 2)
+    gfx.pushContext()
+        gfx.setColor(gfx.kColorBlack)
+        gfx.fillRoundRect(x, y, width, height, border)
+        gfx.setColor(gfx.kColorWhite)
+        gfx.fillRoundRect(x + border, y + height - meter - border, width - border * 2, meter, 3)
+    gfx.popContext()
+    -- Heat amount meter.
+    x += width + border
+    meter = ( GAMEPLAY_STATE.heat_amount ) * (height - border * 2)
     gfx.pushContext()
         gfx.setColor(gfx.kColorBlack)
         gfx.fillRoundRect(x, y, width, height, border)
