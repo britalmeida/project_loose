@@ -474,7 +474,7 @@ function Froggo:think()
             self:select_next_sentence(sayings.help.fire)
         elseif
             -- First check if drops need to be stirred in
-            #rune_anim_table > 1 then
+            GAMEPLAY_STATE.dropped_ingredients > 0 then
             self:give_stirring_direction()
         elseif not Are_ingredients_good_enough() then
             -- Then give hints on next ingredient

@@ -121,14 +121,6 @@ end
 
 local new_rune_count = {0, 0, 0}
 
-function add_rune_travel_anim()
-
-    -- add current rune count and new anim to table
-    local rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
-    table.insert(rune_anim_table, {rune_count, animator.new(3*1000, 0.0, 1.0, inOutQuad), animator.new(200*1000, 0.0, 1.0, inOutQuad)})
-
-end
-
 
 local function draw_symbols( x, y, width, position_params)
     local params = position_params
@@ -159,42 +151,14 @@ local function draw_symbols( x, y, width, position_params)
             glow_strength = Clamp(glow_strength, 0, 1) * 0.75
 
             -- Calculate current_rune_count
-            local animated_rune_count = {0, 0, 0}
-            local avg_count = {0, 0, 0}
-            for anim_index, anim_content in pairs(rune_anim_table) do
-
-                local rune_count = anim_content[1]
-                local progress_fast = anim_content[2]:progress()
-                local progress_slow = anim_content[3]:progress()
-                local progress_stirred = progress_fast * STIR_FACTOR + progress_slow * (1 - STIR_FACTOR)
-                for k, v in pairs(rune_count) do
-                    animated_rune_count[k] = avg_count[k] * (1 - progress_stirred) + v * progress_stirred
-                    avg_count[k] = animated_rune_count[k]
-                end
+            local rune_count_travel = {0, 0, 0}
+            for k, v in pairs(rune_count_travel) do
+                rune_count_travel[k] = GAMEPLAY_STATE.rune_count_unstirred[k] * (1 - STIR_FACTOR) + (GAMEPLAY_STATE.rune_count[k] * STIR_FACTOR)
             end
 
             -- Update glyph positions
-            glyph_y = glyph_y - (animated_rune_count[a] - 0.5) * meter_height
+            glyph_y = glyph_y - (rune_count_travel[a] - 0.5) * meter_height
             glyph_y += wiggle
-
-            -- Reset anim table if all animations are done
-            local rune_anim_progress_avg = 0
-            local rune_anim_table_count = getTableSize(rune_anim_table)
-            for anim_index, anim_content in pairs(rune_anim_table) do
-                local progress_fast = anim_content[2]:progress()
-                local progress_slow = anim_content[3]:progress()
-                local progress_stirred = progress_fast * STIR_FACTOR + progress_slow * (1 - STIR_FACTOR)
-                rune_anim_progress_avg += progress_stirred / rune_anim_table_count
-            end
-            if rune_anim_progress_avg == 1 then
-                if #rune_anim_table > 1 then
-                    DELICIOUS_CHECK = true
-                end
-                local true_rune_count = shallow_copy(GAMEPLAY_STATE.rune_count)
-
-                rune_anim_table = {}
-                table.insert(rune_anim_table, {true_rune_count, animator.new(0, 1.0, 1.0), animator.new(0, 1.0, 1.0)})
-            end
 
             local target_y = y - (target - 0.5) * meter_height + wiggle
 
@@ -212,7 +176,7 @@ local function draw_symbols( x, y, width, position_params)
             gfx.pushContext()
             local tolerance = 0.1
             local rune_graphic = nil
-            if math.abs(DIFF_TO_TARGET.runes[a]) < tolerance and #rune_anim_table <= 1 then
+            if math.abs(DIFF_TO_TARGET.runes[a]) < tolerance and GAMEPLAY_STATE.dropped_ingredients == 0 then
                 ANIMATIONS.rune_correct[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
             else
                     TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
@@ -787,11 +751,6 @@ function Init_visuals()
     }
     ANIMATIONS.b_prompt     = animloop.new(8 * frame_ms, gfxit.new("images/animation-b"), true)
     ANIMATIONS.b_prompt.paused = true
-
-    -- Starting table of active animations for runes
-    rune_anim_table = {}
-    local start_rune_count = {0, 0, 0}
-    table.insert(rune_anim_table, {start_rune_count, animator.new(0, 1.0, 1.0), animator.new(0, 1.0, 1.0)})
 
     -- Load fonts
     FONTS.speech_font = gfx.font.new("fonts/froggotini17")

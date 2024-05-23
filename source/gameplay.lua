@@ -22,7 +22,9 @@ GAMEPLAY_STATE = {
     potion_color = 0.5,
     potion_bubbliness = 0.0,
     rune_count = {0, 0, 0},
+    rune_count_unstirred = {0, 0, 0},
     rune_ratio = {0, 0, 0},
+    dropped_ingredients = 0,
     rune_saturation = 0,
     -- ??
     game_tick = 0,
@@ -41,7 +43,6 @@ DIFF_TO_TARGET = {
 GAME_ENDED = false
 
 TREND = 0
-PREV_RUNE_RATIO = {0, 0, 0}
 PREV_RUNE_COUNT = {0, 0, 0}
 DELICIOUS_CHECK = false
 
@@ -130,8 +131,9 @@ function Reset_gameplay()
     -- Reset current ingredient mix.
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
-        GAMEPLAY_STATE.rune_ratio[a] = 0
+        GAMEPLAY_STATE.rune_count_unstirred[a] = 0
     end
+    GAMEPLAY_STATE.dropped_ingredients = 0
     GAMEPLAY_STATE.rune_saturation = 0
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
@@ -177,7 +179,6 @@ function Reset_gameplay()
 end
 
 function Update_rune_count(drop_rune_count)
-    local sum = 0
     local saturation = GAMEPLAY_STATE.rune_saturation
 
     -- Calculate new rune count
@@ -185,12 +186,6 @@ function Update_rune_count(drop_rune_count)
         GAMEPLAY_STATE.rune_count[a] = GAMEPLAY_STATE.rune_count[a] + ((drop_rune_count[a] * ( 1 - 0.6 * saturation)) * 0.3)
         if GAMEPLAY_STATE.rune_count[a] < 0 then
             GAMEPLAY_STATE.rune_count[a] = 0
-        end
-        sum = sum + GAMEPLAY_STATE.rune_count[a]
-    end
-    if sum > 0 then
-        for a = 1, NUM_RUNES, 1 do
-            GAMEPLAY_STATE.rune_ratio[a] = GAMEPLAY_STATE.rune_count[a] / sum
         end
     end
 
@@ -201,10 +196,12 @@ function Update_rune_count(drop_rune_count)
         end
     end
 
-    -- Trigger rune traveling animation
-    if PREV_RUNE_RATIO ~= GAMEPLAY_STATE.rune_ratio then
-        add_rune_travel_anim()
-    end
+    -- Update variables
+    GAMEPLAY_STATE.dropped_ingredients += 1
+    -- Adjust stir factor relative to new count of drops
+    local drops = GAMEPLAY_STATE.dropped_ingredients
+    STIR_FACTOR = (STIR_FACTOR / drops) * (drops - 1)
+
 
     local prev_rune_avg = (PREV_RUNE_COUNT[1] + PREV_RUNE_COUNT[2] + PREV_RUNE_COUNT[3]) /3
     local current_rune_avg = (GAMEPLAY_STATE.rune_count[1] + GAMEPLAY_STATE.rune_count[2] + GAMEPLAY_STATE.rune_count[3]) / 3
@@ -217,7 +214,6 @@ function Update_rune_count(drop_rune_count)
     end
 
     PREV_RUNE_COUNT = shallow_copy(GAMEPLAY_STATE.rune_count)
-    PREV_RUNE_RATIO = shallow_copy(GAMEPLAY_STATE.rune_ratio)
 
     --print("Rune Count = " .. tostring(GAMEPLAY_STATE.rune_count[1] .. ", " .. tostring(GAMEPLAY_STATE.rune_count[2]) .. ", " .. tostring(GAMEPLAY_STATE.rune_count[3])))
     --print("Saturation =" .. GAMEPLAY_STATE.rune_saturation)
@@ -588,27 +584,33 @@ function update_liquid()
 
 
     local stir_change = 0.001
-    local floating_drops = #rune_anim_table
+    local floating_drops = GAMEPLAY_STATE.dropped_ingredients
     local color_change = 0.005
     local max_darkness = 0.2 * floating_drops
 
     max_darkness = math.min(max_darkness, 1)
 
     -- Calculate current base color of liquid
-    if floating_drops > 1 then
+    if floating_drops > 0 then
         liquid_darkening += color_change * floating_drops
         STIR_FACTOR += STIR_FACTOR * 0.002
         STIR_FACTOR = math.min(STIR_FACTOR, 1)
-    elseif floating_drops <= 1 then
-        floating_drops = 1
-        liquid_darkening -= color_change * 8
-        STIR_FACTOR -= color_change * 8
-        STIR_FACTOR = math.min(STIR_FACTOR, 0)
+    elseif floating_drops == 0 then --tmp this could be simplified
+        liquid_darkening = 0
+        STIR_FACTOR = 0
     end
     liquid_darkening = Clamp(liquid_darkening, 0, max_darkness)
     -- Calculate current stirring effect
     STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change)
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
+
+    -- Reset rune travel variables
+    if STIR_FACTOR >= 1 then
+        table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
+        GAMEPLAY_STATE.dropped_ingredients = 0
+        DELICIOUS_CHECK = true
+    end
+
     -- Total mixed color of liquid
     --GAMEPLAY_STATE.potion_color = (1 - liquid_darkening) + (STIR_FACTOR * max_darkness)
     -- print(STIR_FACTOR)
@@ -626,7 +628,7 @@ end
 local tolerance = 0.1
 
 function Are_ingredients_good_enough()
-    return DIFF_TO_TARGET.ingredients_abs < tolerance and #rune_anim_table <= 1
+    return DIFF_TO_TARGET.ingredients_abs < tolerance and GAMEPLAY_STATE.dropped_ingredients == 0
 end
 
 function Is_potion_good_enough()
@@ -717,7 +719,7 @@ function Check_player_struggle()
     end
 
     -- No stirring
-    if #rune_anim_table >= min_drops_without_stirring then
+    if GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring then
         Check_no_stirring_struggle()
     end
 
@@ -751,7 +753,7 @@ function Check_no_shaking_struggle()
             end)
             CALUDRON_SWAP_COUNT = 0
     elseif CAULDRON_INGREDIENT ~= nil then
-        if #rune_anim_table <= 1 and math.abs(STIR_SPEED) > 7.5 then
+        if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
             -- Start tracking stirring
             if not PLAYER_STRUGGLES.no_shake then
                 stir_amount_tracking += excess_stirring_factor
@@ -765,7 +767,7 @@ function Check_no_shaking_struggle()
                     end)
                 stir_amount_tracking = 0
             end
-        elseif #rune_anim_table > 1 then
+        elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
             -- New ingredients dropped in. Reset tracked stirring and timeout
             stir_amount_tracking = 0
             print("Shaking struggle canceled")
@@ -805,7 +807,7 @@ function Cauldron_ingredient_was_shaken()
 end
 
 function Check_too_much_stirring_struggle()
-    if #rune_anim_table <=1 and math.abs(STIR_SPEED) > 7.5 then
+    if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
         -- Start tracking stirring
         if not PLAYER_STRUGGLES.too_much_stir then
             stir_amount_tracking += excess_stirring_factor
@@ -818,7 +820,7 @@ function Check_too_much_stirring_struggle()
                 end)
             stir_amount_tracking = 0
         end
-    elseif #rune_anim_table > 1 then
+    elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
         -- New ingredients dropped in. Reset tracked stirring and timeout
         stir_amount_tracking = 0
         if too_much_stir_timeout ~= nil then
