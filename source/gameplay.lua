@@ -165,6 +165,7 @@ function Reset_gameplay()
 
     -- Variables for detecting player struggle
     CAULDRON_INGREDIENT = nil
+    LAST_CAULDRON_INGREDIENT = nil
     LAST_SHAKEN_INGREDIENT = nil
     CALUDRON_SWAP_COUNT = 0
 
@@ -308,9 +309,10 @@ function Handle_input()
                 if ingredient:try_pickup() then
                     picked_up = true
                     if not PLAYER_LEARNED.how_to_grab then
+                        PLAYER_LEARNED.how_to_grab = true
+                        FROG:flash_b_prompt()
                         print('Learned how to grab.')
                     end
-                    PLAYER_LEARNED.how_to_grab = true
                     break
                 end
             end
@@ -682,12 +684,14 @@ end
 
 
 function Check_player_learnings()
-    if GAMEPLAY_STATE.heat_amount > 0.3 then
+    if GAMEPLAY_STATE.heat_amount > 0.3 and not PLAYER_LEARNED.how_to_fire then
         PLAYER_LEARNED.how_to_fire = true
+        FROG:flash_b_prompt()
     end
 
-    if math.abs(STIR_SPEED) > 7.5 then
+    if math.abs(STIR_SPEED) > 7.5 and not PLAYER_LEARNED.how_to_stir then
         PLAYER_LEARNED.how_to_stir = true
+        FROG:flash_b_prompt()
     end
 end
 
@@ -699,7 +703,8 @@ local excess_stirring_factor = 0.008
 local struggle_reminder_timout = 10*1000
 local no_shake_timeout = nil
 local no_stir_timeout = nil
-local stir_amount_tracking = 0
+local no_shake_tracking = 0
+local too_much_stir_tracking = 0
 local too_much_stir_timeout = nil
 
 function Check_player_struggle()
@@ -726,7 +731,6 @@ function Check_player_struggle()
     -- Too much stirring
     if Cauldron_ingredient_was_shaken() then
         Check_too_much_stirring_struggle()
-        --print(stir_amount_tracking)
     end
 
     -- Recipe struggle
@@ -745,44 +749,46 @@ end
 
 function Check_no_shaking_struggle()
     -- Check if the ingredient was swapped many times without shaking
-    if CALUDRON_SWAP_COUNT > 3 then
+    if CALUDRON_SWAP_COUNT > 3 and not PLAYER_STRUGGLES.no_shake then
         print("Swapped ingredients too much without shaking")
         PLAYER_STRUGGLES.no_shake = true
+        FROG:flash_b_prompt()
         no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
             PLAYER_STRUGGLES.no_shake = false
             end)
             CALUDRON_SWAP_COUNT = 0
-    elseif CAULDRON_INGREDIENT ~= nil then
+    elseif not PLAYER_STRUGGLES.no_shake then
         if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
             -- Start tracking stirring
-            if not PLAYER_STRUGGLES.no_shake then
-                stir_amount_tracking += excess_stirring_factor
-            end
-            if stir_amount_tracking > 1 then
+            no_shake_tracking += excess_stirring_factor
+            if no_shake_tracking > 1 then
                 --print("Stirring reached struggling amount.")
-                PLAYER_STRUGGLES.no_shake = true
                 print("Too much stirring without shaking")
+                PLAYER_STRUGGLES.no_shake = true
+                FROG:flash_b_prompt()
                 no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
                     PLAYER_STRUGGLES.no_shake = false
                     end)
-                stir_amount_tracking = 0
+                no_shake_tracking = 0
             end
         elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
             -- New ingredients dropped in. Reset tracked stirring and timeout
-            stir_amount_tracking = 0
+            no_shake_tracking = 0
+            PLAYER_STRUGGLES.no_shake = false
             print("Shaking struggle canceled")
             if no_shake_timeout ~= nil then
                 no_shake_timeout:remove()
             end
         end
     end
-    --print(stir_amount_tracking)
+    --print("No shake tracking: " .. no_shake_tracking)
 end
 
 function Check_no_stirring_struggle()
-    if  STIR_FACTOR < 0.3 and not PLAYER_STRUGGLES.no_stir then
-        --print("Player is struggling with stir")
+    if  STIR_FACTOR < 0.3 and not PLAYER_STRUGGLES.too_much_shaking then
+        print("Player is struggling with stir")
         PLAYER_STRUGGLES.too_much_shaking = true
+        FROG:flash_b_prompt()
         no_stir_timeout = playdate.timer.new(struggle_reminder_timout, function ()
             PLAYER_STRUGGLES.too_much_shaking = false
           end)
@@ -797,9 +803,9 @@ end
 
 function Cauldron_ingredient_was_shaken()
     -- Check if ingredient has been shaken and same ingredient is still on cauldron
-    if CAULDRON_INGREDIENT == nil and LAST_SHAKEN_INGREDIENT == nil then
+    if LAST_CAULDRON_INGREDIENT == nil and LAST_SHAKEN_INGREDIENT == nil then
         return false
-    elseif CAULDRON_INGREDIENT == LAST_SHAKEN_INGREDIENT then
+    elseif LAST_CAULDRON_INGREDIENT == LAST_SHAKEN_INGREDIENT then
         return true
     else
         return false
@@ -809,25 +815,25 @@ end
 function Check_too_much_stirring_struggle()
     if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
         -- Start tracking stirring
-        if not PLAYER_STRUGGLES.too_much_stir then
-            stir_amount_tracking += excess_stirring_factor
-        end
-        if stir_amount_tracking > 1 then
+        too_much_stir_tracking += excess_stirring_factor
+        if too_much_stir_tracking > 1 then
             --print("Stirring reached struggling amount.")
             PLAYER_STRUGGLES.too_much_stir = true
+            FROG:flash_b_prompt()
             too_much_stir_timeout = playdate.timer.new(struggle_reminder_timout, function ()
                 PLAYER_STRUGGLES.too_much_stir = false
                 end)
-            stir_amount_tracking = 0
+                too_much_stir_tracking = 0
         end
     elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
         -- New ingredients dropped in. Reset tracked stirring and timeout
-        stir_amount_tracking = 0
+        too_much_stir_tracking = 0
+        PLAYER_STRUGGLES.too_much_stir = false
         if too_much_stir_timeout ~= nil then
             too_much_stir_timeout:remove()
         end
     end
-    --print(stir_amount_tracking)
+    --print("Too much stir tracking: " .. too_much_stir_tracking)
 end
 
 function Next_recipe_struggle_tip()

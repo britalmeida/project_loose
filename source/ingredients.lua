@@ -26,6 +26,7 @@ DROPS = {}
 INGREDIENT_STATE = { is_in_shelf = 0, is_picked_up = 2, is_in_air = 3, is_over_cauldron = 4 }
 
 CAULDRON_INGREDIENT = nil
+LAST_CAULDRON_INGREDIENT = nil
 LAST_SHAKEN_INGREDIENT = nil
 CALUDRON_SWAP_COUNT = 0
 
@@ -101,7 +102,6 @@ function Ingredient:tick()
         -- Follow the gyro
         self:moveTo(GYRO_X, GYRO_Y)
         CAULDRON_INGREDIENT = nil
-        LAST_SHAKEN_INGREDIENT = nil
     elseif self.state == INGREDIENT_STATE.is_over_cauldron then
         if self.is_wiggling then
             self:wiggle()
@@ -110,6 +110,7 @@ function Ingredient:tick()
           CALUDRON_SWAP_COUNT += 1
         end
         CAULDRON_INGREDIENT = self.ingredient_type_idx
+        LAST_CAULDRON_INGREDIENT = self.ingredient_type_idx
         if self.can_drop and (SHAKE_VAL > 3 or IS_SIMULATING_SHAKE) then
             self.can_drop = false
             self:trigger_drop()
@@ -265,9 +266,10 @@ function Ingredient:drop()
   end)
 
   if not PLAYER_LEARNED.how_to_shake then
+    PLAYER_LEARNED.how_to_shake = true
+    FROG:flash_b_prompt()
     print("Learned how to shake")
   end
-  PLAYER_LEARNED.how_to_shake = true
 end
 
 function Ingredient:respawn()
