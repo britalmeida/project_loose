@@ -91,6 +91,7 @@ GRAVITY_Y = 0
 GRAVITY_Z = 0
 
 SHAKE_VAL = 0
+IS_SIMULATING_SHAKE = false -- Simulator only control to mimic shaking the playdate.
 
 -- Resource Management
 
@@ -335,25 +336,53 @@ function Handle_input()
             FROG:Click_the_frog()
         end
 
-        if playdate.buttonIsPressed( playdate.kButtonB ) then
-            -- FROG:Ask_the_frog()
-            SHAKE_VAL = 3
-        end
         if playdate.buttonJustReleased( playdate.kButtonB ) then
-            SHAKE_VAL = 0
+            FROG:Ask_the_frog()
         end
 
         -- Modal instruction overlays.
-        -- if playdate.buttonJustPressed( playdate.kButtonLeft ) then
-        --     GAMEPLAY_STATE.showing_cocktail = true
-        -- elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
-        --     GAMEPLAY_STATE.showing_cocktail = false
-        -- end
-        -- if playdate.buttonJustPressed( playdate.kButtonRight ) then
-        --     GAMEPLAY_STATE.showing_instructions = true
-        -- elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
-        --     GAMEPLAY_STATE.showing_instructions = false
-        -- end
+        if playdate.buttonJustPressed( playdate.kButtonLeft ) then
+            GAMEPLAY_STATE.showing_cocktail = true
+        elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
+            GAMEPLAY_STATE.showing_cocktail = false
+        end
+        if playdate.buttonJustPressed( playdate.kButtonRight ) then
+            GAMEPLAY_STATE.showing_instructions = true
+        elseif playdate.buttonJustReleased( playdate.kButtonRight ) then
+            GAMEPLAY_STATE.showing_instructions = false
+        end
+    end
+end
+
+
+-- When playing on the simulator, allow the keyboard to override the Gyro and mic.
+function playdate.keyPressed(key)
+    -- Note: do not use keys that the simulator might use.
+    -- No: arrows, WASD, B, space, esc, [, ], ., , =, -, or OEV for Dvorak.
+    -- Check Simulator>Controls and https://help.play.date/manual/simulator/#keyboard-shortcuts
+
+    -- Alternative Gyro: shake in ingredients.
+    if key == 'm' then
+        IS_SIMULATING_SHAKE = true
+    -- Alternative Gyro: arrow like controls to position the cursor hand.
+    elseif key == 'j' then
+      GYRO_X -= 15
+    elseif key == 'l' then
+      GYRO_X += 15
+    elseif key == 'i' then
+      GYRO_Y -= 15
+    elseif key == 'k' then
+      GYRO_Y += 15
+    end
+end
+
+function playdate.keyReleased(key)
+    -- Microphone alternative for Fire.
+    if key == 'f' then
+        GAMEPLAY_STATE.flame_amount = math.min(1.0, GAMEPLAY_STATE.flame_amount + 0.2)
+    -- Alternative Gyro: shake in ingredients
+    elseif key == 'm' then
+        IS_SIMULATING_SHAKE = false
     end
 end
 
@@ -368,7 +397,7 @@ function check_gyro_and_gravity()
     end
 
     -- Calculate G's (length of acceleration vector)
-    -- SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
+    SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
 
     if IS_GYRO_INITIALZIED == false then
         -- For the initial vlaue use the gyro at the start of the game, so that
@@ -420,20 +449,8 @@ function check_gyro_and_gravity()
     if SHAKE_VAL < 1.1 then
         PREV_GYRO_X = GYRO_X
         PREV_GYRO_Y = GYRO_Y
-        -- GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
-        -- GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
-        if playdate.buttonIsPressed( playdate.kButtonLeft ) then
-          GYRO_X -= 5
-        end
-        if playdate.buttonIsPressed( playdate.kButtonRight ) then
-          GYRO_X += 5
-        end
-        if playdate.buttonIsPressed( playdate.kButtonUp ) then
-          GYRO_Y -= 5
-        end
-        if playdate.buttonIsPressed( playdate.kButtonDown ) then
-          GYRO_Y += 5
-        end
+        GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
+        GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
     end
 end
 

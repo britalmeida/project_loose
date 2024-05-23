@@ -110,7 +110,7 @@ function Ingredient:tick()
           CALUDRON_SWAP_COUNT += 1
         end
         CAULDRON_INGREDIENT = self.ingredient_type_idx
-        if SHAKE_VAL > 3 and self.can_drop then
+        if self.can_drop and (SHAKE_VAL > 3 or IS_SIMULATING_SHAKE) then
             self.can_drop = false
             self:trigger_drop()
         end
