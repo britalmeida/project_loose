@@ -219,7 +219,7 @@ function Froggo:flash_b_prompt()
     ANIMATIONS.b_prompt.paused = false
 
     -- Stop flashing.
-    playdate.timer.new(1000, function ()
+    playdate.timer.new(3000, function ()
         ANIMATIONS.b_prompt.paused = true
     end)
 end
@@ -579,7 +579,7 @@ function Froggo:start_speech_bubble()
         -- Set the dialog visuals to be picked up in draw_dialog_bubble().
         SPEECH_BUBBLE_ANIM = animloop.new(bubble_framerate * frame_ms, bubble_anim_imgs, true)
         -- Return the time that the animation should be displayed.
-        return SPEECH_BUBBLE_ANIM.endFrame * SPEECH_BUBBLE_ANIM.delay
+        return math.max(SPEECH_BUBBLE_ANIM.endFrame * SPEECH_BUBBLE_ANIM.delay, 2800)
     else
         -- Split text into lines.
         local text_lines = {}
@@ -589,7 +589,7 @@ function Froggo:start_speech_bubble()
         -- Set the dialog visuals to be picked up in draw_dialog_bubble().
         SPEECH_BUBBLE_TEXT = text_lines
         -- Return the time that the speech bubble should be displayed.
-        return math.max(1500, #text_lines*1000)
+        return math.max(2500, #text_lines*1600)
     end
 end
 
