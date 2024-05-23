@@ -44,7 +44,7 @@ GAME_ENDED = false
 
 TREND = 0
 PREV_RUNE_COUNT = {0, 0, 0}
-DELICIOUS_CHECK = false
+CHECK_IF_DELICIOUS = false
 
 PLAYER_LEARNED = {
     how_to_fire = false,
@@ -610,7 +610,7 @@ function update_liquid()
     if STIR_FACTOR >= 1 then
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
         GAMEPLAY_STATE.dropped_ingredients = 0
-        DELICIOUS_CHECK = true
+        CHECK_IF_DELICIOUS = true
     end
 
     -- Total mixed color of liquid
@@ -630,7 +630,16 @@ end
 local tolerance = 0.1
 
 function Are_ingredients_good_enough()
-    return DIFF_TO_TARGET.ingredients_abs < tolerance and GAMEPLAY_STATE.dropped_ingredients == 0
+    for k, v in pairs(DIFF_TO_TARGET.runes) do
+        if DIFF_TO_TARGET.runes[k] > tolerance then
+            return false
+        end
+    end
+    if GAMEPLAY_STATE.dropped_ingredients > 0 then
+        return false
+    else
+        return true
+    end
 end
 
 function Is_potion_good_enough()
@@ -679,7 +688,7 @@ function Calculate_goodness()
     and not RECIPE_STRUGGLE_STEPS
     and PLAYER_LEARNED.complete then
         FROG:Notify_the_frog()
-    elseif DELICIOUS_CHECK then
+    elseif CHECK_IF_DELICIOUS then
         FROG:Lick_eyeballs()
     end
 

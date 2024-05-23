@@ -277,10 +277,10 @@ end
 function Froggo:Lick_eyeballs()
     if self.state == ACTION_STATE.idle then
         -- continueously lick eyeballs or react
-        if Is_potion_good_enough() and DELICIOUS_CHECK then
+        if Is_potion_good_enough() and CHECK_IF_DELICIOUS then
             self:start_animation(self.anim_eyeball)
             self.x_offset = -11
-            DELICIOUS_CHECK = false
+            CHECK_IF_DELICIOUS = false
         end
     end
 end
@@ -292,7 +292,7 @@ function Froggo:fire_reaction()
 
         playdate.timer.new(2*1000, function()
         self:go_idle()
-        DELICIOUS_CHECK = true
+        CHECK_IF_DELICIOUS = true
     end)
 end
 
@@ -308,10 +308,10 @@ function Froggo:go_reacting()
 
     if TREND > 0 then
         self:start_animation(self.anim_happy)
-        DELICIOUS_CHECK = false
+        CHECK_IF_DELICIOUS = false
     elseif TREND < 0 then
         self:start_animation(self.anim_headshake)
-        DELICIOUS_CHECK = false
+        CHECK_IF_DELICIOUS = false
     end
 
 end
@@ -323,7 +323,7 @@ function Froggo:froggo_tickleface()
 
     playdate.timer.new(2.9*1000, function()
         self:go_idle()
-        DELICIOUS_CHECK = true
+        CHECK_IF_DELICIOUS = true
     end)
 end
 

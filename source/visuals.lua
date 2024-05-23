@@ -24,7 +24,7 @@ MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 112
 MAGIC_TRIANGLE_SIZE = 100
 
 -- check for the fog if conditions are correct at the right time
-DELICIOUS_CHECK = false
+CHECK_IF_DELICIOUS = false
 
 -- Debug / Development
 
@@ -119,8 +119,6 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
     end
 end
 
-local new_rune_count = {0, 0, 0}
-
 
 local function draw_symbols( x, y, width, position_params)
     local params = position_params
@@ -175,16 +173,18 @@ local function draw_symbols( x, y, width, position_params)
 
             gfx.pushContext()
             local tolerance = 0.1
-            local rune_graphic = nil
-            if math.abs(DIFF_TO_TARGET.runes[a]) < tolerance and GAMEPLAY_STATE.dropped_ingredients == 0 then
+            if math.abs(DIFF_TO_TARGET.runes[a]) < tolerance
+            and GAMEPLAY_STATE.dropped_ingredients == 0
+            and GAMEPLAY_STATE.heat_amount > 0.3 then
                 ANIMATIONS.rune_correct[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
             else
-                    TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
-                end
-                gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
-                local overlay = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
-                TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
-                gfx.popContext()
+                TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
+            end
+
+            gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
+            local overlay = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
+            TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
+            gfx.popContext()
             end
 
     gfx.popContext()
