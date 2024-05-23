@@ -705,6 +705,8 @@ local excess_stirring_factor = 0.008
 
 -- Timout values and timers fore stopping struggle dialogue
 local struggle_reminder_timout = 10*1000
+local no_fire_tracking = 0
+local too_much_fire_tracking = 0
 local no_shake_timeout = nil
 local no_stir_timeout = nil
 local no_shake_tracking = 0
@@ -718,9 +720,15 @@ function Check_player_struggle()
         return
     end
 
-    -- No Fire here ...
+    -- No Fire
+    if not PLAYER_STRUGGLES.no_fire then
+        Check_no_fire_struggle()
+    end
 
-    -- Too much fire here ...
+    -- Too much fire
+    if not PLAYER_STRUGGLES.too_much_fire then
+        Check_too_much_fire_struggle()
+    end
 
     -- No shaking
     if not Cauldron_ingredient_was_shaken() then
@@ -747,6 +755,43 @@ function Check_player_struggle()
         end
     end
 end
+
+function Check_no_fire_struggle()
+    if GAMEPLAY_STATE.heat_amount < 0.1 then
+        no_fire_tracking += 0.0015
+    else
+        no_fire_tracking = 0
+    end
+    if no_fire_tracking >= 1 then
+        print("Fire is never used.")
+        PLAYER_STRUGGLES.no_fire = true
+        FROG:flash_b_prompt()
+        no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
+            PLAYER_STRUGGLES.no_fire = false
+            end)
+    end
+    --print("No fire tracking: " .. no_fire_tracking)
+end
+
+
+function Check_too_much_fire_struggle()
+    if GAMEPLAY_STATE.flame_amount > 0.3 then
+        too_much_fire_tracking += 0.003
+    else
+        too_much_fire_tracking -= 0.001
+        PLAYER_STRUGGLES.too_much_fire = false
+    end
+    if too_much_fire_tracking >= 1 then
+        print("Fire is stroked way too much!")
+        PLAYER_STRUGGLES.too_much_fire = true
+        FROG:flash_b_prompt()
+        no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
+            PLAYER_STRUGGLES.too_much_fire = false
+            end)
+    end
+    --print("Too much fire tracker: " .. too_much_fire_tracking)
+end
+
 
 function Check_no_shaking_struggle()
     -- Check if the ingredient was swapped many times without shaking
