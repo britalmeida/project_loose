@@ -742,9 +742,6 @@ function Check_player_struggle()
             PLAYER_STRUGGLES.recipe_struggle = false
         end
     end
-    if RECIPE_TEXT_SMALL ~= nil then
-        print(#RECIPE_TEXT_SMALL)
-    end
 end
 
 function Check_no_shaking_struggle()
