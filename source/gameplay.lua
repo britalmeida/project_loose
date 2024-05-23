@@ -671,9 +671,13 @@ function Calculate_goodness()
         TREND = new_trend
     end
 
-    if math.abs(TREND - prev_trend) == 2 and not RECIPE_STRUGGLE_STEPS then
+    if math.abs(TREND - prev_trend) == 2
+    and not RECIPE_STRUGGLE_STEPS
+    and PLAYER_LEARNED.complete then
         FROG:Notify_the_frog()
-    elseif math.abs(diff_change_overall) > 0.01 and not RECIPE_STRUGGLE_STEPS then
+    elseif math.abs(diff_change_overall) > 0.01
+    and not RECIPE_STRUGGLE_STEPS
+    and PLAYER_LEARNED.complete then
         FROG:Notify_the_frog()
     elseif DELICIOUS_CHECK then
         FROG:Lick_eyeballs()
