@@ -753,6 +753,9 @@ function Init_visuals()
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/speechbubble_oneline_wide")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/speechbubble_twolines_extrawide")
     TEXTURES.instructions = gfxi.new("images/instructions")
+    if playdate.isSimulator then
+        TEXTURES.instructions = gfxi.new("images/instructions_sim")
+    end
     TEXTURES.recipe_top = gfxi.new("images/recipes/recipe_top_section")
     TEXTURES.recipe_bottom = gfxi.new("images/recipes/recipe_bottom_section")
     TEXTURES.recipe_middle = {  gfxi.new("images/recipes/recipe_mid_1"),
