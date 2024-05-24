@@ -631,7 +631,7 @@ local tolerance = 0.1
 
 function Are_ingredients_good_enough()
     for k, v in pairs(DIFF_TO_TARGET.runes) do
-        if DIFF_TO_TARGET.runes[k] > tolerance then
+        if math.abs(DIFF_TO_TARGET.runes[k]) > tolerance then
             return false
         end
     end
