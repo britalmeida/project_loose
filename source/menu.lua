@@ -27,6 +27,7 @@ SIDE_SCROLL_X = 400
 INTRO_COMPLETED = false
 DICEY_UNLOCKED = false
 
+
 -- System Menu
 
 local function add_system_menu_entries_gameplay()
@@ -44,12 +45,14 @@ local function add_system_menu_entries_gameplay()
     end)
 end
 
+
 local function add_system_menu_entries_cocktails()
 
     local menu = playdate.getSystemMenu()
     menu:removeAllMenuItems() -- ensure there's no duplicated entries.
 
     -- Add custom entries to system menu.
+
     local menuItem, error = menu:addMenuItem("reset scores", function()
         Reset_high_scores()
     end)
@@ -58,9 +61,12 @@ local function add_system_menu_entries_cocktails()
     end)
 end
 
+
 function remove_system_menu_entries()
     playdate.getSystemMenu():removeAllMenuItems()
 end
+
+
 
 -- High Score
 
@@ -79,13 +85,16 @@ function Reset_high_scores() -- Should be removed in final game
     playdate.datastore.write(frogs_faves, 'frogs_faves')
 end
 
+
 function Unlock_all_cocktails() -- Should be removed in final game + any references
     debug_cocktail_unlock = true
 end
 
+
 function Store_high_scores()
     playdate.datastore.write(FROGS_FAVES, 'frogs_faves')
 end
+
 
 function Load_high_scores()
     FROGS_FAVES = playdate.datastore.read('frogs_faves')
@@ -102,6 +111,8 @@ function Load_high_scores()
         FROGS_FAVES_TEXT[cocktail_name] = Recipe_steps_to_text_menu(FROGS_FAVES_STEPS[cocktail_name])
     end
 end
+
+
 
 -- Menu State Transitions
 
@@ -124,6 +135,7 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
     -- Reset menu positions if needed
     global_origin[1], global_origin[2] = new_global_x, new_global_y
 end
+
 
 function enter_menu_mission(enter_from_gameplay)
 
@@ -158,9 +170,11 @@ function enter_menu_mission(enter_from_gameplay)
 
 end
 
+
 local function enter_menu_credits()
     MENU_STATE.screen = MENU_SCREEN.credits
 end
+
 
 function Enter_gameplay()
     MENU_STATE.screen = MENU_SCREEN.gameplay
@@ -174,6 +188,7 @@ function Enter_gameplay()
     Reroll_mystery_potion()
     Reset_gameplay()
 end
+
 
 local recipe_hover_time = 20
 local recipe_is_hovering = false
@@ -193,23 +208,23 @@ function Small_recipe_hover(TOP_RECIPE_OFFSET)
     recipe_hover_tick = math.min(recipe_hover_tick, recipe_hover_time)
 
     if recipe_hover_tick > 0 then
-      -- Move sprite to the front
-      local time = playdate.getElapsedTime()
-      local wiggle_freq = 1
-      local x_offset = math.sin(time * 1 * math.pi * (wiggle_freq + 0.1))
-      local y_offset = math.sin(time * 2 * math.pi * (wiggle_freq + 0.1))
-      local x_hover = x_offset * 2.5 * recipe_hover_tick / (recipe_hover_time)
-      local y_hover = y_offset * 2.5 * recipe_hover_tick / recipe_hover_time
+        -- Move sprite to the front
+        local time = playdate.getElapsedTime()
+        local wiggle_freq = 1
+        local x_offset = math.sin(time * 1 * math.pi * (wiggle_freq + 0.1))
+        local y_offset = math.sin(time * 2 * math.pi * (wiggle_freq + 0.1))
+        local x_hover = x_offset * 2.5 * recipe_hover_tick / (recipe_hover_time)
+        local y_hover = y_offset * 2.5 * recipe_hover_tick / recipe_hover_time
 
-      return {math.floor(x_hover), math.floor(y_hover + TOP_RECIPE_OFFSET)}
+        return {math.floor(x_hover), math.floor(y_hover + TOP_RECIPE_OFFSET)}
     else
-      if recipe_is_hovering then
-        recipe_is_hovering = false
-        return {0, TOP_RECIPE_OFFSET}
-      end
+        if recipe_is_hovering then
+            recipe_is_hovering = false
+            return {0, TOP_RECIPE_OFFSET}
+        end
     end
     return {0, TOP_RECIPE_OFFSET}
-  end
+end
 
 
 -- Draw & Update
@@ -379,6 +394,7 @@ local function draw_ui()
     end
 
 end
+
 
 local scroll_speed = 1.8
 local auto_scroll_enabled = true
