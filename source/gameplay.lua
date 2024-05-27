@@ -17,7 +17,6 @@ GAMEPLAY_STATE = {
     -- Viscosity
     liquid_offset = 0.0,
     liquid_momentum = 0.0,
-    liquid_viscosity = 0.9, -- This is a factor between 0 and 1 (0.85 = high viscosity, 0.95 = low viscosity)
     -- Current potion mix
     potion_color = 0.5,
     potion_bubbliness = 0.0,
@@ -620,7 +619,7 @@ function update_liquid()
     -- Update liquid state
     GAMEPLAY_STATE.liquid_momentum += Clamp(STIR_SPEED, -8, 8) / 10
     GAMEPLAY_STATE.liquid_offset += GAMEPLAY_STATE.liquid_momentum
-    GAMEPLAY_STATE.liquid_momentum *= GAMEPLAY_STATE.liquid_viscosity
+    GAMEPLAY_STATE.liquid_momentum *= 0.9 -- viscosity factor
     if math.abs(GAMEPLAY_STATE.liquid_momentum) < 1e-4 then
         GAMEPLAY_STATE.liquid_momentum = 0
     end

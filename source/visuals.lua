@@ -291,70 +291,63 @@ local function draw_stirring_stick_front()
     end
 end
 
-
-local function draw_liquid_glow()
-
-    local target = TARGET_COCKTAIL.color
-    local difference_weight = math.max(target, 1-target)
-    
-    local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
-    local light_strength = STIR_FACTOR * 0.6
-    local glow_center_x = LIQUID_CENTER_X + 2
-    local glow_center_y = LIQUID_CENTER_Y
-    local glow_width = LIQUID_WIDTH + 100 + light_strength * 20
-    local glow_height = LIQUID_HEIGHT + 60 + light_strength * 10
-    local glow_blend = math.max(0.25, light_strength) * 0.3
-    gfx.pushContext()
-        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 3, glow_blend, light_strength, gfx.kColorWhite)
-    gfx.popContext()
+-- Create the cauldron liquid surface from a polygon of points.
+-- Allocate these and set the position of the bottom points only once, as it is expensive to do on draw.
+local liquid_num_points = 30
+local liquid_half_num_points = liquid_num_points * 0.5
+local liquid_surface = geo.polygon.new(liquid_num_points)
+local liquid_point_radial_increment = (1 / liquid_num_points) * math.pi * 2
+for i=1, liquid_half_num_points do
+    local angle = i * liquid_point_radial_increment
+    local a_x = math.cos(angle) * LIQUID_WIDTH + LIQUID_CENTER_X
+    local a_y = math.sin(angle) * LIQUID_HEIGHT + LIQUID_CENTER_Y
+    liquid_surface:setPointAt(i, a_x, a_y)
 end
-
+liquid_surface:close()
 
 local function draw_liquid_surface()
+
+    -- Move the points on the back of the liquid in a wave as a response to stirring.
+    -- Calculate a new position for those points, while the front/bottom points don't move.
+    local freq = 0.65
+    local max_amp = 15 -- maximum amplitude in pixels
+    local speed_fac = 0.035 -- speed of the waves (0.01 slow 0.1 fast)
+    -- Get dynamic factors from stirring.
+    local offset = GAMEPLAY_STATE.liquid_offset * speed_fac
+    local amp_range = Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
+
+    -- Premultiply loop constants for performance.
+    local half_points_increment = (1 / liquid_half_num_points) * math.pi
+    local half_points_increment_x2 = (1 / liquid_half_num_points) * math.pi * 2
+    local amp_fac = max_amp * amp_range
+    local period = freq * math.pi
+    for i=liquid_half_num_points, liquid_num_points do
+        local angle = i * liquid_point_radial_increment
+
+        -- Make the point wavy if it's on the backside of the cauldron.
+        local x = i - liquid_half_num_points
+        local amplitude = math.sin(x * half_points_increment) * amp_fac
+        local wave_height = amplitude * math.sin(((x * half_points_increment_x2) - offset) * period)
+
+        -- Set the new point position.
+        local a_x = math.cos(angle) * LIQUID_WIDTH + LIQUID_CENTER_X
+        local a_y = math.sin(angle) * LIQUID_HEIGHT + LIQUID_CENTER_Y - wave_height
+        liquid_surface:setPointAt(i, a_x, a_y)
+    end
+
+    -- Draw
     gfx.pushContext()
-    do
-        local polygon = playdate.geometry.polygon
-        local num_points = 64
-        -- freq 0.4 speed_fac 0.05 vicousity 0.85 --> viscous
-        -- freq 0.9 speed_fac 0.02 vicousity 0.95 --> liquid
-
-        local freq = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.4, 0.9)
-        -- maximum amplitude in pixels
-        local max_amp = 15
-        -- speed of the waves (0.01 slow 0.1 fast)
-        local speed_fac = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.05, 0.02)
-
-        local offset = GAMEPLAY_STATE.liquid_offset * speed_fac
-        local amp_fac = Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
-
-        local surface = polygon.new(num_points)
-        for i=1,num_points do
-            local angle = i / num_points * math.pi * 2
-
-            -- Only affects points at the back side of the cauldron
-            local x = math.max(i - num_points / 2, 0)
-            local amplitude = math.sin(x / (num_points / 2) * math.pi) * max_amp
-            local wave_height = amplitude * amp_fac *
-                math.sin(((x / (num_points / 2) * math.pi * 2) - offset) * freq * math.pi)
-
-            -- Draw wavy points (back) and round edge (front)
-            local a_x = math.cos(angle) * LIQUID_WIDTH + LIQUID_CENTER_X
-            local a_y = math.sin(angle) * LIQUID_HEIGHT + LIQUID_CENTER_Y - wave_height
-            surface:setPointAt(i, a_x, a_y)
-        end
-        surface:close()
-
+        -- Draw fill: black clear color
         gfx.setColor(gfx.kColorBlack)
-        gfx.fillPolygon(surface)
-        gfx.pushContext()
-            gfx.setColor(gfx.kColorWhite)
-            gfx.setDitherPattern((1 - GAMEPLAY_STATE.potion_color), gfx.image.kDitherTypeBayer8x8)
-            gfx.fillPolygon(surface)
-        gfx.popContext()
+        gfx.fillPolygon(liquid_surface)
+        -- Draw fill: dithered white pattern
+        gfx.setColor(gfx.kColorWhite)
+        gfx.setDitherPattern((1 - GAMEPLAY_STATE.potion_color), gfx.image.kDitherTypeBayer8x8)
+        gfx.fillPolygon(liquid_surface)
+        -- Draw line
         gfx.setColor(gfx.kColorWhite)
         gfx.setLineWidth(3)
-        gfx.drawPolygon(surface)
-    end
+        gfx.drawPolygon(liquid_surface)
     gfx.popContext()
 end
 
@@ -381,8 +374,8 @@ local function draw_liquid_bubbles()
         local ellipse_height = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
         local ellipse_bottom_width = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
 
-        local speed_fac = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.05, 0.02)
-        local freq = MapRange(GAMEPLAY_STATE.liquid_viscosity, 0.85, 0.95, 0.4, 0.9)
+        local freq = 0.65
+        local speed_fac = 0.035 -- speed of the waves (0.01 slow 0.1 fast)
         local offset = GAMEPLAY_STATE.liquid_offset * speed_fac * freq / 2
 
         for x = 1, NUM_BUBBLES, 1 do
