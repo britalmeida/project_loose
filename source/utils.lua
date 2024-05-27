@@ -37,19 +37,3 @@ function NewSubClass(name, parent)
   class(name).extends(parent)
   return _G[name]
 end
-
-function getTableSize(t)
-  local count = 0
-  for _, __ in pairs(t) do
-      count = count + 1
-  end
-  return count
-end
-
-function shallow_copy(t)
-  local t2 = {0, 0, 0}
-  for k,v in pairs(t) do
-      t2[k] = v
-  end
-  return t2
-end

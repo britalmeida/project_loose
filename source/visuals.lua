@@ -120,28 +120,26 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
 end
 
 
-local function draw_symbols( x, y, width, position_params)
-    local params = position_params
-    if params == nil then
-        return
-    end
+local function draw_symbols()
+
+    local x = MAGIC_TRIANGLE_CENTER_X
+    local y = MAGIC_TRIANGLE_CENTER_Y - 60
+    local meter_width = 80
+    local meter_height = 60
 
     local wiggle_freq_avg = 2
     local freq_var = 0.1
 
-    local meter_height = 60
     gfx.pushContext()
-        local n = #params
-        for a = 1, n, 1 do
+        for a = 1, NUM_RUNES do
             local glyph_width = TEXTURES.rune_images[a].width
             local glyph_height = TEXTURES.rune_images[a].height
-            local glyph_x = x + width * 0.5 * (a - 2)
+            local glyph_x = x + meter_width * 0.5 * (a - 2)
             local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
             local wiggle = math.sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + math.pi * 0.3)
             local glyph_y = y
 
             local target = TARGET_COCKTAIL.rune_count[a]
-            local difference_weight = math.max(target, 1-target)
             local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
             local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
             local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
@@ -185,29 +183,10 @@ local function draw_symbols( x, y, width, position_params)
             local overlay = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
             TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
             gfx.popContext()
-            end
+        end
 
     gfx.popContext()
-end
 
-
-local function draw_parameter_diagram()
-    local params = {}
-    for k, v in pairs(GAMEPLAY_STATE.rune_count) do
-        params[k] = v
-    end
-
-    local sum = 0
-    for a = 1, #params, 1 do
-        sum = sum + params[a]
-    end
-    if sum ~= 0 then
-        for a = 1, #params, 1 do
-            params[a] = params[a] / sum
-        end
-    end
-
-    draw_symbols(MAGIC_TRIANGLE_CENTER_X, 122 - 70, 80, params)
 end
 
 
@@ -762,7 +741,7 @@ function Init_visuals()
     -- 4: ingredient drops floating in the liquid
     -- 5: ingredient drop splash
     -- 5: ingredient slotted over cauldron
-    Set_draw_pass(6, draw_parameter_diagram)
+    Set_draw_pass(6, draw_symbols)
     Set_draw_pass(7, draw_stirring_stick_front) -- draw ladle when on front side
     Set_draw_pass(8, draw_cauldron_front)
     -- 10: frog

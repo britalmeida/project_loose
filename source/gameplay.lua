@@ -22,7 +22,6 @@ GAMEPLAY_STATE = {
     potion_bubbliness = 0.0,
     rune_count = {0, 0, 0},
     rune_count_unstirred = {0, 0, 0},
-    rune_ratio = {0, 0, 0},
     dropped_ingredients = 0,
     rune_saturation = 0,
     -- ??

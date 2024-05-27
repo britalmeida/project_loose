@@ -85,7 +85,6 @@ COCKTAILS = {
 TARGET_COCKTAIL = {
   name = '',
   type_idx = 1,
-  rune_ratio = {1, 0, 0},
   rune_count = {0, 0, 0},
   color = 0.1,
 }
@@ -111,13 +110,7 @@ function Set_target_potion(chosen_cocktail_idx)
   -- Find normalized rune composition.
   local sum = 0
   for a = 1, NUM_RUNES, 1 do
-    TARGET_COCKTAIL.rune_ratio[a] = chosen_cocktail.rune_composition[a]
     TARGET_COCKTAIL.rune_count[a] = chosen_cocktail.rune_composition[a]
-    
-      sum = sum + TARGET_COCKTAIL.rune_ratio[a]
-  end
-  for a = 1, #TARGET_COCKTAIL.rune_ratio, 1 do
-      TARGET_COCKTAIL.rune_ratio[a] = TARGET_COCKTAIL.rune_ratio[a] / sum
   end
 end
 
