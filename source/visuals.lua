@@ -313,7 +313,7 @@ local function draw_liquid_surface()
     local max_amp = 15 -- maximum amplitude in pixels
     local speed_fac = 0.035 -- speed of the waves (0.01 slow 0.1 fast)
     -- Get dynamic factors from stirring.
-    local offset = GAMEPLAY_STATE.liquid_offset * speed_fac
+    local offset = GAMEPLAY_STATE.liquid_offset * speed_fac % math.pi
     local amp_range = Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
 
     -- Premultiply loop constants for performance.
