@@ -517,7 +517,7 @@ end
 
 function Froggo:give_ingredients_direction()
 
-    local runes_abs_diff = {math.abs(DIFF_TO_TARGET.runes[1]), math.abs(DIFF_TO_TARGET.runes[2]), math.abs(DIFF_TO_TARGET.runes[3])}
+    local runes_abs_diff = DIFF_TO_TARGET.runes_abs
 
     local rune_idx = RUNES.weed
     if runes_abs_diff[1] >= runes_abs_diff[2] and runes_abs_diff[1] >= runes_abs_diff[3] then

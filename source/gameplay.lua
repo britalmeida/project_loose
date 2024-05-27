@@ -37,7 +37,9 @@ DIFF_TO_TARGET = {
     color_abs = 1,
     ingredients_abs = 1,
     runes = { 1, 1, 1},
+    runes_abs = { 1, 1, 1},
 }
+GOAL_TOLERANCE = 0.1
 GAME_ENDED = false
 
 TREND = 0
@@ -212,7 +214,7 @@ function Update_rune_count(drop_rune_count)
         GAMEPLAY_STATE.rune_saturation = math.max(GAMEPLAY_STATE.rune_saturation - 0.1, 0)
     end
 
-    PREV_RUNE_COUNT = shallow_copy(GAMEPLAY_STATE.rune_count)
+    PREV_RUNE_COUNT = table.shallowcopy(GAMEPLAY_STATE.rune_count)
 
     --print("Rune Count = " .. tostring(GAMEPLAY_STATE.rune_count[1] .. ", " .. tostring(GAMEPLAY_STATE.rune_count[2]) .. ", " .. tostring(GAMEPLAY_STATE.rune_count[3])))
     --print("Saturation =" .. GAMEPLAY_STATE.rune_saturation)
@@ -625,11 +627,9 @@ function update_liquid()
 end
 
 
-local tolerance = 0.1
-
 function Are_ingredients_good_enough()
-    for k, v in pairs(DIFF_TO_TARGET.runes) do
-        if math.abs(DIFF_TO_TARGET.runes[k]) > tolerance then
+    for i=1, NUM_RUNES do
+        if DIFF_TO_TARGET.runes_abs[i] > GOAL_TOLERANCE then
             return false
         end
     end
@@ -663,10 +663,10 @@ function Calculate_goodness()
         TARGET_COCKTAIL.rune_count[2] - GAMEPLAY_STATE.rune_count[2],
         TARGET_COCKTAIL.rune_count[3] - GAMEPLAY_STATE.rune_count[3],
     }
-    DIFF_TO_TARGET.ingredients_abs = (
-        math.abs(runes_diff[1]) + math.abs(runes_diff[2]) + math.abs(runes_diff[3])
-    ) * 0.5
     DIFF_TO_TARGET.runes = runes_diff
+    DIFF_TO_TARGET.runes_abs = { math.abs(runes_diff[1]), math.abs(runes_diff[2]), math.abs(runes_diff[3]) }
+
+    DIFF_TO_TARGET.ingredients_abs = DIFF_TO_TARGET.runes_abs[1] + DIFF_TO_TARGET.runes_abs[2] + DIFF_TO_TARGET.runes_abs[3]
 
     -- calculate state change
     local diff_change_runes = DIFF_TO_TARGET.ingredients_abs - prev_diff.ingredients_abs

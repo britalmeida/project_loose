@@ -87,106 +87,93 @@ end
 -- Draw passes
 
 local function draw_soft_circle(x_center, y_center, radius, steps, blend, alpha, color)
-    for a = 1, steps, 1 do
-        gfx.pushContext()
+    gfx.pushContext()
+        for a = 1, steps, 1 do
             gfx.setColor(color)
             gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
             gfx.fillCircleAtPoint(x_center, y_center, (1 - a / steps) * radius * blend + radius)
-        gfx.popContext()
-    end
+        end
+    gfx.popContext()
 end
 
 local function draw_soft_ring(x_center, y_center, radius, steps, blend, alpha, color)
-    for a = 1, steps, 1 do
-        gfx.pushContext()
+    gfx.pushContext()
+        for a = 1, steps, 1 do
             gfx.setColor(color)
             gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
             gfx.drawCircleAtPoint(x_center, y_center, (1 - a / steps) * radius * blend + radius)
-        gfx.popContext()
-    end
+        end
+    gfx.popContext()
 end
 
 local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend, alpha, color)
-    for a = 1, steps, 1 do
-        gfx.pushContext()
+    gfx.pushContext()
+        for a = 1, steps, 1 do
             local iteration_width = (1 - a / steps) * width * blend + width
             local iteration_height = (1 - a / steps) * height * blend + height
             local ellipse_bb = geo.rect.new(x_center - iteration_width * 0.5, y_center - iteration_height * 0.5, iteration_width, iteration_height)
+        
             gfx.setColor(color)
             gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
             gfx.fillEllipseInRect(ellipse_bb)
-        gfx.popContext()
-    end
+        end
+    gfx.popContext()
 end
 
 
 local function draw_symbols()
-
-    local x = MAGIC_TRIANGLE_CENTER_X
-    local y = MAGIC_TRIANGLE_CENTER_Y - 60
-    local meter_width = 80
-    local meter_height = 60
+    local rune_area_x = MAGIC_TRIANGLE_CENTER_X
+    local rune_area_y = MAGIC_TRIANGLE_CENTER_Y - 60
+    local rune_area_width = 80
+    local rune_area_height = 60
 
     local wiggle_freq_avg = 2
     local freq_var = 0.1
 
+    local should_draw_on_target_anim = GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.heat_amount > 0.3
+    local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
+    local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
+    local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
+    local glow_strength = (lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response)
+    glow_strength = Clamp(glow_strength, 0, 1) * 0.75
+    local glyph_overlay_alpha = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
+
+    local rune_count_travel = {0, 0, 0}
+    for k, v in pairs(rune_count_travel) do
+        rune_count_travel[k] = GAMEPLAY_STATE.rune_count_unstirred[k] * (1 - STIR_FACTOR) + (GAMEPLAY_STATE.rune_count[k] * STIR_FACTOR)
+    end
+
     gfx.pushContext()
         for a = 1, NUM_RUNES do
-            local glyph_width = TEXTURES.rune_images[a].width
-            local glyph_height = TEXTURES.rune_images[a].height
-            local glyph_x = x + meter_width * 0.5 * (a - 2)
             local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
             local wiggle = math.sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + math.pi * 0.3)
-            local glyph_y = y
 
-            local target = TARGET_COCKTAIL.rune_count[a]
-            local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
-            local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
-            local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
-            local glow_strength = (lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response)
-            glow_strength = Clamp(glow_strength, 0, 1) * 0.75
-
-            -- Calculate current_rune_count
-            local rune_count_travel = {0, 0, 0}
-            for k, v in pairs(rune_count_travel) do
-                rune_count_travel[k] = GAMEPLAY_STATE.rune_count_unstirred[k] * (1 - STIR_FACTOR) + (GAMEPLAY_STATE.rune_count[k] * STIR_FACTOR)
-            end
-
-            -- Update glyph positions
-            glyph_y = glyph_y - (rune_count_travel[a] - 0.5) * meter_height
-            glyph_y += wiggle
-
-            local target_y = y - (target - 0.5) * meter_height + wiggle
+            local glyph_x = rune_area_x + rune_area_width * 0.5 * (a - 2)
+            local glyph_y = rune_area_y - (rune_count_travel[a] - 0.5) * rune_area_height + wiggle
+            local target_y = rune_area_y - (TARGET_COCKTAIL.rune_count[a] - 0.5) * rune_area_height + wiggle
+            local glyph_topleft_x = glyph_x - TEXTURES.rune_images[a].width * 0.5
+            local glyph_topleft_y = glyph_y - TEXTURES.rune_images[a].height * 0.5
 
             -- Rune circle
-            gfx.setColor(gfx.kColorWhite)
-            gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
             draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 3, 3, 0.5, glow_strength, gfx.kColorWhite)
 
             -- Target ring
-            gfx.setColor(gfx.kColorWhite)
-            gfx.setDitherPattern(1 - heat_response, gfxi.kDitherTypeBayer4x4)
             draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 7, 3, 0.5, glow_strength, gfx.kColorWhite)
 
-
-            gfx.pushContext()
-            local tolerance = 0.1
-            if math.abs(DIFF_TO_TARGET.runes[a]) < tolerance
-            and GAMEPLAY_STATE.dropped_ingredients == 0
-            and GAMEPLAY_STATE.heat_amount > 0.3 then
-                ANIMATIONS.rune_correct[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
+            -- Rune image
+            if should_draw_on_target_anim and DIFF_TO_TARGET.runes_abs[a] < GOAL_TOLERANCE then
+                ANIMATIONS.rune_correct[a]:draw(glyph_topleft_x, glyph_topleft_y)
             else
-                TEXTURES.rune_images[a]:draw(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5)
+                TEXTURES.rune_images[a]:draw(glyph_topleft_x, glyph_topleft_y)
             end
 
-            gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
-            local overlay = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
-            TEXTURES.rune_images[a]:drawFaded(glyph_x - glyph_width * 0.5, glyph_y - glyph_height * 0.5, overlay, gfxi.kDitherTypeBayer4x4)
+            gfx.pushContext()
+                gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
+                TEXTURES.rune_images[a]:drawFaded(glyph_topleft_x, glyph_topleft_y, glyph_overlay_alpha, gfxi.kDitherTypeBayer4x4)
             gfx.popContext()
         end
 
     gfx.popContext()
-
 end
 
 
