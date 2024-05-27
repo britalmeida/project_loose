@@ -127,6 +127,10 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
     remove_system_menu_entries()
     Stop_gameplay()
 
+    for _, pass in ipairs(DRAW_PASSES) do
+        pass:remove()
+    end
+
     SOUND.bg_loop_gameplay:stop()
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
@@ -178,6 +182,10 @@ end
 
 function Enter_gameplay()
     MENU_STATE.screen = MENU_SCREEN.gameplay
+
+    for _, pass in ipairs(DRAW_PASSES) do
+        pass:add()
+    end
 
     SOUND.bg_loop_menu:stop()
     if not SOUND.bg_loop_gameplay:isPlaying() then

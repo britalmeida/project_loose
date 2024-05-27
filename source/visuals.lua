@@ -665,6 +665,7 @@ end
 
 
 -- Load resources and initialize draw passes
+DRAW_PASSES = {}
 
 function Init_visuals()
 
@@ -717,34 +718,34 @@ function Init_visuals()
 
     -- Set the multiple things in their Z order of what overlaps what.
 
-    Set_draw_pass(-40, draw_game_background)
+    table.insert(DRAW_PASSES, Set_draw_pass(-40, draw_game_background))
     -- -5: shelved ingredients
-    Set_draw_pass(-2, draw_bg_lighting)
-    --Set_draw_pass(-1, draw_liquid_glow)
-    Set_draw_pass(0, draw_cauldron)
-    Set_draw_pass(2, draw_liquid_surface)
-    Set_draw_pass(3, draw_stirring_stick_back) -- draw ladle when on farther side
-    Set_draw_pass(4, draw_liquid_bubbles)
+    table.insert(DRAW_PASSES, Set_draw_pass(-2, draw_bg_lighting))
+    --table.insert(DRAW_PASSES, Set_draw_pass(-1, draw_liquid_glow))
+    table.insert(DRAW_PASSES, Set_draw_pass(0, draw_cauldron))
+    table.insert(DRAW_PASSES, Set_draw_pass(2, draw_liquid_surface))
+    table.insert(DRAW_PASSES, Set_draw_pass(3, draw_stirring_stick_back)) -- draw ladle when on farther side
+    table.insert(DRAW_PASSES, Set_draw_pass(4, draw_liquid_bubbles))
     -- 4: ingredient drops floating in the liquid
     -- 5: ingredient drop splash
     -- 5: ingredient slotted over cauldron
-    Set_draw_pass(6, draw_symbols)
-    Set_draw_pass(7, draw_stirring_stick_front) -- draw ladle when on front side
-    Set_draw_pass(8, draw_cauldron_front)
+    table.insert(DRAW_PASSES, Set_draw_pass(6, draw_symbols))
+    table.insert(DRAW_PASSES, Set_draw_pass(7, draw_stirring_stick_front)) -- draw ladle when on front side
+    table.insert(DRAW_PASSES, Set_draw_pass(8, draw_cauldron_front))
     -- 10: frog
     -- depth 20+: UI
-    Set_draw_pass(21, draw_ui_prompts)
-    Set_draw_pass(23, draw_ingredient_place_hint)
+    table.insert(DRAW_PASSES, Set_draw_pass(21, draw_ui_prompts))
+    table.insert(DRAW_PASSES, Set_draw_pass(23, draw_ingredient_place_hint))
     -- 24: grabbed ingredients
-    Set_draw_pass(25, draw_ingredient_grab_cursor)
-    Set_draw_pass(27, draw_dialog_bubble)
+    table.insert(DRAW_PASSES, Set_draw_pass(25, draw_ingredient_grab_cursor))
+    table.insert(DRAW_PASSES, Set_draw_pass(27, draw_dialog_bubble))
     -- depth 30+: overlayed modal instructions
-    Set_draw_pass(30, draw_overlayed_instructions)
-    Set_draw_pass(35, draw_overlayed_recipe)
+    table.insert(DRAW_PASSES, Set_draw_pass(30, draw_overlayed_instructions))
+    table.insert(DRAW_PASSES, Set_draw_pass(35, draw_overlayed_recipe))
     -- Development
-    --Set_draw_pass(50, draw_debug)
-    Set_draw_pass(50, draw_debug_fps)
-    --Set_draw_pass(50, draw_test_dither_patterns)
+    --table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug))
+    table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug_fps))
+    --table.insert(DRAW_PASSES, Set_draw_pass(50, draw_test_dither_patterns))
 end
 
 Z_DEPTH = {
