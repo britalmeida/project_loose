@@ -23,7 +23,6 @@ GAMEPLAY_STATE = {
     rune_count = {0, 0, 0},
     rune_count_unstirred = {0, 0, 0},
     dropped_ingredients = 0,
-    rune_saturation = 0,
     -- ??
     game_tick = 0,
     -- The cursor is held down
@@ -134,7 +133,6 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_count_unstirred[a] = 0
     end
     GAMEPLAY_STATE.dropped_ingredients = 0
-    GAMEPLAY_STATE.rune_saturation = 0
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
 
@@ -180,11 +178,10 @@ function Reset_gameplay()
 end
 
 function Update_rune_count(drop_rune_count)
-    local saturation = GAMEPLAY_STATE.rune_saturation
 
     -- Calculate new rune count
     for a = 1, NUM_RUNES, 1 do
-        GAMEPLAY_STATE.rune_count[a] = GAMEPLAY_STATE.rune_count[a] + ((drop_rune_count[a] * ( 1 - 0.6 * saturation)) * 0.3)
+        GAMEPLAY_STATE.rune_count[a] = GAMEPLAY_STATE.rune_count[a] + (drop_rune_count[a] * 0.3)
         if GAMEPLAY_STATE.rune_count[a] < 0 then
             GAMEPLAY_STATE.rune_count[a] = 0
         end
@@ -207,17 +204,9 @@ function Update_rune_count(drop_rune_count)
     local prev_rune_avg = (PREV_RUNE_COUNT[1] + PREV_RUNE_COUNT[2] + PREV_RUNE_COUNT[3]) /3
     local current_rune_avg = (GAMEPLAY_STATE.rune_count[1] + GAMEPLAY_STATE.rune_count[2] + GAMEPLAY_STATE.rune_count[3]) / 3
 
-    -- Increase/decrease saturation
-    if prev_rune_avg < current_rune_avg then
-        GAMEPLAY_STATE.rune_saturation = math.min(GAMEPLAY_STATE.rune_saturation + 0.1, 1)
-    elseif prev_rune_avg > current_rune_avg then
-        GAMEPLAY_STATE.rune_saturation = math.max(GAMEPLAY_STATE.rune_saturation - 0.1, 0)
-    end
-
     PREV_RUNE_COUNT = table.shallowcopy(GAMEPLAY_STATE.rune_count)
 
     --print("Rune Count = " .. tostring(GAMEPLAY_STATE.rune_count[1] .. ", " .. tostring(GAMEPLAY_STATE.rune_count[2]) .. ", " .. tostring(GAMEPLAY_STATE.rune_count[3])))
-    --print("Saturation =" .. GAMEPLAY_STATE.rune_saturation)
 end
 
 win_text = ""
