@@ -99,10 +99,12 @@ local drop_tips <const> = {
     "11",
 }
 local recipe_struggle <const> = {
-    "Maybe double check how\nthe cocktail looks like?",
     "There's no such thing as\ntoo many ingredients.",
     "That's quite a brew . . .\nMagical symbols can guide you.",
     "Imagine how the ingredients\nmatch the three magical aspects.",
+}
+local cocktail_struggle <const> = {
+    "Maybe double check what\nthe cocktail looks like?",
 }
 
 local sayings <const> = {
@@ -123,6 +125,7 @@ local sayings <const> = {
         drop = { drop_tutorials, drop_tips},
         stir = { stir_tutorials, stir_tips},
         recipe = recipe_struggle,
+        cocktail = cocktail_struggle,
     }
 }
 
@@ -449,6 +452,9 @@ function Froggo:think()
         if PLAYER_STRUGGLES.recipe_struggle then
             print("Giving gameplay hint Nr. " .. struggle_lvl)
             self:select_sentence(sayings.struggle.recipe, struggle_lvl)
+        elseif PLAYER_STRUGGLES.cocktail_struggle then
+            print("Giving hint towards cocktail artwork")
+            self:select_sentence(sayings.struggle.cocktail, 1)
         elseif PLAYER_STRUGGLES.no_fire then
             print("Reminding fire tutorial.")
             self:select_next_sentence(sayings.struggle.fire[1])

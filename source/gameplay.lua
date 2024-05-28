@@ -27,6 +27,18 @@ GAMEPLAY_STATE = {
     game_tick = 0,
     -- The cursor is held down
     cursor_hold = false,
+    used_ingredients = {
+        false, -- peppermints
+        false, -- perfume
+        false, -- mushrooms
+        false, -- coffee
+        false, -- toenails
+        false, -- salt
+        false, -- garlic
+        false, -- spiderweb
+        false, -- snail_shells
+    },
+    used_ingredient_types = 0
 }
 
 CURRENT_RECIPE = {}
@@ -132,6 +144,10 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_count_unstirred[a] = 0
     end
+    for k, v in pairs(GAMEPLAY_STATE.used_ingredients) do
+        GAMEPLAY_STATE.used_ingredients[k] = false
+    end
+    used_ingredient_types = 0
     GAMEPLAY_STATE.dropped_ingredients = 0
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
@@ -160,6 +176,7 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.too_much_stir = false
     PLAYER_STRUGGLES.recipe_struggle = false
     PLAYER_STRUGGLES.recipe_struggle_lvl = 0
+    PLAYER_STRUGGLES.cocktail_struggle = false
 
     -- Variables for detecting player struggle
     CAULDRON_INGREDIENT = nil
@@ -739,6 +756,22 @@ function Check_player_struggle()
     -- Too much stirring
     if Cauldron_ingredient_was_shaken() then
         Check_too_much_stirring_struggle()
+    end
+
+    -- Coktail struggle
+    if GAMEPLAY_STATE.used_ingredient_types > 5 and not PLAYER_STRUGGLES.cocktail_struggle then
+        print("Player used too many ingredient types.")
+        PLAYER_STRUGGLES.cocktail_struggle = true
+        -- Reset tracked used ingredients
+        GAMEPLAY_STATE.used_ingredient_types = 0
+        for k, v in pairs(GAMEPLAY_STATE.used_ingredients) do
+            GAMEPLAY_STATE.used_ingredients[k] = false
+        end
+        -- Timeout to stop cocktail hint dialogue
+        cocktail_struggle_timeout = playdate.timer.new(struggle_reminder_timout, function ()
+            PLAYER_STRUGGLES.cocktail_struggle = false
+            end)
+        FROG:Ask_the_frog()
     end
 
     -- Recipe struggle

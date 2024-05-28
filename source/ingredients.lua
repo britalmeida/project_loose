@@ -73,6 +73,12 @@ function Ingredient:tick()
         LAST_SHAKEN_INGREDIENT = self.ingredient_type_idx
         CALUDRON_SWAP_COUNT = 0
 
+        -- Update list of already used ingredients
+        if GAMEPLAY_STATE.used_ingredients_table[self.ingredient_type_idx] == false then
+          GAMEPLAY_STATE.used_ingredients_table[self.ingredient_type_idx] = true
+          GAMEPLAY_STATE.used_ingredients += 1
+        end
+
         -- Unregister this ingredient drop.
         table.remove(DROPS, table.indexOfElement(DROPS, self))
         self:remove()
