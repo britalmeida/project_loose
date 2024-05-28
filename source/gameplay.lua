@@ -27,7 +27,7 @@ GAMEPLAY_STATE = {
     game_tick = 0,
     -- The cursor is held down
     cursor_hold = false,
-    used_ingredients = {
+    used_ingredients_table = {
         false, -- peppermints
         false, -- perfume
         false, -- mushrooms
@@ -38,7 +38,7 @@ GAMEPLAY_STATE = {
         false, -- spiderweb
         false, -- snail_shells
     },
-    used_ingredient_types = 0
+    used_ingredients = 0
 }
 
 CURRENT_RECIPE = {}
@@ -144,10 +144,10 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_count_unstirred[a] = 0
     end
-    for k, v in pairs(GAMEPLAY_STATE.used_ingredients) do
-        GAMEPLAY_STATE.used_ingredients[k] = false
+    for k, v in pairs(GAMEPLAY_STATE.used_ingredients_table) do
+        GAMEPLAY_STATE.used_ingredients_table[k] = false
     end
-    used_ingredient_types = 0
+    used_ingredients = 0
     GAMEPLAY_STATE.dropped_ingredients = 0
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
@@ -759,13 +759,13 @@ function Check_player_struggle()
     end
 
     -- Coktail struggle
-    if GAMEPLAY_STATE.used_ingredient_types > 5 and not PLAYER_STRUGGLES.cocktail_struggle then
+    if GAMEPLAY_STATE.used_ingredients > 5 and not PLAYER_STRUGGLES.cocktail_struggle then
         print("Player used too many ingredient types.")
         PLAYER_STRUGGLES.cocktail_struggle = true
         -- Reset tracked used ingredients
-        GAMEPLAY_STATE.used_ingredient_types = 0
-        for k, v in pairs(GAMEPLAY_STATE.used_ingredients) do
-            GAMEPLAY_STATE.used_ingredients[k] = false
+        GAMEPLAY_STATE.used_ingredients = 0
+        for k, v in pairs(GAMEPLAY_STATE.used_ingredients_table) do
+            GAMEPLAY_STATE.used_ingredients_table[k] = false
         end
         -- Timeout to stop cocktail hint dialogue
         cocktail_struggle_timeout = playdate.timer.new(struggle_reminder_timout, function ()
