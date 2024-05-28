@@ -99,9 +99,11 @@ local drop_tips <const> = {
     "11",
 }
 local recipe_struggle <const> = {
-    "There's no such thing as\ntoo many ingredients.",
-    "That's quite a brew . . .\nMagical symbols can guide you.",
+    "It's all about making\na balanced brew.",
+    "Look above the cauldron.\nMagical symbols can guide you.",
     "Imagine how the ingredients\nmatch the three magical aspects.",
+    "Ingredients may raise one \nmagic and lower another.",
+    "Some ingredients are potent.\nOthers are subtle.",
 }
 local cocktail_struggle <const> = {
     "Maybe double check what\nthe cocktail looks like?",
@@ -561,6 +563,26 @@ end
 
 function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     print("Frog says: idx "..sentence_cycle_idx.." TUT: "..self.tutorial_state)
+    local ingredient_direction = false
+    -- Compare if any ingredient direction is used
+    for rune_idx, v in pairs(sayings.help.ingredient) do
+        for rune_direction, v in pairs(sayings.help.ingredient[rune_idx]) do
+            if sayings.help.ingredient[rune_idx][rune_direction] == sentence_pool then
+                ingredient_direction = true
+            end
+        end
+    end
+    -- Check if player is stuck in the same frog hint dialogue
+    if self.last_spoken_sentence_pool == sentence_pool
+    and sentence_pool == sayings.help.fire then
+        PLAYER_STRUGGLES.fire_struggle_asked += 1
+    elseif self.last_spoken_sentence_pool == sentence_pool
+    and ingredient_direction then
+        PLAYER_STRUGGLES.ingredient_struggle_asked += 1
+    else
+        PLAYER_STRUGGLES.fire_struggle_asked = 0
+        PLAYER_STRUGGLES.ingredient_struggle_asked = 0
+    end
     self.last_spoken_sentence_pool = sentence_pool
     self.last_spoken_sentence_cycle_idx = sentence_cycle_idx
     self.last_spoken_sentence_str = sentence_pool[sentence_cycle_idx]
@@ -579,6 +601,7 @@ function Froggo:start_speech_bubble()
 
     local text = self.last_spoken_sentence_str
     local anim_idx = tonumber(text)
+    local pool = self.last_spoken_sentence_pool
     if anim_idx then
         -- Select the dialog bubble animation corresponding to anim_idx.
         local bubble_anim_imgs = SPEECH_BUBBLE_ANIM_IMGS[anim_idx][1]
@@ -588,6 +611,11 @@ function Froggo:start_speech_bubble()
         -- Return the time that the animation should be displayed.
         return math.max(SPEECH_BUBBLE_ANIM.endFrame * SPEECH_BUBBLE_ANIM.delay, 2800)
     else
+        -- Add additional time for recipe hints. They can trigger by themselves.
+        local extra_time = 0
+        if pool == sayings.struggle.recipe then
+            extra_time = 1500
+        end
         -- Split text into lines.
         local text_lines = {}
         for line in string.gmatch(text, "[^\n]+") do
@@ -596,7 +624,7 @@ function Froggo:start_speech_bubble()
         -- Set the dialog visuals to be picked up in draw_dialog_bubble().
         SPEECH_BUBBLE_TEXT = text_lines
         -- Return the time that the speech bubble should be displayed.
-        return math.max(2500, #text_lines*1600)
+        return math.max(2500, #text_lines*1600 + extra_time)
     end
 end
 

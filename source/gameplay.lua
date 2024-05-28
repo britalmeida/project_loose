@@ -74,6 +74,8 @@ PLAYER_STRUGGLES = {
     too_much_stir = false,
     recipe_struggle = false,
     recipe_struggle_lvl = 0,
+    fire_struggle_asked = 0,
+    ingredient_struggle_asked = 0,
 }
 
 -- The recipe steps that trigger a gameplay tip from the frog
@@ -177,6 +179,8 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.recipe_struggle = false
     PLAYER_STRUGGLES.recipe_struggle_lvl = 0
     PLAYER_STRUGGLES.cocktail_struggle = false
+    PLAYER_STRUGGLES.fire_struggle_asked = 0
+    PLAYER_STRUGGLES.ingredient_struggle_asked = 0
 
     -- Variables for detecting player struggle
     CAULDRON_INGREDIENT = nil
@@ -775,9 +779,11 @@ function Check_player_struggle()
     end
 
     -- Recipe struggle
-    if RECIPE_STRUGGLE_STEPS and not PLAYER_STRUGGLES.recipe_struggle then
+    if not PLAYER_STRUGGLES.recipe_struggle and
+    (RECIPE_STRUGGLE_STEPS == true or PLAYER_STRUGGLES.ingredient_struggle_asked >= 4) then
         PLAYER_STRUGGLES.recipe_struggle = true
         Next_recipe_struggle_tip()
+        FROG:flash_b_prompt()
     elseif not RECIPE_STRUGGLE_STEPS then
         if PLAYER_STRUGGLES.recipe_struggle then
             PLAYER_STRUGGLES.recipe_struggle = false
@@ -791,8 +797,9 @@ function Check_no_fire_struggle()
     else
         no_fire_tracking = 0
     end
-    if no_fire_tracking >= 1 then
-        print("Fire is never used.")
+    if no_fire_tracking >= 1 or
+    PLAYER_STRUGGLES.fire_struggle_asked >= 4 then
+        print("Fire is never used or player forgot how!")
         PLAYER_STRUGGLES.no_fire = true
         FROG:flash_b_prompt()
         no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
@@ -912,10 +919,11 @@ function Check_too_much_stirring_struggle()
 end
 
 function Next_recipe_struggle_tip()
+    local lines = 5 -- Same as recipe_struggle table
     -- Trigger frog hint line
-    PLAYER_STRUGGLES.recipe_struggle_lvl = math.fmod(PLAYER_STRUGGLES.recipe_struggle_lvl + 1, 4)
+    PLAYER_STRUGGLES.recipe_struggle_lvl = math.fmod(PLAYER_STRUGGLES.recipe_struggle_lvl + 1, lines)
     if PLAYER_STRUGGLES.recipe_struggle_lvl == 0 then
-        PLAYER_STRUGGLES.recipe_struggle_lvl = 4
+        PLAYER_STRUGGLES.recipe_struggle_lvl = lines
     end
     print("Giving gameplay hint Nr. " .. PLAYER_STRUGGLES.recipe_struggle_lvl)
     FROG:Ask_the_frog()
