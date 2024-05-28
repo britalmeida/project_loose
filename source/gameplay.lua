@@ -754,7 +754,7 @@ end
 
 function Check_no_fire_struggle()
     if GAMEPLAY_STATE.heat_amount < 0.1 then
-        no_fire_tracking += 0.0015
+        no_fire_tracking += 0.0006
     else
         no_fire_tracking = 0
     end
