@@ -56,6 +56,7 @@ function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
       self:setImage(INGREDIENT_TYPES[ingredient_type_idx].img)
     end
     self:moveTo(self.start_pos:unpack())
+    self:setZIndex(Z_DEPTH.ingredients_in_shelve)
 
     self:addSprite()
     self:setVisible(true)
@@ -159,8 +160,6 @@ function Ingredient:hover()
   self.hover_tick = math.min(self.hover_tick, hover_time)
 
   if self.hover_tick > 0 then
-    -- Move sprite to the front
-    self:setZIndex(Z_DEPTH.grabbed_ingredient)
     local time = playdate.getElapsedTime()
     local wiggle_freq = 1
     local x_offset = math.sin(time * 2 * math.pi * (wiggle_freq - 0.1))
@@ -236,15 +235,21 @@ function Ingredient:try_pickup()
 end
 
 function Ingredient:release()
+    -- The ingredient is released and will fall down with gravity,
+    -- but potentially snap to the cauldron or shelve.
     self.state = INGREDIENT_STATE.is_in_air
-    self.vel.dx, self.vel.dy = 0, 0
+    -- Make sure it's in front of everything to it doesn't look like it falls in/behind the cauldron.
+    self:setZIndex(Z_DEPTH.grabbed_ingredient)
 
-    local bounds = self:getBoundsRect()
+    self.vel.dx, self.vel.dy = 0, 0
 
     local size = MAGIC_TRIANGLE_SIZE
     local center = geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
     local triangle_bounds = geo.rect.new(center.x - size/2, center.y - size/2, size, size)
+
+    local bounds = self:getBoundsRect()
     if bounds:intersects(triangle_bounds) then
+        -- Snap over the cauldron.
         self:moveTo(center:unpack())
         self:setZIndex(Z_DEPTH.ingredient_slotted_over_cauldron)
         --start wiggling
@@ -255,8 +260,10 @@ function Ingredient:release()
         end
         PLAYER_LEARNED.how_to_release = true
     elseif bounds:containsPoint(self.start_pos) then
+        -- Snap back to its place on the shelve.
         self:respawn()
     end
+    -- Keep falling, see fall().
 end
 
 function Ingredient:drop()
@@ -283,9 +290,9 @@ function Ingredient:respawn()
     table.remove(DROPS, table.indexOfElement(DROPS, self))
     self:remove()
   else
-    self:moveTo(self.start_pos:unpack())
-    self:setZIndex(Z_DEPTH.ingredients)
     self.state = INGREDIENT_STATE.is_in_shelf
+    self:setZIndex(Z_DEPTH.ingredients_in_shelve)
+    self:moveTo(self.start_pos:unpack())
     if INGREDIENT_TYPES[self.ingredient_type_idx].hold then
       self:setImage(INGREDIENT_TYPES[self.ingredient_type_idx].img)
     end

@@ -770,7 +770,7 @@ end
 
 Z_DEPTH = {
     frog = 10,
-    ingredients = -5,
+    ingredients_in_shelve = -5,
     indredient_drops = 4,
     ingredient_slotted_over_cauldron = 5,
     ingredient_drop_splash = 5,

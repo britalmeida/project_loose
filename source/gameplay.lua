@@ -329,7 +329,6 @@ function Handle_input()
             for i, ingredient in pairs(INGREDIENTS) do
                 if ingredient.state == INGREDIENT_STATE.is_over_cauldron and picked_up then
                     ingredient.state = INGREDIENT_STATE.is_in_air
-                    ingredient:setZIndex(Z_DEPTH.ingredients)
                 end
             end
             FROG:Click_the_frog()
