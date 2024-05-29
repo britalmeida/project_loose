@@ -80,7 +80,8 @@ local need_less_weed <const> = {
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",
-    "Tilt to hover an ingredient.\nHold (A) to grab.",
+    "Tilt to move your hand.\nHold (A) to grab.",
+    "Let it go\nover the cauldron.",
 }
 local drop_tutorials <const> = {
     "Place the ingredient over\nthe cauldron and shake!",
