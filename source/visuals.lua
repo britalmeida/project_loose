@@ -270,7 +270,7 @@ end
 
 local function draw_stirring_stick_front()
     -- Draw the laddle only if it's on the front side of the cauldron
-    if STIR_POSITION > 0 and STIR_POSITION < PI then
+    if STIR_POSITION >= 0 and STIR_POSITION < PI then
         draw_stirring_stick()
     end
 end
