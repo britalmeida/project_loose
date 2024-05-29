@@ -710,7 +710,9 @@ function Check_player_learnings()
         FROG:flash_b_prompt()
     end
 
-    if math.abs(STIR_SPEED) > 7.5 and not PLAYER_LEARNED.how_to_stir then
+    if math.abs(STIR_SPEED) > 7.5
+    and GAMEPLAY_STATE.dropped_ingredients > 0
+    and not PLAYER_LEARNED.how_to_stir then
         PLAYER_LEARNED.how_to_stir = true
         FROG:flash_b_prompt()
     end
