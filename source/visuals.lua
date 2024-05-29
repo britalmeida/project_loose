@@ -4,8 +4,21 @@ local gfxit <const> = playdate.graphics.imagetable
 local animloop <const> = playdate.graphics.animation.loop
 local geo <const> = playdate.geometry
 local vec2d <const> = playdate.geometry.vector2D
-local inOutQuad <const> = playdate.easingFunctions.inOutQuad
-local animator <const> = playdate.graphics.animator
+-- Alias frequently accessed math as local variables due to Lua performance reasons.
+-- See https://lua.org/gems/sample.pdf about being 30% faster to access function locals
+-- as opposed to global tables, and file locals being somewhere in between.
+local sin <const> = math.sin
+local cos <const> = math.cos
+local sqrt <const> = math.sqrt
+local min <const> = math.min
+local max <const> = math.max
+local floor <const> = math.floor
+local abs <const> = math.abs
+local fmod <const> = math.fmod
+local random <const> = math.random
+local PI <const> = 3.141592653589793
+local TWO_PI <const> = 6.283185307179586
+local PHI <const> = PI * (sqrt(5.0) - 1.0) -- Golden angle in radians
 
 
 -- Resources
@@ -109,19 +122,23 @@ end
 local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend, alpha, color)
     gfx.pushContext()
         for a = 1, steps, 1 do
-            local iteration_width = (1 - a / steps) * width * blend + width
-            local iteration_height = (1 - a / steps) * height * blend + height
-            local ellipse_bb = geo.rect.new(x_center - iteration_width * 0.5, y_center - iteration_height * 0.5, iteration_width, iteration_height)
-        
+            local step_blend <const> = (1 - a / steps) * blend
+            local iteration_width <const> = step_blend * width + width
+            local iteration_height <const> = step_blend * height + height
+            local iteration_left <const> = x_center - iteration_width * 0.5
+            local iteration_top <const> = y_center - iteration_height * 0.5
+
             gfx.setColor(color)
             gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
-            gfx.fillEllipseInRect(ellipse_bb)
+            gfx.fillEllipseInRect(iteration_left, iteration_top, iteration_width, iteration_height)
         end
     gfx.popContext()
 end
 
 
 local function draw_symbols()
+    local PI <const> = 3.141592653589793
+
     local rune_area_x = MAGIC_TRIANGLE_CENTER_X
     local rune_area_y = MAGIC_TRIANGLE_CENTER_Y - 60
     local rune_area_width = 80
@@ -131,12 +148,12 @@ local function draw_symbols()
     local freq_var = 0.1
 
     local should_draw_on_target_anim = GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.heat_amount > 0.3
-    local heat_response = math.min(math.sqrt(math.max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
+    local heat_response = min(sqrt(max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
     local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
     local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
     local glow_strength = (lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response)
     glow_strength = Clamp(glow_strength, 0, 1) * 0.75
-    local glyph_overlay_alpha = math.max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
+    local glyph_overlay_alpha = max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
 
     local rune_count_travel = {0, 0, 0}
     for k, v in pairs(rune_count_travel) do
@@ -146,7 +163,7 @@ local function draw_symbols()
     gfx.pushContext()
         for a = 1, NUM_RUNES do
             local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
-            local wiggle = math.sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + math.pi * 0.3)
+            local wiggle = sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + PI * 0.3)
 
             local glyph_x = rune_area_x + rune_area_width * 0.5 * (a - 2)
             local glyph_y = rune_area_y - (rune_count_travel[a] - 0.5) * rune_area_height + wiggle
@@ -186,20 +203,21 @@ local function draw_stirring_stick()
         -- 'a': for the path of the top point of the stick,
         -- 'b': for the bottom point
         local stick_width, stick_height, stick_tilt = 10, 60, 45
+        local stick_half_width = stick_width * 0.5
         local ellipse_height = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
         local ellipse_bottom_width = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
         local ellipse_top_width = ellipse_bottom_width + stick_tilt
 
-        local a_x = math.cos(t) * ellipse_top_width + LIQUID_CENTER_X
-        local a_y = math.sin(t) * ellipse_height + LIQUID_CENTER_Y - stick_height
-        local b_x = math.cos(t) * ellipse_bottom_width + LIQUID_CENTER_X
-        local b_y = math.sin(t) * ellipse_height + LIQUID_CENTER_Y
+        local a_x = cos(t) * ellipse_top_width + LIQUID_CENTER_X
+        local a_y = sin(t) * ellipse_height + LIQUID_CENTER_Y - stick_height
+        local b_x = cos(t) * ellipse_bottom_width + LIQUID_CENTER_X
+        local b_y = sin(t) * ellipse_height + LIQUID_CENTER_Y
 
         -- Bottom offset is used to make sure that the bottom stick doesn't go out of the water
         local bot_offset = 0
-        if t > math.pi and t < 2*math.pi then
+        if t > PI and t < TWO_PI then
             local max_amp = 15
-            bot_offset = math.sin(t) * max_amp * Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
+            bot_offset = sin(t) * max_amp * Clamp(abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
             local vec_top = vec2d.new(a_x, a_y)
             local vec_bot = vec2d.new(b_x, b_y)
             local vec_dir = vec_bot - vec_top
@@ -210,27 +228,27 @@ local function draw_stirring_stick()
 
         -- Draw stick
         local stick_outline_width = 3
-        local stick_outer = playdate.geometry.polygon.new(4)
-        stick_outer:setPointAt(1, a_x + stick_width/2 + stick_outline_width, a_y)
-        stick_outer:setPointAt(2, a_x - stick_width/2 - stick_outline_width, a_y)
-        stick_outer:setPointAt(3, b_x - stick_width/2 - stick_outline_width, b_y)
-        stick_outer:setPointAt(4, b_x + stick_width/2 + stick_outline_width, b_y)
+        local stick_outer = geo.polygon.new(4)
+        stick_outer:setPointAt(1, a_x + stick_half_width + stick_outline_width, a_y)
+        stick_outer:setPointAt(2, a_x - stick_half_width - stick_outline_width, a_y)
+        stick_outer:setPointAt(3, b_x - stick_half_width - stick_outline_width, b_y)
+        stick_outer:setPointAt(4, b_x + stick_half_width + stick_outline_width, b_y)
         stick_outer:close()
 
-        local stick_inner = playdate.geometry.polygon.new(4)
-        stick_inner:setPointAt(1, a_x + stick_width/2, a_y)
-        stick_inner:setPointAt(2, a_x - stick_width/2, a_y)
-        stick_inner:setPointAt(3, b_x - stick_width/2, b_y)
-        stick_inner:setPointAt(4, b_x + stick_width/2, b_y)
+        local stick_inner = geo.polygon.new(4)
+        stick_inner:setPointAt(1, a_x + stick_half_width, a_y)
+        stick_inner:setPointAt(2, a_x - stick_half_width, a_y)
+        stick_inner:setPointAt(3, b_x - stick_half_width, b_y)
+        stick_inner:setPointAt(4, b_x + stick_half_width, b_y)
         stick_inner:close()
         
 
         gfx.setColor(gfx.kColorWhite)
-        gfx.fillCircleAtPoint(a_x, a_y, stick_width / 2 + stick_outline_width - 1)
+        gfx.fillCircleAtPoint(a_x, a_y, stick_half_width + stick_outline_width - 1)
         gfx.fillPolygon(stick_outer)
 
         gfx.setColor(gfx.kColorBlack)
-        gfx.fillCircleAtPoint(a_x, a_y, stick_width / 2 -1)
+        gfx.fillCircleAtPoint(a_x, a_y, stick_half_width -1)
         gfx.setDitherPattern(0.05)
         gfx.fillPolygon(stick_inner)
         
@@ -244,7 +262,7 @@ end
 
 local function draw_stirring_stick_back()
     -- Draw the laddle only if it's on the farther side of the cauldron
-    if STIR_POSITION >= math.pi and STIR_POSITION < 2*math.pi then
+    if STIR_POSITION >= PI and STIR_POSITION < TWO_PI then
         draw_stirring_stick()
     end
 end
@@ -252,7 +270,7 @@ end
 
 local function draw_stirring_stick_front()
     -- Draw the laddle only if it's on the front side of the cauldron
-    if STIR_POSITION > 0 and STIR_POSITION < math.pi then
+    if STIR_POSITION > 0 and STIR_POSITION < PI then
         draw_stirring_stick()
     end
 end
@@ -262,16 +280,18 @@ end
 local liquid_num_points = 30
 local liquid_half_num_points = liquid_num_points * 0.5
 local liquid_surface = geo.polygon.new(liquid_num_points)
-local liquid_point_radial_increment = (1 / liquid_num_points) * math.pi * 2
+local liquid_point_radial_increment = (1 / liquid_num_points) * TWO_PI
 for i=1, liquid_half_num_points do
     local angle = i * liquid_point_radial_increment
-    local a_x = math.cos(angle) * LIQUID_WIDTH + LIQUID_CENTER_X
-    local a_y = math.sin(angle) * LIQUID_HEIGHT + LIQUID_CENTER_Y
+    local a_x = cos(angle) * LIQUID_WIDTH + LIQUID_CENTER_X
+    local a_y = sin(angle) * LIQUID_HEIGHT + LIQUID_CENTER_Y
     liquid_surface:setPointAt(i, a_x, a_y)
 end
 liquid_surface:close()
 
 local function draw_liquid_surface()
+    local sin = sin -- make these local to the function, not just the file, for performance.
+    local cos = cos
 
     -- Move the points on the back of the liquid in a wave as a response to stirring.
     -- Calculate a new position for those points, while the front/bottom points don't move.
@@ -279,25 +299,25 @@ local function draw_liquid_surface()
     local max_amp = 15 -- maximum amplitude in pixels
     local speed_fac = 0.035 -- speed of the waves (0.01 slow 0.1 fast)
     -- Get dynamic factors from stirring.
-    local offset = GAMEPLAY_STATE.liquid_offset * speed_fac % math.pi
-    local amp_range = Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
+    local offset = GAMEPLAY_STATE.liquid_offset * speed_fac % PI
+    local amp_range = Clamp(abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
 
     -- Premultiply loop constants for performance.
-    local half_points_increment = (1 / liquid_half_num_points) * math.pi
-    local half_points_increment_x2 = (1 / liquid_half_num_points) * math.pi * 2
+    local half_points_increment = (1 / liquid_half_num_points) * PI
+    local half_points_increment_x2 = (1 / liquid_half_num_points) * TWO_PI
     local amp_fac = max_amp * amp_range
-    local period = freq * math.pi
+    local period = freq * PI
     for i=liquid_half_num_points, liquid_num_points do
         local angle = i * liquid_point_radial_increment
 
         -- Make the point wavy if it's on the backside of the cauldron.
         local x = i - liquid_half_num_points
-        local amplitude = math.sin(x * half_points_increment) * amp_fac
-        local wave_height = amplitude * math.sin(((x * half_points_increment_x2) - offset) * period)
+        local amplitude = sin(x * half_points_increment) * amp_fac
+        local wave_height = amplitude * sin(((x * half_points_increment_x2) - offset) * period)
 
         -- Set the new point position.
-        local a_x = math.cos(angle) * LIQUID_WIDTH + LIQUID_CENTER_X
-        local a_y = math.sin(angle) * LIQUID_HEIGHT + LIQUID_CENTER_Y - wave_height
+        local a_x = cos(angle) * LIQUID_WIDTH + LIQUID_CENTER_X
+        local a_y = sin(angle) * LIQUID_HEIGHT + LIQUID_CENTER_Y - wave_height
         liquid_surface:setPointAt(i, a_x, a_y)
     end
 
@@ -325,16 +345,17 @@ Bubbles_flip = {}
 Bubbles_types = {}
 Bubbles_animation_length = {}
 NUM_BUBBLES = 10
-Phi = math.pi * (math.sqrt(5.) - 1.) -- Golden angle in radians
 for a = 1, NUM_BUBBLES, 1 do
     local y = 1 - ((a - 1) / (NUM_BUBBLES - 1)) * 2
-    Bubbles_amplitude[a] = math.sqrt(1 - y * y) * 0.8 + 0.2
-    Bubbles_radians[a] = Phi * (a - 1) -- Golden angle increment
-    Bubbles_tick_offset[a] = math.floor(Phi * (a - 1) * 50)
+    Bubbles_amplitude[a] = sqrt(1 - y * y) * 0.8 + 0.2
+    Bubbles_radians[a] = PHI * (a - 1) -- Golden angle increment
+    Bubbles_tick_offset[a] = floor(PHI * (a - 1) * 50)
     Bubbles_types[a] = 0
 end
 
 local function draw_liquid_bubbles()
+    local TWO_PI <const> = 6.283185307179586
+
     gfx.pushContext()
     do
         local ellipse_height = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
@@ -345,10 +366,10 @@ local function draw_liquid_bubbles()
         local offset = GAMEPLAY_STATE.liquid_offset * speed_fac * freq / 2
 
         for x = 1, NUM_BUBBLES, 1 do
-            if not Bubbles_animation_playing[x] and GAMEPLAY_STATE.heat_amount > math.random() + 0.1 then
+            if not Bubbles_animation_playing[x] and GAMEPLAY_STATE.heat_amount > random() + 0.1 then
                 Bubbles_animation_playing[x] = true
-                Bubbles_flip[x] = math.random() > 0.5
-                if math.random() > 0.9 then
+                Bubbles_flip[x] = random() > 0.5
+                if random() > 0.9 then
                     Bubbles_types[x] = -1
                 end
             end
@@ -360,13 +381,13 @@ local function draw_liquid_bubbles()
             local bubble_amp = Bubbles_amplitude[x]
 
             local bot_offset = 0
-            if math.sin(bubble_rad) < 0 then
+            if sin(bubble_rad) < 0 then
                 local max_amp = 15
-                bot_offset = math.sin(bubble_rad) * max_amp * Clamp(math.abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
+                bot_offset = sin(bubble_rad) * max_amp * Clamp(abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
             end
 
-            local b_x = bubble_amp * math.cos(bubble_rad) * ellipse_bottom_width + LIQUID_CENTER_X
-            local b_y = bubble_amp * math.sin(bubble_rad) * ellipse_height + LIQUID_CENTER_Y - bot_offset
+            local b_x = bubble_amp * cos(bubble_rad) * ellipse_bottom_width + LIQUID_CENTER_X
+            local b_y = bubble_amp * sin(bubble_rad) * ellipse_height + LIQUID_CENTER_Y - bot_offset
 
             local bubble_tab = ANIMATIONS.bubble
             local bub_off_x, bub_off_y = 5, 12
@@ -381,7 +402,7 @@ local function draw_liquid_bubbles()
             -- Check if they are ingredient drops
             if Bubbles_types[x] <= 0 then
                 anim_length = bubble_tab:getLength()
-                anim_tick = math.fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, anim_length)
+                anim_tick = fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, anim_length)
             else
                 anim_length = 30
                 anim_tick = STIR_FACTOR * (anim_length -1)
@@ -390,10 +411,10 @@ local function draw_liquid_bubbles()
 
             if Bubbles_types[x] > 0 then
                 -- This is the spot for adding a factor. Might need to split the bubble sinking time from drop sprites.
-                local sink = math.sin(GAMEPLAY_STATE.game_tick / (2 * math.pi) * 0.7 + Bubbles_tick_offset[x]) * 0.3 + (anim_tick / anim_length)
+                local sink = sin(GAMEPLAY_STATE.game_tick / TWO_PI * 0.7 + Bubbles_tick_offset[x]) * 0.3 + (anim_tick / anim_length)
                 local drop_sprite = INGREDIENT_TYPES[Bubbles_types[x]].drop
                 local offset_y = drop_sprite.height * sink
-                local mask = playdate.geometry.rect.new(0, 0, drop_sprite.width, drop_sprite.height - offset_y)
+                local mask = geo.rect.new(0, 0, drop_sprite.width, drop_sprite.height - offset_y)
               if Bubbles_flip[x] then
                 drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 12, "flipX", mask)
               else
@@ -492,22 +513,23 @@ end
 
 
 local function draw_bg_lighting()
-    local flicker_freq = {0.0023, 0.3, 5.2}
-    local flicker_strength = {0.01, 0.002, 0.004}
+    local flicker_freq <const> = {0.0023, 0.3, 5.2}
+    local flicker_strength <const> = {0.01, 0.002, 0.004}
+    local tick <const> = GAMEPLAY_STATE.game_tick + random()
+    local time <const>  = TWO_PI * (tick - fmod(tick, 8)) / playdate.getFPS()
+
     local flicker = 0
-    local tick = GAMEPLAY_STATE.game_tick + math.random()
-    local time  = (tick - math.fmod(tick, 8)) / playdate.getFPS()
     for a = 1, #flicker_freq, 1 do
-        flicker += math.sin(time * 2 * math.pi * flicker_freq[a]) * flicker_strength[a]
+        flicker += sin(time * flicker_freq[a]) * flicker_strength[a]
     end
     flicker *= (1 - GAMEPLAY_STATE.heat_amount ^ 2)
-    
+
     local light_strength = (GAMEPLAY_STATE.heat_amount * 0.8 + 0.2 ) + flicker
     local glow_center_x = LIQUID_CENTER_X
     local glow_center_y = 240
     local glow_width = 200 + light_strength * 60
     local glow_height = 120 + light_strength * 40
-    local glow_blend = math.max(0.25, light_strength) * 0.8
+    local glow_blend = max(0.25, light_strength) * 0.8
 
     gfx.pushContext()
         draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 6, glow_blend, light_strength * 0.5, gfx.kColorWhite)
@@ -538,8 +560,6 @@ local function draw_cauldron_front()
     gfx.popContext()
 
     -- Draw flame animation
-    local fmod = math.fmod
-
     gfx.pushContext()
         if GAMEPLAY_STATE.flame_amount > 0.8 then
             buildupflame_counter += 1
