@@ -133,8 +133,8 @@ function Recipe_draw_success(y)
         local y = recipe_y + text_y
         gfx.setFont(FONTS.speech_font)
         gfx.drawTextAligned(win_text, recipe_x + 66, recipe_y + 118, kTextAlignment.center)
-        gfx.drawText("Just add these steps:", recipe_x + text_x, y)
-        y += line_height * 1.5
+        gfx.drawText("So the recipe goes\nlike this?", recipe_x + text_x, y)
+        y += line_height * 2.5
         for a = 1, #RECIPE_TEXT, 1 do
             gfx.drawText(RECIPE_TEXT[a], recipe_x + text_x, y)
             y += line_height
