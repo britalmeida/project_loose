@@ -161,7 +161,7 @@ function enter_menu_mission(enter_from_gameplay)
 
     -- Side scroll amount if coming directly from gameplay
     if enter_from_gameplay == true then
-        SIDE_SCROLL_X = 30
+        SIDE_SCROLL_X = 50
     else
         SIDE_SCROLL_X = 400
     end
@@ -266,8 +266,8 @@ local function draw_ui()
             SIDE_SCROLL_X += -side_scroll_speed * side_scroll_direction
 
             -- Cap side_scroll range
-            if SIDE_SCROLL_X < 30 then
-                SIDE_SCROLL_X = 30
+            if SIDE_SCROLL_X < 50 then
+                SIDE_SCROLL_X = 50
             elseif SIDE_SCROLL_X > 400 then
                 SIDE_SCROLL_X = 400
             end
