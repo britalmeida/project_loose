@@ -15,13 +15,7 @@ local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, drinking = 
 local TUTORIAL_STATE <const> = { start = 1, fire = 1, grab = 2, shake = 3, stir = 4, complete = 5 }
 
 local positive_acceptance <const> = "That'll do it!"
-local forgotten_topics_callouts <const> = {
-    "Blow to stoke up the fire\npuff puff puff!",
-    "Hey, you forgot an ingredient.",
-    "Hey, you forgot to stir.",
-}
 local fire_reminders <const> = {
-    "Hey... the fire is getting low.",
     "Keep it warm to see \nthe magic.",
     "Fire is good, glow is good.",
     "9",
@@ -52,8 +46,8 @@ local need_less_bright <const> = {
     "Just a lil'bit too dark.",
 }
 local stir_tutorials <const> = {
-    "Stirring helps after\nusing ingredients.",
     "Stir to see if you've\ngot it right.",
+    "Stirring helps after\nusing ingredients.",
     "Use the crank to stir.",
     "11",
 }
@@ -99,8 +93,7 @@ local drop_tips <const> = {
     "11",
 }
 local recipe_struggle <const> = {
-    "It's all about making\na balanced brew.",
-    "Look above the cauldron.\nMagical symbols can guide you.",
+    "Look above the cauldron.\nMagical symbols will guide you.",
     "Imagine how the ingredients\nmatch the three magical aspects.",
     "Ingredients may raise one \nmagic and lower another.",
     "Some ingredients are potent.\nOthers are subtle.",
@@ -111,7 +104,6 @@ local cocktail_struggle <const> = {
 
 local sayings <const> = {
     tutorial = { fire_tutorials, grab_tutorials, drop_tutorials, stir_tutorials }, -- fires, grab, shake, stir
-    once = forgotten_topics_callouts,
     help = {
         fire = fire_reminders,
         ingredient = {
@@ -195,7 +187,6 @@ function Froggo:reset()
 
     -- Reset speech content state machine.
     self.tutorial_state = TUTORIAL_STATE.start
-    self.has_said_once_reminders = { false, false, false } -- fire, stir, ingredient
     self.last_spoken_sentence_topic = nil
     self.last_spoken_sentence_pool = nil
     self.last_spoken_sentence_cycle_idx = 0
@@ -435,14 +426,8 @@ function Froggo:think()
 
         local idx = self.tutorial_state
 
-        -- Say things like "You forgot an ingredient!" first and only once.
-        if idx < #sayings.once and not self.has_said_once_reminders[idx] then
-            self:select_sentence(sayings.once, idx)
-            self.has_said_once_reminders[idx] = true
-        else
-            -- Loop throught the sentences for this tutorial step.
-            self:select_next_sentence(sayings.tutorial[idx])
-        end
+        -- Loop throught the sentences for this tutorial step.
+        self:select_next_sentence(sayings.tutorial[idx])
 
     else
         local struggle_lvl = PLAYER_STRUGGLES.recipe_struggle_lvl
