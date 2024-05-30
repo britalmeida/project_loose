@@ -188,7 +188,7 @@ function Reset_gameplay()
     LAST_SHAKEN_INGREDIENT = nil
     CALUDRON_SWAP_COUNT = 0
 
-    STIR_FACTOR = 1 -- sink and despawn all drops
+    STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
 
     -- Reset time delta
@@ -236,7 +236,7 @@ function Win_game()
     GAME_ENDED = true
 
     STIR_SPEED = 0 -- Stop liquid and stirring sounds.
-    STIR_FACTOR = 1 -- sink and despawn all drops
+    STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
     local new_high_score = false
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
@@ -607,8 +607,8 @@ function update_liquid()
         STIR_FACTOR += STIR_FACTOR * 0.002
         STIR_FACTOR = math.min(STIR_FACTOR, 1)
     elseif floating_drops == 0 then --tmp this could be simplified
-        liquid_darkening = 0
-        STIR_FACTOR = 0
+        liquid_darkening -= math.max(color_change * 16, 0)
+        STIR_FACTOR -= math.max(color_change * 16, 0)
     end
     liquid_darkening = Clamp(liquid_darkening, 0, max_darkness)
     -- Calculate current stirring effect
