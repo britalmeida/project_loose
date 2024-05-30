@@ -720,15 +720,20 @@ end
 -- Values to detect struggle
 local min_drops_without_stirring = 6
 local excess_stirring_factor = 0.008
-
--- Timout values and timers fore stopping struggle dialogue
 local struggle_reminder_timout = 10*1000
+
+-- Live values to trigger struggle
 local no_fire_tracking = 0
 local too_much_fire_tracking = 0
-local no_shake_timeout = nil
-local no_stir_timeout = nil
 local no_shake_tracking = 0
 local too_much_stir_tracking = 0
+
+-- Timout values and timers fore stopping struggle dialogue
+local cocktail_struggle_timeout = nil
+local no_fire_timeout = nil
+local too_much_fire_timeout = nil
+local no_shake_timeout = nil
+local no_stir_timeout = nil
 local too_much_stir_timeout = nil
 
 function Check_player_struggle()
@@ -803,7 +808,7 @@ function Check_no_fire_struggle()
         print("Fire is never used or player forgot how!")
         PLAYER_STRUGGLES.no_fire = true
         FROG:flash_b_prompt()
-        no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
+        no_fire_timeout = playdate.timer.new(struggle_reminder_timout, function ()
             PLAYER_STRUGGLES.no_fire = false
             end)
     end
@@ -818,11 +823,12 @@ function Check_too_much_fire_struggle()
         too_much_fire_tracking -= 0.001
         PLAYER_STRUGGLES.too_much_fire = false
     end
+    too_much_fire_tracking = Clamp(too_much_fire_tracking, 0, 1)
     if too_much_fire_tracking >= 1 then
         print("Fire is stroked way too much!")
         PLAYER_STRUGGLES.too_much_fire = true
         FROG:flash_b_prompt()
-        no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
+        too_much_fire_timeout = playdate.timer.new(struggle_reminder_timout, function ()
             PLAYER_STRUGGLES.too_much_fire = false
             end)
     end
