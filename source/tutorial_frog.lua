@@ -157,9 +157,9 @@ function Froggo:init()
     self.anim_idle       = animloop.new(16 * frame_ms, gfxit.new('images/frog/animation-idle'), true)
     self.anim_headshake  = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-headshake'), true)
     self.anim_happy      = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-excited'), true)
-    self.anim_cocktail   = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-cocktail'), true)
-    self.anim_burp       = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-burp'), false)
-    self.anim_burptalk   = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-burptalk'), true)
+    self.anim_cocktail   = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-sip'), true)
+    self.anim_burp       = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-burp'), false)
+    self.anim_burptalk   = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-burptalk'), true)
     self.anim_blabla     = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-blabla'), true)
     self.anim_tickleface = animloop.new(2.5 * frame_ms, gfxit.new('images/frog/animation-tickleface'), false)
     self.anim_eyeball    = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
@@ -327,23 +327,33 @@ end
 
 
 function Froggo:go_drinking()
-    local cocktail_runtime = self.anim_cocktail.delay * self.anim_cocktail.endFrame
-    local burp_runtime = self.anim_burp.delay * self.anim_burp.endFrame
+    local cocktail_runtime = self.anim_cocktail.delay * (self.anim_cocktail.endFrame - 3)
+    local burp_runtime = self.anim_burp.delay * (self.anim_burp.endFrame - 4)
+    local burp_speak_runtime = self.anim_burp.delay * self.anim_burp.endFrame
+    local anim_offset = -9
 
     self.state = ACTION_STATE.drinking
     self:start_animation(self.anim_cocktail)
+    self.anim_current.frame = 3
+    self.x_offset = anim_offset
 
-    playdate.timer.new(cocktail_runtime, function() -- 3200 ms
+    playdate.timer.new(cocktail_runtime, function()
         self:start_animation(self.anim_burp)
+        self.x_offset = anim_offset
 
-        playdate.timer.new(burp_runtime, function() -- 4266.(6) ms
-            self:start_animation(self.anim_burptalk)
+        playdate.timer.new(burp_runtime, function()
             self:start_speech_bubble()
+        end)
+
+        playdate.timer.new(burp_speak_runtime, function()
+            self:start_animation(self.anim_burptalk)
+            self.x_offset = anim_offset
 
             playdate.timer.new(2*1000, function()
                 -- Disable speech bubble after a short moment.
                 self:stop_speech_bubble()
                 self:start_animation(self.anim_cocktail)
+                self.x_offset = anim_offset
                 GAMEPLAY_STATE.showing_recipe = true
             end)
         end)
