@@ -12,7 +12,7 @@ local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, drinking = 
 
 -- Froggo content machine
 --- A separate multi-level state machine to select the sentence the frog says when speaking.
-local TUTORIAL_STATE <const> = { start = 1, fire = 1, grab = 2, shake = 3, stir = 4, complete = 5 }
+local TUTORIAL_STATE <const> = { start = 1, grab = 1, shake = 2, fire = 3, stir = 4, complete = 5 }
 
 local positive_acceptance <const> = "That'll do it!"
 local fire_reminders <const> = {
@@ -22,7 +22,7 @@ local fire_reminders <const> = {
 }
 local fire_tutorials <const> = {
     "Magical brews need fire\nto reveal their magic.",
-    "Just blow air onto the\nbottom of the cauldron.",
+    "Blow air onto the\nbottom of the cauldron.",
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
 }
@@ -104,7 +104,7 @@ local cocktail_struggle <const> = {
 }
 
 local sayings <const> = {
-    tutorial = { fire_tutorials, grab_tutorials, drop_tutorials, stir_tutorials }, -- fires, grab, shake, stir
+    tutorial = { grab_tutorials, drop_tutorials, fire_tutorials, stir_tutorials }, -- order of tutorials
     help = {
         fire = fire_reminders,
         ingredient = {
@@ -400,11 +400,6 @@ function Froggo:think()
 
     -- Check what the player has already done and advance tutorial steps.
     -- Intentional fallthrough, so that the frog advances as many tutorial steps as needed in one go.
-    if self.tutorial_state == TUTORIAL_STATE.fire then
-        if PLAYER_LEARNED.how_to_fire then
-            self.tutorial_state += 1
-        end
-    end
     if self.tutorial_state == TUTORIAL_STATE.grab then
         if PLAYER_LEARNED.how_to_grab and PLAYER_LEARNED.how_to_release then
             self.tutorial_state += 1
@@ -412,6 +407,11 @@ function Froggo:think()
     end
     if self.tutorial_state == TUTORIAL_STATE.shake then
         if PLAYER_LEARNED.how_to_shake then
+            self.tutorial_state += 1
+        end
+    end
+    if self.tutorial_state == TUTORIAL_STATE.fire then
+        if PLAYER_LEARNED.how_to_fire then
             self.tutorial_state += 1
         end
     end
