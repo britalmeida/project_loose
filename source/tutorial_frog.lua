@@ -64,7 +64,7 @@ local need_more_love <const> = {
     "That brew needs more heart!", "2",
 }
 local need_less_love <const> = {
-    "Can't stand the love!\nThrow something vile in!", "1",
+    "Can you weaken\nthat love a bit?", "1",
 }
 local need_more_doom <const> = {
     "Missing doom and gloom.", "4",
@@ -76,7 +76,7 @@ local need_more_weed <const> = {
     "Could use some veggies.",  "6",
 }
 local need_less_weed <const> = {
-    "Too many plants in there!\nBetter get rid of that.", "5",
+    "Could be less vegitarian?", "5",
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",
