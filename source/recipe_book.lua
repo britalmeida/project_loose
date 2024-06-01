@@ -38,7 +38,7 @@ function Recipe_steps_to_text_success(recipe_steps)
     for step = 1, #recipe_steps, 1 do
         local step_type = recipe_steps[step][1]
         local line = ""
-        line = line .. tostring(step) .. ". " 
+        line = line .. tostring(step) .. ". "
         if step_type > 0 then
             line = line .. "Add " .. recipe_steps[step][2]
             if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
@@ -51,8 +51,17 @@ function Recipe_steps_to_text_success(recipe_steps)
                 line = line .. "s"
             end
         else
-            line = line .. "Stir it in"
-            --line = line .. recipe_steps[step][2] .. " time"
+            if recipe_steps[step][2] >= 12 then
+                line = line .. "Stir forever . . ."
+            elseif recipe_steps[step][2] >= 10 then
+                line = line .. "Stir for a while"
+            elseif recipe_steps[step][2] >= 8 then
+                line = line .. "Stir it a lot"
+            elseif recipe_steps[step][2] >= 5 then
+                line = line .. "Stir it in"
+            elseif recipe_steps[step][2] < 5 then
+                line = line .. "Stir a bit"
+            end
         end
         text_lines[#text_lines+1] = line
     end
@@ -83,8 +92,17 @@ function Recipe_steps_to_text_menu(recipe_steps)
                 line = line .. "s"
             end
         else
-            line = line .. "Stir it in"
-            --line = line .. recipe_steps[step][2] .. "x"
+            if recipe_steps[step][2] >= 12 then
+                line = line .. "Stir forever . . ."
+            elseif recipe_steps[step][2] >= 10 then
+                line = line .. "Stir for a while"
+            elseif recipe_steps[step][2] >= 8 then
+                line = line .. "Stir it a lot"
+            elseif recipe_steps[step][2] >= 5 then
+                line = line .. "Stir it in"
+            elseif recipe_steps[step][2] < 5 then
+                line = line .. "Stir a bit"
+            end
         end
         text_lines[#text_lines+1] = line
     end
@@ -105,7 +123,7 @@ function Recipe_draw_success(y)
     local text_x = 24
     local text_y = 180
     local line_height = 23
-    local extra_lines = 3
+    local extra_lines = 4
     local flip_table = {"flipX", "flipY", "flipXY"}
 
     local header_img = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_img

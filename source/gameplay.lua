@@ -461,11 +461,12 @@ function check_gyro_and_gravity()
     end
 end
 
+local ingredients_were_dropped = false
+
 
 function check_crank_to_stir()
     -- Track crank changes
     local prev_stir_position = STIR_POSITION
-    local prev_stir_direction = STIR_DIRECTION
 
     -- Crank stirring
     local angleDelta, acceleratedChange = playdate.getCrankChange()
@@ -473,11 +474,17 @@ function check_crank_to_stir()
     -- Use the absolute position of the crank to drive the stick in the cauldorn
     STIR_POSITION = math.rad(playdate.getCrankPosition())
 
+    if GAMEPLAY_STATE.dropped_ingredients > 0 then
+        ingredients_were_dropped = true
+    end
+
     -- Count crank revolutions
     if math.abs(STIR_SPEED) > 1 then
         STIR_DIRECTION = Sign(STIR_SPEED)
     end
-    if Sign(prev_stir_direction) * Sign(STIR_DIRECTION) < 0 or prev_stir_direction == 0 then
+    if (prev_stir_position == STIR_POSITION and GAMEPLAY_STATE.dropped_ingredients == 0 and ingredients_were_dropped)
+    or not ingredients_were_dropped then
+        ingredients_were_dropped =  false
         STIR_REVOLUTION = 0
         STIR_COUNT = 0
     else
