@@ -594,9 +594,18 @@ local function draw_ui_prompts()
     end
 
     gfx.pushContext()
-        TEXTURES.instructions_prompt:draw(-10, 240-TEXTURES.instructions_prompt.height, 0)
-        ANIMATIONS.b_prompt:draw(362, 203)
+    TEXTURES.instructions_prompt:draw(-10, 240-TEXTURES.instructions_prompt.height, 0)
+    ANIMATIONS.b_prompt:draw(362, 203)
     gfx.popContext()
+
+    if Is_potion_good_enough() then
+        local time = playdate.getElapsedTime()
+        local pulsing_freq = 1
+        local pulse = math.sin(time * 1 * math.pi * (pulsing_freq + 0.1))
+        gfx.pushContext()
+        draw_soft_ring(381, 222, 15 + pulse, 7, 0.7, (pulse + 1) / 2, gfx.kColorWhite) -- tmp. need to animate radius
+        gfx.popContext()
+    end
 end
 
 
