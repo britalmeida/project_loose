@@ -158,18 +158,23 @@ function Recipe_draw_success(y)
             y += line_height
         end
         y += line_height
-        if #RECIPE_TEXT > 1 then
-            gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " steps . . .", recipe_x + text_x, y)
+        if #RECIPE_TEXT > TARGET_COCKTAIL.step_ratings[3] then
+            gfx.drawText("Yep . . . That was " .. tostring(#RECIPE_TEXT) .. " steps.", recipe_x + text_x, y)
+        elseif #RECIPE_TEXT > TARGET_COCKTAIL.step_ratings[2] then
+            gfx.drawText("Well done. Just " .. tostring(#RECIPE_TEXT) .. " steps.", recipe_x + text_x, y)
+        elseif #RECIPE_TEXT > TARGET_COCKTAIL.step_ratings[1] then
+            gfx.drawText("Fantastic! In only " .. tostring(#RECIPE_TEXT) .. " steps!", recipe_x + text_x, y)
         else
-            gfx.drawText("Easy! Just " .. tostring(#RECIPE_TEXT) .. " steps . . .", recipe_x + text_x, y)
+            gfx.drawText("No way to beat " .. tostring(#RECIPE_TEXT) .. " steps!!!", recipe_x + text_x, y)
+
         end
     gfx.popContext()
 end
 
 function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw scrollable top recipe in menu
-    local text_x = 12
-    local text_y = 50
+    local text_x = 16
+    local text_y = 54
     local line_height = 23
     local extra_lines = 4
 
@@ -179,6 +184,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     local number_of_lines = #recipe_text + extra_lines
     local number_of_inserts = math.max(0, math.ceil(((number_of_lines * line_height) + text_y - top_height ) / insert_height))
     RECIPE_MAX_HEIGHT = top_height + number_of_inserts * insert_height + TEXTURES.recipe_small_bottom.height
+    local selected_recipe = COCKTAILS[MENU_STATE.focused_option+1]
 
     -- draw recipe background
     gfx.pushContext()
@@ -194,10 +200,18 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         local y = y + text_y
         gfx.setFont(FONTS.speech_font)
 
-        gfx.drawText("Just " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+        if #recipe_text > selected_recipe.step_ratings[3] then
+            gfx.drawText("Ok . . .\nIn " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+        elseif #recipe_text > selected_recipe.step_ratings[2] then
+            gfx.drawText("Well done.\nIn " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+        elseif #recipe_text > selected_recipe.step_ratings[1] then
+            gfx.drawText("Fantastic!\nIn only " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+        else
+            gfx.drawText("Mastered!!!\nIn only " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+        end
 
         for a = 1, #recipe_text, 1 do
-            gfx.drawText(recipe_text[a], x + text_x + 8, y + 28)
+            gfx.drawText(recipe_text[a], x + text_x + 8, y + 46)
             y += line_height
         end
     gfx.popContext()

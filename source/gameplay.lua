@@ -239,14 +239,14 @@ function Win_game()
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
     local new_high_score = false
-    if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then 
+    if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then
         new_high_score = true
-        win_text = "RECIPE\nDONE!"
+        win_text = "RECIPE\nLEARNED!"
     elseif Score_of_recipe(CURRENT_RECIPE) < Score_of_recipe(FROGS_FAVES.recipes[TARGET_COCKTAIL.name]) then
         new_high_score = true
         win_text = "RECIPE\nIMPROVED!"
     else
-        win_text = "GOOD\nENOUGH!"
+        win_text = "RECIPE\nDONE!"
     end
     if new_high_score then
         FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE

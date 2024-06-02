@@ -345,7 +345,7 @@ local function draw_ui()
             local recipe_hide_speed = 0.2
             local recipe_scroll_speed = 1
             local recipe_min_height = 44
-            local recipe_max_height = RECIPE_MAX_HEIGHT - 90
+            local recipe_max_height = RECIPE_MAX_HEIGHT - 75
 
             local recipe_offset_x = (RECIPE_COCKTAIL - MENU_STATE.focused_option - 1) * cocktail_width
             local recipe_x = selected_cocktail_x - 14 + recipe_offset_x
