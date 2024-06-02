@@ -645,7 +645,8 @@ end
 
 function Are_ingredients_good_enough()
     for i=1, NUM_RUNES do
-        if DIFF_TO_TARGET.runes_abs[i] > GOAL_TOLERANCE then
+        if DIFF_TO_TARGET.runes_abs[i] > GOAL_TOLERANCE
+        and TARGET_COCKTAIL.rune_count[i] ~= 0 then -- Runes that target 0 are for intro cocktails are are
             return false
         end
     end

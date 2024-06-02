@@ -146,11 +146,11 @@ local function draw_symbols()
 
     local wiggle_freq_avg = 2
     local freq_var = 0.1
+    local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
+    local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
 
     local should_draw_on_target_anim = GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.heat_amount > 0.3
     local heat_response = min(sqrt(max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
-    local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
-    local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
     local glow_strength = (lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response)
     glow_strength = Clamp(glow_strength, 0, 1) * 0.75
     local glyph_overlay_alpha = max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
@@ -162,6 +162,10 @@ local function draw_symbols()
 
     gfx.pushContext()
         for a = 1, NUM_RUNES do
+            if TARGET_COCKTAIL.rune_count[a] == 0 then
+                -- Don't draw disabled runes
+                goto continue
+            end
             local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
             local wiggle = sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + PI * 0.3)
 
@@ -188,6 +192,7 @@ local function draw_symbols()
                 gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
                 TEXTURES.rune_images[a]:drawFaded(glyph_topleft_x, glyph_topleft_y, glyph_overlay_alpha, gfxi.kDitherTypeBayer4x4)
             gfx.popContext()
+            ::continue::
         end
 
     gfx.popContext()
