@@ -20,7 +20,6 @@ GAMEPLAY_STATE = {
     liquid_offset = 0.0,
     liquid_momentum = 0.0,
     -- Current potion mix
-    potion_color = 0.5,
     potion_bubbliness = 0.0,
     rune_count = {0, 0, 0},
     rune_count_unstirred = {0, 0, 0},
@@ -45,8 +44,6 @@ GAMEPLAY_STATE = {
 CURRENT_RECIPE = {}
 
 DIFF_TO_TARGET = {
-    color = 1,
-    color_abs = 1,
     ingredients_abs = 1,
     runes = { 1, 1, 1},
     runes_abs = { 1, 1, 1},
@@ -141,7 +138,6 @@ function Reset_gameplay()
     GAMEPLAY_STATE.liquid_offset = 0.0
     GAMEPLAY_STATE.liquid_momentum = 0.0
     GAMEPLAY_STATE.liquid_viscosity = 0.9
-    GAMEPLAY_STATE.potion_color = 0.0
     GAMEPLAY_STATE.potion_bubbliness = 0.0
     -- Reset current ingredient mix.
     for a = 1, NUM_RUNES, 1 do
@@ -608,29 +604,19 @@ function update_fire()
 end
 
 
-local liquid_darkening = 0
-
 function update_liquid()
-    -- Update liquid color & stir effect
+    -- Update liquid stir effect
 
-    local stir_change = 0.001
-    local floating_drops = GAMEPLAY_STATE.dropped_ingredients
-    local color_change = 0.005
-    local max_darkness = 0.2 * floating_drops
+    local stir_change <const> = 0.001
+    local floating_drops <const> = GAMEPLAY_STATE.dropped_ingredients
 
-    max_darkness = math.min(max_darkness, 1)
-
-    -- Calculate current base color of liquid
+    -- Calculate current stirring effect.
     if floating_drops > 0 then
-        liquid_darkening += color_change * floating_drops
         STIR_FACTOR += STIR_FACTOR * 0.002
         STIR_FACTOR = math.min(STIR_FACTOR, 1)
-    elseif floating_drops == 0 then --tmp this could be simplified
-        liquid_darkening -= math.max(color_change * 16, 0)
-        STIR_FACTOR -= math.max(color_change * 16, 0)
+    elseif floating_drops == 0 then
+        STIR_FACTOR -= 0.08
     end
-    liquid_darkening = Clamp(liquid_darkening, 0, max_darkness)
-    -- Calculate current stirring effect
     STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change)
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
 
@@ -640,10 +626,6 @@ function update_liquid()
         GAMEPLAY_STATE.dropped_ingredients = 0
         CHECK_IF_DELICIOUS = true
     end
-
-    -- Total mixed color of liquid
-    --GAMEPLAY_STATE.potion_color = (1 - liquid_darkening) + (STIR_FACTOR * max_darkness)
-    -- print(STIR_FACTOR)
 
     -- Update liquid state
     GAMEPLAY_STATE.liquid_momentum += Clamp(STIR_SPEED, -8, 8) / 10
@@ -688,9 +670,6 @@ function Calculate_goodness()
     local prev_trend = TREND
 
     -- Match expectations with reality.
-    DIFF_TO_TARGET.color = TARGET_COCKTAIL.color - GAMEPLAY_STATE.potion_color
-    DIFF_TO_TARGET.color_abs = math.abs(DIFF_TO_TARGET.color)
-
     local runes_diff = {
         TARGET_COCKTAIL.rune_count[1] - GAMEPLAY_STATE.rune_count[1],
         TARGET_COCKTAIL.rune_count[2] - GAMEPLAY_STATE.rune_count[2],
@@ -722,8 +701,6 @@ function Calculate_goodness()
     elseif CHECK_IF_DELICIOUS then
         FROG:Lick_eyeballs()
     end
-
-    -- print(prev_diff.color, DIFF_TO_TARGET.color, DIFF_TO_TARGET.color - prev_diff.color)
 end
 
 

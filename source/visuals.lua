@@ -328,14 +328,10 @@ local function draw_liquid_surface()
 
     -- Draw
     gfx.pushContext()
-        -- Draw fill: black clear color
+        -- Draw fill: black color
         gfx.setColor(gfx.kColorBlack)
         gfx.fillPolygon(liquid_surface)
-        -- Draw fill: dithered white pattern
-        gfx.setColor(gfx.kColorWhite)
-        gfx.setDitherPattern((1 - GAMEPLAY_STATE.potion_color), gfx.image.kDitherTypeBayer8x8)
-        gfx.fillPolygon(liquid_surface)
-        -- Draw line
+        -- Draw line: white
         gfx.setColor(gfx.kColorWhite)
         gfx.setLineWidth(3)
         gfx.drawPolygon(liquid_surface)

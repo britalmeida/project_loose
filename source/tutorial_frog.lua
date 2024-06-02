@@ -30,21 +30,6 @@ local fire_tips <const> = {
     "No need to stoke\nthe fire this often.",
     "Save your breath!\nLeave it for a bit.",
 }
-local stir_tutorials_color <const> = {
-    "Remember the importance of\nthe stirring direction.",
-    "Use the crank to stir?",
-    "11", "12",
-}
-local need_more_bright <const> = {
-    "Oh my eyes!\nLiquid is way too bright.",
-    "The liquid looks too bright.\nStirr!",
-    "Just a lil'bit too light.",
-}
-local need_less_bright <const> = {
-    "Waaaaay too dark!\nCrank it the other way.",
-    "The liquid looks too dark\nstirr!",
-    "Just a lil'bit too dark.",
-}
 local stir_tutorials <const> = {
     "Always stir to see\nwhat Ingredient do.",
     "Use the crank to stir.",
@@ -111,7 +96,6 @@ local sayings <const> = {
             { need_less_doom, need_more_doom },
             { need_less_weed, need_more_weed },
         },
-        color = { need_less_bright, need_more_bright }, -- too_dark, too_bright
         stir = need_more_stir
     },
     struggle = {
@@ -487,27 +471,6 @@ function Froggo:think()
     end
 end
 
-
-function Froggo:give_color_direction()
-    -- clockwise makes it more 1
-
-    -- check dir
-    local needs_to_stir_in_dir = DIR.need_more_of -- need more bright,  1
-    if DIFF_TO_TARGET.color < 0.0 then
-        needs_to_stir_in_dir = DIR.need_less_of -- need less bright,  2
-    end
-
-    -- check amount
-    local stirr_offset = 1
-    if DIFF_TO_TARGET.color_abs < 0.3 then
-        stirr_offset = 3
-    elseif DIFF_TO_TARGET.color_abs < 0.75 then
-        stirr_offset = 2
-    end
-
-    print("giving stirring direction: dir "..needs_to_stir_in_dir.." amount "..stirr_offset)
-    self:select_sentence(sayings.help.color[needs_to_stir_in_dir], stirr_offset)
-end
 
 local stir_offset = 1
 

@@ -6,7 +6,6 @@ COCKTAILS = {
   { name="Snailiva",
     rune_composition={1, 0, 0},
     step_ratings= {2, 8, 15},
-    color=1.0,
     img=gfxi.new('images/cocktails/snailiva_sheet'),
     table= gfxit.new('images/cocktails/snailiva_sheet'),
     locked_img = gfxi.new('images/cocktails/snailiva_sheet_locked'),
@@ -20,7 +19,6 @@ COCKTAILS = {
   { name="Silkini",
     rune_composition={0.6, 1, 0},
     step_ratings= {3, 8, 15},
-    color=0.0,
     img=gfxi.new('images/cocktails/silkini_sheet'),
     table= gfxit.new('images/cocktails/silkini_sheet'),
     locked_img = gfxi.new('images/cocktails/silkini_sheet_locked'),
@@ -34,7 +32,6 @@ COCKTAILS = {
   { name="Green Toe",
     rune_composition={0, 0.33, 0.8},
     step_ratings= {4, 10, 15},
-    color=0.25,
     img=gfxi.new('images/cocktails/green_toe_sheet'),
     table= gfxit.new('images/cocktails/green_toe_sheet'),
     locked_img = gfxi.new('images/cocktails/green_toe_sheet_locked'),
@@ -48,7 +45,6 @@ COCKTAILS = {
   { name="Overdose",
     rune_composition={0.25, 1, 0.66},
     step_ratings= {4, 10, 15},
-    color=0.15,
     img=gfxi.new('images/cocktails/overdose_sheet'),
     table= gfxit.new('images/cocktails/overdose_sheet'),
     locked_img = gfxi.new('images/cocktails/overdose_sheet_locked'),
@@ -62,7 +58,6 @@ COCKTAILS = {
   { name="Hodge Podge",
     rune_composition={0.5, 0.5, 0.5},
     step_ratings= {4, 10, 15},
-    color=0.85,
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
     table= gfxit.new('images/cocktails/hodge_podge_sheet'),
     locked_img = gfxi.new('images/cocktails/hodge_podge_sheet_locked'),
@@ -76,7 +71,6 @@ COCKTAILS = {
   { name="Dicey Brew",
     rune_composition={1, 1, 1},
     step_ratings= {4, 10, 15},
-    color=1,0,
     img=gfxi.new('images/cocktails/dicey_brew_sheet'),
     table= gfxit.new('images/cocktails/dicey_brew_sheet'),
     locked_img = gfxi.new('images/cocktails/dicey_brew_sheet_locked'),
@@ -93,13 +87,12 @@ TARGET_COCKTAIL = {
   type_idx = 1,
   rune_count = {0, 0, 0},
   step_ratings = {0, 0, 0},
-  color = 0.1,
 }
+
 
 function Reroll_mystery_potion()
     for a = 1, #COCKTAILS, 1 do
       if COCKTAILS[a].name == "Dicey Brew" then
-          COCKTAILS[a].color = math.random(100)/100
           for b = 1, 3, 1 do
             COCKTAILS[a].rune_composition[b] = math.random()
           end
@@ -107,12 +100,12 @@ function Reroll_mystery_potion()
   end
 end
 
-function Set_target_potion(chosen_cocktail_idx)
+
+function Set_target_potion(chosen_cocktail_idx)  
   local chosen_cocktail = COCKTAILS[chosen_cocktail_idx]
 
   TARGET_COCKTAIL.name = chosen_cocktail.name
   TARGET_COCKTAIL.type_idx = chosen_cocktail_idx
-  TARGET_COCKTAIL.color = chosen_cocktail.color
   TARGET_COCKTAIL.step_ratings = chosen_cocktail.step_ratings
 
   -- Find normalized rune composition.
@@ -121,6 +114,7 @@ function Set_target_potion(chosen_cocktail_idx)
     TARGET_COCKTAIL.rune_count[a] = chosen_cocktail.rune_composition[a]
   end
 end
+
 
 function Score_of_recipe(recipe)
   local score = #recipe
