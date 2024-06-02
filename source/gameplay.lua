@@ -8,13 +8,15 @@ RUNES = { love = 1, doom = 2, weed = 3 }
 DIR = { need_more_of = 1, need_less_of = 2 }
 
 GAMEPLAY_STATE = {
+    -- User modal interation
     showing_cocktail = false,
     showing_instructions = false,
     showing_recipe = false,
+    cursor_hold = false,  -- The gyro hand cursor is held down.
     -- Fire!
     flame_amount = 0.0,
     heat_amount = 0.0,
-    -- Viscosity
+    -- Liquid fluid simulation.
     liquid_offset = 0.0,
     liquid_momentum = 0.0,
     -- Current potion mix
@@ -23,10 +25,6 @@ GAMEPLAY_STATE = {
     rune_count = {0, 0, 0},
     rune_count_unstirred = {0, 0, 0},
     dropped_ingredients = 0,
-    -- ??
-    game_tick = 0,
-    -- The cursor is held down
-    cursor_hold = false,
     used_ingredients_table = {
         false, -- peppermints
         false, -- perfume
@@ -38,7 +36,10 @@ GAMEPLAY_STATE = {
         false, -- spiderweb
         false, -- snail_shells
     },
-    used_ingredients = 0
+    used_ingredients = 0,
+    -- DEPRECATED - this 'tick' is used for progressing animations, but it should be removed
+    -- as it makes animations framerate dependent.
+    game_tick = 0,
 }
 
 CURRENT_RECIPE = {}
@@ -107,8 +108,9 @@ GRAVITY_Z = 0
 SHAKE_VAL = 0
 IS_SIMULATING_SHAKE = false -- Simulator only control to mimic shaking the playdate.
 
--- Resource Management
 
+
+-- Resource Management
 
 function Init_gameplay()
     -- Done only once on start of the game, to load and setup const resources.
@@ -198,6 +200,7 @@ function Reset_gameplay()
     end_recipe_y = 0
 end
 
+
 function Update_rune_count(drop_rune_count)
 
     -- Calculate new rune count
@@ -230,6 +233,7 @@ function Update_rune_count(drop_rune_count)
     --print("Rune Count = " .. tostring(GAMEPLAY_STATE.rune_count[1] .. ", " .. tostring(GAMEPLAY_STATE.rune_count[2]) .. ", " .. tostring(GAMEPLAY_STATE.rune_count[3])))
 end
 
+
 win_text = ""
 
 function Win_game()
@@ -256,10 +260,14 @@ function Win_game()
     Store_high_scores()
 end
 
+
 end_recipe_y = 0
 local scroll_speed = 1.8
 
--- Update Loop
+
+
+-- Update Loop: input
+
 function Handle_input()
 
     -- When transitioning to end game, stop processing and reacting to new input.
@@ -382,6 +390,7 @@ function playdate.keyPressed(key)
       GYRO_Y += 15
     end
 end
+
 
 function playdate.keyReleased(key)
     -- Microphone alternative for Fire.
@@ -527,6 +536,8 @@ function check_crank_to_stir()
 end
 
 
+-- Update Loop: logic
+
 function Tick_gameplay()
     GAMEPLAY_STATE.game_tick += 1
     local crankTicks = playdate.getCrankTicks(1) --Not really used, but resets the ticks before going back to start menu
@@ -550,6 +561,7 @@ function Tick_gameplay()
 
     FROG:animation_tick()
 end
+
 
 -- The amount of time before the next blow sound can play
 local blow_sound_timer = playdate.timer.new(0.5 * 1000, 0, 1)
@@ -595,11 +607,11 @@ function update_fire()
     end
 end
 
+
 local liquid_darkening = 0
 
 function update_liquid()
     -- Update liquid color & stir effect
-
 
     local stir_change = 0.001
     local floating_drops = GAMEPLAY_STATE.dropped_ingredients
@@ -641,6 +653,10 @@ function update_liquid()
         GAMEPLAY_STATE.liquid_momentum = 0
     end
 end
+
+
+
+-- Game target goal checks
 
 
 function Are_ingredients_good_enough()
