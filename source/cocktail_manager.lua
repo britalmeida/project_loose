@@ -17,7 +17,7 @@ COCKTAILS = {
     --Intro 1 (Love)
 
   { name="Silkini",
-    rune_composition={0.5, 1, 0},
+    rune_composition={0.6, 1, 0},
     color=0.0,
     img=gfxi.new('images/cocktails/silkini_sheet'),
     table= gfxit.new('images/cocktails/silkini_sheet'),
@@ -30,7 +30,7 @@ COCKTAILS = {
     -- Intro 2 (Love & Doom)
 
   { name="Green Toe",
-    rune_composition={0, 0.33, 1},
+    rune_composition={0, 0.33, 0.8},
     color=0.25,
     img=gfxi.new('images/cocktails/green_toe_sheet'),
     table= gfxit.new('images/cocktails/green_toe_sheet'),

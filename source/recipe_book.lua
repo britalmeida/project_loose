@@ -88,7 +88,7 @@ function Recipe_steps_to_text_menu(recipe_steps)
                 line = line .. " pinch of "
             end
             line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
-            if recipe_steps[step][2] > 1 and not INGREDIENT_TYPES[step_type].drop_name == "salt" then
+            if recipe_steps[step][2] > 1 and INGREDIENT_TYPES[step_type].drop_name ~= "salt" then
                 line = line .. "s"
             end
         else
