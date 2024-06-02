@@ -46,8 +46,7 @@ local need_less_bright <const> = {
     "Just a lil'bit too dark.",
 }
 local stir_tutorials <const> = {
-    "Stir to see if you've\ngot it right.",
-    "Stirring helps after\nusing ingredients.",
+    "Always stir to see\nwhat Ingredient do.",
     "Use the crank to stir.",
     "11",
 }
