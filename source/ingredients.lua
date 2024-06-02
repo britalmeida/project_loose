@@ -9,10 +9,10 @@ local animloop <const> = playdate.graphics.animation.loop
 local splish_imgs, splish_framerate = gfxit.new("images/fx/splish"), 3
 
 INGREDIENT_TYPES = {
-    { name="Peppermints",   drop_name="peppermint",   rune_composition={  1,    -0.33,  0   }, x=375,  y= 27, img=gfxi.new('images/ingredients/peppermints'),  drop=gfxi.new('images/ingredients/peppermints_drop'), hold=nil },
+    { name="Peppermints",   drop_name="peppermint",   rune_composition={  0.5,  -0.2,   0   }, x=375,  y= 27, img=gfxi.new('images/ingredients/peppermints'),  drop=gfxi.new('images/ingredients/peppermints_drop'), hold=nil },
     { name="Perfume",       drop_name="perfume drop", rune_composition={  1,     0,    -0.33}, x=330,  y= 32, img=gfxi.new('images/ingredients/perfume'),      drop=gfxi.new('images/ingredients/perfume_drop'),     hold=nil  },
-    { name="Mushrooms",     drop_name="mushroom",     rune_composition={ -0.33,  1,     0.5 }, x=270,  y= 28, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfxi.new('images/ingredients/mushrooms_drop'),   hold=nil  },
-    { name="Coffee Beans",  drop_name="coffee bean",  rune_composition={  0.5,  -0.33,  1   }, x= 33,  y= 81, img=gfxi.new('images/ingredients/coffee'),       drop=gfxi.new('images/ingredients/coffee_drop'),      hold=nil  },
+    { name="Mushrooms",     drop_name="mushroom",     rune_composition={ -0.33,  0.5,   0.4 }, x=270,  y= 28, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfxi.new('images/ingredients/mushrooms_drop'),   hold=nil  },
+    { name="Coffee Beans",  drop_name="coffee bean",  rune_composition={  0.2,  -0.2,   0.5 }, x= 33,  y= 81, img=gfxi.new('images/ingredients/coffee'),       drop=gfxi.new('images/ingredients/coffee_drop'),      hold=nil  },
     { name="Toenails",      drop_name="toenail",      rune_composition={ -1,     0.33,  0   }, x= 20,  y= 25, img=gfxi.new('images/ingredients/toenails'),     drop=gfxi.new('images/ingredients/toenails_drop'),    hold=nil  },
     { name="Salt",          drop_name="salt",         rune_composition={  0,    -1,    -0.33}, x= 64,  y= 28, img=gfxi.new('images/ingredients/salt'),         drop=gfxi.new('images/ingredients/salt_drop'),        hold=nil  },
     { name="Garlic",        drop_name="garlic clove", rune_composition={  0,    -0.33,  1   }, x=280,  y= 95, img=gfxi.new('images/ingredients/garlic'),       drop=gfxi.new('images/ingredients/garlic_drop'),      hold=gfxi.new('images/ingredients/garlic_held')  },
