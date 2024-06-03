@@ -1,8 +1,5 @@
 local vec2d <const> = playdate.geometry.vector2D
 
-GYRO_X, GYRO_Y = 200, 120
-PREV_GYRO_X, PREV_GYRO_Y = 200, 120
-
 NUM_RUNES = 3
 RUNES = { love = 1, doom = 2, weed = 3 }
 DIR = { need_more_of = 1, need_less_of = 2 }
@@ -79,19 +76,20 @@ PLAYER_STRUGGLES = {
 -- The recipe steps that trigger a gameplay tip from the frog
 RECIPE_STRUGGLE_STEPS = nil
 
+-- Frog entity.
 FROG = nil
 
--- Stir speed is the speed of cranking in revolutions per seconds
-STIR_SPEED = 0
--- Effect stirring has on the potion
-STIR_FACTOR = 0
+-- Stirring.
+STIR_POSITION = 0 -- Ladle position as an angle in radians.
+STIR_FACTOR = 0  -- Effect stirring has on the potion
 
--- Stir position is an angle in radians
-STIR_POSITION = 0
-
-STIR_DIRECTION = 0
+STIR_SPEED = 0 -- Speed of cranking in revolutions per second
 STIR_REVOLUTION = 0
 STIR_COUNT = 0
+
+-- Gyro.
+GYRO_X, GYRO_Y = 200, 120
+PREV_GYRO_X, PREV_GYRO_Y = 200, 120
 
 IS_GYRO_INITIALZIED = false
 AVG_GRAVITY_X = 0
@@ -470,30 +468,28 @@ local ingredients_were_dropped = false
 
 
 function check_crank_to_stir()
-    -- Track crank changes
-    local prev_stir_position = STIR_POSITION
+    local prev_stir_position <const> = STIR_POSITION
 
-    -- Crank stirring
-    local angleDelta, acceleratedChange = playdate.getCrankChange()
-    STIR_SPEED = acceleratedChange
-    -- Use the absolute position of the crank to drive the stick in the cauldorn
-    STIR_POSITION = math.rad(playdate.getCrankPosition())
+    -- Poll crank input.
+    local _, acceleratedChange = playdate.getCrankChange()
+    STIR_SPEED = acceleratedChange or 0
+    -- Use the absolute position of the crank to drive the stick in the cauldron.
+    STIR_POSITION = math.rad(playdate.getCrankPosition() or 0)
 
+    local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
+
+    -- ??
     if GAMEPLAY_STATE.dropped_ingredients > 0 then
         ingredients_were_dropped = true
     end
 
     -- Count crank revolutions
-    if math.abs(STIR_SPEED) > 1 then
-        STIR_DIRECTION = Sign(STIR_SPEED)
-    end
-    if (prev_stir_position == STIR_POSITION and GAMEPLAY_STATE.dropped_ingredients == 0 and ingredients_were_dropped)
+    if (delta_stir == 0 and GAMEPLAY_STATE.dropped_ingredients == 0 and ingredients_were_dropped)
     or not ingredients_were_dropped then
         ingredients_were_dropped =  false
         STIR_REVOLUTION = 0
         STIR_COUNT = 0
     else
-        local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
         if delta_stir > 0.5 then
             delta_stir = 1 - delta_stir
         end
@@ -505,6 +501,7 @@ function check_crank_to_stir()
         end
     end
 
+    -- Play stirring sound when the ladle is moving.
     if math.abs(STIR_SPEED) > 3 then
         if not SOUND.stir_sound:isPlaying() then
             SOUND.stir_sound:play()
