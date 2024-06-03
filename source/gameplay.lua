@@ -464,8 +464,6 @@ function check_gyro_and_gravity()
     end
 end
 
-local ingredients_were_dropped = false
-
 
 function check_crank_to_stir()
     local prev_stir_position <const> = STIR_POSITION
@@ -479,14 +477,11 @@ function check_crank_to_stir()
     local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
 
     -- ??
-    if GAMEPLAY_STATE.dropped_ingredients > 0 then
-        ingredients_were_dropped = true
-    end
+    local ingredients_were_dropped = (GAMEPLAY_STATE.dropped_ingredients > 0)
 
     -- Count crank revolutions
     if (delta_stir == 0 and GAMEPLAY_STATE.dropped_ingredients == 0 and ingredients_were_dropped)
     or not ingredients_were_dropped then
-        ingredients_were_dropped =  false
         STIR_REVOLUTION = 0
         STIR_COUNT = 0
     else
