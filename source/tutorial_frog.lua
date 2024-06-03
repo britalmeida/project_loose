@@ -75,7 +75,7 @@ local need_more_weed <const> = {
     "Could use some veggies.",  "6",
 }
 local need_less_weed <const> = {
-    "Could be less vegitarian?", "5",
+    "Could be less vegetarian?", "5",
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",
