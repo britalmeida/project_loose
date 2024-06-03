@@ -21,6 +21,7 @@ GAMEPLAY_STATE = {
     rune_count = {0, 0, 0},
     rune_count_unstirred = {0, 0, 0},
     dropped_ingredients = 0,
+    dropped_since_last_stirred = false,
     used_ingredients_table = {
         false, -- peppermints
         false, -- perfume
@@ -464,8 +465,6 @@ function check_gyro_and_gravity()
     end
 end
 
--- Var to remember if an ingredient was already in the cauldron when stirring started
-local ingredients_were_dropped = false
 
 function check_crank_to_stir()
     local prev_stir_position <const> = STIR_POSITION
@@ -478,21 +477,19 @@ function check_crank_to_stir()
 
     local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
 
-    -- Turns true when player starts stirring and there's an ingredient in the cauldron
     if GAMEPLAY_STATE.dropped_ingredients > 0 then
-        ingredients_were_dropped = true
+        GAMEPLAY_STATE.dropped_since_last_stirred = true
     end
 
     -- Count crank revolutions
     -- Reset counting when cranking stops
     -- Also resets if there's no ingredient in the cauldron
-    if (delta_stir == 0 and GAMEPLAY_STATE.dropped_ingredients == 0 and ingredients_were_dropped)
-    or not ingredients_were_dropped then
+    if (delta_stir == 0 and GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.dropped_since_last_stirred)
+    or not GAMEPLAY_STATE.dropped_since_last_stirred then
         STIR_REVOLUTION = 0
         STIR_COUNT = 0
-        -- resets to false,
-        -- to check again if there's an ingredent in the cauldron only once stirring starts again
-        ingredients_were_dropped =  false
+        -- Reset to check again if there's an ingredent in the cauldron only once stirring starts again
+        GAMEPLAY_STATE.dropped_since_last_stirred =  false
     else
         if delta_stir > 0.5 then
             delta_stir = 1 - delta_stir
