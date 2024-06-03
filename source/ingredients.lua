@@ -221,6 +221,7 @@ function Ingredient:try_pickup()
       -- Move sprite to the front
       self:setZIndex(Z_DEPTH.grabbed_ingredient)
       self.state = INGREDIENT_STATE.is_picked_up
+      GAMEPLAY_STATE.held_ingredient = self.ingredient_type_idx
       if INGREDIENT_TYPES[self.ingredient_type_idx].hold then
         self:setImage(INGREDIENT_TYPES[self.ingredient_type_idx].hold)
       end

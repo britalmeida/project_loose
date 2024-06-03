@@ -667,11 +667,12 @@ end
 
 local function draw_ingredient_place_hint()
     gfx.pushContext()
-        -- Blink the circle on and off every 12 frames
-        local blink_time = 12
-        if GAMEPLAY_STATE.cursor_hold and GAMEPLAY_STATE.game_tick % blink_time*2 > blink_time then
-          TEXTURES.place_hint:drawCentered(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
-        end
+    if GAMEPLAY_STATE.cursor_hold and GAMEPLAY_STATE.cauldron_ingredient == nil then
+        local held_ingredient = ANIMATIONS.place_hints[GAMEPLAY_STATE.held_ingredient]
+        local hint_x = MAGIC_TRIANGLE_CENTER_X - (held_ingredient:image().width / 2)
+        local hint_y = MAGIC_TRIANGLE_CENTER_Y - (held_ingredient:image().height / 2)
+        held_ingredient:draw(hint_x, hint_y)
+    end
     gfx.popContext()
 end
 
@@ -721,7 +722,17 @@ function Init_visuals()
     -- Load images
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
-    TEXTURES.place_hint = gfxi.new("images/cursor/empty_jar")
+    ANIMATIONS.place_hints = {
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_peppermints_blink"), true), -- peppermints
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_perfume_blink"), true), -- perfume
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_mushrooms_blink"), true), -- mushroom
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_coffee_blink"), true), -- coffee
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_toenails_blink"), true), -- toenails
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_salt_blink"), true), -- salt
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_garlic_blink"), true), -- garlic
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_spiderweb_blink"), true), -- spiderweb
+        animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_snailshells_blink"), true), -- snailshells
+    }
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
     ANIMATIONS.rune_correct = {
         animloop.new(8 * frame_ms, gfxit.new("images/love_correct"), true),

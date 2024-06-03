@@ -20,6 +20,7 @@ GAMEPLAY_STATE = {
     potion_bubbliness = 0.0,
     rune_count = {0, 0, 0},
     rune_count_unstirred = {0, 0, 0},
+    held_ingredient = 0, -- index of currently helf ingredient
     dropped_ingredients = 0,
     dropped_since_last_stirred = false,
     used_ingredients_table = {
@@ -144,6 +145,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.liquid_viscosity = 0.9
     GAMEPLAY_STATE.potion_bubbliness = 0.0
     GAMEPLAY_STATE.cauldron_ingredient = nil
+    GAMEPLAY_STATE.held_ingredient = 0
     GAMEPLAY_STATE.last_cauldron_ingredient = nil
     GAMEPLAY_STATE.last_shaken_ingredient = nil
     GAMEPLAY_STATE.cauldron_swap_count = 0
