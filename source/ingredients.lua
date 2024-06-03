@@ -25,11 +25,6 @@ DROPS = {}
 
 INGREDIENT_STATE = { is_in_shelf = 0, is_picked_up = 2, is_in_air = 3, is_over_cauldron = 4 }
 
-CAULDRON_INGREDIENT = nil
-LAST_CAULDRON_INGREDIENT = nil
-LAST_SHAKEN_INGREDIENT = nil
-CALUDRON_SWAP_COUNT = 0
-
 Ingredient = NewSubClass("Ingredient", Sprite)
 
 function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
@@ -71,8 +66,8 @@ function Ingredient:tick()
         CURRENT_RECIPE[#CURRENT_RECIPE+1] = self.ingredient_type_idx
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
         Recipe_update_current()
-        LAST_SHAKEN_INGREDIENT = self.ingredient_type_idx
-        CALUDRON_SWAP_COUNT = 0
+        GAMEPLAY_STATE.last_shaken_ingredient = self.ingredient_type_idx
+        GAMEPLAY_STATE.cauldron_swap_count = 0
 
         -- Update list of already used ingredients
         if GAMEPLAY_STATE.used_ingredients_table[self.ingredient_type_idx] == false then
@@ -108,16 +103,16 @@ function Ingredient:tick()
         self.vel.dx, self.vel.dy = GYRO_X - PREV_GYRO_X, GYRO_Y - PREV_GYRO_Y
         -- Follow the gyro
         self:moveTo(GYRO_X, GYRO_Y)
-        CAULDRON_INGREDIENT = nil
+        GAMEPLAY_STATE.cauldron_ingredient = nil
     elseif self.state == INGREDIENT_STATE.is_over_cauldron then
         if self.is_wiggling then
             self:wiggle()
         end
-        if CAULDRON_INGREDIENT == nil then
-          CALUDRON_SWAP_COUNT += 1
+        if GAMEPLAY_STATE.cauldron_ingredient == nil then
+          GAMEPLAY_STATE.cauldron_swap_count += 1
         end
-        CAULDRON_INGREDIENT = self.ingredient_type_idx
-        LAST_CAULDRON_INGREDIENT = self.ingredient_type_idx
+        GAMEPLAY_STATE.cauldron_ingredient = self.ingredient_type_idx
+        GAMEPLAY_STATE.last_cauldron_ingredient = self.ingredient_type_idx
         if self.can_drop and (SHAKE_VAL > 3 or IS_SIMULATING_SHAKE) then
             self.can_drop = false
             self:trigger_drop()

@@ -34,6 +34,11 @@ GAMEPLAY_STATE = {
         false, -- snail_shells
     },
     used_ingredients = 0,
+    -- Variables for primarily detecting player struggle
+    cauldron_ingredient = nil,
+    last_cauldron_ingredient = nil,
+    last_shaken_ingredient = nil,
+    cauldron_swap_count = 0,
     -- DEPRECATED - this 'tick' is used for progressing animations, but it should be removed
     -- as it makes animations framerate dependent.
     game_tick = 0,
@@ -138,6 +143,10 @@ function Reset_gameplay()
     GAMEPLAY_STATE.liquid_momentum = 0.0
     GAMEPLAY_STATE.liquid_viscosity = 0.9
     GAMEPLAY_STATE.potion_bubbliness = 0.0
+    GAMEPLAY_STATE.cauldron_ingredient = nil
+    GAMEPLAY_STATE.last_cauldron_ingredient = nil
+    GAMEPLAY_STATE.last_shaken_ingredient = nil
+    GAMEPLAY_STATE.cauldron_swap_count = 0
     -- Reset current ingredient mix.
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
@@ -178,12 +187,6 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.cocktail_struggle = false
     PLAYER_STRUGGLES.fire_struggle_asked = 0
     PLAYER_STRUGGLES.ingredient_struggle_asked = 0
-
-    -- Variables for detecting player struggle
-    CAULDRON_INGREDIENT = nil
-    LAST_CAULDRON_INGREDIENT = nil
-    LAST_SHAKEN_INGREDIENT = nil
-    CALUDRON_SWAP_COUNT = 0
 
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
@@ -893,9 +896,9 @@ end
 
 function Cauldron_ingredient_was_shaken()
     -- Check if ingredient has been shaken and same ingredient is still on cauldron
-    if LAST_CAULDRON_INGREDIENT == nil and LAST_SHAKEN_INGREDIENT == nil then
+    if GAMEPLAY_STATE.last_cauldron_ingredient == nil and GAMEPLAY_STATE.last_shaken_ingredient == nil then
         return false
-    elseif LAST_CAULDRON_INGREDIENT == LAST_SHAKEN_INGREDIENT then
+    elseif GAMEPLAY_STATE.last_cauldron_ingredient == GAMEPLAY_STATE.last_shaken_ingredient then
         return true
     else
         return false
