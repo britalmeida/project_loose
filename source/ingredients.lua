@@ -6,7 +6,6 @@ local Sprite <const> = gfx.sprite
 local animloop <const> = playdate.graphics.animation.loop
 
 
-local splish_imgs, splish_framerate = gfxit.new("images/fx/splish"), 3
 
 INGREDIENT_TYPES = {
     { name="Peppermints",   drop_name="peppermint",   rune_composition={  4,  -2,   2  }, x=374,  y= 24, img=gfxi.new('images/ingredients/peppermints'),  drop=gfxi.new('images/ingredients/peppermints_drop'), hold=nil },
@@ -320,9 +319,10 @@ IngredientSplash = NewSubClass("IngredientSplash", Sprite)
 function IngredientSplash:init()
     IngredientSplash.super.init(self)
 
-    self.anim = animloop.new(splish_framerate * frame_ms, gfxit.new("images/fx/splish"), false)
 
-    self:moveTo(LIQUID_CENTER_X+5, LIQUID_CENTER_Y-10)
+    self.anim = animloop.new(3*frame_ms, gfxit.new("images/fx/splish"), false)
+
+    self:moveTo(LIQUID_CENTER_X+5, LIQUID_CENTER_Y-10) -- default to center the graphic with the liquid center.
     self:setZIndex(Z_DEPTH.ingredient_drop_splash)
 
     self:reset()
