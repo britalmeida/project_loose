@@ -4,10 +4,12 @@ local gfxi <const> = playdate.graphics.image
 RECIPE_TEXT = {}
 RECIPE_MAX_HEIGHT = 0
 
+
+-- Convert a list of ingredient drop types to a counted list of consecutive drops.
+-- e.g.: { 1, 1, 1, 4, 1, 1 } -> { {1, 3}, {4, 1}, {1, 2} }
 function Recipe_to_steps(recipe)
-    if recipe == nil then
-        return {}
-    elseif next(recipe) == nil then
+    -- Early out when there's no added ingredients (recipe table is empty).
+    if next(recipe) == nil then
         return {}
     end
 
@@ -27,6 +29,7 @@ function Recipe_to_steps(recipe)
     recipe_steps[#recipe_steps+1] = {current_ingredient, ingredient_stack}
     return recipe_steps
 end
+
 
 function Recipe_steps_to_text_success(recipe_steps)
     if recipe_steps == nil then
