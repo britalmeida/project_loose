@@ -464,6 +464,8 @@ function check_gyro_and_gravity()
     end
 end
 
+-- Var to remember if an ingredient was already in the cauldron when stirring started
+local ingredients_were_dropped = false
 
 function check_crank_to_stir()
     local prev_stir_position <const> = STIR_POSITION
@@ -476,14 +478,21 @@ function check_crank_to_stir()
 
     local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
 
-    -- ??
-    local ingredients_were_dropped = (GAMEPLAY_STATE.dropped_ingredients > 0)
+    -- Turns true when player starts stirring and there's an ingredient in the cauldron
+    if GAMEPLAY_STATE.dropped_ingredients > 0 then
+        ingredients_were_dropped = true
+    end
 
     -- Count crank revolutions
+    -- Reset counting when cranking stops
+    -- Also resets if there's no ingredient in the cauldron
     if (delta_stir == 0 and GAMEPLAY_STATE.dropped_ingredients == 0 and ingredients_were_dropped)
     or not ingredients_were_dropped then
         STIR_REVOLUTION = 0
         STIR_COUNT = 0
+        -- resets to false,
+        -- to check again if there's an ingredent in the cauldron only once stirring starts again
+        ingredients_were_dropped =  false
     else
         if delta_stir > 0.5 then
             delta_stir = 1 - delta_stir
