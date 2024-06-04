@@ -75,12 +75,12 @@ PLAYER_STRUGGLES = {
     too_much_fire = false,
     no_shake = false,
     too_much_shaking = false,
-    no_stir = false,
     too_much_stir = false,
     recipe_struggle = false,
     recipe_struggle_lvl = 0,
     fire_struggle_asked = 0,
     ingredient_struggle_asked = 0,
+    struggle_hint_asked = 0
 }
 
 -- The recipe steps that trigger a gameplay tip from the frog
@@ -134,7 +134,7 @@ GAMEPLAY_TIMERS = {
     no_shake_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.no_shake = false
         end),
-    no_stir_timeout = playdate.timer.new(100, function ()
+    too_much_shaking_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.too_much_shaking = false
       end),
     too_much_stir_timeout = playdate.timer.new(100, function ()
@@ -253,13 +253,13 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.too_much_fire = false
     PLAYER_STRUGGLES.no_shake = false
     PLAYER_STRUGGLES.too_much_shaking = false
-    PLAYER_STRUGGLES.no_stir = false
     PLAYER_STRUGGLES.too_much_stir = false
     PLAYER_STRUGGLES.recipe_struggle = false
     PLAYER_STRUGGLES.recipe_struggle_lvl = 0
     PLAYER_STRUGGLES.cocktail_struggle = false
     PLAYER_STRUGGLES.fire_struggle_asked = 0
     PLAYER_STRUGGLES.ingredient_struggle_asked = 0
+    PLAYER_STRUGGLES.struggle_hint_asked = 0
 
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
@@ -429,6 +429,7 @@ function Handle_input()
         -- Modal instruction overlays.
         if playdate.buttonJustPressed( playdate.kButtonLeft ) then
             GAMEPLAY_STATE.showing_cocktail = true
+            PLAYER_STRUGGLES.cocktail_struggle = false
         elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
             GAMEPLAY_STATE.showing_cocktail = false
         end
@@ -768,12 +769,16 @@ function Calculate_goodness()
     and not RECIPE_STRUGGLE_STEPS
     and PLAYER_LEARNED.complete then
         FROG:Notify_the_frog()
-        FROG:flash_b_prompt(0) -- Stop potentual blinking from eyeball lick
+        -- Stop potentual blinking from eyeball lick
+        ANIMATIONS.b_prompt.frame = 1
+        ANIMATIONS.b_prompt.paused = true
     elseif math.abs(diff_change_overall) > 0.01
     and not RECIPE_STRUGGLE_STEPS
     and PLAYER_LEARNED.complete then
         FROG:Notify_the_frog()
-        FROG:flash_b_prompt(0) -- Stop potentual blinking from eyeball lick
+        -- Stop potentual blinking from eyeball lick
+        ANIMATIONS.b_prompt.frame = 1
+        ANIMATIONS.b_prompt.paused = true
     elseif CHECK_IF_DELICIOUS then
         FROG:Lick_eyeballs()
     end
@@ -824,14 +829,14 @@ function Check_player_struggle()
         Check_too_much_fire_struggle()
     end
 
+    -- Too much shaking
+    if GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring then
+        Check_too_much_shaking_struggle()
+    end
+
     -- No shaking
     if not Cauldron_ingredient_was_shaken() then
         Check_no_shaking_struggle()
-    end
-
-    -- No stirring
-    if GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring then
-        Check_no_stirring_struggle()
     end
 
     -- Too much stirring
@@ -839,8 +844,11 @@ function Check_player_struggle()
         Check_too_much_stirring_struggle()
     end
 
+    -- No check for "No Stirring needed". There's already frequent remidners in place
+
     -- Coktail struggle
-    if GAMEPLAY_STATE.used_ingredients > 5 and not PLAYER_STRUGGLES.cocktail_struggle then
+    if GAMEPLAY_STATE.used_ingredients > 5 and not PLAYER_STRUGGLES.cocktail_struggle
+    and TARGET_COCKTAIL.type_idx < 5 then
         print("Player used too many ingredient types.")
         PLAYER_STRUGGLES.cocktail_struggle = true
         -- Reset tracked used ingredients
@@ -923,6 +931,7 @@ function Check_no_shaking_struggle()
         FROG:flash_b_prompt()
         Restart_timer("no_shake_timeout", struggle_reminder_timout)
         GAMEPLAY_STATE.cauldron_swap_count = 0
+    -- Check it there's too much stirring without a dropped ingredient
     elseif not PLAYER_STRUGGLES.no_shake then
         if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
             -- Start tracking stirring
@@ -946,16 +955,17 @@ function Check_no_shaking_struggle()
     --print("No shake tracking: " .. no_shake_tracking)
 end
 
-function Check_no_stirring_struggle()
-    if  STIR_FACTOR < 0.3 and not PLAYER_STRUGGLES.too_much_shaking then
+function Check_too_much_shaking_struggle()
+    if STIR_FACTOR < 0.3 and not PLAYER_STRUGGLES.too_much_shaking then
         print("Player is struggling with stir")
         PLAYER_STRUGGLES.too_much_shaking = true
         FROG:flash_b_prompt()
-        Restart_timer("no_stir_timeout", struggle_reminder_timout)
-    elseif STIR_FACTOR > 0.3 and PLAYER_STRUGGLES.no_stir then
+        Restart_timer("too_much_shaking_timeout", struggle_reminder_timout)
+        GAMEPLAY_STATE.dropped_ingredients = 0
+    elseif STIR_FACTOR > 0.3 and PLAYER_STRUGGLES.too_much_shaking then
         --print("Player struggle with stir resolved")
         PLAYER_STRUGGLES.too_much_shaking = false
-        GAMEPLAY_TIMERS.no_stir_timeout:pause()
+        GAMEPLAY_TIMERS.too_much_shaking_timeout:pause()
     end
 end
 

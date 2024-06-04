@@ -74,7 +74,7 @@ local drop_tutorials <const> = {
 }
 local drop_tips <const> = {
     "Seems a bit excessive . . .\nFewer shakes are also fine.",
-    "Remember to stir ingredients in.",
+    "Remember to stir it all in.",
     "11",
 }
 local recipe_struggle <const> = {
@@ -102,6 +102,8 @@ local sayings <const> = {
         fire = { fire_tutorials, fire_tips},
         drop = { drop_tutorials, drop_tips},
         stir = { stir_tutorials, stir_tips},
+    },
+    hint = { -- hook these up poperly everywhere
         recipe = recipe_struggle,
         cocktail = cocktail_struggle,
     }
@@ -398,38 +400,35 @@ function Froggo:think()
 
     else
         local struggle_lvl = PLAYER_STRUGGLES.recipe_struggle_lvl
+        local struggles_unread = PLAYER_STRUGGLES.struggle_hint_asked < 5
 
         PLAYER_LEARNED.complete = true
         -- Frustration checks:
         -- PLAYER_STRUGGLES are usually on a timer before set to false again
 
-        if PLAYER_STRUGGLES.recipe_struggle then
+        if PLAYER_STRUGGLES.recipe_struggle and struggles_unread then
             print("Giving gameplay hint Nr. " .. struggle_lvl)
-            self:select_sentence(sayings.struggle.recipe, struggle_lvl)
-        elseif PLAYER_STRUGGLES.cocktail_struggle then
+            self:select_sentence(sayings.hint.recipe, struggle_lvl)
+        elseif PLAYER_STRUGGLES.cocktail_struggle and struggles_unread then
             print("Giving hint towards cocktail artwork")
-            self:select_sentence(sayings.struggle.cocktail, 1)
-        elseif PLAYER_STRUGGLES.no_fire then
+            self:select_sentence(sayings.hint.cocktail, 1)
+        elseif PLAYER_STRUGGLES.no_fire and struggles_unread then
             print("Reminding fire tutorial.")
             self:select_next_sentence(sayings.struggle.fire[1])
-        elseif PLAYER_STRUGGLES.too_much_fire then
+        elseif PLAYER_STRUGGLES.too_much_fire and struggles_unread then
             print("Giving fire hint.")
             self:select_next_sentence(sayings.struggle.fire[2])
-        elseif PLAYER_STRUGGLES.no_shake then
+        elseif PLAYER_STRUGGLES.no_shake and struggles_unread then
             print("Reminding drop tutorial.")
             self:select_next_sentence(sayings.struggle.drop[1])
-        elseif PLAYER_STRUGGLES.too_much_shaking then
+        elseif PLAYER_STRUGGLES.too_much_shaking and struggles_unread then
             print("Giving drop hint.")
-            self:select_sentence(sayings.struggle.drop[2], 1)
-        elseif PLAYER_STRUGGLES.no_stir then
-            print("Reminding stir tutorial.")
-            self:select_next_sentence(sayings.struggle.stir[1])
-        elseif PLAYER_STRUGGLES.too_much_stir then
+            self:select_next_sentence(sayings.struggle.drop[2])
+        elseif PLAYER_STRUGGLES.too_much_stir and struggles_unread then
             print("Giving stir hint.")
             self:select_next_sentence(sayings.struggle.stir[2])
 
         -- Normal help loop:
-
         elseif GAMEPLAY_STATE.heat_amount < 0.3 then
             -- Reminder to keep the heat up whenever it goes low.
             self:select_next_sentence(sayings.help.fire)
@@ -440,6 +439,16 @@ function Froggo:think()
         elseif not Are_ingredients_good_enough() then
             -- Then give hints on next ingredient
             self:give_ingredients_direction()
+        end
+
+        -- If they went through struggle tips too much, skip them
+        if not struggles_unread then
+            PLAYER_STRUGGLES.struggle_hint_asked = 0
+            PLAYER_STRUGGLES.no_fire = false
+            PLAYER_STRUGGLES.too_much_fire = false
+            PLAYER_STRUGGLES.no_shake = false
+            PLAYER_STRUGGLES.too_much_shaking = false
+            PLAYER_STRUGGLES.too_much_stir = false
         end
     end
 end
@@ -503,6 +512,14 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
             end
         end
     end
+    -- Compare if any struggle hint is used
+    for mechanic in pairs(sayings.struggle) do
+        for severity in pairs(sayings.struggle[mechanic]) do
+            if sayings.struggle[mechanic][severity] == sentence_pool then
+                struggle_tip = true
+            end
+        end
+    end
     -- Check if player is stuck in the same frog hint dialogue
     if self.last_spoken_sentence_pool == sentence_pool
     and sentence_pool == sayings.help.fire then
@@ -510,9 +527,14 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     elseif self.last_spoken_sentence_pool == sentence_pool
     and ingredient_direction then
         PLAYER_STRUGGLES.ingredient_struggle_asked += 1
+    -- Check if they already went through struggle/tips
+    elseif self.last_spoken_sentence_pool == sentence_pool
+    and struggle_tip then
+        PLAYER_STRUGGLES.struggle_hint_asked += 1
     else
         PLAYER_STRUGGLES.fire_struggle_asked = 0
         PLAYER_STRUGGLES.ingredient_struggle_asked = 0
+        PLAYER_STRUGGLES.struggle_hint_asked = 0
     end
     self.last_spoken_sentence_pool = sentence_pool
     self.last_spoken_sentence_cycle_idx = sentence_cycle_idx
@@ -544,7 +566,7 @@ function Froggo:start_speech_bubble()
     else
         -- Add additional time for recipe hints. They can trigger by themselves.
         local extra_time = 0
-        if pool == sayings.struggle.recipe then
+        if pool == sayings.hint.recipe then
             extra_time = 1500
         end
         -- Split text into lines.
