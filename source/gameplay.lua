@@ -951,7 +951,7 @@ function Check_too_much_stirring_struggle()
 end
 
 function Next_recipe_struggle_tip()
-    local lines = 5 -- Same as recipe_struggle table
+    local lines = 4 -- Same as recipe_struggle table
     -- Trigger frog hint line
     PLAYER_STRUGGLES.recipe_struggle_lvl = math.fmod(PLAYER_STRUGGLES.recipe_struggle_lvl + 1, lines)
     if PLAYER_STRUGGLES.recipe_struggle_lvl == 0 then

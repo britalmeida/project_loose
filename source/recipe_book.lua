@@ -115,6 +115,7 @@ end
 function Recipe_update_current()
     RECIPE_TEXT = Recipe_steps_to_text_success(Recipe_to_steps(CURRENT_RECIPE))
     RECIPE_TEXT_SMALL = (Recipe_to_steps(CURRENT_RECIPE))
+    -- The steps where the frog speaks up and gives a hint (20th step and then ever 15 steps)
     RECIPE_STRUGGLE_STEPS = #RECIPE_TEXT_SMALL >= 20 and math.fmod(#RECIPE_TEXT_SMALL - 20, 15) == 0
 end
 
