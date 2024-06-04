@@ -89,6 +89,64 @@ RECIPE_STRUGGLE_STEPS = nil
 -- Frog entity.
 FROG = nil
 
+-- Various timers that are running during gameplay
+GAMEPLAY_TIMERS = {
+    stop_b_flashing = playdate.timer.new(100, function ()
+        ANIMATIONS.b_prompt.frame = 1
+        ANIMATIONS.b_prompt.paused = true
+        end),
+    speech_timer = playdate.timer.new(100, function()
+        FROG:stop_speech_bubble()
+        FROG:go_idle()
+        end),
+    frog_go_idle = playdate.timer.new(100, function()
+        FROG:go_idle()
+        CHECK_IF_DELICIOUS = true
+        end),
+    drinking_cocktail = playdate.timer.new(100, function()
+        FROG:start_animation(FROG.anim_burp)
+        FROG.x_offset = -9
+        end),
+    drinking_burp = playdate.timer.new(100, function()
+        FROG:start_speech_bubble()
+        end),
+    drinking_burp_talk = playdate.timer.new(100, function()
+        FROG:start_animation(FROG.anim_burptalk)
+        FROG.x_offset = -9
+        end),
+    drinking_talk = playdate.timer.new(100, function()
+        -- Disable speech bubble after a short moment.
+        FROG:stop_speech_bubble()
+        FROG:start_animation(FROG.anim_cocktail)
+        FROG.x_offset = -9
+        GAMEPLAY_STATE.showing_recipe = true
+        end),
+    -- Timout values and timers fore stopping struggle dialogue -- tmp these need to be store better and only reset and paused.
+    cocktail_struggle_timeout = playdate.timer.new(100, function ()
+        PLAYER_STRUGGLES.cocktail_struggle = false
+        end),
+    no_fire_timeout = playdate.timer.new(100, function ()
+        PLAYER_STRUGGLES.no_fire = false
+        end),
+    too_much_fire_timeout = playdate.timer.new(100, function ()
+        PLAYER_STRUGGLES.too_much_fire = false
+        end),
+    no_shake_timeout = playdate.timer.new(100, function ()
+        PLAYER_STRUGGLES.no_shake = false
+        end),
+    no_stir_timeout = playdate.timer.new(100, function ()
+        PLAYER_STRUGGLES.too_much_shaking = false
+      end),
+    too_much_stir_timeout = playdate.timer.new(100, function ()
+        PLAYER_STRUGGLES.too_much_stir = false
+        end),
+}
+-- Make sure none of the gameplay timers are removed on completion
+for k in pairs(GAMEPLAY_TIMERS) do
+    GAMEPLAY_TIMERS[k]:pause()
+    GAMEPLAY_TIMERS[k].discardOnCompletion = false
+end
+
 -- Stirring.
 STIR_POSITION = 0 -- Ladle position as an angle in radians.
 STIR_FACTOR = 0  -- Effect stirring has on the potion
@@ -166,6 +224,14 @@ function Reset_gameplay()
     GAMEPLAY_STATE.dropped_ingredients = 0
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
+
+    -- Reset active timers
+    for k, v in pairs(GAMEPLAY_TIMERS) do
+        if GAMEPLAY_TIMERS[k] ~= nil then
+            GAMEPLAY_TIMERS[k]:reset()
+            GAMEPLAY_TIMERS[k]:pause()
+        end
+    end
 
     Calculate_goodness()
 
@@ -702,10 +768,12 @@ function Calculate_goodness()
     and not RECIPE_STRUGGLE_STEPS
     and PLAYER_LEARNED.complete then
         FROG:Notify_the_frog()
+        FROG:flash_b_prompt(0) -- Stop potentual blinking from eyeball lick
     elseif math.abs(diff_change_overall) > 0.01
     and not RECIPE_STRUGGLE_STEPS
     and PLAYER_LEARNED.complete then
         FROG:Notify_the_frog()
+        FROG:flash_b_prompt(0) -- Stop potentual blinking from eyeball lick
     elseif CHECK_IF_DELICIOUS then
         FROG:Lick_eyeballs()
     end
@@ -738,14 +806,6 @@ local no_fire_tracking = 0
 local too_much_fire_tracking = 0
 local no_shake_tracking = 0
 local too_much_stir_tracking = 0
-
--- Timout values and timers fore stopping struggle dialogue
-local cocktail_struggle_timeout = nil
-local no_fire_timeout = nil
-local too_much_fire_timeout = nil
-local no_shake_timeout = nil
-local no_stir_timeout = nil
-local too_much_stir_timeout = nil
 
 function Check_player_struggle()
 
@@ -789,9 +849,7 @@ function Check_player_struggle()
             GAMEPLAY_STATE.used_ingredients_table[k] = false
         end
         -- Timeout to stop cocktail hint dialogue
-        cocktail_struggle_timeout = playdate.timer.new(struggle_reminder_timout, function ()
-            PLAYER_STRUGGLES.cocktail_struggle = false
-            end)
+        Restart_timer("cocktail_struggle_timeout", struggle_reminder_timout)
         FROG:Ask_the_frog()
     end
 
@@ -819,9 +877,7 @@ function Check_no_fire_struggle()
         print("Fire is never used or player forgot how!")
         PLAYER_STRUGGLES.no_fire = true
         FROG:flash_b_prompt()
-        no_fire_timeout = playdate.timer.new(struggle_reminder_timout, function ()
-            PLAYER_STRUGGLES.no_fire = false
-            end)
+        Restart_timer("no_fire_timeout", struggle_reminder_timout)
     end
     --print("No fire tracking: " .. no_fire_tracking)
 end
@@ -852,9 +908,7 @@ function Check_too_much_fire_struggle()
         GAMEPLAY_STATE.fire_stoke_count = 0
         too_much_fire_tracking = 0
         -- timer to stop struggle dialogue
-        too_much_fire_timeout = playdate.timer.new(struggle_reminder_timout, function ()
-            PLAYER_STRUGGLES.too_much_fire = false
-        end)
+        Restart_timer("too_much_fire_timeout", struggle_reminder_timout)
     end
     --print("Too much fire tracker: " .. too_much_fire_tracking)
     --print(GAMEPLAY_STATE.fire_stoke_count)
@@ -867,10 +921,8 @@ function Check_no_shaking_struggle()
         print("Swapped ingredients too much without shaking")
         PLAYER_STRUGGLES.no_shake = true
         FROG:flash_b_prompt()
-        no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
-            PLAYER_STRUGGLES.no_shake = false
-            end)
-            GAMEPLAY_STATE.cauldron_swap_count = 0
+        Restart_timer("no_shake_timeout", struggle_reminder_timout)
+        GAMEPLAY_STATE.cauldron_swap_count = 0
     elseif not PLAYER_STRUGGLES.no_shake then
         if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
             -- Start tracking stirring
@@ -880,9 +932,7 @@ function Check_no_shaking_struggle()
                 print("Too much stirring without shaking")
                 PLAYER_STRUGGLES.no_shake = true
                 FROG:flash_b_prompt()
-                no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
-                    PLAYER_STRUGGLES.no_shake = false
-                    end)
+                Restart_timer("no_shake_timeout", struggle_reminder_timout)
                 no_shake_tracking = 0
             end
         elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
@@ -890,9 +940,7 @@ function Check_no_shaking_struggle()
             no_shake_tracking = 0
             PLAYER_STRUGGLES.no_shake = false
             print("Shaking struggle canceled")
-            if no_shake_timeout ~= nil then
-                no_shake_timeout:remove()
-            end
+            GAMEPLAY_TIMERS.no_shake_timeout:pause()
         end
     end
     --print("No shake tracking: " .. no_shake_tracking)
@@ -903,15 +951,11 @@ function Check_no_stirring_struggle()
         print("Player is struggling with stir")
         PLAYER_STRUGGLES.too_much_shaking = true
         FROG:flash_b_prompt()
-        no_stir_timeout = playdate.timer.new(struggle_reminder_timout, function ()
-            PLAYER_STRUGGLES.too_much_shaking = false
-          end)
+        Restart_timer("no_stir_timeout", struggle_reminder_timout)
     elseif STIR_FACTOR > 0.3 and PLAYER_STRUGGLES.no_stir then
         --print("Player struggle with stir resolved")
         PLAYER_STRUGGLES.too_much_shaking = false
-        if no_stir_timeout ~= nil then
-            no_stir_timeout:remove()
-        end
+        GAMEPLAY_TIMERS.no_stir_timeout:pause()
     end
 end
 
@@ -934,18 +978,14 @@ function Check_too_much_stirring_struggle()
             --print("Stirring reached struggling amount.")
             PLAYER_STRUGGLES.too_much_stir = true
             FROG:flash_b_prompt()
-            too_much_stir_timeout = playdate.timer.new(struggle_reminder_timout, function ()
-                PLAYER_STRUGGLES.too_much_stir = false
-                end)
-                too_much_stir_tracking = 0
+            Restart_timer("too_much_stir_timeout", struggle_reminder_timout)
+            too_much_stir_tracking = 0
         end
     elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
         -- New ingredients dropped in. Reset tracked stirring and timeout
         too_much_stir_tracking = 0
         PLAYER_STRUGGLES.too_much_stir = false
-        if too_much_stir_timeout ~= nil then
-            too_much_stir_timeout:remove()
-        end
+        GAMEPLAY_TIMERS.too_much_stir_timeout:pause()
     end
     --print("Too much stir tracking: " .. too_much_stir_tracking)
 end
@@ -960,4 +1000,10 @@ function Next_recipe_struggle_tip()
     print("Giving gameplay hint Nr. " .. PLAYER_STRUGGLES.recipe_struggle_lvl)
     FROG:Ask_the_frog()
 
+end
+
+function Restart_timer(timer, duration)
+    GAMEPLAY_TIMERS[timer].duration = duration
+    GAMEPLAY_TIMERS[timer]:reset()
+    GAMEPLAY_TIMERS[timer]:start()
 end

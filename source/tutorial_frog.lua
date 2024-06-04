@@ -148,13 +148,6 @@ function Froggo:init()
     self.anim_eyeball    = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
     self.anim_frogfire   = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-frogfire'), true)
 
-    -- Create timer for disabling the speech bubble and transition out of speaking.
-    self.speech_timer = playdate.timer.new(100, function()
-        self:stop_speech_bubble()
-        self:go_idle()
-    end)
-    self.speech_timer.discardOnCompletion = false
-
     self:setZIndex(Z_DEPTH.frog)
 
     self:addSprite()
@@ -178,7 +171,7 @@ function Froggo:reset()
 
     -- Reset speech Bubble state used by draw_dialog_bubble().
     self:stop_speech_bubble()
-    self.speech_timer.paused = true
+    GAMEPLAY_TIMERS.speech_timer.paused = true
 
     -- Ensure the B button prompt is not flashing.
     if ANIMATIONS.b_prompt then
@@ -194,14 +187,17 @@ function Froggo:start_animation(anim_loop)
 end
 
 
-function Froggo:flash_b_prompt()
-    ANIMATIONS.b_prompt.frame = 1  -- Restart the animation from the beggining
+function Froggo:flash_b_prompt(duration)
+    -- Set default duration if none is specified
+    if duration == nil then
+        duration = 3000
+    end
+    -- Restart the animation and start
+    ANIMATIONS.b_prompt.frame = 1
     ANIMATIONS.b_prompt.paused = false
 
-    -- Stop flashing.
-    playdate.timer.new(3000, function ()
-        ANIMATIONS.b_prompt.paused = true
-    end)
+    -- Start the timer that eventually pauses the blinking
+    Restart_timer("stop_b_flashing", duration)
 end
 
 
@@ -215,7 +211,7 @@ function Froggo:Ask_the_frog()
         self:croak()
     elseif self.state == ACTION_STATE.speaking then
         -- Prevent speech bubble kill and transition to idle from the previous sentence.
-        self.speech_timer.paused = true
+        GAMEPLAY_TIMERS.speech_timer.paused = true
         -- Clear the previous text or animated icon graphic. (bc text/icon isn't guaranteed to be replaced)
         self:stop_speech_bubble()
         -- Run a new sentence.
@@ -229,10 +225,8 @@ function Froggo:Ask_for_cocktail()
     self.last_spoken_sentence_str = string.format("One \"%s\", please!", COCKTAILS[TARGET_COCKTAIL.type_idx].name)
     self:croak()
 
-    -- Temp: flash B button some time after starting a cocktail
-    playdate.timer.new(4000, function ()
-        self:flash_b_prompt()
-    end)
+    -- tmp: update to flash B button some time after starting a cocktail
+    self:flash_b_prompt(4000)
 end
 
 
@@ -258,7 +252,7 @@ function Froggo:Lick_eyeballs()
     if self.state == ACTION_STATE.idle then
         -- continueously lick eyeballs or react
         if Is_potion_good_enough() and CHECK_IF_DELICIOUS then
-            self:flash_b_prompt()
+            self:flash_b_prompt(20*1000)
             self:start_animation(self.anim_eyeball)
             self.x_offset = -11
             CHECK_IF_DELICIOUS = false
@@ -269,12 +263,8 @@ end
 
 function Froggo:fire_reaction()
     self.state = ACTION_STATE.reacting
-        self:start_animation(self.anim_frogfire)
-
-        playdate.timer.new(2*1000, function()
-        self:go_idle()
-        CHECK_IF_DELICIOUS = true
-    end)
+    self:start_animation(self.anim_frogfire)
+    Restart_timer("frog_go_idle", 2*1000)
 end
 
 
@@ -301,11 +291,7 @@ end
 function Froggo:froggo_tickleface()
     self.state = ACTION_STATE.reacting
     self:start_animation(self.anim_tickleface)
-
-    playdate.timer.new(2.9*1000, function()
-        self:go_idle()
-        CHECK_IF_DELICIOUS = true
-    end)
+    Restart_timer("frog_go_idle", 2.9*1000)
 end
 
 
@@ -313,34 +299,25 @@ function Froggo:go_drinking()
     local cocktail_runtime = self.anim_cocktail.delay * (self.anim_cocktail.endFrame - 3)
     local burp_runtime = self.anim_burp.delay * (self.anim_burp.endFrame - 4)
     local burp_speak_runtime = self.anim_burp.delay * self.anim_burp.endFrame
-    local anim_offset = -9
+    local runtime = 0
 
     self.state = ACTION_STATE.drinking
     self:start_animation(self.anim_cocktail)
     self.anim_current.frame = 3
-    self.x_offset = anim_offset
+    self.x_offset = -9
 
-    playdate.timer.new(cocktail_runtime, function()
-        self:start_animation(self.anim_burp)
-        self.x_offset = anim_offset
+    -- Start sequence of timers to trigger animations and speech
+    duration = cocktail_runtime
+    Restart_timer("drinking_cocktail", duration)
 
-        playdate.timer.new(burp_runtime, function()
-            self:start_speech_bubble()
-        end)
+    duration += burp_runtime
+    Restart_timer("drinking_burp", duration)
 
-        playdate.timer.new(burp_speak_runtime, function()
-            self:start_animation(self.anim_burptalk)
-            self.x_offset = anim_offset
+    duration += burp_speak_runtime - burp_runtime
+    Restart_timer("drinking_burp_talk", duration)
 
-            playdate.timer.new(2*1000, function()
-                -- Disable speech bubble after a short moment.
-                self:stop_speech_bubble()
-                self:start_animation(self.anim_cocktail)
-                self.x_offset = anim_offset
-                GAMEPLAY_STATE.showing_recipe = true
-            end)
-        end)
-    end)
+    duration += 2*1000
+    Restart_timer("drinking_talk", duration)
 
 end
 
@@ -360,9 +337,7 @@ function Froggo:croak()
 
         local dialog_display_time = self:start_speech_bubble()
 
-        self.speech_timer.duration = dialog_display_time
-        self.speech_timer:reset()
-        self.speech_timer:start()
+        Restart_timer("speech_timer", dialog_display_time)
     end
 end
 
@@ -371,9 +346,7 @@ function Froggo:froggo_react()
     self.state = ACTION_STATE.reacting
 
     self:go_reacting()
-    playdate.timer.new(2*1000, function()
-        self:go_idle()
-    end)
+    Restart_timer("frog_go_idle", 2*1000)
 end
 
 
