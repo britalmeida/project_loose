@@ -239,6 +239,9 @@ function Ingredient:release()
 
     self.vel.dx, self.vel.dy = 0, 0
 
+    -- Reset held ingredient idx
+    GAMEPLAY_STATE.held_ingredient = 0
+
     local size = MAGIC_TRIANGLE_SIZE
     local center = geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
     local triangle_bounds = geo.rect.new(center.x - size/2, center.y - size/2, size, size)

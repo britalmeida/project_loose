@@ -664,7 +664,7 @@ end
 
 local function draw_ingredient_place_hint()
     gfx.pushContext()
-    if GAMEPLAY_STATE.cursor_hold and GAMEPLAY_STATE.cauldron_ingredient == nil then
+    if GAMEPLAY_STATE.cursor_hold and GAMEPLAY_STATE.cauldron_ingredient == nil and GAMEPLAY_STATE.held_ingredient ~= 0 then
         local held_ingredient = ANIMATIONS.place_hints[GAMEPLAY_STATE.held_ingredient]
         local hint_x = MAGIC_TRIANGLE_CENTER_X - (held_ingredient:image().width / 2)
         local hint_y = MAGIC_TRIANGLE_CENTER_Y - (held_ingredient:image().height / 2)
