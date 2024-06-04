@@ -64,7 +64,7 @@ local need_less_weed <const> = {
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",
-    "Tilt to move your hand.\nHold (A) to grab.",
+    "Tilt to move your hand.\nHold { to grab.",
     "Let it go\nover the cauldron.",
 }
 local drop_tutorials <const> = {
@@ -84,7 +84,7 @@ local recipe_struggle <const> = {
     "Some ingredients are potent.\nOthers are subtle.",
 }
 local cocktail_struggle <const> = {
-    "Maybe double check what\nthe cocktail looks like?",
+    "Use [ to check what\nthe cocktail looks like?",
 }
 
 local sayings <const> = {
