@@ -844,14 +844,14 @@ end
 
 function Check_no_shaking_struggle()
     -- Check if the ingredient was swapped many times without shaking
-    if CALUDRON_SWAP_COUNT > 3 and not PLAYER_STRUGGLES.no_shake then
+    if GAMEPLAY_STATE.cauldron_swap_count > 3 and not PLAYER_STRUGGLES.no_shake then
         print("Swapped ingredients too much without shaking")
         PLAYER_STRUGGLES.no_shake = true
         FROG:flash_b_prompt()
         no_shake_timeout = playdate.timer.new(struggle_reminder_timout, function ()
             PLAYER_STRUGGLES.no_shake = false
             end)
-            CALUDRON_SWAP_COUNT = 0
+            GAMEPLAY_STATE.cauldron_swap_count = 0
     elseif not PLAYER_STRUGGLES.no_shake then
         if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
             -- Start tracking stirring
