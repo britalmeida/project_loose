@@ -677,17 +677,27 @@ end
 
 
 local function draw_ingredient_grab_cursor()
+    if GAME_ENDED then
+        -- Disappear interaction visuals when the game transitions to win!
+        return
+    end
+
     gfx.pushContext()
         if GAMEPLAY_STATE.cursor_hold then
-            TEXTURES.cursor_hold:drawCentered(GYRO_X, GYRO_Y)
+            TEXTURES.cursor_hold:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
         else
-            TEXTURES.cursor:drawCentered(GYRO_X, GYRO_Y)
+            TEXTURES.cursor:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
         end
     gfx.popContext()
 end
 
 
 local function draw_ingredient_place_hint()
+    if GAME_ENDED then
+        -- Disappear interaction visuals when the game transitions to win!
+        return
+    end
+
     gfx.pushContext()
     if GAMEPLAY_STATE.cursor_hold and GAMEPLAY_STATE.cauldron_ingredient == nil and GAMEPLAY_STATE.held_ingredient ~= 0 then
         local held_ingredient = ANIMATIONS.place_hints[GAMEPLAY_STATE.held_ingredient]

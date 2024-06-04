@@ -99,9 +99,8 @@ function Ingredient:tick()
     if self.state == INGREDIENT_STATE.is_in_shelf then
         self:hover()
     elseif self.state == INGREDIENT_STATE.is_picked_up then
-        self.vel.dx, self.vel.dy = GYRO_X - PREV_GYRO_X, GYRO_Y - PREV_GYRO_Y
         -- Follow the gyro
-        self:moveTo(GYRO_X, GYRO_Y)
+        self:moveTo(GAMEPLAY_STATE.cursor_pos)
         GAMEPLAY_STATE.cauldron_ingredient = nil
     elseif self.state == INGREDIENT_STATE.is_over_cauldron then
         if self.is_wiggling then
@@ -143,7 +142,7 @@ end
 function Ingredient:hover()
   local bounds = self:getBoundsRect()
   local hover_time = 10
-  if bounds:containsPoint(GYRO_X, GYRO_Y) then
+  if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos) then
     self.is_hover = true
     self.hover_tick += 1
   else
@@ -216,15 +215,14 @@ end
 
 function Ingredient:try_pickup()
     local bounds = self:getBoundsRect()
-    if bounds:containsPoint(GYRO_X, GYRO_Y) then
-      -- Move sprite to the front
-      self:setZIndex(Z_DEPTH.grabbed_ingredient)
-      self.state = INGREDIENT_STATE.is_picked_up
-      GAMEPLAY_STATE.held_ingredient = self.ingredient_type_idx
-      if INGREDIENT_TYPES[self.ingredient_type_idx].hold then
-        self:setImage(INGREDIENT_TYPES[self.ingredient_type_idx].hold)
-      end
-      return true
+    if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos) then
+        self.state = INGREDIENT_STATE.is_picked_up
+        self:setZIndex(Z_DEPTH.grabbed_ingredient)
+        GAMEPLAY_STATE.held_ingredient = self.ingredient_type_idx
+        if INGREDIENT_TYPES[self.ingredient_type_idx].hold then
+            self:setImage(INGREDIENT_TYPES[self.ingredient_type_idx].hold)
+        end
+        return true
     end
     return false
 end
@@ -233,9 +231,10 @@ function Ingredient:release()
     -- The ingredient is released and will fall down with gravity,
     -- but potentially snap to the cauldron or shelve.
     self.state = INGREDIENT_STATE.is_in_air
-    -- Make sure it's in front of everything to it doesn't look like it falls in/behind the cauldron.
-    self:setZIndex(Z_DEPTH.grabbed_ingredient)
 
+    -- Make sure it's in front of everything so it doesn't look like it falls in/behind the cauldron.
+    self:setZIndex(Z_DEPTH.grabbed_ingredient)
+    -- Set the initial fall direction. fall() will accelerate the descent.
     self.vel.dx, self.vel.dy = 0, 0
 
     -- Reset held ingredient idx
@@ -291,6 +290,7 @@ function Ingredient:respawn()
     self.state = INGREDIENT_STATE.is_in_shelf
     self:setZIndex(Z_DEPTH.ingredients_in_shelve)
     self:moveTo(self.start_pos:unpack())
+    self.vel.dx, self.vel.dy = 0, 0
     if INGREDIENT_TYPES[self.ingredient_type_idx].hold then
       self:setImage(INGREDIENT_TYPES[self.ingredient_type_idx].img)
     end

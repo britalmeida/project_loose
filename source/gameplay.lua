@@ -1,3 +1,4 @@
+local point <const> = playdate.geometry.point
 local vec2d <const> = playdate.geometry.vector2D
 
 NUM_RUNES = 3
@@ -13,6 +14,7 @@ GAMEPLAY_STATE = {
     instructions_offset_y = 275,
     showing_recipe = false,
     cursor_hold = false,  -- The gyro hand cursor is held down.
+    cursor_pos = point.new(200, 120),
     -- Fire!
     flame_amount = 0.0,
     heat_amount = 0.0,
@@ -179,17 +181,11 @@ STIR_REVOLUTION = 0
 STIR_COUNT = 0
 
 -- Gyro.
-GYRO_X, GYRO_Y = 200, 120
-PREV_GYRO_X, PREV_GYRO_Y = 200, 120
-
-IS_GYRO_INITIALZIED = false
-AVG_GRAVITY_X = 0
-AVG_GRAVITY_Y = 0
-AVG_GRAVITY_Z = 0
-
-GRAVITY_X = 0
-GRAVITY_Y = 0
-GRAVITY_Z = 0
+local GYRO_X, GYRO_Y = 200, 120
+local IS_GYRO_INITIALIZED = false
+local AVG_GRAVITY_X = 0
+local AVG_GRAVITY_Y = 0
+local AVG_GRAVITY_Z = 0
 
 SHAKE_VAL = 0
 IS_SIMULATING_SHAKE = false -- Simulator only control to mimic shaking the playdate.
@@ -364,10 +360,6 @@ function Handle_input()
 
     -- When transitioning to end game, stop processing and reacting to new input.
     if GAME_ENDED then
-        -- Put the hand off screen
-        GYRO_X = -50
-        GYRO_Y = -50
-
         -- Wait for recipe to show up before handling more input
         if GAMEPLAY_STATE.showing_recipe == true then
             local crankTicks = playdate.getCrankTicks(100)
@@ -502,20 +494,23 @@ function check_gyro_and_gravity()
     local raw_gravity_x, raw_gravity_y, raw_gravity_z = playdate.readAccelerometer()
     -- Occasionally when simulator starts to upload the game to the actual
     -- device the gyro returns nil as results.
-    if raw_gravity_x == nil then
+    -- Note: check all values and not just x for nil so that the IDE linter is sure it's numbers.
+    if raw_gravity_x == nil or raw_gravity_y == nil or raw_gravity_z == nil then
         return
     end
 
     -- Calculate G's (length of acceleration vector)
     SHAKE_VAL = raw_gravity_x * raw_gravity_x + raw_gravity_y * raw_gravity_y + raw_gravity_z * raw_gravity_z
 
-    if IS_GYRO_INITIALZIED == false then
-        -- For the initial vlaue use the gyro at the start of the game, so that
+    -- Update the average "normal" gyroscope position. This depends on the tilt that players are
+    -- comfortable holding the playdate and might change over time. aka Normalize Gravity.
+    if IS_GYRO_INITIALIZED == false then
+        -- For the initial value, use the gyro at the start of the game, so that
         -- it calibrates as quickly as possible to the current device orientation.
         AVG_GRAVITY_X = raw_gravity_x
         AVG_GRAVITY_Y = raw_gravity_y
         AVG_GRAVITY_Z = raw_gravity_z
-        IS_GYRO_INITIALZIED = true
+        IS_GYRO_INITIALIZED = true
     else
         -- Exponential moving average:
         --   https://en.wikipedia.org/wiki/Exponential_smoothing
@@ -523,44 +518,39 @@ function check_gyro_and_gravity()
         -- The weight from the number of samples can be estimated as `2 / (n + 1)`.
         -- See the Relationship between SMA and EMA section of the
         --   https://en.wikipedia.org/wiki/Moving_average
-        local num_smooth_samples = 120
-        local alpha = 2 / (num_smooth_samples + 1)
+        local num_smooth_samples <const> = 120
+        local alpha <const> = 2 / (num_smooth_samples + 1)
 
         AVG_GRAVITY_X = alpha * raw_gravity_x + (1 - alpha) * AVG_GRAVITY_X
         AVG_GRAVITY_Y = alpha * raw_gravity_y + (1 - alpha) * AVG_GRAVITY_Y
         AVG_GRAVITY_Z = alpha * raw_gravity_z + (1 - alpha) * AVG_GRAVITY_Z
 
-        local len = math.sqrt(AVG_GRAVITY_X*AVG_GRAVITY_X + AVG_GRAVITY_Y*AVG_GRAVITY_Y + AVG_GRAVITY_Z*AVG_GRAVITY_Z)
+        local len <const> = math.sqrt(AVG_GRAVITY_X*AVG_GRAVITY_X + AVG_GRAVITY_Y*AVG_GRAVITY_Y + AVG_GRAVITY_Z*AVG_GRAVITY_Z)
         AVG_GRAVITY_X /= len
         AVG_GRAVITY_Y /= len
         AVG_GRAVITY_Z /= len
     end
 
-    local v1 = vec2d.new(0, 1)
-    local v2 = vec2d.new(AVG_GRAVITY_Y, AVG_GRAVITY_Z)
-    local angle = v2:angleBetween(v1) / 180 * math.pi
-
-    local co = math.cos(angle)
-    local si = math.sin(angle)
-
-    GRAVITY_X = raw_gravity_x
-
-    GRAVITY_Y = raw_gravity_y*co - raw_gravity_z*si
-    GRAVITY_Z = raw_gravity_y*si + raw_gravity_z*co
-
-    local axis_sign = 0
-    if raw_gravity_z < 0 then
-        axis_sign = -1
-    else
-        axis_sign = 1
-    end
-
-    local gyroSpeed = 60
+    -- Only update the gyro onscreen position when it's fairly stable (player isn't actively shaking the console).
     if SHAKE_VAL < 1.1 then
-        PREV_GYRO_X = GYRO_X
-        PREV_GYRO_Y = GYRO_Y
-        GYRO_X = Clamp(GYRO_X + GRAVITY_X * gyroSpeed * axis_sign, 0, 400)
-        GYRO_Y = Clamp(GYRO_Y + GRAVITY_Y * gyroSpeed, 0, 240)
+        local v1 <const> = vec2d.new(0, 1)
+        local v2 <const> = vec2d.new(AVG_GRAVITY_Y, AVG_GRAVITY_Z)
+        local angle <const> = v2:angleBetween(v1) / 180 * math.pi
+
+        local co <const> = math.cos(angle)
+        local si <const> = math.sin(angle)
+
+        local gravity_x <const> = raw_gravity_x
+        local gravity_y <const> = raw_gravity_y*co - raw_gravity_z*si
+        --    gravity_z <const> = raw_gravity_y*si + raw_gravity_z*co
+
+        local axis_sign <const> = Sign(raw_gravity_z)
+        local gyroSpeed <const> = 60
+
+        GYRO_X = Clamp(GYRO_X + gravity_x * gyroSpeed * axis_sign, 0, 400)
+        GYRO_Y = Clamp(GYRO_Y + gravity_y * gyroSpeed, 0, 240)
+        GAMEPLAY_STATE.cursor_pos.x = GYRO_X
+        GAMEPLAY_STATE.cursor_pos.y = GYRO_Y
     end
 end
 
