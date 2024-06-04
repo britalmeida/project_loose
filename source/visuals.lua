@@ -27,13 +27,13 @@ TEXTURES = {}
 ANIMATIONS = {}
 
 -- Constants
-LIQUID_CENTER_X, LIQUID_CENTER_Y = 145, 175
+LIQUID_CENTER_X, LIQUID_CENTER_Y = 156, 175
 LIQUID_WIDTH, LIQUID_HEIGHT = 66, 29
 LIQUID_AABB = geo.rect.new(
     LIQUID_CENTER_X-LIQUID_WIDTH,
     LIQUID_CENTER_Y-LIQUID_HEIGHT*0.5,
     LIQUID_WIDTH*2, LIQUID_HEIGHT)
-MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 150, 112
+MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 158, 124
 MAGIC_TRIANGLE_SIZE = 100
 
 -- check for the fog if conditions are correct at the right time
@@ -140,7 +140,7 @@ local function draw_symbols()
     local PI <const> = 3.141592653589793
 
     local rune_area_x = MAGIC_TRIANGLE_CENTER_X
-    local rune_area_y = MAGIC_TRIANGLE_CENTER_Y - 60
+    local rune_area_y = MAGIC_TRIANGLE_CENTER_Y - 72
     local rune_area_width = 80
     local rune_area_height = 60
 
@@ -548,7 +548,7 @@ end
 local function draw_cauldron()
     -- Draw cauldron image
     gfx.pushContext()
-        TEXTURES.cauldron:draw(43, 128)
+        TEXTURES.cauldron:draw(54, 128)
     gfx.popContext()
 end
 
@@ -557,7 +557,7 @@ local buildupflame_counter = 0
 local function draw_cauldron_front()
     -- Draw cauldron foreground image
     gfx.pushContext()
-        TEXTURES.cauldron_front:draw(43, 128)
+        TEXTURES.cauldron_front:draw(54, 128)
     gfx.popContext()
 
     -- Draw flame animation
@@ -565,24 +565,24 @@ local function draw_cauldron_front()
         if GAMEPLAY_STATE.flame_amount > 0.8 then
             buildupflame_counter += 1
             if buildupflame_counter < 5 then
-                TEXTURES.flame_buildup:draw(-1, 0)
+                TEXTURES.flame_buildup:draw(10, 0)
             else
-                ANIMATIONS.flame.stir:draw(-1, 0)
+                ANIMATIONS.flame.stir:draw(10, 0)
             end
         elseif GAMEPLAY_STATE.flame_amount > 0.5 then
             buildupflame_counter = buildupflame_counter * 0.5
             if buildupflame_counter > 2 then
-                ANIMATIONS.flame.stir:draw(-1, 0)
+                ANIMATIONS.flame.stir:draw(10, 0)
             else
-                ANIMATIONS.flame.high:draw(-1, 0)
+                ANIMATIONS.flame.high:draw(10, 0)
                 buildupflame_counter = 0
             end
         elseif GAMEPLAY_STATE.heat_amount > 0.4 then
-            ANIMATIONS.flame.medium:draw(-1, 0)
+            ANIMATIONS.flame.medium:draw(10, 0)
         elseif GAMEPLAY_STATE.heat_amount > 0.2 then
-            ANIMATIONS.flame.low:draw(-1, 0)
+            ANIMATIONS.flame.low:draw(10, 0)
         elseif GAMEPLAY_STATE.heat_amount > 0.08 then
-            ANIMATIONS.flame.ember:draw(-1, 0)
+            ANIMATIONS.flame.ember:draw(10, 0)
         end
     gfx.popContext()
 end
