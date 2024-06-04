@@ -715,7 +715,7 @@ end
 function Check_player_learnings()
     if GAMEPLAY_STATE.flame_amount > 0.3
     and not PLAYER_LEARNED.how_to_fire
-    and GAMEPLAY_STATE.dropped_ingredients > 0 then
+    and GAMEPLAY_STATE.last_shaken_ingredient ~= nil then
         PLAYER_LEARNED.how_to_fire = true
         FROG:flash_b_prompt()
     end
