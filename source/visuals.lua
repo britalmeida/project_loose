@@ -417,9 +417,9 @@ local function draw_liquid_bubbles()
                 local offset_y = drop_sprite.height * sink
                 local mask = geo.rect.new(0, 0, drop_sprite.width, drop_sprite.height - offset_y)
               if Bubbles_flip[x] then
-                drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 12, "flipX", mask)
+                drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 6, "flipX", mask)
               else
-                drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 12, 0, mask)
+                drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 6, 0, mask)
               end
             else
               if Bubbles_flip[x] then
