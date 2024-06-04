@@ -13,6 +13,9 @@ GAMEPLAY_STATE = {
     -- Fire!
     flame_amount = 0.0,
     heat_amount = 0.0,
+    -- Keeping track of fire over-use
+    fire_stoke_count = 0,
+    start_counting_blows = true,
     -- Liquid fluid simulation.
     liquid_offset = 0.0,
     liquid_momentum = 0.0,
@@ -140,6 +143,8 @@ function Reset_gameplay()
     GAMEPLAY_STATE.showing_recipe = false
     GAMEPLAY_STATE.flame_amount = 0.0
     GAMEPLAY_STATE.heat_amount = 0.0
+    GAMEPLAY_STATE.fire_stoke_count = 0
+    GAMEPLAY_STATE.start_counting_blows = true
     GAMEPLAY_STATE.liquid_offset = 0.0
     GAMEPLAY_STATE.liquid_momentum = 0.0
     GAMEPLAY_STATE.liquid_viscosity = 0.9
@@ -823,22 +828,36 @@ end
 
 
 function Check_too_much_fire_struggle()
-    if GAMEPLAY_STATE.flame_amount > 0.3 then
+    -- 1. Heat doesn't fall under a high threshold for a certain amount of time
+    -- 2. Fire is blown 5 times in a row
+    -- 3. Flame is kept over a very high threshold for a prolonged period of time
+    if GAMEPLAY_STATE.heat_amount > 0.9 then
         too_much_fire_tracking += 0.003
+    elseif GAMEPLAY_STATE.flame_amount > 0.6 then
+        too_much_fire_tracking += 0.003
+        if GAMEPLAY_STATE.start_counting_blows then
+            GAMEPLAY_STATE.fire_stoke_count += 1
+            GAMEPLAY_STATE.start_counting_blows = false
+        end
     else
         too_much_fire_tracking -= 0.001
-        PLAYER_STRUGGLES.too_much_fire = false
+        GAMEPLAY_STATE.start_counting_blows = true
     end
     too_much_fire_tracking = Clamp(too_much_fire_tracking, 0, 1)
-    if too_much_fire_tracking >= 1 then
+    if too_much_fire_tracking >= 1 or GAMEPLAY_STATE.fire_stoke_count >= 5 then
         print("Fire is stroked way too much!")
         PLAYER_STRUGGLES.too_much_fire = true
         FROG:flash_b_prompt()
+        -- reset counting
+        GAMEPLAY_STATE.fire_stoke_count = 0
+        too_much_fire_tracking = 0
+        -- timer to stop struggle dialogue
         too_much_fire_timeout = playdate.timer.new(struggle_reminder_timout, function ()
             PLAYER_STRUGGLES.too_much_fire = false
-            end)
+        end)
     end
     --print("Too much fire tracker: " .. too_much_fire_tracking)
+    --print(GAMEPLAY_STATE.fire_stoke_count)
 end
 
 
