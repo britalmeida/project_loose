@@ -600,11 +600,8 @@ local function draw_ui_prompts()
     gfx.popContext()
 
     if Is_potion_good_enough() then
-        local time = playdate.getElapsedTime()
-        local pulsing_freq = 1
-        local pulse = math.sin(time * 1 * math.pi * (pulsing_freq + 0.1))
         gfx.pushContext()
-        draw_soft_ring(381, 222, 15 + pulse, 7, 0.7, (pulse + 1) / 2, gfx.kColorWhite) -- tmp. need to animate radius
+        draw_soft_ring(381, 222, 14, 7, 0.7, 1, gfx.kColorWhite)
         gfx.popContext()
     end
 end
