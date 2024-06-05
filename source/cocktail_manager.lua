@@ -31,7 +31,7 @@ COCKTAILS = {
 
   { name="Green Toe",
     rune_composition={0, 0.33, 0.8},
-    step_ratings= {4, 10, 15},
+    step_ratings= {3, 8, 15},
     img=gfxi.new('images/cocktails/green_toe_sheet'),
     table= gfxit.new('images/cocktails/green_toe_sheet'),
     locked_img = gfxi.new('images/cocktails/green_toe_sheet_locked'),
@@ -56,8 +56,8 @@ COCKTAILS = {
     --Medium (3 runes and specific. Spamming = fine tuning)
 
   { name="Hodge Podge",
-    rune_composition={0.5, 0.5, 0.5},
-    step_ratings= {4, 10, 15},
+    rune_composition={0.4, 0.4, 0.4},
+    step_ratings= {5, 10, 15},
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
     table= gfxit.new('images/cocktails/hodge_podge_sheet'),
     locked_img = gfxi.new('images/cocktails/hodge_podge_sheet_locked'),
