@@ -8,6 +8,9 @@ GAMEPLAY_STATE = {
     -- User modal interation
     showing_cocktail = false,
     showing_instructions = false,
+    instructions_prompt_expanded = false,
+    instructions_offset_x = -10,
+    instructions_offset_y = 275,
     showing_recipe = false,
     cursor_hold = false,  -- The gyro hand cursor is held down.
     -- Fire!
@@ -105,6 +108,9 @@ FROG = nil
 
 -- Various timers that are running during gameplay
 GAMEPLAY_TIMERS = {
+    instructions_expanded = playdate.timer.new(100, function ()
+        GAMEPLAY_STATE.instructions_prompt_expanded = false
+        end),
     stop_b_flashing = playdate.timer.new(100, function ()
         ANIMATIONS.b_prompt.frame = 1
         ANIMATIONS.b_prompt.paused = true
@@ -212,6 +218,9 @@ function Reset_gameplay()
     GAMEPLAY_STATE.game_tick = 0
     GAMEPLAY_STATE.showing_cocktail = false
     GAMEPLAY_STATE.showing_instructions = false
+    GAMEPLAY_STATE.instructions_prompt_expanded = false
+    GAMEPLAY_STATE.instructions_offset_x = -10
+    GAMEPLAY_STATE.instructions_offset_y = 275
     GAMEPLAY_STATE.showing_recipe = false
     GAMEPLAY_STATE.flame_amount = 0.0
     GAMEPLAY_STATE.heat_amount = 0.0

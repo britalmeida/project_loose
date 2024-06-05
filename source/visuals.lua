@@ -594,8 +594,33 @@ local function draw_ui_prompts()
         return
     end
 
+    -- Create bounds for the instructions prompt
+    local bounds = playdate.geometry.rect.new(
+        GAMEPLAY_STATE.instructions_offset_x,
+        GAMEPLAY_STATE.instructions_offset_y - TEXTURES.instructions_prompt.height,
+        TEXTURES.instructions_prompt.width,
+        TEXTURES.instructions_prompt.height
+    )
+    local max_y_offset = 275
+    local min_y_offset = 240
+    local shift_speed = 1.5
+
+    -- If hovering over the prompt, start expanding it for 10 seconds
+    if bounds:containsPoint(GYRO_X, GYRO_Y) then
+        GAMEPLAY_STATE.instructions_prompt_expanded = true
+        Restart_timer("instructions_expanded", 10*1000)
+        -- if done for the first time, enable the arrow buttons?
+    end
+
+    -- iteratively move the instructions_offset_y
+    if GAMEPLAY_STATE.instructions_prompt_expanded and GAMEPLAY_STATE.instructions_offset_y > min_y_offset then
+        GAMEPLAY_STATE.instructions_offset_y = math.max(GAMEPLAY_STATE.instructions_offset_y - shift_speed, min_y_offset)
+    elseif not GAMEPLAY_STATE.instructions_prompt_expanded and GAMEPLAY_STATE.instructions_offset_y < max_y_offset then
+        GAMEPLAY_STATE.instructions_offset_y = math.min(GAMEPLAY_STATE.instructions_offset_y + shift_speed, max_y_offset)
+    end
+
     gfx.pushContext()
-    TEXTURES.instructions_prompt:draw(-10, 240-TEXTURES.instructions_prompt.height, 0)
+    TEXTURES.instructions_prompt:draw(GAMEPLAY_STATE.instructions_offset_x, GAMEPLAY_STATE.instructions_offset_y-TEXTURES.instructions_prompt.height, 0)
     ANIMATIONS.b_prompt:draw(362, 203)
     gfx.popContext()
 
