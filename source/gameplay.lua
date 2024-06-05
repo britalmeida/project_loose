@@ -115,6 +115,9 @@ GAMEPLAY_TIMERS = {
         ANIMATIONS.b_prompt.frame = 1
         ANIMATIONS.b_prompt.paused = true
         end),
+    talk_reminder = playdate.timer.new(100, function()
+        FROG:Talk_reminder()
+        end),
     speech_timer = playdate.timer.new(100, function()
         FROG:stop_speech_bubble()
         FROG:go_idle()
@@ -264,6 +267,7 @@ function Reset_gameplay()
     playdate.timer.new(1000, function ()
       FROG:Ask_for_cocktail()
     end)
+    Restart_timer("talk_reminder",20*1000)
 
     PLAYER_LEARNED.how_to_fire = false
     PLAYER_LEARNED.how_to_grab = false
@@ -451,6 +455,7 @@ function Handle_input()
 
         if playdate.buttonJustReleased( playdate.kButtonB ) then
             FROG:Ask_the_frog()
+            GAMEPLAY_TIMERS.talk_reminder:pause()
         end
 
         -- Modal instruction overlays.

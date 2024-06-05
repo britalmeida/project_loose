@@ -232,6 +232,15 @@ function Froggo:Ask_for_cocktail()
 end
 
 
+function Froggo:Talk_reminder()
+    self.last_spoken_sentence_str = string.format("I can talk, you know?")
+    self:croak()
+
+    self:flash_b_prompt(3000)
+    Restart_timer("talk_reminder", 20*1000)
+end
+
+
 function Froggo:Click_the_frog()
     local bounds = self:getBoundsRect()
     -- Make it a bit smaller, so we don't accedentially click on the frog
