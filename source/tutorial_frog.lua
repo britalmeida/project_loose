@@ -31,7 +31,7 @@ local fire_tips <const> = {
     "Save your breath!\nLeave it for a bit.",
 }
 local stir_tutorials <const> = {
-    "Always stir to see\nwhat Ingredient do.",
+    "Always stir to see\nwhat ingredient do.",
     "Use the crank to stir.",
     "11",
 }
