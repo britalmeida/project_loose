@@ -307,16 +307,8 @@ function Update_rune_count(drop_rune_count)
 
     -- Calculate new rune count
     for a = 1, NUM_RUNES, 1 do
-        GAMEPLAY_STATE.rune_count[a] = GAMEPLAY_STATE.rune_count[a] + ((drop_rune_count[a]/6) * 0.3)
-        if GAMEPLAY_STATE.rune_count[a] < 0 then
-            GAMEPLAY_STATE.rune_count[a] = 0
-        end
-    end
-
-      -- Cap rune count
-      for a = 1, NUM_RUNES, 1 do
-        if GAMEPLAY_STATE.rune_count[a] > 1 then
-            GAMEPLAY_STATE.rune_count[a] = 1
+        if TARGET_COCKTAIL.rune_count[a] > 0 then
+            GAMEPLAY_STATE.rune_count[a] = Clamp(GAMEPLAY_STATE.rune_count[a] + ((drop_rune_count[a]/6) * 0.3), 0, 1)
         end
     end
 

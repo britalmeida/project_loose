@@ -478,9 +478,11 @@ function Froggo:give_ingredients_direction()
     local runes_abs_diff = DIFF_TO_TARGET.runes_abs
 
     local rune_idx = RUNES.weed
-    if runes_abs_diff[1] >= runes_abs_diff[2] and runes_abs_diff[1] >= runes_abs_diff[3] then
+    if runes_abs_diff[1] >= runes_abs_diff[2] and runes_abs_diff[1] >= runes_abs_diff[3]
+    and TARGET_COCKTAIL.rune_count[1] > 0 then
         rune_idx = RUNES.love
-    elseif runes_abs_diff[2] >= runes_abs_diff[1] and runes_abs_diff[2] >= runes_abs_diff[3] then
+    elseif runes_abs_diff[2] >= runes_abs_diff[1] and runes_abs_diff[2] >= runes_abs_diff[3]
+    and TARGET_COCKTAIL.rune_count[2] > 0 then
         rune_idx = RUNES.doom
     end
 
