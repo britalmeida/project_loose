@@ -216,7 +216,6 @@ function Small_recipe_hover(TOP_RECIPE_OFFSET)
     recipe_hover_tick = math.min(recipe_hover_tick, recipe_hover_time)
 
     if recipe_hover_tick > 0 then
-        -- Move sprite to the front
         local time = playdate.getElapsedTime()
         local wiggle_freq = 1
         local x_offset = math.sin(time * 1 * math.pi * (wiggle_freq + 0.1))
