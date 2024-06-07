@@ -66,7 +66,7 @@ local need_less_weed <const> = {
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",
     "Tilt to move your hand.\nHold { to grab.",
-    "Let it go\nover the cauldron.",
+    "Let it go over the cauldron.",
 }
 local drop_tutorials <const> = {
     "Place the ingredient over\nthe cauldron and shake!",
@@ -359,7 +359,7 @@ end
 -- Select what should the frog say, adjust sentence state and trigger the speech bubble.
 function Froggo:think()
 
-    local automated = GAMEPLAY_TIMERS.talk_reminder.paused
+    local automated = not GAMEPLAY_TIMERS.talk_reminder.paused
 
     -- Check if the potion is approved and early out!
     -- If the frog is speaking up as a talk reminder, don't end the game!
