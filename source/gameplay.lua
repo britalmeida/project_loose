@@ -118,11 +118,14 @@ GAMEPLAY_TIMERS = {
         ANIMATIONS.b_prompt.paused = true
         end),
     talk_reminder = playdate.timer.new(100, function()
-        FROG:Talk_reminder()
+        FROG:Ask_the_frog()
+        FROG:flash_b_prompt(6*1000)
+        Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
         end),
     speech_timer = playdate.timer.new(100, function()
         FROG:stop_speech_bubble()
         FROG:go_idle()
+        CHECK_IF_DELICIOUS = true
         end),
     frog_go_idle = playdate.timer.new(100, function()
         FROG:go_idle()
@@ -261,7 +264,10 @@ function Reset_gameplay()
     playdate.timer.new(1000, function ()
       FROG:Ask_for_cocktail()
     end)
-    Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
+    -- Regular talk reminders on the beginner cocktails
+    if TARGET_COCKTAIL.type_idx < 4 then
+        Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
+    end
 
     PLAYER_LEARNED.how_to_fire = false
     PLAYER_LEARNED.how_to_grab = false
@@ -436,8 +442,8 @@ function Handle_input()
         end
 
         if playdate.buttonJustReleased( playdate.kButtonB ) then
-            FROG:Ask_the_frog()
             GAMEPLAY_TIMERS.talk_reminder:pause()
+            FROG:Ask_the_frog()
         end
 
         -- Modal instruction overlays.
@@ -731,19 +737,19 @@ end
 function Are_ingredients_good_enough()
     for i=1, NUM_RUNES do
         if DIFF_TO_TARGET.runes_abs[i] > GOAL_TOLERANCE
-        and TARGET_COCKTAIL.rune_count[i] ~= 0 then -- Runes that target 0 are for intro cocktails are are
+        and TARGET_COCKTAIL.rune_count[i] ~= 0 then -- Runes that target 0 are for intro cocktails
             return false
         end
     end
-    if GAMEPLAY_STATE.dropped_ingredients > 0 then
-        return false
-    else
-        return true
-    end
+    return true
 end
 
 function Is_potion_good_enough()
-    return Are_ingredients_good_enough()
+    if Are_ingredients_good_enough() and GAMEPLAY_STATE.dropped_ingredients == 0 then
+        return true
+    else
+        return false
+    end
 end
 
 function Calculate_goodness()
@@ -814,6 +820,14 @@ function Check_player_learnings()
 end
 
 
+function Shorten_talk_reminder()
+    -- If the player hasn't talked to to frog yet, shorten the regular intervals in some cases
+    if GAMEPLAY_TIMERS.talk_reminder.paused == false then
+        GAMEPLAY_TIMERS.talk_reminder.duration -= 10*1000
+    end
+end
+
+
 function Check_player_struggle()
 
     -- Only once tutorial is complete
@@ -853,6 +867,7 @@ function Check_player_struggle()
     and TARGET_COCKTAIL.type_idx < 5 then
         print("Player used too many ingredient types.")
         PLAYER_STRUGGLES.cocktail_struggle = true
+        Shorten_talk_reminder()
         -- Reset tracked used ingredients
         GAMEPLAY_STATE.used_ingredients = 0
         for k, v in pairs(GAMEPLAY_STATE.used_ingredients_table) do
@@ -867,6 +882,7 @@ function Check_player_struggle()
     if not PLAYER_STRUGGLES.recipe_struggle and
     (RECIPE_STRUGGLE_STEPS == true or PLAYER_STRUGGLES.ingredient_struggle_asked >= 4) then
         PLAYER_STRUGGLES.recipe_struggle = true
+        Shorten_talk_reminder()
         Next_recipe_struggle_tip()
         FROG:flash_b_prompt()
     elseif not RECIPE_STRUGGLE_STEPS then
@@ -913,6 +929,7 @@ function Check_too_much_fire_struggle()
     if PLAYER_STRUGGLES.too_much_fire_tracking >= 1 or GAMEPLAY_STATE.fire_stoke_count >= 5 then
         print("Fire is stroked way too much!")
         PLAYER_STRUGGLES.too_much_fire = true
+        Shorten_talk_reminder()
         FROG:flash_b_prompt()
         -- reset counting
         GAMEPLAY_STATE.fire_stoke_count = 0
@@ -930,6 +947,7 @@ function Check_no_shaking_struggle()
     if GAMEPLAY_STATE.cauldron_swap_count > 3 and not PLAYER_STRUGGLES.no_shake then
         print("Swapped ingredients too much without shaking")
         PLAYER_STRUGGLES.no_shake = true
+        Shorten_talk_reminder()
         FROG:flash_b_prompt()
         Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
         GAMEPLAY_STATE.cauldron_swap_count = 0
@@ -942,6 +960,7 @@ function Check_no_shaking_struggle()
                 --print("Stirring reached struggling amount.")
                 print("Too much stirring without shaking")
                 PLAYER_STRUGGLES.no_shake = true
+                Shorten_talk_reminder()
                 FROG:flash_b_prompt()
                 Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
                 PLAYER_STRUGGLES.no_shake_tracking = 0
@@ -961,6 +980,7 @@ function Check_too_much_shaking_struggle()
     if STIR_FACTOR < 0.3 and not PLAYER_STRUGGLES.too_much_shaking then
         print("Player is struggling with stir")
         PLAYER_STRUGGLES.too_much_shaking = true
+        Shorten_talk_reminder()
         FROG:flash_b_prompt()
         Restart_timer(GAMEPLAY_TIMERS.too_much_shaking_timeout, struggle_reminder_timout)
         GAMEPLAY_STATE.dropped_ingredients = 0
@@ -989,6 +1009,7 @@ function Check_too_much_stirring_struggle()
         if PLAYER_STRUGGLES.too_much_stir_tracking > 1 then
             --print("Stirring reached struggling amount.")
             PLAYER_STRUGGLES.too_much_stir = true
+            Shorten_talk_reminder()
             FROG:flash_b_prompt()
             Restart_timer(GAMEPLAY_TIMERS.too_much_stir_timeout, struggle_reminder_timout)
             PLAYER_STRUGGLES.too_much_stir_tracking = 0

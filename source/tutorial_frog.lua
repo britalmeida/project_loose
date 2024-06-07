@@ -15,6 +15,7 @@ local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, drinking = 
 local TUTORIAL_STATE <const> = { start = 1, grab = 1, shake = 2, fire = 3, stir = 4, complete = 5 }
 
 local positive_acceptance <const> = "That'll do it!"
+local win_hint <const> = "That looks delicious!"
 local fire_reminders <const> = {
     "Keep it warm to see \nthe magic.",
     "Fire is good, glow is good.",
@@ -232,15 +233,6 @@ function Froggo:Ask_for_cocktail()
 end
 
 
-function Froggo:Talk_reminder()
-    self.last_spoken_sentence_str = string.format("I can talk, you know?")
-    self:croak()
-
-    self:flash_b_prompt(3000)
-    Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
-end
-
-
 function Froggo:Click_the_frog()
     local bounds = self:getBoundsRect()
     -- Make it a bit smaller, so we don't accedentially click on the frog
@@ -367,12 +359,17 @@ end
 -- Select what should the frog say, adjust sentence state and trigger the speech bubble.
 function Froggo:think()
 
+    local automated = GAMEPLAY_TIMERS.talk_reminder.paused
+
     -- Check if the potion is approved and early out!
-    if Is_potion_good_enough() then
+    -- If the frog is speaking up as a talk reminder, don't end the game!
+    if Is_potion_good_enough() and not automated then
         Win_game()
         Reset_ingredients()
         self.last_spoken_sentence_str = positive_acceptance
         return
+    elseif Is_potion_good_enough() and automated then
+        self.last_spoken_sentence_str = win_hint
     end
 
     -- Check what the player has already done and advance tutorial steps.
@@ -438,12 +435,15 @@ function Froggo:think()
             self:select_next_sentence(sayings.struggle.stir[2])
 
         -- Normal help loop:
-        elseif GAMEPLAY_STATE.heat_amount < 0.3 then
+        -- Some lines will not be picked if the frog speaks autoamtically with a talk reminder
+        elseif GAMEPLAY_STATE.heat_amount < 0.3 and not automated then
             -- Reminder to keep the heat up whenever it goes low.
             self:select_next_sentence(sayings.help.fire)
         elseif
             -- First check if drops need to be stirred in
-            GAMEPLAY_STATE.dropped_ingredients > 0 then
+            -- Also automated frog messaages need to be stopped or the potion is good but instirred
+            GAMEPLAY_STATE.dropped_ingredients > 0 and
+            (not automated or (Are_ingredients_good_enough() and not Is_potion_good_enough())) then
             self:give_stirring_direction()
         elseif not Are_ingredients_good_enough() then
             -- Then give hints on next ingredient
