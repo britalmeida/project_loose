@@ -796,12 +796,12 @@ function Init_visuals()
     table.insert(DRAW_PASSES, Set_draw_pass(-2, draw_bg_lighting))
     --table.insert(DRAW_PASSES, Set_draw_pass(-1, draw_liquid_glow))
     table.insert(DRAW_PASSES, Set_draw_pass(0, draw_cauldron))
-    table.insert(DRAW_PASSES, Set_draw_pass(2, draw_liquid_surface))
-    table.insert(DRAW_PASSES, Set_draw_pass(3, draw_stirring_stick_back)) -- draw ladle when on farther side
-    table.insert(DRAW_PASSES, Set_draw_pass(4, draw_liquid_bubbles))
-    -- 4: ingredient drops floating in the liquid
+    table.insert(DRAW_PASSES, Set_draw_pass(1, draw_liquid_surface))
+    table.insert(DRAW_PASSES, Set_draw_pass(2, draw_stirring_stick_back)) -- draw ladle when on farther side
+    table.insert(DRAW_PASSES, Set_draw_pass(3, draw_liquid_bubbles))
+    -- 3: ingredient drops floating in the liquid
+    -- 4: ingredient slotted over cauldron
     -- 5: ingredient drop splash
-    -- 5: ingredient slotted over cauldron
     table.insert(DRAW_PASSES, Set_draw_pass(6, draw_symbols))
     table.insert(DRAW_PASSES, Set_draw_pass(7, draw_stirring_stick_front)) -- draw ladle when on front side
     table.insert(DRAW_PASSES, Set_draw_pass(8, draw_cauldron_front))
@@ -824,8 +824,8 @@ end
 Z_DEPTH = {
     frog = 10,
     ingredients_in_shelve = -5,
-    indredient_drops = 4,
-    ingredient_slotted_over_cauldron = 5,
+    indredient_drops = 3,
+    ingredient_slotted_over_cauldron = 4,
     ingredient_drop_splash = 5,
     grabbed_ingredient = 24
 }
