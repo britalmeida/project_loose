@@ -465,7 +465,7 @@ local function draw_dialog_bubble()
         -- Should be displaying an animated speech bubble.
 
         gfx.pushContext()
-            SPEECH_BUBBLE_ANIM:image():draw(0, 0)
+            SPEECH_BUBBLE_ANIM:image():draw(13, 5)
         gfx.popContext()
 
     elseif SPEECH_BUBBLE_TEXT then
