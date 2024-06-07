@@ -46,7 +46,7 @@ function Recipe_steps_to_text_success(recipe_steps)
             elseif INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] == 1 then
                 line = line .. " pinch of "
             end
-            line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
+            line = line .. INGREDIENT_TYPES[step_type].drop_name
             if recipe_steps[step][2] > 1 and INGREDIENT_TYPES[step_type].drop_name ~= "salt" then
                 line = line .. "s"
             end
