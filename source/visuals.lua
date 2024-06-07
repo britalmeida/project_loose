@@ -606,7 +606,7 @@ local function draw_ui_prompts()
     local shift_speed = 1.5
 
     -- If hovering over the prompt, start expanding it for 10 seconds
-    if bounds:containsPoint(GYRO_X, GYRO_Y) then
+    if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos:unpack()) then
         GAMEPLAY_STATE.instructions_prompt_expanded = true
         Restart_timer(GAMEPLAY_TIMERS.instructions_expanded, 10*1000)
         -- if done for the first time, enable the arrow buttons?
