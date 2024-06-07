@@ -1016,7 +1016,7 @@ end
 
 function Restart_timer(timer, duration)
 
+    timer:start()
     timer:reset()
     timer.duration = duration
-    timer:start()
 end
