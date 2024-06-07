@@ -137,6 +137,9 @@ end
 
 
 local function draw_symbols()
+    sample("--draw_symbols", function()
+
+
     local PI <const> = 3.141592653589793
 
     local rune_area_x = MAGIC_TRIANGLE_CENTER_X
@@ -196,10 +199,13 @@ local function draw_symbols()
         end
 
     gfx.popContext()
+end)
 end
 
 
 local function draw_stirring_stick()
+    sample("--draw_stirring_stick", function()
+
     gfx.pushContext()
     do
         local t = STIR_POSITION
@@ -262,6 +268,8 @@ local function draw_stirring_stick()
         gfx.drawLine(a_x - 2, a_y, b_x - 2, b_y)
     end
     gfx.popContext()
+end)
+
 end
 
 
@@ -295,6 +303,8 @@ end
 liquid_surface:close()
 
 local function draw_liquid_surface()
+    sample("--draw_liquid_surface", function()
+
     local sin = sin -- make these local to the function, not just the file, for performance.
     local cos = cos
 
@@ -336,6 +346,8 @@ local function draw_liquid_surface()
         gfx.setLineWidth(3)
         gfx.drawPolygon(liquid_surface)
     gfx.popContext()
+end)
+
 end
 
 Bubbles_amplitude = {}
@@ -355,6 +367,8 @@ for a = 1, NUM_BUBBLES, 1 do
 end
 
 local function draw_liquid_bubbles()
+    sample("--draw_liquid_bubbles", function()
+
     local TWO_PI <const> = 6.283185307179586
 
     gfx.pushContext()
@@ -437,10 +451,14 @@ local function draw_liquid_bubbles()
         end
     end
     gfx.popContext()
+end)
+
 end
 
 
 local function draw_overlayed_instructions()
+    sample("--draw_overlayed_instructions", function()
+
     if GAMEPLAY_STATE.showing_cocktail then
         gfx.pushContext()
             COCKTAILS[TARGET_COCKTAIL.type_idx].img:draw(0, 0)
@@ -452,15 +470,22 @@ local function draw_overlayed_instructions()
             TEXTURES.instructions:draw(400-TEXTURES.instructions.width, 0)
         gfx.popContext()
     end
+end)
+
 end
 
 local function draw_overlayed_recipe()
+    sample("--draw_overlayed_recipe", function()
+
     if GAMEPLAY_STATE.showing_recipe then
         Recipe_draw_success(end_recipe_y, RECIPE_TEXT)
     end
+end)
 end
 
 local function draw_dialog_bubble()
+    sample("--draw_dialog_bubble", function()
+
     if SPEECH_BUBBLE_ANIM then
         -- Should be displaying an animated speech bubble.
 
@@ -510,10 +535,13 @@ local function draw_dialog_bubble()
         gfx.popContext()
 
     end
+end)
 end
 
 
 local function draw_bg_lighting()
+    sample("--draw_bg_lighting", function()
+
     local flicker_freq <const> = {0.0023, 0.3, 5.2}
     local flicker_strength <const> = {0.01, 0.002, 0.004}
     local tick <const> = GAMEPLAY_STATE.game_tick + random()
@@ -535,26 +563,35 @@ local function draw_bg_lighting()
     gfx.pushContext()
         draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 6, glow_blend, light_strength * 0.5, gfx.kColorWhite)
     gfx.popContext()
+end)
 end
 
 local function draw_game_background()
+    sample("--draw_game_background", function()
+
     -- Draw full screen background.
     gfx.pushContext()
         TEXTURES.bg:draw(0, 0)
     gfx.popContext()
+end)
 end
 
 
 local function draw_cauldron()
+    sample("--draw_cauldron", function()
+
     -- Draw cauldron image
     gfx.pushContext()
         TEXTURES.cauldron:draw(54, 128)
     gfx.popContext()
+end)
 end
 
 local buildupflame_counter = 0
 
 local function draw_cauldron_front()
+    sample("--draw_cauldron_front", function()
+
     -- Draw cauldron foreground image
     gfx.pushContext()
         TEXTURES.cauldron_front:draw(54, 128)
@@ -585,10 +622,13 @@ local function draw_cauldron_front()
             ANIMATIONS.flame.ember:draw(10, 0)
         end
     gfx.popContext()
+end)
 end
 
 
 local function draw_ui_prompts()
+    sample("--draw_ui_prompts", function()
+
     if GAME_ENDED then
         -- Disappear button prompts when the game transitions to win!
         return
@@ -629,6 +669,7 @@ local function draw_ui_prompts()
         draw_soft_ring(381, 222, 14, 7, 0.7, 1, gfx.kColorWhite)
         gfx.popContext()
     end
+end)
 end
 
 
@@ -677,6 +718,7 @@ end
 
 
 local function draw_ingredient_grab_cursor()
+    sample("--draw_ingredient_grab_cursor", function()
     if GAME_ENDED then
         -- Disappear interaction visuals when the game transitions to win!
         return
@@ -689,10 +731,12 @@ local function draw_ingredient_grab_cursor()
             TEXTURES.cursor:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
         end
     gfx.popContext()
+end)
 end
 
 
 local function draw_ingredient_place_hint()
+    sample("--draw_ingredient_place_hint", function()
     if GAME_ENDED then
         -- Disappear interaction visuals when the game transitions to win!
         return
@@ -706,6 +750,7 @@ local function draw_ingredient_place_hint()
         held_ingredient:draw(hint_x, hint_y)
     end
     gfx.popContext()
+end)
 end
 
 

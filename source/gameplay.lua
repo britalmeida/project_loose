@@ -622,8 +622,12 @@ end
 -- Update Loop: logic
 
 function Tick_gameplay()
+    sample("---tick_game 1", function()
     GAMEPLAY_STATE.game_tick += 1
     local crankTicks = playdate.getCrankTicks(1) --Not really used, but resets the ticks before going back to start menu
+
+end)
+    sample("---tick_game 2 ing", function()
 
     -- Update ingredient animations.
     for _, ingredient in ipairs(INGREDIENTS) do
@@ -631,6 +635,8 @@ function Tick_gameplay()
             ingredient:tick()
         end
     end
+end)
+    sample("---tick_game 2 drops", function()
 
     -- Update drops animations.
     for _, drop in ipairs(DROPS) do
@@ -638,11 +644,16 @@ function Tick_gameplay()
           drop:tick()
         end
     end
+end)
+    sample("---tick_game 3", function()
 
     update_fire()
     update_liquid()
+end)
+    sample("---tick_game 4", function()
 
     FROG:animation_tick()
+end)
 end
 
 

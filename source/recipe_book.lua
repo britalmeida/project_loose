@@ -154,6 +154,7 @@ function Recipe_draw_success(y, recipe_steps_text)
     local y_first_text <const> = text_y
 
     -- Draw a dark dither background.
+sample("---draw_overlayed_recipe rect", function()
     gfx.pushContext()
         gfx.setDitherPattern(0.6, gfxi.kDitherTypeBayer4x4)
         gfx.fillRect(0, 0, 400, 240)
@@ -162,7 +163,8 @@ function Recipe_draw_success(y, recipe_steps_text)
         -- gfx.fillRect(0, 0, recipe_x+10, 240)
         -- gfx.fillRect(recipe_x2-10, 0, 400-recipe_x2+10, 240)
     gfx.popContext()
-
+end)
+sample("---draw_overlayed_recipe bg", function()
     -- Draw recipe paper background.
     gfx.pushContext()
         if scroll_offset < y_first_insert then
@@ -178,6 +180,9 @@ function Recipe_draw_success(y, recipe_steps_text)
             TEXTURES.recipe_bottom:draw(recipe_x, y + y_paper_bottom)
         end
     gfx.popContext()
+end)
+
+sample("---draw_overlayed_recipe content", function()
 
     -- Draw recipe content
     gfx.pushContext()
@@ -218,6 +223,8 @@ function Recipe_draw_success(y, recipe_steps_text)
         end
 
     gfx.popContext()
+end)
+
 end
 
 

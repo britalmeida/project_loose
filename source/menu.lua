@@ -242,6 +242,7 @@ local side_scroll_speed = 40
 local credits_return = false
 
 local function draw_ui()
+    sample("--draw_ui", function()
 
     -- Timing to the music for credits animation
     music_tick += 1
@@ -400,6 +401,7 @@ local function draw_ui()
         gfx.popContext()
     end
 
+end)
 end
 
 
@@ -441,6 +443,8 @@ end
 
 
 function Handle_menu_input()
+    sample("--Handle_menu_input", function()
+
     local acceleratedChange = playdate.getCrankChange()
 
     if MENU_STATE.screen == MENU_SCREEN.start then
@@ -561,10 +565,12 @@ function Handle_menu_input()
             Enter_menu_start(0, 0, true)
         end
     end
+end)
 end
 
 
 function Init_menus()
+    sample("Init_menus", function()
 
     -- Create animation loops for the cocktails.
     for i in pairs(COCKTAILS) do
@@ -586,4 +592,6 @@ function Init_menus()
 
     -- Set the multiple things in their Z order of what overlaps what.
     Set_draw_pass(100, draw_ui) -- UI goes on top of everything.
+end)
+
 end
