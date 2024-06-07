@@ -261,7 +261,7 @@ function Reset_gameplay()
     playdate.timer.new(1000, function ()
       FROG:Ask_for_cocktail()
     end)
-    Restart_timer("talk_reminder", 20*1000)
+    Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
 
     PLAYER_LEARNED.how_to_fire = false
     PLAYER_LEARNED.how_to_grab = false
@@ -598,7 +598,7 @@ function check_crank_to_stir()
 
             -- Stop the sound with a bit of delay when stirring stops.
             -- There is one timer to count a delay of time after stopping stirring.
-            delay_to_stop_timer = playdate.timer.new(0.4 * 1000)
+            delay_to_stop_timer = playdate.timer.new(0.4 * 1000) --tmp this timer should also become a GAMEPLAY_TIMERS
             -- There is a second timer that ticks a function while the sound plays.
             sfx_dur = SOUND.stir_sound:getLength() * 1000
             sound_effect_timer = playdate.timer.new(sfx_dur)
@@ -859,7 +859,7 @@ function Check_player_struggle()
             GAMEPLAY_STATE.used_ingredients_table[k] = false
         end
         -- Timeout to stop cocktail hint dialogue
-        Restart_timer("cocktail_struggle_timeout", struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.cocktail_struggle_timeout, struggle_reminder_timout)
         FROG:Ask_the_frog()
     end
 
@@ -887,7 +887,7 @@ function Check_no_fire_struggle()
         print("Fire is never used or player forgot how!")
         PLAYER_STRUGGLES.no_fire = true
         FROG:flash_b_prompt()
-        Restart_timer("no_fire_timeout", struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.no_fire_timeout, struggle_reminder_timout)
     end
     --print("No fire tracking: " .. PLAYER_STRUGGLES.no_fire_tracking)
 end
@@ -918,7 +918,7 @@ function Check_too_much_fire_struggle()
         GAMEPLAY_STATE.fire_stoke_count = 0
         PLAYER_STRUGGLES.too_much_fire_tracking = 0
         -- timer to stop struggle dialogue
-        Restart_timer("too_much_fire_timeout", struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.too_much_fire_timeout, struggle_reminder_timout)
     end
     --print("Too much fire tracker: " .. PLAYER_STRUGGLES.too_much_fire_tracking)
     --print(GAMEPLAY_STATE.fire_stoke_count)
@@ -931,7 +931,7 @@ function Check_no_shaking_struggle()
         print("Swapped ingredients too much without shaking")
         PLAYER_STRUGGLES.no_shake = true
         FROG:flash_b_prompt()
-        Restart_timer("no_shake_timeout", struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
         GAMEPLAY_STATE.cauldron_swap_count = 0
     -- Check it there's too much stirring without a dropped ingredient
     elseif not PLAYER_STRUGGLES.no_shake then
@@ -943,7 +943,7 @@ function Check_no_shaking_struggle()
                 print("Too much stirring without shaking")
                 PLAYER_STRUGGLES.no_shake = true
                 FROG:flash_b_prompt()
-                Restart_timer("no_shake_timeout", struggle_reminder_timout)
+                Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
                 PLAYER_STRUGGLES.no_shake_tracking = 0
             end
         elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
@@ -962,7 +962,7 @@ function Check_too_much_shaking_struggle()
         print("Player is struggling with stir")
         PLAYER_STRUGGLES.too_much_shaking = true
         FROG:flash_b_prompt()
-        Restart_timer("too_much_shaking_timeout", struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.too_much_shaking_timeout, struggle_reminder_timout)
         GAMEPLAY_STATE.dropped_ingredients = 0
     elseif STIR_FACTOR > 0.3 and PLAYER_STRUGGLES.too_much_shaking then
         --print("Player struggle with stir resolved")
@@ -990,7 +990,7 @@ function Check_too_much_stirring_struggle()
             --print("Stirring reached struggling amount.")
             PLAYER_STRUGGLES.too_much_stir = true
             FROG:flash_b_prompt()
-            Restart_timer("too_much_stir_timeout", struggle_reminder_timout)
+            Restart_timer(GAMEPLAY_TIMERS.too_much_stir_timeout, struggle_reminder_timout)
             PLAYER_STRUGGLES.too_much_stir_tracking = 0
         end
     elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
@@ -1015,7 +1015,8 @@ function Next_recipe_struggle_tip()
 end
 
 function Restart_timer(timer, duration)
-    GAMEPLAY_TIMERS[timer].duration = duration
-    GAMEPLAY_TIMERS[timer]:reset()
-    GAMEPLAY_TIMERS[timer]:start()
+
+    timer:reset()
+    timer.duration = duration
+    timer:start()
 end

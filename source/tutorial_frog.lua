@@ -199,7 +199,7 @@ function Froggo:flash_b_prompt(duration)
     ANIMATIONS.b_prompt.paused = false
 
     -- Start the timer that eventually pauses the blinking
-    Restart_timer("stop_b_flashing", duration)
+    Restart_timer(GAMEPLAY_TIMERS.stop_b_flashing, duration)
 end
 
 
@@ -237,7 +237,7 @@ function Froggo:Talk_reminder()
     self:croak()
 
     self:flash_b_prompt(3000)
-    Restart_timer("talk_reminder", 20*1000)
+    Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
 end
 
 
@@ -275,7 +275,7 @@ end
 function Froggo:fire_reaction()
     self.state = ACTION_STATE.reacting
     self:start_animation(self.anim_frogfire)
-    Restart_timer("frog_go_idle", 2*1000)
+    Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
 end
 
 
@@ -302,7 +302,7 @@ end
 function Froggo:froggo_tickleface()
     self.state = ACTION_STATE.reacting
     self:start_animation(self.anim_tickleface)
-    Restart_timer("frog_go_idle", 2.9*1000)
+    Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2.9*1000)
 end
 
 
@@ -319,16 +319,16 @@ function Froggo:go_drinking()
 
     -- Start sequence of timers to trigger animations and speech
     duration = cocktail_runtime
-    Restart_timer("drinking_cocktail", duration)
+    Restart_timer(GAMEPLAY_TIMERS.drinking_cocktail, duration)
 
     duration += burp_runtime
-    Restart_timer("drinking_burp", duration)
+    Restart_timer(GAMEPLAY_TIMERS.drinking_burp, duration)
 
     duration += burp_speak_runtime - burp_runtime
-    Restart_timer("drinking_burp_talk", duration)
+    Restart_timer(GAMEPLAY_TIMERS.drinking_burp_talk, duration)
 
     duration += 2*1000
-    Restart_timer("drinking_talk", duration)
+    Restart_timer(GAMEPLAY_TIMERS.drinking_talk, duration)
 
 end
 
@@ -348,7 +348,7 @@ function Froggo:croak()
 
         local dialog_display_time = self:start_speech_bubble()
 
-        Restart_timer("speech_timer", dialog_display_time)
+        Restart_timer(GAMEPLAY_TIMERS.speech_timer, dialog_display_time)
     end
 end
 
@@ -357,7 +357,7 @@ function Froggo:froggo_react()
     self.state = ACTION_STATE.reacting
 
     self:go_reacting()
-    Restart_timer("frog_go_idle", 2*1000)
+    Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
 end
 
 
