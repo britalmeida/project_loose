@@ -252,11 +252,9 @@ function Reset_gameplay()
     RECIPE_TEXT = {}
 
     -- Reset active timers
-    for k, v in pairs(GAMEPLAY_TIMERS) do
-        if GAMEPLAY_TIMERS[k] ~= nil then
-            GAMEPLAY_TIMERS[k]:reset()
-            GAMEPLAY_TIMERS[k]:pause()
-        end
+    for k in pairs(GAMEPLAY_TIMERS) do
+        GAMEPLAY_TIMERS[k]:reset()
+        GAMEPLAY_TIMERS[k]:pause()
     end
 
     Calculate_goodness()
@@ -267,7 +265,7 @@ function Reset_gameplay()
     playdate.timer.new(1000, function ()
       FROG:Ask_for_cocktail()
     end)
-    Restart_timer("talk_reminder",20*1000)
+    Restart_timer("talk_reminder", 20*1000)
 
     PLAYER_LEARNED.how_to_fire = false
     PLAYER_LEARNED.how_to_grab = false
