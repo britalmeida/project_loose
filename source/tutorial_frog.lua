@@ -150,6 +150,7 @@ function Froggo:init()
     self.anim_tickleface = animloop.new(2.5 * frame_ms, gfxit.new('images/frog/animation-tickleface'), false)
     self.anim_eyeball    = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
     self.anim_frogfire   = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-frogfire'), true)
+    self.anim_facepalm   = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-facepalm'), true)
 
     self:setZIndex(Z_DEPTH.frog)
 
@@ -164,6 +165,7 @@ function Froggo:reset()
     -- Reset frog action state machine.
     self:go_idle()
     self.x_offset = 0
+    self.y_offset = 0
 
     -- Reset speech content state machine.
     self.tutorial_state = TUTORIAL_STATE.start
@@ -185,6 +187,7 @@ end
 
 function Froggo:start_animation(anim_loop)
     self.x_offset = 0
+    self.y_offset = 0
     self.anim_current = anim_loop
     self.anim_current.frame = 1  -- Restart the animation from the beggining
 end
@@ -280,11 +283,24 @@ end
 function Froggo:go_reacting()
     self.state = ACTION_STATE.reacting
 
-    if TREND > 0 then
+    -- If the potion was right already, give propper reaction :D
+    if self.anim_current == self.anim_eyeball then
+        local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
+
+        self:start_animation(self.anim_facepalm)
+        self.x_offset = -10
+        self.y_offset = 9
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, runtime)
+        CHECK_IF_DELICIOUS = false
+
+    -- Otherwise reacht to ingredient direction
+    elseif TREND > 0 then
         self:start_animation(self.anim_happy)
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
         CHECK_IF_DELICIOUS = false
     elseif TREND < 0 then
         self:start_animation(self.anim_headshake)
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
         CHECK_IF_DELICIOUS = false
     end
 
@@ -349,7 +365,6 @@ function Froggo:froggo_react()
     self.state = ACTION_STATE.reacting
 
     self:go_reacting()
-    Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
 end
 
 
@@ -606,6 +621,6 @@ function Froggo:animation_tick()
     -- Set the image frame to display.
     if self.anim_current then
         self:setImage(self.anim_current:image())
-        self:moveTo(350 + self.x_offset, 148)
+        self:moveTo(350 + self.x_offset, 148 + self.y_offset)
     end
 end
