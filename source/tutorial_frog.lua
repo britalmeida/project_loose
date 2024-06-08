@@ -451,7 +451,7 @@ function Froggo:think()
 
         -- Normal help loop:
         -- Some lines will not be picked if the frog speaks autoamtically with a talk reminder
-        elseif GAMEPLAY_STATE.heat_amount < 0.3 and not automated then
+        elseif GAMEPLAY_STATE.heat_amount < 0.2 and not automated then
             -- Reminder to keep the heat up whenever it goes low.
             self:select_next_sentence(sayings.help.fire)
         elseif
