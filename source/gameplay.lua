@@ -245,7 +245,7 @@ function Reset_gameplay()
     for k, v in pairs(GAMEPLAY_STATE.used_ingredients_table) do
         GAMEPLAY_STATE.used_ingredients_table[k] = false
     end
-    used_ingredients = 0
+    GAMEPLAY_STATE.used_ingredients = 0
     GAMEPLAY_STATE.dropped_ingredients = 0
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
@@ -450,6 +450,9 @@ function Handle_input()
         if playdate.buttonJustPressed( playdate.kButtonLeft ) then
             GAMEPLAY_STATE.showing_cocktail = true
             PLAYER_STRUGGLES.cocktail_struggle = false
+            -- Set a negative tracking for ingredient types,
+            -- so the cocktail struggle won't be triggered in the level anymore
+            GAMEPLAY_STATE.used_ingredients = -9
         elseif playdate.buttonJustReleased( playdate.kButtonLeft ) then
             GAMEPLAY_STATE.showing_cocktail = false
         end
@@ -862,8 +865,8 @@ function Check_player_struggle()
 
     -- No check for "No Stirring needed". There's already frequent remidners in place
 
-    -- Coktail struggle
-    if GAMEPLAY_STATE.used_ingredients > 5 and not PLAYER_STRUGGLES.cocktail_struggle
+    -- Cocktail struggle
+    if GAMEPLAY_STATE.used_ingredients > 6 and not PLAYER_STRUGGLES.cocktail_struggle
     and TARGET_COCKTAIL.type_idx < 5 then
         print("Player used too many ingredient types.")
         PLAYER_STRUGGLES.cocktail_struggle = true
