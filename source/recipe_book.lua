@@ -40,13 +40,17 @@ function Recipe_steps_to_text_success(recipe_steps)
         local line = "" .. tostring(step) .. ". "
         local step_type = recipe_steps[step][1]
         if step_type > 0 then
-            line = line .. "Add " .. recipe_steps[step][2]
-            if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
-                line = line .. " pinches of "
-            elseif INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] == 1 then
-                line = line .. " pinch of "
+            if recipe_steps[step][2] == 1 then
+                line = line .. "Add a"
+            else
+                line = line .. "Add " .. recipe_steps[step][2]
             end
-            line = line .. INGREDIENT_TYPES[step_type].drop_name
+            if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
+                line = line .. " pinches of"
+            elseif INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] == 1 then
+                line = line .. " pinch of"
+            end
+            line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
             if recipe_steps[step][2] > 1 and INGREDIENT_TYPES[step_type].drop_name ~= "salt" then
                 line = line .. "s"
             end
@@ -207,7 +211,7 @@ function Recipe_draw_success(y, recipe_steps_text)
         y += line_height
         if y > 0 and y < 240 then
             if num_steps > TARGET_COCKTAIL.step_ratings[3] then
-                gfx.drawText("Yep . . . That was " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
+                gfx.drawText("Yep . . . that was " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
             elseif num_steps > TARGET_COCKTAIL.step_ratings[2] then
                 gfx.drawText("Well done. Just " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
             elseif num_steps > TARGET_COCKTAIL.step_ratings[1] then
