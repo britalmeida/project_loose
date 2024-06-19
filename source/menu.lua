@@ -498,7 +498,7 @@ function Handle_menu_input()
             if MENU_STATE.focused_option > 0 and
             MENU_STATE.focused_option < 3 and not INTRO_COMPLETED then
                 print("Intro not completed yet!")
-            elseif MENU_STATE.focused_option > 1 and
+            elseif MENU_STATE.focused_option > 2 and
             MENU_STATE.focused_option < 5 and not EASY_COMPLETED then
                 print("Easy not completed yet!")
             elseif MENU_STATE.focused_option == 5 and not DICEY_UNLOCKED then
