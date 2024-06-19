@@ -18,7 +18,7 @@ COCKTAILS = {
 
   { name="Silkini",
     rune_composition={0.6, 1, 0},
-    step_ratings= {3, 8, 15},
+    step_ratings= {3, 10, 18},
     img=gfxi.new('images/cocktails/silkini_sheet'),
     table= gfxit.new('images/cocktails/silkini_sheet'),
     locked_img = gfxi.new('images/cocktails/silkini_sheet_locked'),
@@ -31,7 +31,7 @@ COCKTAILS = {
 
   { name="Green Toe",
     rune_composition={0, 0.33, 0.8},
-    step_ratings= {3, 8, 15},
+    step_ratings= {3, 10, 18},
     img=gfxi.new('images/cocktails/green_toe_sheet'),
     table= gfxit.new('images/cocktails/green_toe_sheet'),
     locked_img = gfxi.new('images/cocktails/green_toe_sheet_locked'),
@@ -44,7 +44,7 @@ COCKTAILS = {
 
   { name="Overdose",
     rune_composition={0.25, 1, 0.66},
-    step_ratings= {4, 10, 15},
+    step_ratings= {4, 10, 18},
     img=gfxi.new('images/cocktails/overdose_sheet'),
     table= gfxit.new('images/cocktails/overdose_sheet'),
     locked_img = gfxi.new('images/cocktails/overdose_sheet_locked'),
@@ -57,7 +57,7 @@ COCKTAILS = {
 
   { name="Hodge Podge",
     rune_composition={0.4, 0.4, 0.4},
-    step_ratings= {5, 10, 15},
+    step_ratings= {5, 10, 20},
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
     table= gfxit.new('images/cocktails/hodge_podge_sheet'),
     locked_img = gfxi.new('images/cocktails/hodge_podge_sheet_locked'),
@@ -70,7 +70,7 @@ COCKTAILS = {
 
   { name="Dicey Brew",
     rune_composition={1, 1, 1},
-    step_ratings= {4, 10, 15},
+    step_ratings= {4, 10, 18},
     img=gfxi.new('images/cocktails/dicey_brew_sheet'),
     table= gfxit.new('images/cocktails/dicey_brew_sheet'),
     locked_img = gfxi.new('images/cocktails/dicey_brew_sheet_locked'),
