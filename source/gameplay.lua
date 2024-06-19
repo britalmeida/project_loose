@@ -879,7 +879,8 @@ function Check_player_struggle()
 
     -- No check for "No Stirring needed". There's already frequent remidners in place
 
-    -- Cocktail struggle
+    -- Cocktail struggle (Pointing towards cocktail artwork or clues)
+    -- If you used too many different ingredients
     if GAMEPLAY_STATE.used_ingredients > 6 and not PLAYER_STRUGGLES.cocktail_struggle
     and TARGET_COCKTAIL.type_idx < 5 then
         print("Player used too many ingredient types.")
@@ -895,13 +896,19 @@ function Check_player_struggle()
         FROG:Ask_the_frog()
     end
 
-    -- Recipe struggle
-    if not PLAYER_STRUGGLES.recipe_struggle and
-    (RECIPE_STRUGGLE_STEPS == true or PLAYER_STRUGGLES.ingredient_struggle_asked >= 4) then
+    -- Recipe struggle (General gameplay hints)
+    -- If you used to many actions so far
+    if not PLAYER_STRUGGLES.recipe_struggle and RECIPE_STRUGGLE_STEPS == true then
         PLAYER_STRUGGLES.recipe_struggle = true
         Shorten_talk_reminder()
         Next_recipe_struggle_tip()
         FROG:flash_b_prompt()
+    -- If you keep asking the same question
+    elseif not PLAYER_STRUGGLES.recipe_struggle and PLAYER_STRUGGLES.ingredient_struggle_asked >= 4 then
+        PLAYER_STRUGGLES.recipe_struggle = true
+        Shorten_talk_reminder()
+        Next_recipe_struggle_tip()
+    -- Reset struggle
     elseif not RECIPE_STRUGGLE_STEPS then
         if PLAYER_STRUGGLES.recipe_struggle then
             PLAYER_STRUGGLES.recipe_struggle = false
