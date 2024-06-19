@@ -27,9 +27,12 @@ local fire_tutorials <const> = {
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
 }
-local fire_tips <const> = {
+local fire_tips_a <const> = {
     "No need to stoke\nthe fire this often.",
     "Save your breath!\nLeave it for a bit.",
+}
+local fire_tips_b <const> = {
+    "Raise the fire higher!\nIt will stick around longer.",
 }
 local stir_tutorials <const> = {
     "Always stir to see\nwhat ingredient do.",
@@ -100,7 +103,7 @@ local sayings <const> = {
         stir = need_more_stir
     },
     struggle = {
-        fire = { fire_tutorials, fire_tips},
+        fire = { fire_tutorials, fire_tips_a, fire_tips_b},
         drop = { drop_tutorials, drop_tips},
         stir = { stir_tutorials, stir_tips},
     },
@@ -437,8 +440,11 @@ function Froggo:think()
             print("Reminding fire tutorial.")
             self:select_next_sentence(sayings.struggle.fire[1])
         elseif PLAYER_STRUGGLES.too_much_fire and struggles_unread then
-            print("Giving fire hint.")
+            print("Giving hint to use fire less.")
             self:select_next_sentence(sayings.struggle.fire[2])
+        elseif PLAYER_STRUGGLES.too_little_fire and struggles_unread then
+            print("Giving hint to use fire more.")
+            self:select_next_sentence(sayings.struggle.fire[3])
         elseif PLAYER_STRUGGLES.no_shake and struggles_unread then
             print("Reminding drop tutorial.")
             self:select_next_sentence(sayings.struggle.drop[1])
@@ -470,6 +476,7 @@ function Froggo:think()
             PLAYER_STRUGGLES.struggle_hint_asked = 0
             PLAYER_STRUGGLES.no_fire = false
             PLAYER_STRUGGLES.too_much_fire = false
+            PLAYER_STRUGGLES.too_little_fire = false
             PLAYER_STRUGGLES.no_shake = false
             PLAYER_STRUGGLES.too_much_shaking = false
             PLAYER_STRUGGLES.too_much_stir = false

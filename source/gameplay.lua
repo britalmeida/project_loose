@@ -92,6 +92,7 @@ PLAYER_STRUGGLES = {
     -- Live values to detect struggle
     no_fire_tracking = 0,
     too_much_fire_tracking = 0,
+    too_little_fire_tracking = 0,
     no_shake_tracking = 0,
     too_much_stir_tracking = 0,
 }
@@ -158,6 +159,9 @@ GAMEPLAY_TIMERS = {
         end),
     too_much_fire_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.too_much_fire = false
+        end),
+    too_little_fire_timeout = playdate.timer.new(100, function ()
+        PLAYER_STRUGGLES.too_little_fire = false
         end),
     no_shake_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.no_shake = false
@@ -278,6 +282,7 @@ function Reset_gameplay()
 
     PLAYER_STRUGGLES.no_fire = false
     PLAYER_STRUGGLES.too_much_fire = false
+    PLAYER_STRUGGLES.too_little_fire = false
     PLAYER_STRUGGLES.no_shake = false
     PLAYER_STRUGGLES.too_much_shaking = false
     PLAYER_STRUGGLES.too_much_stir = false
@@ -289,6 +294,7 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.struggle_hint_asked = 0
     PLAYER_STRUGGLES.no_fire_tracking = 0
     PLAYER_STRUGGLES.too_much_fire_tracking = 0
+    PLAYER_STRUGGLES.too_little_fire_tracking = 0
     PLAYER_STRUGGLES.no_shake_tracking = 0
     PLAYER_STRUGGLES.too_much_stir_tracking = 0
 
@@ -848,6 +854,11 @@ function Check_player_struggle()
         Check_too_much_fire_struggle()
     end
 
+    -- Too little fire
+    if not PLAYER_STRUGGLES.too_little_fire then
+        Check_too_little_fire_struggle()
+    end
+
     -- Too much shaking
     if GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring then
         Check_too_much_shaking_struggle()
@@ -914,34 +925,55 @@ end
 
 function Check_too_much_fire_struggle()
     -- 1. Heat doesn't fall under a high threshold for a certain amount of time
-    -- 2. Fire is blown 5 times in a row
-    -- 3. Flame is kept over a very high threshold for a prolonged period of time
+    -- 2. Flame is kept over a very high threshold for a prolonged period of time
     if GAMEPLAY_STATE.heat_amount > 0.9 then
         PLAYER_STRUGGLES.too_much_fire_tracking += 0.003
-    elseif GAMEPLAY_STATE.flame_amount > 0.6 then
-        PLAYER_STRUGGLES.too_much_fire_tracking += 0.003
-        if GAMEPLAY_STATE.start_counting_blows then
-            GAMEPLAY_STATE.fire_stoke_count += 1
-            GAMEPLAY_STATE.start_counting_blows = false
-        end
     else
         PLAYER_STRUGGLES.too_much_fire_tracking -= 0.001
-        GAMEPLAY_STATE.start_counting_blows = true
     end
+
     PLAYER_STRUGGLES.too_much_fire_tracking = Clamp(PLAYER_STRUGGLES.too_much_fire_tracking, 0, 1)
-    if PLAYER_STRUGGLES.too_much_fire_tracking >= 1 or GAMEPLAY_STATE.fire_stoke_count >= 5 then
-        print("Fire is stroked way too much!")
+    if PLAYER_STRUGGLES.too_much_fire_tracking >= 1 then
+        print("Fire is stoked way too much!")
         PLAYER_STRUGGLES.too_much_fire = true
         Shorten_talk_reminder()
         FROG:flash_b_prompt()
-        -- reset counting
-        GAMEPLAY_STATE.fire_stoke_count = 0
         PLAYER_STRUGGLES.too_much_fire_tracking = 0
         -- timer to stop struggle dialogue
         Restart_timer(GAMEPLAY_TIMERS.too_much_fire_timeout, struggle_reminder_timout)
     end
     --print("Too much fire tracker: " .. PLAYER_STRUGGLES.too_much_fire_tracking)
     --print(GAMEPLAY_STATE.fire_stoke_count)
+end
+
+
+function Check_too_little_fire_struggle()
+    -- 1. Fire is stoked 4 times and not going above a threshold
+    if GAMEPLAY_STATE.heat_amount < 0.6 then
+    -- Start tracking stoke counts if it stays under the threshold
+        if GAMEPLAY_STATE.flame_amount > 0.3 then
+            if GAMEPLAY_STATE.start_counting_blows then
+                GAMEPLAY_STATE.fire_stoke_count += 1
+                GAMEPLAY_STATE.start_counting_blows = false
+            end
+        else
+            GAMEPLAY_STATE.start_counting_blows = true
+        end
+    else
+        GAMEPLAY_STATE.fire_stoke_count = 0
+    end
+
+    if GAMEPLAY_STATE.fire_stoke_count >= 5 then
+        print("Fire is stoked way little!")
+        PLAYER_STRUGGLES.too_little_fire = true
+        Shorten_talk_reminder()
+        FROG:flash_b_prompt()
+        -- reset counting
+        GAMEPLAY_STATE.fire_stoke_count = 0
+        -- timer to stop struggle dialogue
+        Restart_timer(GAMEPLAY_TIMERS.too_little_fire_timeout, struggle_reminder_timout)
+    end
+    print(GAMEPLAY_STATE.fire_stoke_count)
 end
 
 
