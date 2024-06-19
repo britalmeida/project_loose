@@ -978,7 +978,7 @@ function Check_too_little_fire_struggle()
         -- timer to stop struggle dialogue
         Restart_timer(GAMEPLAY_TIMERS.too_little_fire_timeout, struggle_reminder_timout)
     end
-    print(GAMEPLAY_STATE.fire_stoke_count)
+    --print(GAMEPLAY_STATE.fire_stoke_count)
 end
 
 

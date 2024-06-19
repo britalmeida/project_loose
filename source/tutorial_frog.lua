@@ -424,9 +424,8 @@ function Froggo:think()
 
     else
         local struggle_lvl = PLAYER_STRUGGLES.recipe_struggle_lvl
-        local struggles_unread = PLAYER_STRUGGLES.struggle_hint_asked < 5
+        local struggles_unread = PLAYER_STRUGGLES.struggle_hint_asked < 5 --how often to ask the same thing before a hint drops
 
-        PLAYER_LEARNED.complete = true
         -- Frustration checks:
         -- PLAYER_STRUGGLES are usually on a timer before set to false again
 
