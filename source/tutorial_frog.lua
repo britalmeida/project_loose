@@ -284,10 +284,9 @@ end
 
 
 function Froggo:go_reacting()
-    self.state = ACTION_STATE.reacting
 
     -- If the potion was right already, give propper reaction :D
-    if self.anim_current == self.anim_eyeball then
+    if self.anim_current == self.anim_eyeball and TUTORIAL_COMPLETED then
         local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
 
         self:start_animation(self.anim_facepalm)
@@ -295,18 +294,24 @@ function Froggo:go_reacting()
         self.y_offset = 9
         Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, runtime)
         CHECK_IF_DELICIOUS = false
-
-    -- Otherwise reacht to ingredient direction
-    elseif TREND > 0 then
-        self:start_animation(self.anim_happy)
-        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
-        CHECK_IF_DELICIOUS = false
-    elseif TREND < 0 then
+    elseif self.anim_current == self.anim_eyeball and not TUTORIAL_COMPLETED then
         self:start_animation(self.anim_headshake)
         Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
         CHECK_IF_DELICIOUS = false
-    end
 
+    -- Otherwise reacht to ingredient direction
+    elseif TREND > 0 and TUTORIAL_COMPLETED then
+        self:start_animation(self.anim_happy)
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
+        CHECK_IF_DELICIOUS = false
+    elseif TREND < 0 and TUTORIAL_COMPLETED then
+        self:start_animation(self.anim_headshake)
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
+        CHECK_IF_DELICIOUS = false
+    else
+        -- return back to idle if not reaction applies
+        self:go_idle()
+    end
 end
 
 

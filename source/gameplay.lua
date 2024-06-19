@@ -796,15 +796,13 @@ function Calculate_goodness()
     end
 
     if math.abs(TREND - prev_trend) == 2
-    and not RECIPE_STRUGGLE_STEPS
-    and TUTORIAL_COMPLETED then
+    and not RECIPE_STRUGGLE_STEPS then
         FROG:Notify_the_frog()
         -- Stop potentual blinking from eyeball lick
         ANIMATIONS.b_prompt.frame = 1
         ANIMATIONS.b_prompt.paused = true
     elseif math.abs(diff_change_overall) > 0.01
-    and not RECIPE_STRUGGLE_STEPS
-    and TUTORIAL_COMPLETED then
+    and not RECIPE_STRUGGLE_STEPS then
         FROG:Notify_the_frog()
         -- Stop potentual blinking from eyeball lick
         ANIMATIONS.b_prompt.frame = 1
