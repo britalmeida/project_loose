@@ -15,7 +15,7 @@ local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, drinking = 
 local TUTORIAL_STATE <const> = { start = 1, grab = 1, shake = 2, fire = 3, stir = 4, complete = 5 }
 
 local positive_acceptance <const> = "That'll do it!"
-local win_hint <const> = "That looks delicious!"
+local win_hint <const> = "Just don't mess it up now!"
 local fire_reminders <const> = {
     "Keep it warm to see \nthe magic.",
     "Fire is good, glow is good.",
