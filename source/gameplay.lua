@@ -72,8 +72,9 @@ PLAYER_LEARNED = {
     how_to_grab = false,
     how_to_shake = false,
     how_to_stir = false,
-    complete = false,
 }
+
+TUTORIAL_COMPLETED = false
 
 PLAYER_STRUGGLES = {
     -- Turns true when struggle is detected
@@ -278,7 +279,8 @@ function Reset_gameplay()
     PLAYER_LEARNED.how_to_release = false
     PLAYER_LEARNED.how_to_shake = false
     PLAYER_LEARNED.how_to_stir = false
-    PLAYER_LEARNED.complete = false
+
+    TUTORIAL_COMPLETED = false
 
     PLAYER_STRUGGLES.no_fire = false
     PLAYER_STRUGGLES.too_much_fire = false
@@ -425,6 +427,7 @@ function Handle_input()
                     if not PLAYER_LEARNED.how_to_grab then
                         PLAYER_LEARNED.how_to_grab = true
                         FROG:flash_b_prompt()
+                        Check_tutorial_completion()
                         print('Learned how to grab.')
                     end
                     break
@@ -794,14 +797,14 @@ function Calculate_goodness()
 
     if math.abs(TREND - prev_trend) == 2
     and not RECIPE_STRUGGLE_STEPS
-    and PLAYER_LEARNED.complete then
+    and TUTORIAL_COMPLETED then
         FROG:Notify_the_frog()
         -- Stop potentual blinking from eyeball lick
         ANIMATIONS.b_prompt.frame = 1
         ANIMATIONS.b_prompt.paused = true
     elseif math.abs(diff_change_overall) > 0.01
     and not RECIPE_STRUGGLE_STEPS
-    and PLAYER_LEARNED.complete then
+    and TUTORIAL_COMPLETED then
         FROG:Notify_the_frog()
         -- Stop potentual blinking from eyeball lick
         ANIMATIONS.b_prompt.frame = 1
@@ -818,6 +821,7 @@ function Check_player_learnings()
     and GAMEPLAY_STATE.last_shaken_ingredient ~= nil then
         PLAYER_LEARNED.how_to_fire = true
         FROG:flash_b_prompt()
+        Check_tutorial_completion()
     end
 
     if math.abs(STIR_SPEED) > 7.5
@@ -825,6 +829,7 @@ function Check_player_learnings()
     and not PLAYER_LEARNED.how_to_stir then
         PLAYER_LEARNED.how_to_stir = true
         FROG:flash_b_prompt()
+        Check_tutorial_completion()
     end
 end
 
@@ -840,7 +845,7 @@ end
 function Check_player_struggle()
 
     -- Only once tutorial is complete
-    if not PLAYER_LEARNED.complete then
+    if not TUTORIAL_COMPLETED then
         return
     end
 
@@ -1068,6 +1073,17 @@ function Next_recipe_struggle_tip()
     print("Giving gameplay hint Nr. " .. PLAYER_STRUGGLES.recipe_struggle_lvl)
     FROG:Ask_the_frog()
 
+end
+
+function Check_tutorial_completion()
+    -- Check if everything has been learned
+    for i in pairs(PLAYER_LEARNED) do
+        if not PLAYER_LEARNED[i] then
+            return
+        end
+    end
+    -- Set
+    TUTORIAL_COMPLETED = true
 end
 
 function Restart_timer(timer, duration)

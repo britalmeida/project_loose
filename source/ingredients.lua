@@ -253,9 +253,10 @@ function Ingredient:release()
         self:start_wiggle()
         self.state = INGREDIENT_STATE.is_over_cauldron
         if not PLAYER_LEARNED.how_to_release then
+          PLAYER_LEARNED.how_to_release = true
+          Check_tutorial_completion()
           print("learned how to release")
         end
-        PLAYER_LEARNED.how_to_release = true
     elseif bounds:containsPoint(self.start_pos) then
         -- Snap back to its place on the shelve.
         self:respawn()
@@ -278,6 +279,7 @@ function Ingredient:drop()
   if not PLAYER_LEARNED.how_to_shake then
     PLAYER_LEARNED.how_to_shake = true
     FROG:flash_b_prompt()
+    Check_tutorial_completion()
     print("Learned how to shake")
   end
 end
