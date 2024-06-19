@@ -25,6 +25,7 @@ RECIPE_COCKTAIL = 1
 SIDE_SCROLL_X = 400
 
 INTRO_COMPLETED = false
+EASY_COMPLETED = false
 DICEY_UNLOCKED = false
 
 
@@ -153,13 +154,15 @@ function enter_menu_mission(enter_from_gameplay)
     end
 
     -- Locking/Unlocking cocktails
-    if (FROGS_FAVES.accomplishments[COCKTAILS[1].name] and
-    FROGS_FAVES.accomplishments[COCKTAILS[2].name]) then
+    if FROGS_FAVES.accomplishments[COCKTAILS[1].name] then
         INTRO_COMPLETED = true
     end
-    if (FROGS_FAVES.accomplishments[COCKTAILS[3].name] and
-    FROGS_FAVES.accomplishments[COCKTAILS[4].name] and
-    FROGS_FAVES.accomplishments[COCKTAILS[5].name]) then
+    if FROGS_FAVES.accomplishments[COCKTAILS[2].name] and
+    FROGS_FAVES.accomplishments[COCKTAILS[3].name] then
+        EASY_COMPLETED = true
+    end
+    if FROGS_FAVES.accomplishments[COCKTAILS[4].name] and
+    FROGS_FAVES.accomplishments[COCKTAILS[5].name] then
         DICEY_UNLOCKED = true
     end
 
@@ -292,6 +295,7 @@ local function draw_ui()
 
             if debug_cocktail_unlock then
                 INTRO_COMPLETED = true
+                EASY_COMPLETED = true
                 DICEY_UNLOCKED = true
             end
 
@@ -309,15 +313,17 @@ local function draw_ui()
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
                     if (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
-                        if (i > 2 and not INTRO_COMPLETED) or
-                            i == 6 and not DICEY_UNLOCKED then
+                        if (i > 1 and not INTRO_COMPLETED) or
+                            (i > 3 and not EASY_COMPLETED) or
+                            (i == 6 and not DICEY_UNLOCKED) then
                                 cocktail_anims_locked[i]:draw(cocktail_x, global_origin[2])
                         else
                             cocktail:draw(cocktail_x, global_origin[2])
                         end
                     else
-                        if (i > 2 and not INTRO_COMPLETED) or
-                            i == 6 and not DICEY_UNLOCKED then
+                        if (i > 1 and not INTRO_COMPLETED) or
+                            (i > 3 and not EASY_COMPLETED) or
+                            (i == 6 and not DICEY_UNLOCKED) then
                                 COCKTAILS[i].locked_img:draw(cocktail_x, global_origin[2])
                         else
                             COCKTAILS[i].img:draw(cocktail_x, global_origin[2])
@@ -489,9 +495,12 @@ function Handle_menu_input()
         end
 
         if playdate.buttonJustReleased( playdate.kButtonA ) then
-            if MENU_STATE.focused_option > 1 and
-            MENU_STATE.focused_option < 5 and not INTRO_COMPLETED then
+            if MENU_STATE.focused_option > 0 and
+            MENU_STATE.focused_option < 3 and not INTRO_COMPLETED then
                 print("Intro not completed yet!")
+            elseif MENU_STATE.focused_option > 1 and
+            MENU_STATE.focused_option < 5 and not EASY_COMPLETED then
+                print("Easy not completed yet!")
             elseif MENU_STATE.focused_option == 5 and not DICEY_UNLOCKED then
                 print("Dicey not unlocked yet!")
             else
