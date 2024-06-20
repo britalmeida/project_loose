@@ -156,7 +156,7 @@ function Recipe_draw_success(y, recipe_steps_text)
     local y_header_img <const> = 0
     local y_win_sticker <const> = 124
     local y_first_text <const> = text_y
-    local y_paper_bottom <const> = y_first_text + y_recipe_step_start + (line_height * (num_steps + 1.65))
+    local y_paper_bottom <const> = y_first_text + y_recipe_step_start + (line_height * (num_steps + 1))
 
     -- Draw a dark dither background.
     gfx.pushContext()
@@ -209,7 +209,7 @@ function Recipe_draw_success(y, recipe_steps_text)
         end
 
         -- Show "rating" text.
-        y += line_height
+        y += line_height * 0.5
         if y > 0 and y < 240 then
             if num_steps > TARGET_COCKTAIL.step_ratings[3] then
                 gfx.drawText("Yep . . . that was " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
