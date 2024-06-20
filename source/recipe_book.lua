@@ -152,10 +152,11 @@ function Recipe_draw_success(y, recipe_steps_text)
 
     local y_paper_top <const> = 0 -- margin from the recipe to the top of the screen.
     local y_first_insert <const> = y_paper_top + TEXTURES.recipe_top.height
-    local y_paper_bottom <const> = y_first_insert + number_of_inserts * insert_height
+    local y_recipe_step_start <const> = line_height * 2.2
     local y_header_img <const> = 0
     local y_win_sticker <const> = 124
     local y_first_text <const> = text_y
+    local y_paper_bottom <const> = y_first_text + y_recipe_step_start + (line_height * (num_steps + 1.65))
 
     -- Draw a dark dither background.
     gfx.pushContext()
