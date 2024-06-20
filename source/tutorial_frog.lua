@@ -66,6 +66,9 @@ local need_more_weed <const> = {
 local need_less_weed <const> = {
     "Could be less vegetarian?", "5",
 }
+local positive_reinforcement <const> = {
+    "That's the good stuff!\nShake in more.",
+}
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",
     "Tilt to move your hand.\nHold { to grab.",
@@ -251,6 +254,13 @@ end
 
 function Froggo:Notify_the_frog()
     -- notify the frog when significant change happened
+
+    -- Save the trend of the latest ingredient drop, just in case the frog is occupied
+    if TREND > 0 then
+        PREV_TREND_REACTION = 1
+    elseif TREND < 0 then
+        PREV_TREND_REACTION = -1
+    end
     if self.state == ACTION_STATE.idle then
             -- React to a state change
             self:froggo_react()
@@ -573,9 +583,23 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
         PLAYER_STRUGGLES.ingredient_struggle_asked = 0
         PLAYER_STRUGGLES.struggle_hint_asked = 0
     end
+
+    -- Set the current sentence variables
     self.last_spoken_sentence_pool = sentence_pool
     self.last_spoken_sentence_cycle_idx = sentence_cycle_idx
-    self.last_spoken_sentence_str = sentence_pool[sentence_cycle_idx]
+    -- In case a good ingredient was used last time and is still over the cauldron,
+    -- replace current ingredient direction with positive reinforcement.
+    if ingredient_direction and
+        (GAMEPLAY_STATE.cauldron_ingredient == GAMEPLAY_STATE.last_shaken_ingredient) and
+        PREV_TREND_REACTION > 0 then
+            self.last_spoken_sentence_str = positive_reinforcement[1]
+    else
+        self.last_spoken_sentence_str = sentence_pool[sentence_cycle_idx]
+    end
+    print("Cauldron Ingredient = " .. GAMEPLAY_STATE.cauldron_ingredient)
+    print("Last used Ingredient = " .. GAMEPLAY_STATE.last_shaken_ingredient)
+    print("Previous reaction = " .. PREV_TREND_REACTION)
+    print("Repeated ingredient direction = " .. PLAYER_STRUGGLES.ingredient_struggle_asked)
 end
 
 

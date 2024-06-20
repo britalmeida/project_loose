@@ -63,7 +63,10 @@ DIFF_TO_TARGET = {
 GOAL_TOLERANCE = 0.1
 GAME_ENDED = false
 
+-- Trend on the current tick
 TREND = 0
+-- Trend from previous ingredient drop
+PREV_TREND_REACTION = 0
 PREV_RUNE_COUNT = {0, 0, 0}
 CHECK_IF_DELICIOUS = false
 
@@ -222,6 +225,7 @@ function Reset_gameplay()
     -- Done on every (re)start of the play.
 
     GAME_ENDED = false
+    PREV_TREND_REACTION = 0
     GAMEPLAY_STATE.game_tick = 0
     GAMEPLAY_STATE.showing_cocktail = false
     GAMEPLAY_STATE.showing_instructions = false
@@ -326,6 +330,18 @@ function Update_rune_count(drop_rune_count)
     local drops = GAMEPLAY_STATE.dropped_ingredients
     STIR_FACTOR = (STIR_FACTOR / drops) * (drops - 1)
 
+    -- Set neutral recorded trend if the rune count is the same
+    local matching_runes = 0
+    for i in pairs(GAMEPLAY_STATE.rune_count) do
+        if GAMEPLAY_STATE.rune_count[i] == PREV_RUNE_COUNT[i] then
+            matching_runes += 1
+        end
+    end
+    if matching_runes == 3 then
+        PREV_TREND_REACTION = 0
+        print("Rune count didn't change!")
+    end
+    printTable(GAMEPLAY_STATE.rune_count)
 
     local prev_rune_avg = (PREV_RUNE_COUNT[1] + PREV_RUNE_COUNT[2] + PREV_RUNE_COUNT[3]) /3
     local current_rune_avg = (GAMEPLAY_STATE.rune_count[1] + GAMEPLAY_STATE.rune_count[2] + GAMEPLAY_STATE.rune_count[3]) / 3
