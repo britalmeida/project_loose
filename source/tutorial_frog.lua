@@ -597,10 +597,6 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     else
         self.last_spoken_sentence_str = sentence_pool[sentence_cycle_idx]
     end
-    print("Cauldron Ingredient = " .. GAMEPLAY_STATE.cauldron_ingredient)
-    print("Last used Ingredient = " .. GAMEPLAY_STATE.last_shaken_ingredient)
-    print("Previous reaction = " .. PREV_TREND_REACTION)
-    print("Repeated ingredient direction = " .. PLAYER_STRUGGLES.ingredient_struggle_asked)
 end
 
 

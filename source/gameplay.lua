@@ -341,7 +341,6 @@ function Update_rune_count(drop_rune_count)
         PREV_TREND_REACTION = 0
         print("Rune count didn't change!")
     end
-    printTable(GAMEPLAY_STATE.rune_count)
 
     local prev_rune_avg = (PREV_RUNE_COUNT[1] + PREV_RUNE_COUNT[2] + PREV_RUNE_COUNT[3]) /3
     local current_rune_avg = (GAMEPLAY_STATE.rune_count[1] + GAMEPLAY_STATE.rune_count[2] + GAMEPLAY_STATE.rune_count[3]) / 3
