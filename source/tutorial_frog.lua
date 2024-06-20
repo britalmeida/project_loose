@@ -309,7 +309,7 @@ function Froggo:go_reacting()
         Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
         CHECK_IF_DELICIOUS = false
 
-    -- Otherwise reacht to ingredient direction
+    -- Otherwise react to ingredient direction
     elseif TREND > 0 and TUTORIAL_COMPLETED then
         self:start_animation(self.anim_happy)
         Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
@@ -319,7 +319,7 @@ function Froggo:go_reacting()
         Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
         CHECK_IF_DELICIOUS = false
     else
-        -- return back to idle if not reaction applies
+        -- return back to idle if no reaction applies
         self:go_idle()
     end
 end
@@ -551,15 +551,15 @@ end
 function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     print("Frog says: idx "..sentence_cycle_idx.." TUT: "..self.tutorial_state)
     local ingredient_direction = false
-    -- Compare if any ingredient direction is used
-    for rune_idx, v in pairs(sayings.help.ingredient) do
+    -- Check if any ingredient direction is used
+    for rune_idx in pairs(sayings.help.ingredient) do
         for rune_direction, v in pairs(sayings.help.ingredient[rune_idx]) do
             if sayings.help.ingredient[rune_idx][rune_direction] == sentence_pool then
                 ingredient_direction = true
             end
         end
     end
-    -- Compare if any struggle hint is used
+    -- Check if any struggle hint is used
     for mechanic in pairs(sayings.struggle) do
         for severity in pairs(sayings.struggle[mechanic]) do
             if sayings.struggle[mechanic][severity] == sentence_pool then
@@ -567,7 +567,8 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
             end
         end
     end
-    -- Check if player is stuck in the same frog hint dialogue
+    -- Check if player is still in the same frog hint dialogue.
+    -- Eventually this triggers a hint message
     if self.last_spoken_sentence_pool == sentence_pool
     and sentence_pool == sayings.help.fire then
         PLAYER_STRUGGLES.fire_struggle_asked += 1
