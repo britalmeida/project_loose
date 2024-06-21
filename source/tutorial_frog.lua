@@ -257,9 +257,7 @@ function Froggo:Notify_the_frog()
 
     -- Save the trend of the latest ingredient drop, just in case the frog is occupied
     if TREND > 0 then
-        PREV_TREND_REACTION = 1
-    elseif TREND < 0 then
-        PREV_TREND_REACTION = -1
+        CAN_REINFORCE = true
     end
     if self.state == ACTION_STATE.idle then
             -- React to a state change
@@ -550,12 +548,21 @@ end
 
 function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     print("Frog says: idx "..sentence_cycle_idx.." TUT: "..self.tutorial_state)
-    local ingredient_direction = false
-    -- Check if any ingredient direction is used
+    local any_ingredient_direction = false
+    local ingredient_rune_idx = 0
+    local ingredient_rune_direction = 0
+    local same_prev_direction = self.last_spoken_sentence_pool == sentence_pool
+    local directed_rune_improved = false
+    local same_ingredient_in_use = (GAMEPLAY_STATE.cauldron_ingredient == GAMEPLAY_STATE.last_shaken_ingredient)
+    -- Check if any, and which, ingredient direction is used
     for rune_idx in pairs(sayings.help.ingredient) do
-        for rune_direction, v in pairs(sayings.help.ingredient[rune_idx]) do
+        for rune_direction in pairs(sayings.help.ingredient[rune_idx]) do
             if sayings.help.ingredient[rune_idx][rune_direction] == sentence_pool then
-                ingredient_direction = true
+                any_ingredient_direction = true
+                -- save the specific ingredient direction and see if they were followed/improved since last time
+                ingredient_rune_idx = rune_idx
+                ingredient_rune_direction = rune_direction
+                directed_rune_improved = DIFF_TO_TARGET.runes_abs[ingredient_rune_idx] < DIFF_TO_TARGET.runes_abs_prev[ingredient_rune_idx]
             end
         end
     end
@@ -573,7 +580,7 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     and sentence_pool == sayings.help.fire then
         PLAYER_STRUGGLES.fire_struggle_asked += 1
     elseif self.last_spoken_sentence_pool == sentence_pool
-    and ingredient_direction then
+    and any_ingredient_direction then
         PLAYER_STRUGGLES.ingredient_struggle_asked += 1
     -- Check if they already went through struggle/tips
     elseif self.last_spoken_sentence_pool == sentence_pool
@@ -588,14 +595,20 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     -- Set the current sentence variables
     self.last_spoken_sentence_pool = sentence_pool
     self.last_spoken_sentence_cycle_idx = sentence_cycle_idx
-    -- In case a good ingredient was used last time and is still over the cauldron,
+    -- In case the directed ingredient was used last time and is still over the cauldron,
     -- replace current ingredient direction with positive reinforcement.
-    if ingredient_direction and
-        (GAMEPLAY_STATE.cauldron_ingredient == GAMEPLAY_STATE.last_shaken_ingredient) and
-        PREV_TREND_REACTION > 0 then
+    if any_ingredient_direction and
+        same_prev_direction and
+        directed_rune_improved and
+        same_ingredient_in_use and
+        CAN_REINFORCE then
             self.last_spoken_sentence_str = positive_reinforcement[1]
+            -- Reset to 0 so the sentence won't repeat
+            CAN_REINFORCE = false
     else
         self.last_spoken_sentence_str = sentence_pool[sentence_cycle_idx]
+        -- Reset to 0 so the sentence won't appear afterwards
+        CAN_REINFORCE = false
     end
 end
 

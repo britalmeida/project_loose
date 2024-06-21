@@ -58,15 +58,17 @@ CURRENT_RECIPE = {}
 DIFF_TO_TARGET = {
     ingredients_abs = 1,
     runes = { 1, 1, 1},
+    runes_trend = { 0, 0, 0},
     runes_abs = { 1, 1, 1},
+    runes_abs_prev = { 1, 1, 1},
 }
 GOAL_TOLERANCE = 0.1
 GAME_ENDED = false
 
 -- Trend on the current tick
 TREND = 0
--- Trend from previous ingredient drop
-PREV_TREND_REACTION = 0
+-- If a positive reinforcement can be triggered
+CAN_REINFORCE = false
 PREV_RUNE_COUNT = {0, 0, 0}
 CHECK_IF_DELICIOUS = false
 
@@ -225,7 +227,7 @@ function Reset_gameplay()
     -- Done on every (re)start of the play.
 
     GAME_ENDED = false
-    PREV_TREND_REACTION = 0
+    CAN_REINFORCE = false
     GAMEPLAY_STATE.game_tick = 0
     GAMEPLAY_STATE.showing_cocktail = false
     GAMEPLAY_STATE.showing_instructions = false
@@ -337,10 +339,24 @@ function Update_rune_count(drop_rune_count)
             matching_runes += 1
         end
     end
+
     if matching_runes == 3 then
-        PREV_TREND_REACTION = 0
-        print("Rune count didn't change!")
+        -- Rune count didn't change, so frog reinforcement is disabled
+        CAN_REINFORCE = false
+    else
+        -- Compare how the trend of each rune changed
+        for i in pairs(DIFF_TO_TARGET.runes_abs) do
+            if DIFF_TO_TARGET.runes_abs[i] < DIFF_TO_TARGET.runes_abs_prev[i] then
+                DIFF_TO_TARGET.runes_trend[i] = 1
+            elseif DIFF_TO_TARGET.runes_abs[i] > DIFF_TO_TARGET.runes_abs_prev[i] then
+                DIFF_TO_TARGET.runes_trend[i] = -1
+            else
+                DIFF_TO_TARGET.runes_trend[i] = 0
+            end
+            DIFF_TO_TARGET.runes_abs_prev[i] = DIFF_TO_TARGET.runes_abs[i]
+        end
     end
+
 
     local prev_rune_avg = (PREV_RUNE_COUNT[1] + PREV_RUNE_COUNT[2] + PREV_RUNE_COUNT[3]) /3
     local current_rune_avg = (GAMEPLAY_STATE.rune_count[1] + GAMEPLAY_STATE.rune_count[2] + GAMEPLAY_STATE.rune_count[3]) / 3
