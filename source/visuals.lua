@@ -765,11 +765,15 @@ function Init_visuals()
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_spiderweb_blink"), true), -- spiderweb
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_snailshells_blink"), true), -- snailshells
     }
-    TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
+    TEXTURES.rune_images = {gfxi.new("images/runes/love"), gfxi.new("images/runes/doom"), gfxi.new("images/runees/weeds")}
     ANIMATIONS.rune_correct = {
-        animloop.new(8 * frame_ms, gfxit.new("images/love_correct"), true),
-        animloop.new(8 * frame_ms, gfxit.new("images/doom_correct"), true),
-        animloop.new(8 * frame_ms, gfxit.new("images/weeds_correct"), true)}
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/love_correct"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_correct"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_correct"), true)}
+    ANIMATIONS.rune_target = {
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/love_goal"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_goal"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_goal"), true)}
     -- Load fx
     -- Load animation images and initialize animation loop timers.
     ANIMATIONS.bubble = gfxit.new("images/fx/bubble")
