@@ -186,7 +186,7 @@ local function draw_symbols()
             if should_draw_on_target_anim and DIFF_TO_TARGET.runes_abs[a] < GOAL_TOLERANCE then
                 ANIMATIONS.rune_correct[a]:draw(glyph_topleft_x, glyph_topleft_y)
             -- if the rune is currently moving, draw the blinking outline
-            elseif GAMEPLAY_STATE.rune_count_unstirred[a] ~= GAMEPLAY_STATE.rune_count[a] and
+            elseif GAMEPLAY_STATE.rune_count_unclamped[a] ~= GAMEPLAY_STATE.rune_count_unstirred[a] and
                 GAMEPLAY_STATE.dropped_ingredients ~= 0 and
                 GAMEPLAY_STATE.heat_amount > 0.3 then
                     ANIMATIONS.rune_active[a]:draw(glyph_topleft_x, glyph_topleft_y)

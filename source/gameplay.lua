@@ -28,6 +28,8 @@ GAMEPLAY_STATE = {
     potion_bubbliness = 0.0,
     rune_count = {0, 0, 0},
     rune_count_unstirred = {0, 0, 0},
+    -- To check which directions runes would travel in. Reset regularly when ingredients are stirred in
+    rune_count_unclamped = {0, 0, 0},
     held_ingredient = 0, -- index of currently helf ingredient
     dropped_ingredients = 0,
     dropped_since_last_stirred = false,
@@ -252,6 +254,7 @@ function Reset_gameplay()
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_count_unstirred[a] = 0
+        GAMEPLAY_STATE.rune_count_unclamped[a] = 0
     end
     for k, v in pairs(GAMEPLAY_STATE.used_ingredients_table) do
         GAMEPLAY_STATE.used_ingredients_table[k] = false
@@ -322,7 +325,8 @@ function Update_rune_count(drop_rune_count)
     -- Calculate new rune count
     for a = 1, NUM_RUNES, 1 do
         if TARGET_COCKTAIL.rune_count[a] > 0 then
-            GAMEPLAY_STATE.rune_count[a] = Clamp(GAMEPLAY_STATE.rune_count[a] + ((drop_rune_count[a]/6) * 0.3), 0, 1)
+            GAMEPLAY_STATE.rune_count_unclamped[a] = GAMEPLAY_STATE.rune_count[a] + ((drop_rune_count[a]/6) * 0.3)
+            GAMEPLAY_STATE.rune_count[a] = Clamp(GAMEPLAY_STATE.rune_count_unclamped[a], 0, 1)
         end
     end
 
@@ -759,6 +763,7 @@ function update_liquid()
     -- Reset rune travel variables
     if STIR_FACTOR >= 1 then
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
+        table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unclamped)
         GAMEPLAY_STATE.dropped_ingredients = 0
         CHECK_IF_DELICIOUS = true
     end
