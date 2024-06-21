@@ -153,7 +153,9 @@ local function draw_symbols()
     local heat_response = min(sqrt(max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
     local glow_strength = (lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response)
     glow_strength = Clamp(glow_strength, 0, 1) * 0.75
-    local glyph_overlay_alpha = max(0.8-GAMEPLAY_STATE.heat_amount * 2, 0) * 0.8
+    local glyph_fade = Clamp(glow_strength, 0.2, 0.6)
+    local target_fade = Clamp(glow_strength, 0.0, 0.5)
+
 
     local rune_count_travel = {0, 0, 0}
     for k, v in pairs(rune_count_travel) do
@@ -172,26 +174,36 @@ local function draw_symbols()
             local glyph_x = rune_area_x + rune_area_width * 0.5 * (a - 2)
             local glyph_y = rune_area_y - (rune_count_travel[a] - 0.5) * rune_area_height + wiggle
             local target_y = rune_area_y - (TARGET_COCKTAIL.rune_count[a] - 0.5) * rune_area_height + wiggle
-            local glyph_topleft_x = glyph_x - TEXTURES.rune_images[a].width * 0.5
-            local glyph_topleft_y = glyph_y - TEXTURES.rune_images[a].height * 0.5
+            local target_topleft_y = target_y - ANIMATIONS.rune_idle[a]:image().height * 0.5
+            local glyph_topleft_x = glyph_x - ANIMATIONS.rune_idle[a]:image().width * 0.5
+            local glyph_topleft_y = glyph_y - ANIMATIONS.rune_idle[a]:image().height * 0.5
 
-            -- Rune circle
-            draw_soft_circle(glyph_x, glyph_y, 10 * glow_strength + 3, 3, 0.5, glow_strength, gfx.kColorWhite)
+            -- Rune target shadow and outline
+            ANIMATIONS.rune_target[a]:draw(glyph_topleft_x, target_topleft_y)
+            ANIMATIONS.rune_target_outline[a]:image():drawFaded(glyph_topleft_x, target_topleft_y, target_fade, gfxi.kDitherTypeBayer4x4)
 
-            -- Target ring
-            draw_soft_ring(glyph_x, target_y, 10 * glow_strength + 7, 3, 0.5, glow_strength, gfx.kColorWhite)
-
-            -- Rune image
+            -- Rune glyphs. Draw idle, moving or correct
             if should_draw_on_target_anim and DIFF_TO_TARGET.runes_abs[a] < GOAL_TOLERANCE then
                 ANIMATIONS.rune_correct[a]:draw(glyph_topleft_x, glyph_topleft_y)
+            -- if the rune is currently moving, draw the blinking outline
+            elseif GAMEPLAY_STATE.rune_count_unstirred[a] ~= GAMEPLAY_STATE.rune_count[a] and
+                GAMEPLAY_STATE.dropped_ingredients ~= 0 and
+                GAMEPLAY_STATE.heat_amount > 0.3 then
+                    ANIMATIONS.rune_active[a]:draw(glyph_topleft_x, glyph_topleft_y)
+                    -- fade the glyph
+                    gfx.pushContext()
+                        gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
+                        ANIMATIONS.rune_active[a]:image():drawFaded(glyph_topleft_x, glyph_topleft_y, 1-glyph_fade, gfxi.kDitherTypeBayer4x4)
+                    gfx.popContext()
+                    ANIMATIONS.rune_active_outline[a]:draw(glyph_topleft_x, glyph_topleft_y)
             else
-                TEXTURES.rune_images[a]:draw(glyph_topleft_x, glyph_topleft_y)
+                ANIMATIONS.rune_idle[a]:draw(glyph_topleft_x, glyph_topleft_y)
+                -- fade the glyph
+                gfx.pushContext()
+                    gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
+                    ANIMATIONS.rune_idle[a]:image():drawFaded(glyph_topleft_x, glyph_topleft_y, 1-glyph_fade, gfxi.kDitherTypeBayer4x4)
+                gfx.popContext()
             end
-
-            gfx.pushContext()
-                gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
-                TEXTURES.rune_images[a]:drawFaded(glyph_topleft_x, glyph_topleft_y, glyph_overlay_alpha, gfxi.kDitherTypeBayer4x4)
-            gfx.popContext()
             ::continue::
         end
 
@@ -765,15 +777,32 @@ function Init_visuals()
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_spiderweb_blink"), true), -- spiderweb
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_snailshells_blink"), true), -- snailshells
     }
-    TEXTURES.rune_images = {gfxi.new("images/runes/love"), gfxi.new("images/runes/doom"), gfxi.new("images/runes/weeds")}
+    ANIMATIONS.rune_idle = {
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/love_idle"), true),
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/doom_idle"), true),
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/weeds_idle"), true),}
+    ANIMATIONS.rune_active = {
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/love_idle"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_idle"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_idle"), true),}
+    ANIMATIONS.rune_active_outline = {
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/love_active_white_line"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_active_white_line"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_active_white_line"), true),
+    }
     ANIMATIONS.rune_correct = {
         animloop.new(8 * frame_ms, gfxit.new("images/runes/love_correct"), true),
         animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_correct"), true),
         animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_correct"), true)}
     ANIMATIONS.rune_target = {
-        animloop.new(8 * frame_ms, gfxit.new("images/runes/love_goal"), true),
-        animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_goal"), true),
-        animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_goal"), true)}
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/love_goal"), true),
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/doom_goal"), true),
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/weeds_goal"), true)}
+    ANIMATIONS.rune_target_outline = {
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/love_goal_white_line"), true),
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/doom_goal_white_line"), true),
+        animloop.new(16 * frame_ms, gfxit.new("images/runes/weeds_goal_white_line"), true),
+    }
     -- Load fx
     -- Load animation images and initialize animation loop timers.
     ANIMATIONS.bubble = gfxit.new("images/fx/bubble")
