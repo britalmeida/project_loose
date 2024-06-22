@@ -938,7 +938,6 @@ function Check_player_struggle()
         PLAYER_STRUGGLES.recipe_struggle = true
         Shorten_talk_reminder()
         Next_recipe_struggle_tip()
-        FROG:flash_b_prompt()
     -- If you keep asking the same question
     elseif not PLAYER_STRUGGLES.recipe_struggle and PLAYER_STRUGGLES.ingredient_struggle_asked >= 4 then
         PLAYER_STRUGGLES.recipe_struggle = true
