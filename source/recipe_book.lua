@@ -176,7 +176,7 @@ function Recipe_draw_success(y, recipe_steps_text)
         for a = 1, number_of_inserts, 1 do
             local y_paper_insert <const> = y_first_insert + (a-1) * insert_height
             if y_paper_insert < scroll_window_end and y_paper_insert + insert_height > scroll_offset  then
-                TEXTURES.recipe_middle[math.random(3)]:draw(recipe_x, y + y_paper_insert, flip_table[math.random(3)])
+                TEXTURES.recipe_middle[math.random(6)]:draw(recipe_x, y + y_paper_insert, flip_table[math.random(6)])
             end
         end
         if y_paper_bottom < scroll_window_end then
