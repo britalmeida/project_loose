@@ -33,6 +33,7 @@ local fire_tips_a <const> = {
 }
 local fire_tips_b <const> = {
     "Raise the fire higher!\nIt will stick around longer.",
+    "Really get the fire started!",
 }
 local stir_tutorials <const> = {
     "Always stir to see\nwhat ingredient do.",
