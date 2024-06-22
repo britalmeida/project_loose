@@ -270,7 +270,7 @@ function Froggo:Lick_eyeballs()
     if self.state == ACTION_STATE.idle then
         -- continueously lick eyeballs or react
         if Is_potion_good_enough() and CHECK_IF_DELICIOUS then
-            self:flash_b_prompt(20*1000)
+            self:flash_b_prompt(60*1000)
             self:start_animation(self.anim_eyeball)
             self.x_offset = -11
             CHECK_IF_DELICIOUS = false

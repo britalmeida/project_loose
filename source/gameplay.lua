@@ -111,7 +111,7 @@ RECIPE_STRUGGLE_STEPS = nil
 -- Constants to detect struggle
 local min_drops_without_stirring <const> = 6
 local excess_stirring_factor <const> = 0.008
-local struggle_reminder_timout <const> = 10*1000
+local struggle_reminder_timout <const> = 7*1000
 
 
 -- Frog entity.
