@@ -796,7 +796,10 @@ function Init_visuals()
     TEXTURES.recipe_bottom = gfxi.new("images/recipes/recipe_bottom_section")
     TEXTURES.recipe_middle = {  gfxi.new("images/recipes/recipe_mid_1"),
                                 gfxi.new("images/recipes/recipe_mid_2"),
-                                gfxi.new("images/recipes/recipe_mid_3"),}
+                                gfxi.new("images/recipes/recipe_mid_3"),
+                                gfxi.new("images/recipes/recipe_mid_4"),
+                                gfxi.new("images/recipes/recipe_mid_5"),
+                                gfxi.new("images/recipes/recipe_mid_6"),}
     TEXTURES.recipe_small_top = gfxi.new("images/recipes/recipe__small_top_section")
     TEXTURES.recipe_small_middle = gfxi.new("images/recipes/recipe__small_mid")
     TEXTURES.recipe_small_bottom = gfxi.new("images/recipes/recipe_small_bottom_section")
