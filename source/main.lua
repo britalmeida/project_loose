@@ -37,7 +37,7 @@ end
 
 -- Start the game: initialize resources and enter the menu or gameplay.
 initialize()
-Enter_menu_start(0, 0, true)
+Launch_menu_start()
 --Enter_gameplay() -- For testing, enter gameplay directly.
 
 
@@ -51,7 +51,9 @@ end
 function playdate.update()
     -- Called before every frame is drawn.
 
-    if MENU_STATE.screen ~= MENU_SCREEN.gameplay then
+    if MENU_STATE.screen == MENU_SCREEN.launch then
+        -- Wait for launch to finish
+    elseif MENU_STATE.screen ~= MENU_SCREEN.gameplay then
         -- In Menu system.
         Handle_menu_input()
     end

@@ -4,7 +4,7 @@ local gfxit <const> = playdate.graphics.imagetable
 local animloop <const> = playdate.graphics.animation.loop
 
 MENU_STATE = {}
-MENU_SCREEN = { gameplay = 0, start = 2, mission = 3, credits = 4 }
+MENU_SCREEN = { gameplay = 0, launch = 1, start = 2, mission = 3, credits = 4 }
 
 FROGS_FAVES = {
     accomplishments = {},
@@ -113,6 +113,22 @@ function Load_high_scores()
     end
 end
 
+
+-- launch transition to start menu
+function Launch_menu_start()
+    MENU_STATE.screen = MENU_SCREEN.launch
+
+    local duration = UI_TEXTURES.launch.delay * UI_TEXTURES.launch.endFrame
+    print(duration)
+
+    -- Start launch animation
+    UI_TEXTURES.launch.frame = 1
+
+    -- After the launch animation is finished
+    playdate.timer.new(duration, function ()
+        Enter_menu_start(0, 0, true)
+    end)
+end
 
 
 -- Menu State Transitions
@@ -253,12 +269,16 @@ local function draw_ui()
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
         music_tick = 0
         return
-    end
 
     -- In menus. The gameplay is inactive.
 
+    elseif MENU_STATE.screen == MENU_SCREEN.launch then
+        gfx.pushContext()
+        UI_TEXTURES.launch:draw(0, 0)
+        gfx.popContext()
+
     -- Draw combined menus
-    if MENU_STATE.screen == MENU_SCREEN.start or MENU_SCREEN.credits or MENU_SCREEN.mission then
+    elseif MENU_STATE.screen == MENU_SCREEN.start or MENU_SCREEN.credits or MENU_SCREEN.mission then
         local fmod = math.fmod
         gfx.pushContext()
 
@@ -585,6 +605,7 @@ function Init_menus()
     end
 
     -- Create animation loops for the menu backgrounds
+    UI_TEXTURES.launch = animloop.new(2 * frame_ms, gfxit.new("images/start_anim/start_anim"), false)
     UI_TEXTURES.start = animloop.new(16 * frame_ms * music_speed, gfxit.new("images/menu_start"), true)
     UI_TEXTURES.selection_highlight = animloop.new(16 * frame_ms * music_speed, gfxit.new("images/cocktails/white_selection_border"), true)
     UI_TEXTURES.credit_scroll = animloop.new(8 * frame_ms * music_speed, gfxit.new("images/credits"), true)
