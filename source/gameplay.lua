@@ -33,6 +33,8 @@ GAMEPLAY_STATE = {
     held_ingredient = 0, -- index of currently helf ingredient
     dropped_ingredients = 0,
     dropped_since_last_stirred = false,
+    stirring_complete = false,
+    puff_anim_started = false, -- specific for the anim when stirring is complete
     used_ingredients_table = {
         false, -- peppermints
         false, -- perfume
@@ -261,6 +263,9 @@ function Reset_gameplay()
     end
     GAMEPLAY_STATE.used_ingredients = 0
     GAMEPLAY_STATE.dropped_ingredients = 0
+    GAMEPLAY_STATE.dropped_since_last_stirred = false
+    GAMEPLAY_STATE.stirring_complete = false
+    GAMEPLAY_STATE.puff_anim_started = false
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
 
@@ -760,12 +765,16 @@ function update_liquid()
     STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change)
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
 
-    -- Reset rune travel variables
+    -- Reset rune travel variables and mark stirring as complete
     if STIR_FACTOR >= 1 then
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unclamped)
         GAMEPLAY_STATE.dropped_ingredients = 0
         CHECK_IF_DELICIOUS = true
+        if not GAMEPLAY_STATE.stirring_complete and GAMEPLAY_STATE.dropped_since_last_stirred then
+            GAMEPLAY_STATE.stirring_complete = true
+            GAMEPLAY_STATE.puff_anim_started = false
+        end
     end
 
     -- Update liquid state

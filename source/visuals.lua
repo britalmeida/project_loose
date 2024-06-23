@@ -452,6 +452,43 @@ local function draw_liquid_bubbles()
 end
 
 
+function draw_stirring_bubbles()
+    local ingredients_being_stirred = GAMEPLAY_STATE.dropped_ingredients > 0 and GAMEPLAY_STATE.dropped_since_last_stirred
+
+    -- Check if stirring was completed and draw puff animation for one loop
+    if GAMEPLAY_STATE.stirring_complete then
+        -- Reset animation if it now starts
+        if not GAMEPLAY_STATE.puff_anim_started then
+            ANIMATIONS.stirring_bubble.puff.frame = 1
+            GAMEPLAY_STATE.puff_anim_started = true
+        end
+
+        gfx.pushContext()
+        ANIMATIONS.stirring_bubble.puff:draw(0, 0)
+        gfx.popContext()
+
+        -- End animation once it reaches the end frame
+        if ANIMATIONS.stirring_bubble.puff.frame == ANIMATIONS.stirring_bubble.puff.endFrame then
+            GAMEPLAY_STATE.stirring_complete = false
+        end
+    -- Check if no stirring bubbles are needed
+    elseif (STIR_FACTOR < 0.1 and not GAMEPLAY_STATE.stirring_complete) or
+        not ingredients_being_stirred then
+            return
+    -- Draw appropriate stirring_bubble state anim
+    elseif (STIR_FACTOR >= 0.1 and STIR_FACTOR < 0.4) and ingredients_being_stirred then
+        gfx.pushContext()
+        ANIMATIONS.stirring_bubble.small:draw(125, 154)
+        gfx.popContext()
+    elseif STIR_FACTOR < 0.99 and ingredients_being_stirred then
+        gfx.pushContext()
+        ANIMATIONS.stirring_bubble.big:draw(125, 154)
+        gfx.popContext()
+        -- Restart puff anim in case it is triggered next
+    end
+end
+
+
 local function draw_overlayed_instructions()
     if GAMEPLAY_STATE.showing_cocktail then
         gfx.pushContext()
@@ -807,6 +844,11 @@ function Init_visuals()
     -- Load animation images and initialize animation loop timers.
     ANIMATIONS.bubble = gfxit.new("images/fx/bubble")
     ANIMATIONS.bubble2 = gfxit.new("images/fx/bubble2")
+    ANIMATIONS.stirring_bubble = {
+        small  = animloop.new(3.75 * frame_ms, gfxit.new("images/fx/stirring_bubble_small"), true),
+        big  = animloop.new(3.75 * frame_ms, gfxit.new("images/fx/stirring_bubble_big"), true),
+        puff  = animloop.new(3.75 * frame_ms, gfxit.new("images/fx/stirring_bubble_puff"), true),
+    }
     TEXTURES.flame_buildup = gfxi.new("images/fx/buildupflame")
     ANIMATIONS.flame = {
         ember  = animloop.new(4 * frame_ms, gfxit.new("images/fx/ember"), true),
@@ -834,10 +876,11 @@ function Init_visuals()
     table.insert(DRAW_PASSES, Set_draw_pass(3, draw_liquid_bubbles))
     -- 3: ingredient drops floating in the liquid
     -- 4: ingredient slotted over cauldron
-    -- 5: ingredient drop splash
-    table.insert(DRAW_PASSES, Set_draw_pass(6, draw_symbols))
-    table.insert(DRAW_PASSES, Set_draw_pass(7, draw_stirring_stick_front)) -- draw ladle when on front side
-    table.insert(DRAW_PASSES, Set_draw_pass(8, draw_cauldron_front))
+    table.insert(DRAW_PASSES, Set_draw_pass(5, draw_stirring_bubbles))
+    -- 6: ingredient drop splash
+    table.insert(DRAW_PASSES, Set_draw_pass(7, draw_symbols))
+    table.insert(DRAW_PASSES, Set_draw_pass(8, draw_stirring_stick_front)) -- draw ladle when on front side
+    table.insert(DRAW_PASSES, Set_draw_pass(9, draw_cauldron_front))
     -- 10: frog
     -- depth 20+: UI
     table.insert(DRAW_PASSES, Set_draw_pass(21, draw_ui_prompts))
@@ -859,6 +902,6 @@ Z_DEPTH = {
     ingredients_in_shelve = -5,
     indredient_drops = 3,
     ingredient_slotted_over_cauldron = 4,
-    ingredient_drop_splash = 5,
+    ingredient_drop_splash = 6,
     grabbed_ingredient = 24
 }
