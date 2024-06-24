@@ -605,7 +605,7 @@ function Init_menus()
     end
 
     -- Create animation loops for the menu backgrounds
-    UI_TEXTURES.launch = animloop.new(2 * frame_ms, gfxit.new("images/start_anim/start_anim"), false)
+    UI_TEXTURES.launch = animloop.new(1.5 * frame_ms, gfxit.new("images/start_anim/start_anim"), false)
     UI_TEXTURES.start = animloop.new(16 * frame_ms * music_speed, gfxit.new("images/menu_start"), true)
     UI_TEXTURES.selection_highlight = animloop.new(16 * frame_ms * music_speed, gfxit.new("images/cocktails/white_selection_border"), true)
     UI_TEXTURES.credit_scroll = animloop.new(8 * frame_ms * music_speed, gfxit.new("images/credits"), true)
