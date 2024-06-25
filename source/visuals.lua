@@ -802,7 +802,12 @@ function Init_visuals()
                                 gfxi.new("images/recipes/recipe_mid_5"),
                                 gfxi.new("images/recipes/recipe_mid_6"),}
     TEXTURES.recipe_small_top = gfxi.new("images/recipes/recipe__small_top_section")
-    TEXTURES.recipe_small_middle = gfxi.new("images/recipes/recipe__small_mid")
+    TEXTURES.recipe_small_middle = {
+        gfxi.new("images/recipes/recipe__small_mid_1"),
+        gfxi.new("images/recipes/recipe__small_mid_2"),
+        gfxi.new("images/recipes/recipe__small_mid_3"),
+        gfxi.new("images/recipes/recipe__small_mid_4"),
+        gfxi.new("images/recipes/recipe__small_mid_5"),}
     TEXTURES.recipe_small_bottom = gfxi.new("images/recipes/recipe_small_bottom_section")
     -- Load images
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
