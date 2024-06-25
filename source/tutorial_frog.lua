@@ -332,6 +332,11 @@ end
 
 
 function Froggo:go_drinking()
+    -- Stop currently running timers that might interrupt animation sequence
+    for k in pairs(GAMEPLAY_TIMERS) do
+        GAMEPLAY_TIMERS[k]:pause()
+    end
+
     local cocktail_runtime = self.anim_cocktail.delay * (self.anim_cocktail.endFrame - 3)
     local burp_runtime = self.anim_burp.delay * (self.anim_burp.endFrame - 4)
     local burp_speak_runtime = self.anim_burp.delay * self.anim_burp.endFrame
