@@ -32,7 +32,7 @@ GAMEPLAY_STATE = {
     rune_count_unclamped = {0, 0, 0},
     held_ingredient = 0, -- index of currently helf ingredient
     dropped_ingredients = 0,
-    dropped_since_last_stirred = false,
+    counting_stirs = false,
     stirring_complete = false,
     puff_anim_started = false, -- specific for the anim when stirring is complete
     used_ingredients_table = {
@@ -277,7 +277,7 @@ function Reset_gameplay()
     end
     GAMEPLAY_STATE.used_ingredients = 0
     GAMEPLAY_STATE.dropped_ingredients = 0
-    GAMEPLAY_STATE.dropped_since_last_stirred = false
+    GAMEPLAY_STATE.counting_stirs = false
     GAMEPLAY_STATE.stirring_complete = false
     GAMEPLAY_STATE.puff_anim_started = false
     GAMEPLAY_STATE.cocktail_learned = false
@@ -654,18 +654,18 @@ function check_crank_to_stir()
     local delta_stir = math.abs(STIR_POSITION - prev_stir_position) / (math.pi * 2)
 
     if GAMEPLAY_STATE.dropped_ingredients > 0 then
-        GAMEPLAY_STATE.dropped_since_last_stirred = true
+        GAMEPLAY_STATE.counting_stirs = true
     end
 
     -- Count crank revolutions
     -- Reset counting when cranking stops
     -- Also resets if there's no ingredient in the cauldron
-    if (delta_stir == 0 and GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.dropped_since_last_stirred)
-    or not GAMEPLAY_STATE.dropped_since_last_stirred then
+    if (delta_stir == 0 and GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.counting_stirs)
+    or not GAMEPLAY_STATE.counting_stirs then
         STIR_REVOLUTION = 0
         STIR_COUNT = 0
         -- Reset to check again if there's an ingredent in the cauldron only once stirring starts again
-        GAMEPLAY_STATE.dropped_since_last_stirred =  false
+        GAMEPLAY_STATE.counting_stirs = false
     else
         if delta_stir > 0.5 then
             delta_stir = 1 - delta_stir
@@ -800,7 +800,7 @@ function update_liquid()
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unclamped)
         GAMEPLAY_STATE.dropped_ingredients = 0
         CHECK_IF_DELICIOUS = true
-        if not GAMEPLAY_STATE.stirring_complete and GAMEPLAY_STATE.dropped_since_last_stirred then
+        if not GAMEPLAY_STATE.stirring_complete and GAMEPLAY_STATE.counting_stirs then
             GAMEPLAY_STATE.stirring_complete = true
             GAMEPLAY_STATE.puff_anim_started = false
         end

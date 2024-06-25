@@ -453,7 +453,7 @@ end
 
 
 function draw_stirring_bubbles()
-    local ingredients_being_stirred = GAMEPLAY_STATE.dropped_ingredients > 0 and GAMEPLAY_STATE.dropped_since_last_stirred
+    local ingredients_being_stirred = GAMEPLAY_STATE.dropped_ingredients
 
     -- Check if stirring was completed and draw puff animation for one loop
     if GAMEPLAY_STATE.stirring_complete then
