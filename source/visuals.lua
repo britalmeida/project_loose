@@ -417,6 +417,7 @@ local function draw_liquid_bubbles()
                 anim_length = bubble_tab:getLength()
                 anim_tick = fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, anim_length)
             else
+                -- Hack suggested by Sebastian to ensure the drops will disappear when stirring in completely
                 anim_length = 30
                 anim_tick = STIR_FACTOR * (anim_length -1)
             end
