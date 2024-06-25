@@ -192,6 +192,10 @@ GAMEPLAY_TIMERS = {
     sticker_glitter = playdate.timer.new(100, function ()
         MENU_STATE.screen = MENU_SCREEN.mission
     end),
+    selection_finger = playdate.timer.new(100, function ()
+        Set_target_potion(MENU_STATE.focused_option + 1)
+        Enter_gameplay()
+    end),
 }
 -- Make sure none of the gameplay timers are removed on completion
 for k in pairs(GAMEPLAY_TIMERS) do

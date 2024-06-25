@@ -4,7 +4,7 @@ local gfxit <const> = playdate.graphics.imagetable
 local animloop <const> = playdate.graphics.animation.loop
 
 MENU_STATE = {}
-MENU_SCREEN = { gameplay = 0, launch = 1, start = 2, mission = 3, credits = 4, mission_sticker = 5 }
+MENU_SCREEN = { gameplay = 0, launch = 1, start = 2, mission = 3, credits = 4, mission_sticker = 5, mission_confirm = 6 }
 
 FROGS_FAVES = {
     accomplishments = {},
@@ -127,6 +127,16 @@ function Sticker_slap()
     local duration = UI_TEXTURES.stickerslap.delay * UI_TEXTURES.stickerslap.endFrame
     Restart_timer(GAMEPLAY_TIMERS.sticker_slap, duration)
     UI_TEXTURES.stickerslap.frame = 1
+end
+
+
+function Selection_finger()
+    MENU_STATE.screen = MENU_SCREEN.mission_confirm
+    -- Set start and timer for anim
+    -- Once that timer ends, gameplay is started
+    local duration = UI_TEXTURES.selection_finger.delay * UI_TEXTURES.selection_finger.endFrame
+    Restart_timer(GAMEPLAY_TIMERS.selection_finger, duration)
+    UI_TEXTURES.selection_finger.frame = 1
 end
 
 
@@ -505,6 +515,11 @@ local function draw_ui()
                 UI_TEXTURES.stickerslap:draw(hand_x, hand_y)
             end
 
+            -- Draw finger pointing if cocktail is confirmed
+            if GAMEPLAY_TIMERS.selection_finger.timeLeft > 100 and not GAMEPLAY_TIMERS.selection_finger.paused then
+                UI_TEXTURES.selection_finger:draw(selected_cocktail_x, 0)
+            end
+
             -- FPS debugging
             gfx.pushContext()
             gfx.setColor(gfx.kColorWhite)
@@ -613,9 +628,8 @@ function Handle_menu_input()
                 print("Dicey not unlocked yet!")
             else
                 SOUND.menu_confirm:play()
-                -- reset mystery potion
-                Set_target_potion(MENU_STATE.focused_option + 1)
-                Enter_gameplay()
+                -- enter mission after finger pointing is complete
+                Selection_finger()
             end
         elseif playdate.buttonJustReleased( playdate.kButtonLeft ) and
         MENU_STATE.focused_option < 1 or
