@@ -146,9 +146,8 @@ function Recipe_draw_success(y, recipe_steps_text)
     local insert_height <const> = TEXTURES.recipe_middle[1].height
     local number_of_inserts <const> = math.ceil(((number_of_lines * line_height) + text_y - TEXTURES.recipe_top.height ) / insert_height)
 
-    -- FIXME: this makes the game not random anymore. The inserts randomness should instead be picked
-    -- on something static like the cocktail or number of steps.
-    math.randomseed(10)
+    -- Set consistent random seed based on recipe length
+    math.randomseed(num_steps)
 
     local y_paper_top <const> = 0 -- margin from the recipe to the top of the screen.
     local y_first_insert <const> = y_paper_top + TEXTURES.recipe_top.height
@@ -173,10 +172,22 @@ function Recipe_draw_success(y, recipe_steps_text)
         if scroll_offset < y_first_insert then
             TEXTURES.recipe_top:draw(recipe_x, y + y_paper_top)
         end
+
+        -- Set random positions and flip of each mid section before drawing it
+        local mid_sections = { }
+        for a = 1, number_of_inserts, 1 do
+            local randomseed = {
+                section = math.random(6),
+                flip = math.random(3),
+            }
+            table.insert(mid_sections, randomseed)
+        end
+
+        -- Draw mid sections
         for a = 1, number_of_inserts, 1 do
             local y_paper_insert <const> = y_first_insert + (a-1) * insert_height
-            if y_paper_insert < scroll_window_end and y_paper_insert + insert_height > scroll_offset  then
-                TEXTURES.recipe_middle[math.random(6)]:draw(recipe_x, y + y_paper_insert, flip_table[math.random(6)])
+            if y_paper_insert < scroll_window_end and y_paper_insert + insert_height > scroll_offset then
+                TEXTURES.recipe_middle[mid_sections[a].section]:draw(recipe_x, y + y_paper_insert, flip_table[mid_sections[a].flip])
             end
         end
         if y_paper_bottom < scroll_window_end then

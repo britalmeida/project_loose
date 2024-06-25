@@ -244,6 +244,9 @@ end
 function Reset_gameplay()
     -- Done on every (re)start of the play.
 
+    -- Reset to default randomness
+    math.randomseed(playdate.getSecondsSinceEpoch())
+
     GAME_ENDED = false
     CAN_REINFORCE = false
     GAMEPLAY_STATE.game_tick = 0
