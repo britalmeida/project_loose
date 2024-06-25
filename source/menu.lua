@@ -4,7 +4,7 @@ local gfxit <const> = playdate.graphics.imagetable
 local animloop <const> = playdate.graphics.animation.loop
 
 MENU_STATE = {}
-MENU_SCREEN = { gameplay = 0, launch = 1, start = 2, mission = 3, credits = 4 }
+MENU_SCREEN = { gameplay = 0, launch = 1, start = 2, mission = 3, credits = 4, mission_sticker = 5 }
 
 FROGS_FAVES = {
     accomplishments = {},
@@ -13,12 +13,18 @@ FROGS_FAVES = {
 FROGS_FAVES_TEXT = {}
 FROGS_FAVES_STEPS = {}
 
-local UI_TEXTURES = {}
+UI_TEXTURES = {} -- tmp. Had to make it global since needed for timers ... maybe there's a workaround?
 local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the mission selection, others are (half) clipped.
 local global_origin = {0, 0}
 local music_speed = 1.13  -- Extra factor to synch to music
 local cocktail_anims = {}
 local cocktail_anims_locked = {}
+local focused_sticker_served = {
+    x = 0,
+    y = 0,}
+local focused_sticker_mastered = {
+    x = 0,
+    y = 0,}
 
 TOP_RECIPE_OFFSET = 0
 RECIPE_COCKTAIL = 1
@@ -114,6 +120,16 @@ function Load_high_scores()
 end
 
 
+function Sticker_slap()
+    -- Set start and timer for stickerslap anim
+    -- Once that timer ends, the glitter anim timer is triggered
+    -- At the end of the glitter anim timer, the menu state is switched to mission
+    local duration = UI_TEXTURES.stickerslap.delay * UI_TEXTURES.stickerslap.endFrame
+    Restart_timer(GAMEPLAY_TIMERS.sticker_slap, duration)
+    UI_TEXTURES.stickerslap.frame = 1
+end
+
+
 -- launch transition to start menu
 function Launch_menu_start()
     MENU_STATE.screen = MENU_SCREEN.launch
@@ -162,7 +178,6 @@ function enter_menu_mission(enter_from_gameplay)
 
     Load_high_scores()
     add_system_menu_entries_cocktails()
-    MENU_STATE.screen = MENU_SCREEN.mission
 
     SOUND.bg_loop_gameplay:stop()
     if not SOUND.bg_loop_menu:isPlaying() then
@@ -182,7 +197,7 @@ function enter_menu_mission(enter_from_gameplay)
         DICEY_UNLOCKED = true
     end
 
-    -- Side scroll amount if coming directly from gameplay
+    -- Side scroll amount if coming directly from gameplay or from start menu
     if enter_from_gameplay == true then
         SIDE_SCROLL_X = 50
     else
@@ -190,6 +205,15 @@ function enter_menu_mission(enter_from_gameplay)
     end
     -- Reset menu positions if needed
     global_origin[1], global_origin[2] = 0, 0
+
+    -- First do sticker animation or directly enter mission selection state
+    -- Needed to lock inputs during animation
+    if enter_from_gameplay and (GAMEPLAY_STATE.cocktail_learned or GAMEPLAY_STATE.new_mastered) then
+        MENU_STATE.screen = MENU_SCREEN.mission_sticker
+        Sticker_slap()
+    else
+        MENU_STATE.screen = MENU_SCREEN.mission
+    end
 
 end
 
@@ -278,7 +302,7 @@ local function draw_ui()
         gfx.popContext()
 
     -- Draw combined menus
-    elseif MENU_STATE.screen == MENU_SCREEN.start or MENU_SCREEN.credits or MENU_SCREEN.mission then
+    else
         local fmod = math.fmod
         gfx.pushContext()
 
@@ -289,7 +313,7 @@ local function draw_ui()
             -- Side_scroll to auto-scroll to the correct screen
             if MENU_STATE.screen == MENU_SCREEN.mission then
                 side_scroll_direction = 1.2
-            else
+            elseif MENU_STATE.screen == MENU_SCREEN.start then
                 side_scroll_direction = -1.2
             end
 
@@ -327,18 +351,40 @@ local function draw_ui()
 
             for i, cocktail in pairs(cocktail_anims) do
                 local cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[i].name]
+                local uncompleted_recipe = {}
+                local best_recipe = FROGS_FAVES_TEXT[COCKTAILS[i].name]
+                local cocktail_mastered = false
+                -- Check if the recipe completed
+                if best_recipe ~= nil then
+                    if best_recipe[1] ~= nil then
+                        -- Check if the cocktail is mastered
+                        cocktail_mastered = #best_recipe <= COCKTAILS[i].step_ratings[1]
+                    end
+                end
 
                 if (i-1) >= MENU_STATE.first_option_in_view - 1 and
                     (i-1) <= MENU_STATE.first_option_in_view + NUM_VISIBLE_MISSIONS then
                     local cocktail_relative_to_window = (i-1) - MENU_STATE.first_option_in_view +1
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
                     if (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
+                        -- Save some positions for later animation drawing
+                        focused_sticker_served.x = COCKTAILS[i].sticker_pos[1] + cocktail_x
+                        focused_sticker_served.y = COCKTAILS[i].sticker_pos[2] - 10
+                        focused_sticker_mastered.x = COCKTAILS[i].mastered_sticker_pos[1] + cocktail_x
+                        focused_sticker_mastered.y = COCKTAILS[i].mastered_sticker_pos[2] - 10
+                        -- Locked or unlocked cocktail art
                         if (i > 1 and not INTRO_COMPLETED) or
                             (i > 3 and not EASY_COMPLETED) or
                             (i == 6 and not DICEY_UNLOCKED) then
                                 cocktail_anims_locked[i]:draw(cocktail_x, global_origin[2])
                         else
                             cocktail:draw(cocktail_x, global_origin[2])
+                            -- Draw mastered sticker animation
+                            if cocktail_mastered then
+                                UI_TEXTURES.mastered_sticker_anim:draw(
+                                    cocktail_x + COCKTAILS[i].mastered_sticker_pos[1] - (UI_TEXTURES.mastered_sticker.width/2),
+                                    COCKTAILS[i].mastered_sticker_pos[2] - (UI_TEXTURES.mastered_sticker.height/2) - 10)
+                            end
                         end
                     else
                         if (i > 1 and not INTRO_COMPLETED) or
@@ -347,15 +393,21 @@ local function draw_ui()
                                 COCKTAILS[i].locked_img:draw(cocktail_x, global_origin[2])
                         else
                             COCKTAILS[i].img:draw(cocktail_x, global_origin[2])
+                            -- Draw mastered sticker static
+                            if cocktail_mastered then
+                                UI_TEXTURES.mastered_sticker:drawAnchored(
+                                    cocktail_x + COCKTAILS[i].mastered_sticker_pos[1],
+                                    COCKTAILS[i].mastered_sticker_pos[2] - 10, 0.5, 0.5)
+                            end
                         end
                     end
 
-                    -- draw badge of accomplishment
+                    -- draw served sticker
+                    gfx.pushContext()
                     if cocktail_done then
-                        gfx.pushContext()
-                            COCKTAILS[i].sticker:drawAnchored(cocktail_x + COCKTAILS[i].sticker_pos[1] , COCKTAILS[i].sticker_pos[2] - 10, 0.5, 0.5)
-                        gfx.popContext()
+                        COCKTAILS[i].sticker:drawAnchored(cocktail_x + COCKTAILS[i].sticker_pos[1] , COCKTAILS[i].sticker_pos[2] - 10, 0.5, 0.5)
                     end
+                    gfx.popContext()
                 end
             end
 
@@ -415,6 +467,42 @@ local function draw_ui()
             local x_hover, y_hover = Small_recipe_hover(TOP_RECIPE_OFFSET)[1], Small_recipe_hover(TOP_RECIPE_OFFSET)[2]
             if FROGS_FAVES_TEXT[recipe_cocktail_name] ~= nil then
                 Recipe_draw_menu(recipe_x - x_hover, 240 - y_hover + 6, recipe_text, recipe_steps)
+            end
+
+            -- Draw animations for getting a sticker
+
+            -- Set hand anim position to correct sticker position during animation
+            local hand_x = 0
+            local hand_y = 0
+            local hand_anchor = {
+                x = UI_TEXTURES.stickerslap:image().width/2 ,
+                y = UI_TEXTURES.stickerslap:image().height*0.35 ,
+            }
+            if UI_TEXTURES.stickerslap.frame >= 8 and GAMEPLAY_STATE.new_mastered then
+                hand_x = focused_sticker_mastered.x - hand_anchor.x
+                hand_y = focused_sticker_mastered.y - hand_anchor.y
+            elseif UI_TEXTURES.stickerslap.frame >= 8 and GAMEPLAY_STATE.cocktail_learned then
+                hand_x = focused_sticker_served.x - hand_anchor.x
+                hand_y = focused_sticker_served.y - hand_anchor.y
+            end
+
+            -- Set position of sticker glitter
+            local glitter_x = 0
+            local glitter_y = 0
+            if GAMEPLAY_STATE.new_mastered then
+                glitter_x = focused_sticker_mastered.x
+                glitter_y = focused_sticker_mastered.y
+            elseif GAMEPLAY_STATE.cocktail_learned then
+                glitter_x = focused_sticker_served.x
+                glitter_y = focused_sticker_served.y
+            end
+            -- Draw glitter anim if the associated timer is running
+            if GAMEPLAY_TIMERS.sticker_glitter.timeLeft > 0 and not GAMEPLAY_TIMERS.sticker_glitter.paused then
+                UI_TEXTURES.sticker_glitter:draw(glitter_x - (UI_TEXTURES.sticker_glitter:image().width/2), glitter_y - (UI_TEXTURES.sticker_glitter:image().height/2))
+            end
+            -- Draw hand anim if the associated timer is running (I removed last 100ms to avoid sometimes repeating the first frame)
+            if GAMEPLAY_TIMERS.sticker_slap.timeLeft > 100 and not GAMEPLAY_TIMERS.sticker_slap.paused then
+                UI_TEXTURES.stickerslap:draw(hand_x, hand_y)
             end
 
             -- FPS debugging
@@ -609,6 +697,15 @@ function Init_menus()
     UI_TEXTURES.start = animloop.new(16 * frame_ms * music_speed, gfxit.new("images/menu_start"), true)
     UI_TEXTURES.selection_highlight = animloop.new(16 * frame_ms * music_speed, gfxit.new("images/cocktails/white_selection_border"), true)
     UI_TEXTURES.credit_scroll = animloop.new(8 * frame_ms * music_speed, gfxit.new("images/credits"), true)
+
+    -- Animation loops for mission select
+    UI_TEXTURES.stickerslap = animloop.new(2.5 * frame_ms, gfxit.new("images/fx/stickerslap"), true)
+    UI_TEXTURES.selection_finger = animloop.new(2.5 * frame_ms, gfxit.new("images/fx/selection_finger"), true)
+    UI_TEXTURES.sticker_glitter = animloop.new(4 * frame_ms, gfxit.new("images/fx/sticker_glitter_reveal"), true)
+
+    -- Star sticker graphics
+    UI_TEXTURES.mastered_sticker = gfxi.new('images/cocktails/sticker_star')
+    UI_TEXTURES.mastered_sticker_anim = animloop.new(4 * frame_ms, gfxit.new("images/cocktails/sticker_star"), true)
 
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0

@@ -13,7 +13,8 @@ COCKTAILS = {
     recipe_img = gfxi.new('images/recipes/recipe_snailiva'),
     framerate= 16,
     sticker= gfxi.new('images/cocktails/sticker_a'),
-    sticker_pos= {41, 131} },
+    sticker_pos= {41, 131},
+    mastered_sticker_pos= {109, 124} },
     --Intro 1 (Love)
 
   { name="Silkini",
@@ -26,7 +27,8 @@ COCKTAILS = {
     recipe_img = gfxi.new('images/recipes/recipe_silkini'),
     framerate= 16,
     sticker= gfxi.new('images/cocktails/sticker_b'),
-    sticker_pos= {109, 116} },
+    sticker_pos= {109, 116},
+    mastered_sticker_pos= {37, 66} },
     -- Intro 2 (Love & Doom)
 
   { name="Green Toe",
@@ -39,7 +41,8 @@ COCKTAILS = {
     recipe_img = gfxi.new('images/recipes/recipe_green_toe'),
     framerate= 16,
     sticker= gfxi.new('images/cocktails/sticker_c'),
-    sticker_pos= {114, 79} },
+    sticker_pos= {114, 79},
+    mastered_sticker_pos= {42, 48} },
     --Easy (Doom & Weeds but specific)
 
   { name="Overdose",
@@ -52,7 +55,8 @@ COCKTAILS = {
     recipe_img = gfxi.new('images/recipes/recipe_overdose'),
     framerate= 16,
     sticker= gfxi.new('images/cocktails/sticker_a'),
-    sticker_pos= {109, 135} },
+    sticker_pos= {109, 135},
+    mastered_sticker_pos= {37, 67} },
     --Medium (3 runes and specific. Spamming = fine tuning)
 
   { name="Hodge Podge",
@@ -65,7 +69,8 @@ COCKTAILS = {
     recipe_img = gfxi.new('images/recipes/recipe_hodge_podge'),
     framerate= 16,
     sticker= gfxi.new('images/cocktails/sticker_c'),
-    sticker_pos= {112, 134} },
+    sticker_pos= {112, 134},
+    mastered_sticker_pos= {35, 128} },
     --Hard (3 Runes. All equally balanced)
 
   { name="Dicey Brew",
@@ -78,7 +83,8 @@ COCKTAILS = {
     recipe_img = gfxi.new('images/recipes/recipe_dicey_brew'),
     framerate= 16,
     sticker= gfxi.new('images/cocktails/sticker_b'),
-    sticker_pos= {107, 111} },
+    sticker_pos= {107, 111},
+    mastered_sticker_pos= {35, 110} },
     --Random
 }
 
