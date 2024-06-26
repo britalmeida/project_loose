@@ -85,7 +85,7 @@ function Recipe_steps_to_text_menu(recipe_steps)
         local test = recipe_steps[step]
         local step_type = recipe_steps[step][1]
         local line = ""
-        line = ""
+        line = "- "
         if step_type > 0 then
             line = line .. recipe_steps[step][2]
             if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
@@ -99,15 +99,15 @@ function Recipe_steps_to_text_menu(recipe_steps)
             end
         else
             if recipe_steps[step][2] >= 12 then
-                line = line .. "Stir forever . . ."
+                line = line .. "stir forever . . ."
             elseif recipe_steps[step][2] >= 10 then
-                line = line .. "Stir for a while"
+                line = line .. "stir for a while"
             elseif recipe_steps[step][2] >= 8 then
-                line = line .. "Stir it a lot"
+                line = line .. "stir it a lot"
             elseif recipe_steps[step][2] >= 5 then
-                line = line .. "Stir it in"
+                line = line .. "stir it in"
             elseif recipe_steps[step][2] < 5 then
-                line = line .. "Stir a bit"
+                line = line .. "stir a bit"
             end
         end
         text_lines[#text_lines+1] = line
@@ -241,7 +241,8 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw scrollable top recipe in menu
     local text_x <const> = 16
     local text_y <const> = 54
-    local line_height <const> = 23
+    local text_x_aligned <const> = TEXTURES.recipe_small_middle[1].width/2
+    local line_height <const> = 21
     local extra_lines <const> = 4
     local flip_table <const> = {"flipX", "flipY", "flipXY"}
 
@@ -254,7 +255,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     local top_height <const> = TEXTURES.recipe_small_top.height
     local bottom_height <const> = TEXTURES.recipe_small_bottom.height
     local number_of_lines <const> = #recipe_text + extra_lines
-    local number_of_inserts <const> = math.max(0, math.ceil(((number_of_lines * line_height) + text_y - top_height ) / insert_height))
+    local number_of_inserts <const> = math.max(0, math.ceil(((number_of_lines * line_height) - top_height ) / insert_height))
     RECIPE_MAX_HEIGHT = top_height + number_of_inserts * insert_height + bottom_height
     local selected_recipe <const> = COCKTAILS[MENU_STATE.focused_option+1]
 
@@ -273,13 +274,13 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         gfx.setFont(FONTS.speech_font)
 
         if #recipe_text > selected_recipe.step_ratings[3] then
-            gfx.drawText("Ok . . .\nIn " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+            gfx.drawTextAligned("This works . . .\nBut it took " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
         elseif #recipe_text > selected_recipe.step_ratings[2] then
-            gfx.drawText("Well done.\nIn " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+            gfx.drawTextAligned("Not, too bad!\nIn " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
         elseif #recipe_text > selected_recipe.step_ratings[1] then
-            gfx.drawText("Fantastic!\nIn only " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+            gfx.drawTextAligned("Great!\nIn only " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
         else
-            gfx.drawText("Mastered!!!\nIn only " .. tostring(#recipe_text) .. " steps:", x + text_x, y)
+            gfx.drawTextAligned("Mastered!!!\nIn " .. tostring(#recipe_text) .. " simple steps.", x + text_x_aligned, y, kTextAlignment.center)
         end
 
         for a = 1, #recipe_text, 1 do
