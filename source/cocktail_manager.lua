@@ -60,8 +60,8 @@ COCKTAILS = {
     --Medium (3 runes and specific. Spamming = fine tuning)
 
   { name="Hodge Podge",
-    rune_composition={0.4, 0.4, 0.4},
-    step_ratings= {5, 10, 20},
+    rune_composition={0.45, 0.45, 0.45},
+    step_ratings= {6, 12, 20},
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
     table= gfxit.new('images/cocktails/hodge_podge_sheet'),
     locked_img = gfxi.new('images/cocktails/hodge_podge_sheet_locked'),
