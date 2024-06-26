@@ -278,7 +278,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         elseif #recipe_text > selected_recipe.step_ratings[2] then
             gfx.drawTextAligned("Not, too bad!\nIn " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
         elseif #recipe_text > selected_recipe.step_ratings[1] then
-            gfx.drawTextAligned("Great!\nIn only " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
+            gfx.drawTextAligned("Fantastic!\nIn only " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
         else
             gfx.drawTextAligned("Mastered!!!\nIn " .. tostring(#recipe_text) .. " simple steps.", x + text_x_aligned, y, kTextAlignment.center)
         end
