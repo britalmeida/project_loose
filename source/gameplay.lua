@@ -1104,8 +1104,7 @@ function Check_too_much_shaking_struggle()
         Shorten_talk_reminder()
         FROG:flash_b_prompt()
         Restart_timer(GAMEPLAY_TIMERS.too_much_shaking_timeout, struggle_reminder_timout)
-        GAMEPLAY_STATE.dropped_ingredients = 0
-    elseif STIR_FACTOR > 0.3 and PLAYER_STRUGGLES.too_much_shaking then
+    elseif STIR_FACTOR >= 0.3 and PLAYER_STRUGGLES.too_much_shaking then
         --print("Player struggle with stir resolved")
         PLAYER_STRUGGLES.too_much_shaking = false
         GAMEPLAY_TIMERS.too_much_shaking_timeout:pause()
