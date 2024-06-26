@@ -239,7 +239,7 @@ end
 
 function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw scrollable top recipe in menu
-    local text_x <const> = 16
+    local text_x <const> = 11
     local text_y <const> = 54
     local text_x_aligned <const> = TEXTURES.recipe_small_middle[1].width/2
     local line_height <const> = 21
@@ -276,7 +276,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
         if #recipe_text > selected_recipe.step_ratings[3] then
             gfx.drawTextAligned("This works . . .\nBut it took " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
         elseif #recipe_text > selected_recipe.step_ratings[2] then
-            gfx.drawTextAligned("Not, too bad!\nIn " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
+            gfx.drawTextAligned("Not too bad!\nIn " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
         elseif #recipe_text > selected_recipe.step_ratings[1] then
             gfx.drawTextAligned("Fantastic!\nIn only " .. tostring(#recipe_text) .. " steps.", x + text_x_aligned, y, kTextAlignment.center)
         else
