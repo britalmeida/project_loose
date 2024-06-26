@@ -404,6 +404,10 @@ function Win_game()
     STIR_SPEED = 0 -- Stop liquid and stirring sounds.
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
+    -- Reset cursor position to avoid floating shelf ingredients
+    GAMEPLAY_STATE.cursor_pos.x = 0
+    GAMEPLAY_STATE.cursor_pos.y = 240
+
     -- Set win recipe top text
     GAMEPLAY_STATE.new_high_score = false
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then
