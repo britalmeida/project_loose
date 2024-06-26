@@ -85,7 +85,7 @@ function Recipe_steps_to_text_menu(recipe_steps)
         local test = recipe_steps[step]
         local step_type = recipe_steps[step][1]
         local line = ""
-        line = "- "
+        line = "-"
         if step_type > 0 then
             line = line .. recipe_steps[step][2]
             if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
@@ -239,7 +239,7 @@ end
 
 function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw scrollable top recipe in menu
-    local text_x <const> = 11
+    local text_x <const> = 13
     local text_y <const> = 54
     local text_x_aligned <const> = TEXTURES.recipe_small_middle[1].width/2
     local line_height <const> = 21
