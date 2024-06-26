@@ -488,10 +488,10 @@ local function draw_ui()
                 x = UI_TEXTURES.stickerslap:image().width/2 ,
                 y = UI_TEXTURES.stickerslap:image().height*0.35 ,
             }
-            if UI_TEXTURES.stickerslap.frame >= 8 and GAMEPLAY_STATE.new_mastered then
+            if UI_TEXTURES.stickerslap.frame >= 7 and GAMEPLAY_STATE.new_mastered then
                 hand_x = focused_sticker_mastered.x - hand_anchor.x
                 hand_y = focused_sticker_mastered.y - hand_anchor.y
-            elseif UI_TEXTURES.stickerslap.frame >= 8 and GAMEPLAY_STATE.cocktail_learned then
+            elseif UI_TEXTURES.stickerslap.frame >= 7 and GAMEPLAY_STATE.cocktail_learned then
                 hand_x = focused_sticker_served.x - hand_anchor.x
                 hand_y = focused_sticker_served.y - hand_anchor.y
             end
