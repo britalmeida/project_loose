@@ -507,7 +507,7 @@ local function draw_ui()
                 glitter_y = focused_sticker_served.y
             end
             -- Draw glitter anim if the associated timer is running
-            if GAMEPLAY_TIMERS.sticker_glitter.timeLeft > 0 and not GAMEPLAY_TIMERS.sticker_glitter.paused then
+            if GAMEPLAY_TIMERS.sticker_glitter.timeLeft > 80 and not GAMEPLAY_TIMERS.sticker_glitter.paused then
                 UI_TEXTURES.sticker_glitter:draw(glitter_x - (UI_TEXTURES.sticker_glitter:image().width/2), glitter_y - (UI_TEXTURES.sticker_glitter:image().height/2))
             end
             -- Draw hand anim if the associated timer is running (I removed last 100ms to avoid sometimes repeating the first frame)
@@ -715,7 +715,7 @@ function Init_menus()
     -- Animation loops for mission select
     UI_TEXTURES.stickerslap = animloop.new(2.5 * frame_ms, gfxit.new("images/fx/stickerslap"), true)
     UI_TEXTURES.selection_finger = animloop.new(2.5 * frame_ms, gfxit.new("images/fx/selection_finger"), true)
-    UI_TEXTURES.sticker_glitter = animloop.new(4 * frame_ms, gfxit.new("images/fx/sticker_glitter_reveal"), true)
+    UI_TEXTURES.sticker_glitter = animloop.new(3.33 * frame_ms, gfxit.new("images/fx/sticker_glitter_reveal"), true)
 
     -- Star sticker graphics
     UI_TEXTURES.mastered_sticker = gfxi.new('images/cocktails/sticker_star')
