@@ -792,7 +792,7 @@ function update_liquid()
     local floating_drops <const> = GAMEPLAY_STATE.dropped_ingredients
 
     -- Calculate current stirring effect.
-    if floating_drops > 0 then
+    if floating_drops > 0 and STIR_FACTOR > 0.8 then
         STIR_FACTOR += STIR_FACTOR * 0.002
         STIR_FACTOR = math.min(STIR_FACTOR, 1)
     elseif floating_drops == 0 then
