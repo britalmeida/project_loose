@@ -189,20 +189,10 @@ local function draw_symbols()
             elseif GAMEPLAY_STATE.rune_count_unclamped[a] ~= GAMEPLAY_STATE.rune_count_unstirred[a] and
                 GAMEPLAY_STATE.dropped_ingredients ~= 0 and
                 GAMEPLAY_STATE.heat_amount > 0.3 then
-                    ANIMATIONS.rune_active[a]:draw(glyph_topleft_x, glyph_topleft_y)
-                    -- fade the glyph
-                    gfx.pushContext()
-                        gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
-                        ANIMATIONS.rune_active[a]:image():drawFaded(glyph_topleft_x, glyph_topleft_y, 1-glyph_fade, gfxi.kDitherTypeBayer4x4)
-                    gfx.popContext()
-                    ANIMATIONS.rune_active_outline[a]:draw(glyph_topleft_x, glyph_topleft_y)
+                        ANIMATIONS.rune_active[a]:image():drawFaded(glyph_topleft_x, glyph_topleft_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
+                        ANIMATIONS.rune_active_outline[a]:draw(glyph_topleft_x, glyph_topleft_y)
             else
-                ANIMATIONS.rune_idle[a]:draw(glyph_topleft_x, glyph_topleft_y)
-                -- fade the glyph
-                gfx.pushContext()
-                    gfx.setImageDrawMode(gfx.kDrawModeFillBlack)
-                    ANIMATIONS.rune_idle[a]:image():drawFaded(glyph_topleft_x, glyph_topleft_y, 1-glyph_fade, gfxi.kDitherTypeBayer4x4)
-                gfx.popContext()
+                ANIMATIONS.rune_idle[a]:image():drawFaded(glyph_topleft_x, glyph_topleft_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
             end
             ::continue::
         end
