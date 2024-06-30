@@ -674,11 +674,6 @@ local function draw_ui_prompts()
     ANIMATIONS.b_prompt:draw(362, 203)
     gfx.popContext()
 
-    if Is_potion_good_enough() then
-        gfx.pushContext()
-        draw_soft_ring(381, 222, 14, 7, 0.7, 1, gfx.kColorWhite)
-        gfx.popContext()
-    end
 end
 
 
