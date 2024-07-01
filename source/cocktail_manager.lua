@@ -32,7 +32,7 @@ COCKTAILS = {
     -- Intro 2 (Love & Doom)
 
   { name="Green Toe",
-    rune_composition={0, 0.33, 0.8},
+    rune_composition={0, 0.33, 0.75},
     step_ratings= {3, 10, 18},
     img=gfxi.new('images/cocktails/green_toe_sheet'),
     table= gfxit.new('images/cocktails/green_toe_sheet'),
@@ -61,7 +61,7 @@ COCKTAILS = {
 
   { name="Hodge Podge",
     rune_composition={0.45, 0.45, 0.45},
-    step_ratings= {6, 12, 20},
+    step_ratings= {4, 12, 20},
     img=gfxi.new('images/cocktails/hodge_podge_sheet'),
     table= gfxit.new('images/cocktails/hodge_podge_sheet'),
     locked_img = gfxi.new('images/cocktails/hodge_podge_sheet_locked'),

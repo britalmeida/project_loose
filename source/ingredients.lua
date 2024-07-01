@@ -10,7 +10,7 @@ local animloop <const> = playdate.graphics.animation.loop
 INGREDIENT_TYPES = {
     { name="Peppermints",   drop_name="peppermint",   rune_composition={  4,  -2,   2  }, x=374,  y= 24, img=gfxi.new('images/ingredients/peppermints'),  drop=gfxi.new('images/ingredients/peppermints_drop'), hold=nil },
     { name="Perfume",       drop_name="perfume drop", rune_composition={  6,   0,  -2  }, x=323,  y= 21, img=gfxi.new('images/ingredients/perfume'),      drop=gfxi.new('images/ingredients/perfume_drop'),     hold=nil  },
-    { name="Mushrooms",     drop_name="mushroom",     rune_composition={  0,   4,   4  }, x=269,  y= 20, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfxi.new('images/ingredients/mushrooms_drop'),   hold=nil  },
+    { name="Mushrooms",     drop_name="mushroom",     rune_composition={  0,   4,   3  }, x=269,  y= 20, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfxi.new('images/ingredients/mushrooms_drop'),   hold=nil  },
     { name="Coffee Beans",  drop_name="coffee bean",  rune_composition={  2,  -4,   4  }, x= 31,  y= 79, img=gfxi.new('images/ingredients/coffee'),       drop=gfxi.new('images/ingredients/coffee_drop'),      hold=nil  },
     { name="Toenails",      drop_name="toenail",      rune_composition={ -6,   2,  -2  }, x= 18,  y= 21, img=gfxi.new('images/ingredients/toenails'),     drop=gfxi.new('images/ingredients/toenails_drop'),    hold=nil  },
     { name="Salt",          drop_name="salt",         rune_composition={  1,  -6,  -2  }, x= 64,  y= 21, img=gfxi.new('images/ingredients/salt'),         drop=gfxi.new('images/ingredients/salt_drop'),        hold=nil  },
