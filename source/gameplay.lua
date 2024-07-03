@@ -52,6 +52,7 @@ GAMEPLAY_STATE = {
     last_cauldron_ingredient = nil,
     last_shaken_ingredient = nil,
     cauldron_swap_count = 0,
+    asked_frog_count = 0,
     -- If new stickers were unlocked after beating the cocktail
     cocktail_learned = false,
     new_high_score = false,
@@ -269,6 +270,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.last_cauldron_ingredient = nil
     GAMEPLAY_STATE.last_shaken_ingredient = nil
     GAMEPLAY_STATE.cauldron_swap_count = 0
+    GAMEPLAY_STATE.asked_frog_count = 0
     -- Reset current ingredient mix.
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
@@ -527,7 +529,15 @@ function Handle_input()
         end
 
         if playdate.buttonJustReleased( playdate.kButtonB ) then
-            GAMEPLAY_TIMERS.talk_reminder:pause()
+            -- Press B 3 times for the frog to stop speaking by himself (Unless it's late cocktails)
+            if GAMEPLAY_STATE.asked_frog_count < 3 and TARGET_COCKTAIL.type_idx < 4 then
+                GAMEPLAY_STATE.asked_frog_count += 1
+                Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
+            end
+            if GAMEPLAY_STATE.asked_frog_count >= 3 then
+                GAMEPLAY_TIMERS.talk_reminder:pause()
+            end
+
             FROG:Ask_the_frog()
         end
 
