@@ -105,6 +105,7 @@ PLAYER_STRUGGLES = {
     fire_struggle_asked = 0,
     ingredient_struggle_asked = 0,
     struggle_hint_asked = 0,
+    recipe_hint_asked = 0,
     -- Live values to detect struggle
     no_fire_tracking = 0,
     too_much_fire_tracking = 0,
@@ -332,6 +333,7 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.fire_struggle_asked = 0
     PLAYER_STRUGGLES.ingredient_struggle_asked = 0
     PLAYER_STRUGGLES.struggle_hint_asked = 0
+    PLAYER_STRUGGLES.recipe_hint_asked = 0
     PLAYER_STRUGGLES.no_fire_tracking = 0
     PLAYER_STRUGGLES.too_much_fire_tracking = 0
     PLAYER_STRUGGLES.too_little_fire_tracking = 0
@@ -991,20 +993,18 @@ function Check_player_struggle()
 
     -- Recipe struggle (General gameplay hints)
     -- If you used to many actions so far
-    if not PLAYER_STRUGGLES.recipe_struggle and RECIPE_STRUGGLE_STEPS == true then
+    -- Or if you keep asking the same question
+    if not PLAYER_STRUGGLES.recipe_struggle and
+    (RECIPE_STRUGGLE_STEPS == true or PLAYER_STRUGGLES.ingredient_struggle_asked >= 4) then
         PLAYER_STRUGGLES.recipe_struggle = true
         Shorten_talk_reminder()
         Next_recipe_struggle_tip()
-    -- If you keep asking the same question
-    elseif not PLAYER_STRUGGLES.recipe_struggle and PLAYER_STRUGGLES.ingredient_struggle_asked >= 4 then
-        PLAYER_STRUGGLES.recipe_struggle = true
-        Shorten_talk_reminder()
-        Next_recipe_struggle_tip()
-    -- Reset struggle
+    -- Reset so the sturggle can be detected and triggered again
     elseif not RECIPE_STRUGGLE_STEPS then
         if PLAYER_STRUGGLES.recipe_struggle then
             PLAYER_STRUGGLES.recipe_struggle = false
         end
+        PLAYER_STRUGGLES.recipe_hint_asked = 0
     end
 end
 

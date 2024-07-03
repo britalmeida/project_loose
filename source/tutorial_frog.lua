@@ -461,12 +461,14 @@ function Froggo:think()
 
     else
         local struggle_lvl = PLAYER_STRUGGLES.recipe_struggle_lvl
-        local struggles_unread = PLAYER_STRUGGLES.struggle_hint_asked < 5 --how often to ask the same thing before a hint drops
+        -- How often you can cycle through hints before they disappear
+        local struggles_unread = PLAYER_STRUGGLES.struggle_hint_asked < 5
+        local recipe_struggle_unread = PLAYER_STRUGGLES.recipe_hint_asked < 1
 
         -- Frustration checks:
         -- PLAYER_STRUGGLES are usually on a timer before set to false again
 
-        if PLAYER_STRUGGLES.recipe_struggle and struggles_unread then
+        if PLAYER_STRUGGLES.recipe_struggle and recipe_struggle_unread then
             print("Giving gameplay hint Nr. " .. struggle_lvl)
             self:select_sentence(sayings.hint.recipe, struggle_lvl)
         elseif PLAYER_STRUGGLES.cocktail_struggle and struggles_unread then
@@ -568,6 +570,8 @@ end
 
 function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     print("Frog says: idx "..sentence_cycle_idx.." TUT: "..self.tutorial_state)
+    local struggle_tip = false
+    local recipe_hint = false
     local any_ingredient_direction = false
     local ingredient_rune_idx = 0
     local ingredient_rune_direction = 0
@@ -594,6 +598,11 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
             end
         end
     end
+    for type in pairs(sayings.hint) do
+        if sayings.hint[type] == sentence_pool then
+            recipe_hint = true
+        end
+    end
     -- Check if player is still in the same frog hint dialogue.
     -- Eventually this triggers a hint message
     if self.last_spoken_sentence_pool == sentence_pool
@@ -603,9 +612,12 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     and any_ingredient_direction then
         PLAYER_STRUGGLES.ingredient_struggle_asked += 1
     -- Check if they already went through struggle/tips
-    elseif self.last_spoken_sentence_pool == sentence_pool
-    and struggle_tip then
+    elseif self.last_spoken_sentence_pool == sentence_pool and
+    struggle_tip then
         PLAYER_STRUGGLES.struggle_hint_asked += 1
+    elseif self.last_spoken_sentence_pool == sentence_pool and
+    recipe_hint then
+        PLAYER_STRUGGLES.recipe_hint_asked += 1
     else
         PLAYER_STRUGGLES.fire_struggle_asked = 0
         PLAYER_STRUGGLES.ingredient_struggle_asked = 0
