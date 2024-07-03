@@ -379,6 +379,7 @@ function Froggo:croak()
         local dialog_display_time = self:start_speech_bubble()
 
         Restart_timer(GAMEPLAY_TIMERS.speech_timer, dialog_display_time)
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, dialog_display_time)
     end
 end
 

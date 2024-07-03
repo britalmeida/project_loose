@@ -140,7 +140,6 @@ GAMEPLAY_TIMERS = {
         end),
     speech_timer = playdate.timer.new(100, function()
         FROG:stop_speech_bubble()
-        FROG:go_idle()
         CHECK_IF_DELICIOUS = true
         end),
     frog_go_idle = playdate.timer.new(100, function()
