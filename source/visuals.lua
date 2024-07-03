@@ -37,9 +37,6 @@ MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 158, 124
 MAGIC_TRIANGLE_SIZE = 100
 CAULDRON_SLOT_X, CAULDRON_SLOT_Y = MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y
 
--- check for the fog if conditions are correct at the right time
-CHECK_IF_DELICIOUS = false
-
 -- Debug / Development
 
 local function draw_test_dither_patterns()

@@ -16,6 +16,7 @@ local TUTORIAL_STATE <const> = { start = 1, grab = 1, shake = 2, fire = 3, stir 
 
 local positive_acceptance <const> = "That'll do it!"
 local win_hint <const> = "Just don't mess it up now!"
+local almost_win_hint <const> = "Just needs a little stir."
 local fire_reminders <const> = {
     "Keep it warm to see \nthe magic.",
     "Fire is good, glow is good.",
@@ -268,8 +269,20 @@ end
 
 function Froggo:Lick_eyeballs()
     if self.state == ACTION_STATE.idle then
-        -- continueously lick eyeballs or react
-        if Is_potion_good_enough() and CHECK_IF_DELICIOUS then
+        -- Check if the rune count is still within the goal
+        local rune_count_unchanged = true
+        for i in pairs(GAMEPLAY_STATE.rune_count) do
+            local distance_from_goal = math.abs(GAMEPLAY_STATE.rune_count[i] - GAMEPLAY_STATE.rune_count_unstirred[i])
+            if distance_from_goal > GOAL_TOLERANCE then
+                rune_count_unchanged = false
+            end
+        end
+
+        -- lick eyeballs if:
+        -- - The potion is confirmed to be good
+        -- - The potion was good already, some new ingredients were thrown in but it should still be the same
+        if (Is_potion_good_enough() and CHECK_IF_DELICIOUS) or
+        (Are_ingredients_good_enough() and CHECK_IF_DELICIOUS and rune_count_unchanged) then
             self:flash_b_prompt(60*1000)
             self:start_animation(self.anim_eyeball)
             self.x_offset = -11
@@ -408,6 +421,10 @@ function Froggo:think()
         return
     elseif Is_potion_good_enough() and automated then
         self.last_spoken_sentence_str = win_hint
+        return
+    elseif Are_ingredients_good_enough() and automated then
+        self.last_spoken_sentence_str = almost_win_hint
+        return
     end
 
     -- Check what the player has already done and advance tutorial steps.
@@ -479,12 +496,8 @@ function Froggo:think()
         elseif GAMEPLAY_STATE.heat_amount < 0.2 then
             -- Reminder to keep the heat up whenever it goes low.
             self:select_next_sentence(sayings.help.fire)
-        elseif
-            -- First check if drops need to be stirred in
-            -- Also automated frog messaages need to be stopped or the potion is good but instirred
-            GAMEPLAY_STATE.dropped_ingredients > 0 and
-            (not automated or (Are_ingredients_good_enough() and not Is_potion_good_enough())) then
-            self:give_stirring_direction()
+        elseif GAMEPLAY_STATE.dropped_ingredients > 0 and not automated then
+                self:give_stirring_direction()
         elseif not Are_ingredients_good_enough() then
             -- Then give hints on next ingredient
             self:give_ingredients_direction()

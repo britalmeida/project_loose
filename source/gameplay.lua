@@ -79,6 +79,7 @@ TREND = 0
 -- If a positive reinforcement can be triggered
 CAN_REINFORCE = false
 PREV_RUNE_COUNT = {0, 0, 0}
+-- fog will check again if win conditions are correct
 CHECK_IF_DELICIOUS = false
 
 PLAYER_LEARNED = {
@@ -144,7 +145,9 @@ GAMEPLAY_TIMERS = {
         end),
     frog_go_idle = playdate.timer.new(100, function()
         FROG:go_idle()
+        -- Check if the potion is still good. If yes, start eyeball lick anim
         CHECK_IF_DELICIOUS = true
+        FROG:Lick_eyeballs()
         end),
     drinking_cocktail = playdate.timer.new(100, function()
         FROG:start_animation(FROG.anim_burp)
