@@ -410,7 +410,7 @@ end
 -- Select what should the frog say, adjust sentence state and trigger the speech bubble.
 function Froggo:think()
 
-    local automated = not GAMEPLAY_TIMERS.talk_reminder.paused
+    local automated = GAMEPLAY_STATE.asked_frog_count == 0
 
     -- Check if the potion is approved and early out!
     -- If the frog is speaking up as a talk reminder, don't end the game!
