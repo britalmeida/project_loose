@@ -103,9 +103,21 @@ function Ingredient:tick()
         self:moveTo(GAMEPLAY_STATE.cursor_pos)
         GAMEPLAY_STATE.cauldron_ingredient = nil
     elseif self.state == INGREDIENT_STATE.is_over_cauldron then
+      -- Add a bit of floating wiggle on top
+        local time = playdate.getElapsedTime()
+        local wiggle_freq = 0.6
+        local wiggle_strength = 2
+        local wiggle = math.sin(time * 2 * math.pi * (wiggle_freq - 0.1))
+        CAULDRON_SLOT_Y = MAGIC_TRIANGLE_CENTER_Y + wiggle * wiggle_strength
+
+        -- Add irregular shaky wiggle
         if self.is_wiggling then
-            self:wiggle()
+          self:wiggle()
         end
+
+        -- Set new position
+        local center = geo.vector2D.new(CAULDRON_SLOT_X, CAULDRON_SLOT_Y)
+        self:moveTo((center):unpack())
         if GAMEPLAY_STATE.cauldron_ingredient == nil then
           GAMEPLAY_STATE.cauldron_swap_count += 1
         end
@@ -188,21 +200,16 @@ function Ingredient:wiggle()
   --   return
   -- end
   local current_wiggle_time = self.wiggle_timer.currentTime / 1000
-  
   local wiggle_freq = 8
   local x_offset = math.sin(current_wiggle_time * 2 * math.pi * (wiggle_freq - 0.1))
   local y_offset = math.sin(current_wiggle_time * 2 * math.pi * (wiggle_freq + 0.1))
   local hover_vector = geo.vector2D.new(x_offset, y_offset) * current_wiggle_time / self.wiggle_time * 0.8
-  
-  local center = geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
-  self:moveTo((center + hover_vector):unpack())
 end
 
 function Ingredient:end_wiggle()
   self.is_wiggling = false
 
-  local center = geo.point.new(MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
-  self:moveTo(center:unpack())
+  local center = geo.point.new(CAULDRON_SLOT_X, CAULDRON_SLOT_Y)
 
   -- wiggle again after random pause
   local pause = math.random(2 * 1000, 4 * 1000)
