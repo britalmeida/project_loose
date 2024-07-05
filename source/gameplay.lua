@@ -534,9 +534,11 @@ function Handle_input()
 
         if playdate.buttonJustReleased( playdate.kButtonB ) then
             -- Press B 3 times for the frog to stop speaking by himself (Unless it's late cocktails)
-            if GAMEPLAY_STATE.asked_frog_count < 3 and TARGET_COCKTAIL.type_idx < 4 then
+            if GAMEPLAY_STATE.asked_frog_count < 3 then
                 GAMEPLAY_STATE.asked_frog_count += 1
-                Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
+                if TARGET_COCKTAIL.type_idx < 4 then
+                    Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
+                end
             end
             if GAMEPLAY_STATE.asked_frog_count >= 3 then
                 GAMEPLAY_TIMERS.talk_reminder:pause()
