@@ -87,7 +87,7 @@ local drop_tips <const> = {
     "11",
 }
 local recipe_struggle <const> = {
-    "Look above the cauldron\nfor guidance",
+    "Look above the cauldron\nfor guidance.",
     "Consider how the ingredients\nmatch the magical symbols.",
     "Ingredients may raise one \nmagic and lower another.",
     "Some ingredients are potent.\nOthers are subtle.",
