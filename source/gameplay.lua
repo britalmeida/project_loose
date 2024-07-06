@@ -807,7 +807,7 @@ function update_liquid()
 
     local stir_change <const> = math.abs(STIR_SPEED) * 0.001
     local min_stir_change <const> = 0.005
-    local max_stir_change <const> = 0.025
+    local max_stir_change <const> = 0.02
     local idle_stir_change <const> = 0.001
     local floating_drops <const> = GAMEPLAY_STATE.dropped_ingredients
 
