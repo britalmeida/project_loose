@@ -804,7 +804,10 @@ end
 function update_liquid()
     -- Update liquid stir effect
 
-    local stir_change <const> = 0.001
+    local stir_change <const> = math.abs(STIR_SPEED) * 0.001
+    local min_stir_change <const> = 0.005
+    local max_stir_change <const> = 0.025
+    local idle_stir_change <const> = 0.001
     local floating_drops <const> = GAMEPLAY_STATE.dropped_ingredients
 
     -- Calculate current stirring effect.
@@ -814,7 +817,9 @@ function update_liquid()
     elseif floating_drops == 0 then
         STIR_FACTOR -= 0.08
     end
-    STIR_FACTOR += (math.abs(STIR_SPEED) * stir_change)
+    if stir_change >= idle_stir_change then
+        STIR_FACTOR += Clamp(stir_change, min_stir_change, max_stir_change)
+    end
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
 
     -- Reset rune travel variables and mark stirring as complete
