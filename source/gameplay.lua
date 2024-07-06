@@ -450,7 +450,12 @@ function Handle_input()
     -- When transitioning to end game, stop processing and reacting to new input.
     if GAME_ENDED then
         -- Wait for recipe to show up before handling more input
-        if GAMEPLAY_STATE.showing_recipe == true then
+        if not GAMEPLAY_STATE.showing_recipe and playdate.buttonJustReleased( playdate.kButtonB ) then
+            -- stop burp_anim timer
+            GAMEPLAY_TIMERS.burp_anim:pause()
+            -- trim time off burptalk_anim timer to trigger its function
+            GAMEPLAY_TIMERS.burptalk_anim.duration -= 10*1000
+        elseif GAMEPLAY_STATE.showing_recipe then
             local crankTicks = playdate.getCrankTicks(100)
             end_recipe_y += -crankTicks
             if playdate.buttonIsPressed( playdate.kButtonUp ) then
