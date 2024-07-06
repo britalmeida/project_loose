@@ -151,9 +151,9 @@ function Froggo:init()
     self.anim_idle       = animloop.new(16 * frame_ms, gfxit.new('images/frog/animation-idle'), true)
     self.anim_headshake  = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-headshake'), true)
     self.anim_happy      = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-excited'), true)
-    self.anim_cocktail   = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-sip'), true)
     self.anim_burp       = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-burp'), false)
-    self.anim_burptalk   = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-burptalk'), true)
+    self.anim_burptalk   = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-burp-talk'), true)
+    self.anim_drink      = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-drink'), true)
     self.anim_blabla     = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-blabla'), true)
     self.anim_tickleface = animloop.new(2.5 * frame_ms, gfxit.new('images/frog/animation-tickleface'), false)
     self.anim_eyeball    = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
@@ -350,28 +350,19 @@ function Froggo:go_drinking()
         GAMEPLAY_TIMERS[k]:pause()
     end
 
-    local cocktail_runtime = self.anim_cocktail.delay * (self.anim_cocktail.endFrame - 3)
-    local burp_runtime = self.anim_burp.delay * (self.anim_burp.endFrame - 4)
-    local burp_speak_runtime = self.anim_burp.delay * self.anim_burp.endFrame
+    local burp_runtime = self.anim_burp.delay * self.anim_burp.endFrame
+    local burptalk_runtime = (self.anim_burptalk.delay * self.anim_burptalk.endFrame) * 4
     local runtime = 0
 
     self.state = ACTION_STATE.drinking
-    self:start_animation(self.anim_cocktail)
-    self.anim_current.frame = 3
+    self:start_animation(self.anim_burp)
     self.x_offset = -9
 
     -- Start sequence of timers to trigger animations and speech
-    duration = cocktail_runtime
-    Restart_timer(GAMEPLAY_TIMERS.drinking_cocktail, duration)
-
-    duration += burp_runtime
-    Restart_timer(GAMEPLAY_TIMERS.drinking_burp, duration)
-
-    duration += burp_speak_runtime - burp_runtime
-    Restart_timer(GAMEPLAY_TIMERS.drinking_burp_talk, duration)
-
-    duration += 2*1000
-    Restart_timer(GAMEPLAY_TIMERS.drinking_talk, duration)
+    -- First one transitions to burptalk loop and starts speech bubble
+    -- Second stops speech bubble, triggers recipe screen and starts looping drinking animation
+    Restart_timer(GAMEPLAY_TIMERS.burp_anim, burp_runtime)
+    Restart_timer(GAMEPLAY_TIMERS.burptalk_anim, burp_runtime + burptalk_runtime)
 
 end
 

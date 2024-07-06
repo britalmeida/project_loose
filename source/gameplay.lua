@@ -150,21 +150,14 @@ GAMEPLAY_TIMERS = {
         CHECK_IF_DELICIOUS = true
         FROG:Lick_eyeballs()
         end),
-    drinking_cocktail = playdate.timer.new(100, function()
-        FROG:start_animation(FROG.anim_burp)
-        FROG.x_offset = -9
-        end),
-    drinking_burp = playdate.timer.new(100, function()
-        FROG:start_speech_bubble()
-        end),
-    drinking_burp_talk = playdate.timer.new(100, function()
+    burp_anim = playdate.timer.new(100, function()
         FROG:start_animation(FROG.anim_burptalk)
         FROG.x_offset = -9
+        FROG:start_speech_bubble()
         end),
-    drinking_talk = playdate.timer.new(100, function()
-        -- Disable speech bubble after a short moment.
+    burptalk_anim = playdate.timer.new(100, function()
         FROG:stop_speech_bubble()
-        FROG:start_animation(FROG.anim_cocktail)
+        FROG:start_animation(FROG.anim_drink)
         FROG.x_offset = -9
         GAMEPLAY_STATE.showing_recipe = true
         end),
