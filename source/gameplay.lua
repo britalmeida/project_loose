@@ -74,6 +74,9 @@ DIFF_TO_TARGET = {
 GOAL_TOLERANCE = 0.1
 GAME_ENDED = false
 
+-- Minimum number of frog interactions before no longer automated
+FROG_AUTOMATED = 3
+
 -- Trend on the current tick
 TREND = 0
 -- If a positive reinforcement can be triggered
@@ -532,13 +535,13 @@ function Handle_input()
 
         if playdate.buttonJustReleased( playdate.kButtonB ) then
             -- Press B 3 times for the frog to stop speaking by himself (Unless it's late cocktails)
-            if GAMEPLAY_STATE.asked_frog_count < 3 then
+            if GAMEPLAY_STATE.asked_frog_count < FROG_AUTOMATED then
                 GAMEPLAY_STATE.asked_frog_count += 1
                 if TARGET_COCKTAIL.type_idx < 4 then
                     Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
                 end
             end
-            if GAMEPLAY_STATE.asked_frog_count >= 3 then
+            if GAMEPLAY_STATE.asked_frog_count >= FROG_AUTOMATED then
                 GAMEPLAY_TIMERS.talk_reminder:pause()
             end
 
