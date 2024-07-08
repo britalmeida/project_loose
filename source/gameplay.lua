@@ -546,7 +546,9 @@ function Handle_input()
                 GAMEPLAY_TIMERS.talk_reminder:pause()
             end
 
-            FROG:Ask_the_frog()
+            -- Start frog player initiated dialogue
+            local automated = false
+            FROG:Ask_the_frog(automated)
         end
 
         -- Modal instruction overlays.
