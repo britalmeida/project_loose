@@ -139,7 +139,8 @@ GAMEPLAY_TIMERS = {
         ANIMATIONS.b_prompt.paused = true
         end),
     talk_reminder = playdate.timer.new(100, function()
-        FROG:Ask_the_frog()
+        local automated = true
+        FROG:Ask_the_frog(automated)
         FROG:flash_b_prompt(6*1000)
         Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
         end),

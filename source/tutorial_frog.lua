@@ -37,7 +37,7 @@ local fire_tips_b <const> = {
     "Really get the fire started!",
 }
 local stir_tutorials <const> = {
-    "Always stir to see\nwhat ingredient do.",
+    "Always stir to see\nwhat ingredients do.",
     "Use the crank to stir.",
     "11",
 }
@@ -217,11 +217,11 @@ end
 
 -- Events for transition
 
-function Froggo:Ask_the_frog()
+function Froggo:Ask_the_frog(automated)
     if self.state == ACTION_STATE.idle or self.state == ACTION_STATE.reacting then
         -- Possibly interrupt an emoting animation.
         -- Start speaking.
-        self:think()
+        self:think(automated)
         self:croak()
     elseif self.state == ACTION_STATE.speaking then
         -- Prevent speech bubble kill and transition to idle from the previous sentence.
@@ -229,7 +229,7 @@ function Froggo:Ask_the_frog()
         -- Clear the previous text or animated icon graphic. (bc text/icon isn't guaranteed to be replaced)
         self:stop_speech_bubble()
         -- Run a new sentence.
-        self:think()
+        self:think(automated)
         self:croak()
     end
 end
@@ -399,9 +399,7 @@ end
 -- Sentences and Speech Bubble
 
 -- Select what should the frog say, adjust sentence state and trigger the speech bubble.
-function Froggo:think()
-
-    local automated = GAMEPLAY_STATE.asked_frog_count < FROG_AUTOMATED
+function Froggo:think(automated)
 
     -- Check if the potion is approved and early out!
     -- If the frog is speaking up as a talk reminder, don't end the game!
