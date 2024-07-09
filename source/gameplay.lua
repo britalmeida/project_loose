@@ -158,6 +158,10 @@ GAMEPLAY_TIMERS = {
         FROG:start_animation(FROG.anim_urgent)
         Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 6*1000)
         end),
+    thought_bubble_anim = playdate.timer.new(100, function()
+        THOUGHT_BUBBLE_ANIM = ANIMATIONS.thought_bubble
+        ANIMATIONS.thought_bubble.frame = 1
+        end),
     burp_anim = playdate.timer.new(100, function()
         FROG:start_animation(FROG.anim_burptalk)
         FROG.x_offset = -9

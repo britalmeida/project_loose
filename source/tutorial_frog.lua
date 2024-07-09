@@ -289,6 +289,7 @@ function Froggo:Lick_eyeballs()
             self:flash_b_prompt(60*1000)
             self:start_animation(self.anim_eyeball)
             self.x_offset = -11
+            self:start_thought_bubble()
             CHECK_IF_DELICIOUS = false
         end
     end
@@ -313,7 +314,23 @@ end
 function Froggo:fire_reaction()
     self.state = ACTION_STATE.reacting
     self:start_animation(self.anim_frogfire)
-    Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
+    self:prepare_to_idle()
+end
+
+
+function Froggo:prepare_to_idle(delay)
+
+    -- Set standard time
+    if delay == nil then
+        delay = 2*1000
+    end
+
+    -- Stop thought bubbles and go idle after delay is passed
+    self:stop_thought_bubble()
+    Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, delay)
+
+    -- Make sure that eyelick animation restarts if needed
+    CHECK_IF_DELICIOUS = false
 end
 
 
@@ -332,22 +349,18 @@ function Froggo:go_reacting()
         self:start_animation(self.anim_facepalm)
         self.x_offset = -10
         self.y_offset = 9
-        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, runtime)
-        CHECK_IF_DELICIOUS = false
+        self:prepare_to_idle(runtime)
     elseif self.anim_current == self.anim_eyeball and not TUTORIAL_COMPLETED then
         self:start_animation(self.anim_headshake)
-        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
-        CHECK_IF_DELICIOUS = false
+        self:prepare_to_idle()
 
     -- Otherwise react to ingredient direction
     elseif TREND > 0 and TUTORIAL_COMPLETED then
         self:start_animation(self.anim_happy)
-        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
-        CHECK_IF_DELICIOUS = false
+        self:prepare_to_idle()
     elseif TREND < 0 and TUTORIAL_COMPLETED then
         self:start_animation(self.anim_headshake)
-        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2*1000)
-        CHECK_IF_DELICIOUS = false
+        self:prepare_to_idle()
     else
         -- return back to idle if no reaction applies
         self:go_idle()
@@ -358,7 +371,7 @@ end
 function Froggo:froggo_tickleface()
     self.state = ACTION_STATE.reacting
     self:start_animation(self.anim_tickleface)
-    Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 2.9*1000)
+    self:prepare_to_idle(2.9*1000)
 end
 
 
@@ -401,7 +414,7 @@ function Froggo:croak()
         local dialog_display_time = self:start_speech_bubble()
 
         Restart_timer(GAMEPLAY_TIMERS.speech_timer, dialog_display_time)
-        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, dialog_display_time)
+        self:prepare_to_idle(dialog_display_time)
     end
 end
 
@@ -698,6 +711,24 @@ function Froggo:stop_speech_bubble()
     SPEECH_BUBBLE_ANIM = nil
 end
 
+
+function Froggo:start_thought_bubble()
+    -- start though bubble intro animation and switch to anim loop after timer ended
+
+    local duration = (ANIMATIONS.thought_bubble_start.delay * ANIMATIONS.thought_bubble_start.endFrame) - 50
+
+    ANIMATIONS.thought_bubble_start.frame = 1
+    THOUGHT_BUBBLE_ANIM = ANIMATIONS.thought_bubble_start
+    Restart_timer(GAMEPLAY_TIMERS.thought_bubble_anim, duration)
+
+end
+
+
+function Froggo:stop_thought_bubble()
+    -- Also clear thought bubble anim and timers
+    THOUGHT_BUBBLE_ANIM = nil
+    GAMEPLAY_TIMERS.thought_bubble_anim:pause()
+end
 
 
 -- Update

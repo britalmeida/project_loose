@@ -547,6 +547,11 @@ local function draw_dialog_bubble()
             end
         gfx.popContext()
 
+    elseif THOUGHT_BUBBLE_ANIM then
+        -- Animated thought bubble when frog wants to say something
+        gfx.pushContext()
+            THOUGHT_BUBBLE_ANIM:image():draw(0, 0)
+        gfx.popContext()
     end
 end
 
@@ -772,6 +777,8 @@ function Init_visuals()
     TEXTURES.instructions_prompt = gfxi.new("images/instructions_prompt")
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/speechbubble_oneline_wide")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/speechbubble_twolines_extrawide")
+    ANIMATIONS.thought_bubble_start = animloop.new(6 * frame_ms, gfxit.new("images/speech/animation-dream-cocktail_start"), true)
+    ANIMATIONS.thought_bubble = animloop.new(6 * frame_ms, gfxit.new("images/speech/animation-dream-cocktail"), true)
     TEXTURES.instructions = gfxi.new("images/instructions")
     if playdate.isSimulator then
         TEXTURES.instructions = gfxi.new("images/instructions_sim")
