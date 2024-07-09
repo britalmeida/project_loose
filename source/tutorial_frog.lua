@@ -438,6 +438,7 @@ function Froggo:think(automated)
         Win_game()
         Reset_ingredients()
         self.last_spoken_sentence_str = positive_acceptance
+        self:stop_thought_bubble()
         return
     elseif Is_potion_good_enough() and automated then
         self.last_spoken_sentence_str = win_hint
