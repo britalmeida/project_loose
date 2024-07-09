@@ -115,6 +115,7 @@ PLAYER_STRUGGLES = {
     too_little_fire_tracking = 0,
     no_shake_tracking = 0,
     too_much_stir_tracking = 0,
+    too_much_shaking_tracking = 0,
 }
 
 -- The recipe steps that trigger a gameplay tip from the frog
@@ -174,6 +175,11 @@ GAMEPLAY_TIMERS = {
         GAMEPLAY_STATE.showing_recipe = true
         end),
     -- Timout values and timers fore stopping struggle dialogue
+    tutorial_timeout = playdate.timer.new(100, function ()
+        -- special timer that starts after tutorial is complete.
+        -- Only once done, struggles can be triggerd
+        TUTORIAL_COMPLETED = true
+      end),
     cocktail_struggle_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.cocktail_struggle = false
         end),
@@ -215,6 +221,7 @@ end
 -- Stirring.
 STIR_POSITION = 0 -- Ladle position as an angle in radians.
 STIR_FACTOR = 0  -- Effect stirring has on the potion
+STIR_CHANGE = 0 -- Amount of player induced change in STIR_FACTOR this frame
 
 STIR_SPEED = 0 -- Speed of cranking in revolutions per second
 STIR_REVOLUTION = 0
@@ -344,6 +351,7 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.too_little_fire_tracking = 0
     PLAYER_STRUGGLES.no_shake_tracking = 0
     PLAYER_STRUGGLES.too_much_stir_tracking = 0
+    PLAYER_STRUGGLES.too_much_shaking_tracking = 0
 
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
@@ -816,11 +824,13 @@ end
 function update_liquid()
     -- Update liquid stir effect
 
-    local stir_change <const> = math.abs(STIR_SPEED) * 0.001
+    local stir_change_unclamped <const> = math.abs(STIR_SPEED) * 0.001
     local min_stir_change <const> = 0.005
     local max_stir_change <const> = 0.02
     local idle_stir_change <const> = 0.001
     local floating_drops <const> = GAMEPLAY_STATE.dropped_ingredients
+
+    STIR_CHANGE = Clamp(stir_change_unclamped, min_stir_change, max_stir_change)
 
     -- Calculate current stirring effect.
     if floating_drops > 0 and STIR_FACTOR > 0.8 then
@@ -829,8 +839,10 @@ function update_liquid()
     elseif floating_drops == 0 then
         STIR_FACTOR -= 0.08
     end
-    if stir_change >= idle_stir_change then
-        STIR_FACTOR += Clamp(stir_change, min_stir_change, max_stir_change)
+    if stir_change_unclamped >= idle_stir_change then
+        STIR_FACTOR += STIR_CHANGE
+    else
+        STIR_CHANGE = 0
     end
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
 
@@ -1135,16 +1147,25 @@ function Check_no_shaking_struggle()
 end
 
 function Check_too_much_shaking_struggle()
-    if STIR_FACTOR < 0.3 and not PLAYER_STRUGGLES.too_much_shaking then
+    -- min combined stirring factor to trigger struggle dialogue
+    local min_stirring = STIR_FACTOR + PLAYER_STRUGGLES.too_much_shaking_tracking
+    if min_stirring < 0.15 and
+    not PLAYER_STRUGGLES.too_much_shaking then
         print("Player is struggling with stir")
         PLAYER_STRUGGLES.too_much_shaking = true
         Shorten_talk_reminder()
         FROG:wants_to_talk()
         Restart_timer(GAMEPLAY_TIMERS.too_much_shaking_timeout, struggle_reminder_timout)
-    elseif STIR_FACTOR >= 0.3 and PLAYER_STRUGGLES.too_much_shaking then
-        --print("Player struggle with stir resolved")
+        -- Increasing the tracking variable will make sure the frog won't retrigger the dialogue,
+        -- unless the player addressed the issue
+        PLAYER_STRUGGLES.too_much_shaking_tracking = 1
+    elseif STIR_FACTOR >= 0.15 and PLAYER_STRUGGLES.too_much_shaking_tracking > 0 then
+        print("Player shaking struggle was reset")
+        -- Reset variables and start tracking struggle again to retrigger later
         PLAYER_STRUGGLES.too_much_shaking = false
         GAMEPLAY_TIMERS.too_much_shaking_timeout:pause()
+        PLAYER_STRUGGLES.too_much_shaking_tracking = 0
+        --print("Player struggle with stir resolved")
     end
 end
 
@@ -1199,8 +1220,7 @@ function Check_tutorial_completion()
             return
         end
     end
-    -- Set
-    TUTORIAL_COMPLETED = true
+    Restart_timer(GAMEPLAY_TIMERS.tutorial_timeout, 3*1000)
 end
 
 function Restart_timer(timer, duration)
