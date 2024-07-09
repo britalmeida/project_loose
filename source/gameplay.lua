@@ -962,7 +962,8 @@ end
 
 function Shorten_talk_reminder()
     -- If the player hasn't talked to to frog yet, shorten the regular intervals in some cases
-    if GAMEPLAY_TIMERS.talk_reminder.paused == false then
+    -- Don't do this if the cocktail is already close to done.
+    if GAMEPLAY_TIMERS.talk_reminder.paused == false and not Is_potion_good_enough() then
         GAMEPLAY_TIMERS.talk_reminder.duration -= 10*1000
     end
 end
@@ -971,7 +972,7 @@ end
 function Check_player_struggle()
 
     -- Only once tutorial is complete
-    if not TUTORIAL_COMPLETED then
+    if not TUTORIAL_COMPLETED and not Is_potion_good_enough() then
         return
     end
 
