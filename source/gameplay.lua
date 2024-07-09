@@ -154,6 +154,10 @@ GAMEPLAY_TIMERS = {
         CHECK_IF_DELICIOUS = true
         FROG:Lick_eyeballs()
         end),
+    frog_go_urgent = playdate.timer.new(100, function()
+        FROG:start_animation(FROG.anim_urgent)
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 6*1000)
+        end),
     burp_anim = playdate.timer.new(100, function()
         FROG:start_animation(FROG.anim_burptalk)
         FROG.x_offset = -9
@@ -1029,7 +1033,7 @@ function Check_no_fire_struggle()
     PLAYER_STRUGGLES.fire_struggle_asked >= 4 then
         print("Fire is never used or player forgot how!")
         PLAYER_STRUGGLES.no_fire = true
-        FROG:flash_b_prompt()
+        FROG:wants_to_talk()
         Restart_timer(GAMEPLAY_TIMERS.no_fire_timeout, struggle_reminder_timout)
     end
     --print("No fire tracking: " .. PLAYER_STRUGGLES.no_fire_tracking)
@@ -1050,7 +1054,7 @@ function Check_too_much_fire_struggle()
         print("Fire is stoked way too much!")
         PLAYER_STRUGGLES.too_much_fire = true
         Shorten_talk_reminder()
-        FROG:flash_b_prompt()
+        FROG:wants_to_talk()
         PLAYER_STRUGGLES.too_much_fire_tracking = 0
         -- timer to stop struggle dialogue
         Restart_timer(GAMEPLAY_TIMERS.too_much_fire_timeout, struggle_reminder_timout)
@@ -1080,7 +1084,7 @@ function Check_too_little_fire_struggle()
         print("Fire is stoked way little!")
         PLAYER_STRUGGLES.too_little_fire = true
         Shorten_talk_reminder()
-        FROG:flash_b_prompt()
+        FROG:wants_to_talk()
         -- reset counting
         GAMEPLAY_STATE.fire_stoke_count = 0
         -- timer to stop struggle dialogue
@@ -1096,7 +1100,7 @@ function Check_no_shaking_struggle()
         print("Swapped ingredients too much without shaking")
         PLAYER_STRUGGLES.no_shake = true
         Shorten_talk_reminder()
-        FROG:flash_b_prompt()
+        FROG:wants_to_talk()
         Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
         GAMEPLAY_STATE.cauldron_swap_count = 0
     -- Check it there's too much stirring without a dropped ingredient
@@ -1109,7 +1113,7 @@ function Check_no_shaking_struggle()
                 print("Too much stirring without shaking")
                 PLAYER_STRUGGLES.no_shake = true
                 Shorten_talk_reminder()
-                FROG:flash_b_prompt()
+                FROG:wants_to_talk()
                 Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
                 PLAYER_STRUGGLES.no_shake_tracking = 0
             end
@@ -1129,7 +1133,7 @@ function Check_too_much_shaking_struggle()
         print("Player is struggling with stir")
         PLAYER_STRUGGLES.too_much_shaking = true
         Shorten_talk_reminder()
-        FROG:flash_b_prompt()
+        FROG:wants_to_talk()
         Restart_timer(GAMEPLAY_TIMERS.too_much_shaking_timeout, struggle_reminder_timout)
     elseif STIR_FACTOR >= 0.3 and PLAYER_STRUGGLES.too_much_shaking then
         --print("Player struggle with stir resolved")
@@ -1157,7 +1161,7 @@ function Check_too_much_stirring_struggle()
             --print("Stirring reached struggling amount.")
             PLAYER_STRUGGLES.too_much_stir = true
             Shorten_talk_reminder()
-            FROG:flash_b_prompt()
+            FROG:wants_to_talk()
             Restart_timer(GAMEPLAY_TIMERS.too_much_stir_timeout, struggle_reminder_timout)
             PLAYER_STRUGGLES.too_much_stir_tracking = 0
         end
