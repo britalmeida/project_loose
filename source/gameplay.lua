@@ -934,6 +934,7 @@ function Check_player_learnings()
         PLAYER_LEARNED.how_to_fire = true
         FROG:flash_b_prompt()
         Check_tutorial_completion()
+        print('Learned how to fire.')
     end
 
     if math.abs(STIR_SPEED) > 7.5
@@ -942,6 +943,7 @@ function Check_player_learnings()
         PLAYER_LEARNED.how_to_stir = true
         FROG:flash_b_prompt()
         Check_tutorial_completion()
+        print('Learned how to stir.')
     end
 end
 
