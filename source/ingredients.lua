@@ -285,7 +285,9 @@ function Ingredient:drop()
 
   if not PLAYER_LEARNED.how_to_shake then
     PLAYER_LEARNED.how_to_shake = true
-    FROG:flash_b_prompt()
+    if TARGET_COCKTAIL.type_idx < 5 then
+      FROG:flash_b_prompt()
+    end
     Check_tutorial_completion()
     print("Learned how to shake")
   end

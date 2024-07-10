@@ -537,7 +537,9 @@ function Handle_input()
                     picked_up = true
                     if not PLAYER_LEARNED.how_to_grab then
                         PLAYER_LEARNED.how_to_grab = true
-                        FROG:flash_b_prompt()
+                        if TARGET_COCKTAIL.type_idx < 5 then
+                            FROG:flash_b_prompt()
+                        end
                         Check_tutorial_completion()
                         print('Learned how to grab.')
                     end
@@ -562,6 +564,10 @@ function Handle_input()
         end
 
         if playdate.buttonJustReleased( playdate.kButtonB ) then
+
+            -- Stop the flasshing B.
+            GAMEPLAY_TIMERS.stop_b_flashing.duration -= GAMEPLAY_TIMERS.stop_b_flashing.timeLeft
+
             -- Press B 3 times for the frog to stop speaking by himself (Unless it's late cocktails)
             if GAMEPLAY_STATE.asked_frog_count < FROG_AUTOMATED then
                 GAMEPLAY_STATE.asked_frog_count += 1
@@ -955,7 +961,9 @@ function Check_player_learnings()
     and not PLAYER_LEARNED.how_to_fire
     and GAMEPLAY_STATE.last_shaken_ingredient ~= nil then
         PLAYER_LEARNED.how_to_fire = true
-        FROG:flash_b_prompt()
+        if TARGET_COCKTAIL.type_idx < 5 then
+            FROG:flash_b_prompt()
+        end
         Check_tutorial_completion()
         print('Learned how to fire.')
     end
@@ -964,7 +972,9 @@ function Check_player_learnings()
     and GAMEPLAY_STATE.dropped_ingredients > 0
     and not PLAYER_LEARNED.how_to_stir then
         PLAYER_LEARNED.how_to_stir = true
-        FROG:flash_b_prompt()
+        if TARGET_COCKTAIL.type_idx < 5 then
+            FROG:flash_b_prompt()
+        end
         Check_tutorial_completion()
         print('Learned how to stir.')
     end

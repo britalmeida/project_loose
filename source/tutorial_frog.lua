@@ -244,9 +244,6 @@ end
 function Froggo:Ask_for_cocktail()
     self.last_spoken_sentence_str = string.format("One \"%s\", please!", COCKTAILS[TARGET_COCKTAIL.type_idx].name)
     self:croak()
-
-    -- tmp: update to flash B button some time after starting a cocktail
-    self:flash_b_prompt(4000)
 end
 
 
