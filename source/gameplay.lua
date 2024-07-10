@@ -102,6 +102,9 @@ PLAYER_STRUGGLES = {
     too_much_shaking = false,
     too_much_stir = false,
     recipe_struggle = false,
+}
+
+STRUGGLE_PROGRESS = {
     -- Current line in pool of recipe struggle hints
     recipe_struggle_lvl = 0,
     -- Track how often struggle hints have been read
@@ -340,18 +343,19 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.too_much_shaking = false
     PLAYER_STRUGGLES.too_much_stir = false
     PLAYER_STRUGGLES.recipe_struggle = false
-    PLAYER_STRUGGLES.recipe_struggle_lvl = 0
     PLAYER_STRUGGLES.cocktail_struggle = false
-    PLAYER_STRUGGLES.fire_struggle_asked = 0
-    PLAYER_STRUGGLES.ingredient_struggle_asked = 0
-    PLAYER_STRUGGLES.struggle_hint_asked = 0
-    PLAYER_STRUGGLES.recipe_hint_asked = 0
-    PLAYER_STRUGGLES.no_fire_tracking = 0
-    PLAYER_STRUGGLES.too_much_fire_tracking = 0
-    PLAYER_STRUGGLES.too_little_fire_tracking = 0
-    PLAYER_STRUGGLES.no_shake_tracking = 0
-    PLAYER_STRUGGLES.too_much_stir_tracking = 0
-    PLAYER_STRUGGLES.too_much_shaking_tracking = 0
+
+    STRUGGLE_PROGRESS.recipe_struggle_lvl = 0
+    STRUGGLE_PROGRESS.fire_struggle_asked = 0
+    STRUGGLE_PROGRESS.ingredient_struggle_asked = 0
+    STRUGGLE_PROGRESS.struggle_hint_asked = 0
+    STRUGGLE_PROGRESS.recipe_hint_asked = 0
+    STRUGGLE_PROGRESS.no_fire_tracking = 0
+    STRUGGLE_PROGRESS.too_much_fire_tracking = 0
+    STRUGGLE_PROGRESS.too_little_fire_tracking = 0
+    STRUGGLE_PROGRESS.no_shake_tracking = 0
+    STRUGGLE_PROGRESS.too_much_stir_tracking = 0
+    STRUGGLE_PROGRESS.too_much_shaking_tracking = 0
 
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
@@ -1029,7 +1033,7 @@ function Check_player_struggle()
     -- If you used to many actions so far
     -- Or if you keep asking the same question
     if not PLAYER_STRUGGLES.recipe_struggle and
-    (RECIPE_STRUGGLE_STEPS == true or PLAYER_STRUGGLES.ingredient_struggle_asked >= 4) then
+    (RECIPE_STRUGGLE_STEPS == true or STRUGGLE_PROGRESS.ingredient_struggle_asked >= 4) then
         PLAYER_STRUGGLES.recipe_struggle = true
         Shorten_talk_reminder()
         Next_recipe_struggle_tip()
@@ -1038,24 +1042,24 @@ function Check_player_struggle()
         if PLAYER_STRUGGLES.recipe_struggle then
             PLAYER_STRUGGLES.recipe_struggle = false
         end
-        PLAYER_STRUGGLES.recipe_hint_asked = 0
+        STRUGGLE_PROGRESS.recipe_hint_asked = 0
     end
 end
 
 function Check_no_fire_struggle()
     if GAMEPLAY_STATE.heat_amount < 0.1 then
-        PLAYER_STRUGGLES.no_fire_tracking += 0.0006
+        STRUGGLE_PROGRESS.no_fire_tracking += 0.0006
     else
-        PLAYER_STRUGGLES.no_fire_tracking = 0
+        STRUGGLE_PROGRESS.no_fire_tracking = 0
     end
-    if PLAYER_STRUGGLES.no_fire_tracking >= 1 or
-    PLAYER_STRUGGLES.fire_struggle_asked >= 4 then
+    if STRUGGLE_PROGRESS.no_fire_tracking >= 1 or
+    STRUGGLE_PROGRESS.fire_struggle_asked >= 4 then
         print("Fire is never used or player forgot how!")
         PLAYER_STRUGGLES.no_fire = true
         FROG:wants_to_talk()
         Restart_timer(GAMEPLAY_TIMERS.no_fire_timeout, struggle_reminder_timout)
     end
-    --print("No fire tracking: " .. PLAYER_STRUGGLES.no_fire_tracking)
+    --print("No fire tracking: " .. STRUGGLE_PROGRESS.no_fire_tracking)
 end
 
 
@@ -1063,22 +1067,22 @@ function Check_too_much_fire_struggle()
     -- 1. Heat doesn't fall under a high threshold for a certain amount of time
     -- 2. Flame is kept over a very high threshold for a prolonged period of time
     if GAMEPLAY_STATE.heat_amount > 0.9 then
-        PLAYER_STRUGGLES.too_much_fire_tracking += 0.003
+        STRUGGLE_PROGRESS.too_much_fire_tracking += 0.003
     else
-        PLAYER_STRUGGLES.too_much_fire_tracking -= 0.001
+        STRUGGLE_PROGRESS.too_much_fire_tracking -= 0.001
     end
 
-    PLAYER_STRUGGLES.too_much_fire_tracking = Clamp(PLAYER_STRUGGLES.too_much_fire_tracking, 0, 1)
-    if PLAYER_STRUGGLES.too_much_fire_tracking >= 1 then
+    STRUGGLE_PROGRESS.too_much_fire_tracking = Clamp(PLAYESTRUGGLE_PROGRESS_STRUGGLES.too_much_fire_tracking, 0, 1)
+    if STRUGGLE_PROGRESS.too_much_fire_tracking >= 1 then
         print("Fire is stoked way too much!")
         PLAYER_STRUGGLES.too_much_fire = true
         Shorten_talk_reminder()
         FROG:wants_to_talk()
-        PLAYER_STRUGGLES.too_much_fire_tracking = 0
+        STRUGGLE_PROGRESS.too_much_fire_tracking = 0
         -- timer to stop struggle dialogue
         Restart_timer(GAMEPLAY_TIMERS.too_much_fire_timeout, struggle_reminder_timout)
     end
-    --print("Too much fire tracker: " .. PLAYER_STRUGGLES.too_much_fire_tracking)
+    --print("Too much fire tracker: " .. STRUGGLE_PROGRESS.too_much_fire_tracking)
     --print(GAMEPLAY_STATE.fire_stoke_count)
 end
 
@@ -1126,30 +1130,30 @@ function Check_no_shaking_struggle()
     elseif not PLAYER_STRUGGLES.no_shake then
         if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
             -- Start tracking stirring
-            PLAYER_STRUGGLES.no_shake_tracking += excess_stirring_factor
-            if PLAYER_STRUGGLES.no_shake_tracking > 1 then
+            STRUGGLE_PROGRESS.no_shake_tracking += excess_stirring_factor
+            if STRUGGLE_PROGRESS.no_shake_tracking > 1 then
                 --print("Stirring reached struggling amount.")
                 print("Too much stirring without shaking")
                 PLAYER_STRUGGLES.no_shake = true
                 Shorten_talk_reminder()
                 FROG:wants_to_talk()
                 Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
-                PLAYER_STRUGGLES.no_shake_tracking = 0
+                STRUGGLE_PROGRESS.no_shake_tracking = 0
             end
         elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
             -- New ingredients dropped in. Reset tracked stirring and timeout
-            PLAYER_STRUGGLES.no_shake_tracking = 0
+            STRUGGLE_PROGRESS.no_shake_tracking = 0
             PLAYER_STRUGGLES.no_shake = false
             print("Shaking struggle canceled")
             GAMEPLAY_TIMERS.no_shake_timeout:pause()
         end
     end
-    --print("No shake tracking: " .. PLAYER_STRUGGLES.no_shake_tracking)
+    --print("No shake tracking: " .. STRUGGLE_PROGRESS.no_shake_tracking)
 end
 
 function Check_too_much_shaking_struggle()
     -- min combined stirring factor to trigger struggle dialogue
-    local min_stirring = STIR_FACTOR + PLAYER_STRUGGLES.too_much_shaking_tracking
+    local min_stirring = STIR_FACTOR + STRUGGLE_PROGRESS.too_much_shaking_tracking
     if min_stirring < 0.15 and
     not PLAYER_STRUGGLES.too_much_shaking then
         print("Player is struggling with stir")
@@ -1159,13 +1163,13 @@ function Check_too_much_shaking_struggle()
         Restart_timer(GAMEPLAY_TIMERS.too_much_shaking_timeout, struggle_reminder_timout)
         -- Increasing the tracking variable will make sure the frog won't retrigger the dialogue,
         -- unless the player addressed the issue
-        PLAYER_STRUGGLES.too_much_shaking_tracking = 1
-    elseif STIR_FACTOR >= 0.15 and PLAYER_STRUGGLES.too_much_shaking_tracking > 0 then
+        STRUGGLE_PROGRESS.too_much_shaking_tracking = 1
+    elseif STIR_FACTOR >= 0.15 and STRUGGLE_PROGRESS.too_much_shaking_tracking > 0 then
         print("Player shaking struggle was reset")
         -- Reset variables and start tracking struggle again to retrigger later
         PLAYER_STRUGGLES.too_much_shaking = false
         GAMEPLAY_TIMERS.too_much_shaking_timeout:pause()
-        PLAYER_STRUGGLES.too_much_shaking_tracking = 0
+        STRUGGLE_PROGRESS.too_much_shaking_tracking = 0
         --print("Player struggle with stir resolved")
     end
 end
@@ -1184,32 +1188,32 @@ end
 function Check_too_much_stirring_struggle()
     if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
         -- Start tracking stirring
-        PLAYER_STRUGGLES.too_much_stir_tracking += excess_stirring_factor
-        if PLAYER_STRUGGLES.too_much_stir_tracking > 1 then
+        STRUGGLE_PROGRESS.too_much_stir_tracking += excess_stirring_factor
+        if STRUGGLE_PROGRESS.too_much_stir_tracking > 1 then
             --print("Stirring reached struggling amount.")
             PLAYER_STRUGGLES.too_much_stir = true
             Shorten_talk_reminder()
             FROG:wants_to_talk()
             Restart_timer(GAMEPLAY_TIMERS.too_much_stir_timeout, struggle_reminder_timout)
-            PLAYER_STRUGGLES.too_much_stir_tracking = 0
+            STRUGGLE_PROGRESS.too_much_stir_tracking = 0
         end
     elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
         -- New ingredients dropped in. Reset tracked stirring and timeout
-        PLAYER_STRUGGLES.too_much_stir_tracking = 0
+        STRUGGLE_PROGRESS.too_much_stir_tracking = 0
         PLAYER_STRUGGLES.too_much_stir = false
         GAMEPLAY_TIMERS.too_much_stir_timeout:pause()
     end
-    --print("Too much stir tracking: " .. PLAYER_STRUGGLES.too_much_stir_tracking)
+    --print("Too much stir tracking: " .. STRUGGLE_PROGRESS.too_much_stir_tracking)
 end
 
 function Next_recipe_struggle_tip()
     local lines = 4 -- Same as recipe_struggle table
     -- Trigger frog hint line
-    PLAYER_STRUGGLES.recipe_struggle_lvl = math.fmod(PLAYER_STRUGGLES.recipe_struggle_lvl + 1, lines)
-    if PLAYER_STRUGGLES.recipe_struggle_lvl == 0 then
-        PLAYER_STRUGGLES.recipe_struggle_lvl = lines
+    STRUGGLE_PROGRESS.recipe_struggle_lvl = math.fmod(STRUGGLE_PROGRESS.recipe_struggle_lvl + 1, lines)
+    if STRUGGLE_PROGRESS.recipe_struggle_lvl == 0 then
+        STRUGGLE_PROGRESS.recipe_struggle_lvl = lines
     end
-    print("Giving gameplay hint Nr. " .. PLAYER_STRUGGLES.recipe_struggle_lvl)
+    print("Giving gameplay hint Nr. " .. STRUGGLE_PROGRESS.recipe_struggle_lvl)
     FROG:wants_to_talk()
 
 end
