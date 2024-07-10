@@ -1060,7 +1060,7 @@ function Check_player_struggle()
 end
 
 function Check_no_fire_struggle()
-    if GAMEPLAY_STATE.heat_amount < 0.1 then
+    if GAMEPLAY_STATE.heat_amount < 0.1 and GAMEPLAY_TIMERS.no_fire_timeout.paused then
         STRUGGLE_PROGRESS.no_fire_tracking += 0.0006
     else
         STRUGGLE_PROGRESS.no_fire_tracking = 0
@@ -1071,6 +1071,7 @@ function Check_no_fire_struggle()
         PLAYER_STRUGGLES.no_fire = true
         FROG:wants_to_talk()
         Restart_timer(GAMEPLAY_TIMERS.no_fire_timeout, struggle_reminder_timout)
+        STRUGGLE_PROGRESS.no_fire_tracking = 0
     end
     --print("No fire tracking: " .. STRUGGLE_PROGRESS.no_fire_tracking)
 end
@@ -1079,7 +1080,7 @@ end
 function Check_too_much_fire_struggle()
     -- 1. Heat doesn't fall under a high threshold for a certain amount of time
     -- 2. Flame is kept over a very high threshold for a prolonged period of time
-    if GAMEPLAY_STATE.heat_amount > 0.9 then
+    if GAMEPLAY_STATE.heat_amount > 0.9 and GAMEPLAY_TIMERS.too_much_fire_timeout.paused then
         STRUGGLE_PROGRESS.too_much_fire_tracking += 0.003
     else
         STRUGGLE_PROGRESS.too_much_fire_tracking -= 0.001
