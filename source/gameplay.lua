@@ -160,7 +160,9 @@ GAMEPLAY_TIMERS = {
         end),
     frog_go_urgent = playdate.timer.new(100, function()
         FROG:start_animation(FROG.anim_urgent)
-        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, 6*1000)
+        end),
+    frog_go_urgent_end = playdate.timer.new(100, function()
+        FROG:start_animation(FROG.anim_urgent_end)
         end),
     thought_bubble_anim = playdate.timer.new(100, function()
         THOUGHT_BUBBLE_ANIM = ANIMATIONS.thought_bubble

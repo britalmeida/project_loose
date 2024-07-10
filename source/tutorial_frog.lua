@@ -159,8 +159,10 @@ function Froggo:init()
     self.anim_eyeball       = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
     self.anim_frogfire      = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-frogfire'), true)
     self.anim_facepalm      = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-facepalm'), true)
-    self.anim_urgent        = animloop.new(10 * frame_ms, gfxit.new('images/frog/animation-urgent'), true)
-    self.anim_urgent_start  = animloop.new(5 * frame_ms, gfxit.new('images/frog/animation-urgent_start'), true)
+    self.anim_urgent        = animloop.new(3.75 * frame_ms, gfxit.new('images/frog/animation-urgent'), true)
+    self.anim_urgent_start  = animloop.new(3.75 * frame_ms, gfxit.new('images/frog/animation-urgent_start'), true)
+    self.anim_urgent_end    = animloop.new(6 * frame_ms, gfxit.new('images/frog/animation-urgent_end'), true)
+
 
 
     self:setZIndex(Z_DEPTH.frog)
@@ -298,15 +300,25 @@ end
 
 function Froggo:wants_to_talk()
     self.state = ACTION_STATE.reacting
-    self:flash_b_prompt(6*1000)
+
+    local total_time = 6*1000
+
+    self:flash_b_prompt(total_time)
 
     -- IF the frog is not automatically speaking anyway or the game is over:
     -- Start with a very brief intro animation for the animation loop. Once ended, trigger urgent loop
     if GAMEPLAY_STATE.asked_frog_count >= FROG_AUTOMATED and not GAME_ENDED then
         local duration = (self.anim_urgent_start.delay * self.anim_urgent_start.endFrame) - 50
+
         self:stop_speech_bubble()
+
+        -- Sequence of animation transitions, ending with going idle
         self:start_animation(self.anim_urgent_start)
         Restart_timer(GAMEPLAY_TIMERS.frog_go_urgent, duration)
+        duration = total_time - duration
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_urgent_end, duration)
+        duration += self.anim_urgent_end.delay + 100
+        Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, duration)
     end
 end
 
