@@ -186,6 +186,9 @@ GAMEPLAY_TIMERS = {
     cocktail_struggle_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.cocktail_struggle = false
         end),
+    recipe_struggle_timeout = playdate.timer.new(100, function ()
+        PLAYER_STRUGGLES.recipe_struggle = false
+        end),
     no_fire_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.no_fire = false
         end),
@@ -1037,8 +1040,14 @@ function Check_player_struggle()
         PLAYER_STRUGGLES.recipe_struggle = true
         Shorten_talk_reminder()
         Next_recipe_struggle_tip()
-    -- Reset so the sturggle can be detected and triggered again
-    elseif not RECIPE_STRUGGLE_STEPS then
+        print("Giving gameplay hint Nr. " .. STRUGGLE_PROGRESS.recipe_struggle_lvl)
+        -- Only when not cycling through dialogue, use the urgent reaction of the frog
+        if RECIPE_STRUGGLE_STEPS == true then
+            FROG:wants_to_talk()
+            Restart_timer(GAMEPLAY_TIMERS.recipe_struggle_timeout, struggle_reminder_timout)
+        end
+    -- Reset so the struggle can be detected and triggered again
+    elseif not RECIPE_STRUGGLE_STEPS and GAMEPLAY_TIMERS.recipe_struggle_timeout.paused then
         if PLAYER_STRUGGLES.recipe_struggle then
             PLAYER_STRUGGLES.recipe_struggle = false
         end
@@ -1072,7 +1081,7 @@ function Check_too_much_fire_struggle()
         STRUGGLE_PROGRESS.too_much_fire_tracking -= 0.001
     end
 
-    STRUGGLE_PROGRESS.too_much_fire_tracking = Clamp(PLAYESTRUGGLE_PROGRESS_STRUGGLES.too_much_fire_tracking, 0, 1)
+    STRUGGLE_PROGRESS.too_much_fire_tracking = Clamp(STRUGGLE_PROGRESS.too_much_fire_tracking, 0, 1)
     if STRUGGLE_PROGRESS.too_much_fire_tracking >= 1 then
         print("Fire is stoked way too much!")
         PLAYER_STRUGGLES.too_much_fire = true
@@ -1213,8 +1222,6 @@ function Next_recipe_struggle_tip()
     if STRUGGLE_PROGRESS.recipe_struggle_lvl == 0 then
         STRUGGLE_PROGRESS.recipe_struggle_lvl = lines
     end
-    print("Giving gameplay hint Nr. " .. STRUGGLE_PROGRESS.recipe_struggle_lvl)
-    FROG:wants_to_talk()
 
 end
 
