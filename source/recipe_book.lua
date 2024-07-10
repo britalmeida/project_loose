@@ -56,7 +56,7 @@ function Recipe_steps_to_text_success(recipe_steps)
             end
         else
             if recipe_steps[step][2] >= 12 then
-                line = line .. "Stir forever . . ."
+                line = line .. "Stir forever ..."
             elseif recipe_steps[step][2] >= 10 then
                 line = line .. "Stir for a while"
             elseif recipe_steps[step][2] >= 8 then
@@ -223,7 +223,7 @@ function Recipe_draw_success(y, recipe_steps_text)
         y += line_height * 0.5
         if y > 0 and y < 240 then
             if num_steps > TARGET_COCKTAIL.step_ratings[3] then
-                gfx.drawText("Yep . . . that was " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
+                gfx.drawText("Yep ... that was " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
             elseif num_steps > TARGET_COCKTAIL.step_ratings[2] then
                 gfx.drawText("Well done. Just " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
             elseif num_steps > TARGET_COCKTAIL.step_ratings[1] then

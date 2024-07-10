@@ -60,7 +60,7 @@ local need_more_doom <const> = {
     "Missing doom and gloom.", "4",
 }
 local need_less_doom <const> = {
-    "Too grim . . .\nEvil repellent may work?",  "3",
+    "Too grim ...\nEvil repellent may work?",  "3",
 }
 local need_more_weed <const> = {
     "Could use some veggies.",  "6",
@@ -82,7 +82,7 @@ local drop_tutorials <const> = {
     "13",
 }
 local drop_tips <const> = {
-    "Seems a bit excessive . . .\nFewer shakes are also fine.",
+    "Seems a bit excessive ...\nFewer shakes are also fine.",
     "Remember to stir it all in.",
     "11",
 }
