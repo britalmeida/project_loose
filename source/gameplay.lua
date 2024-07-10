@@ -791,12 +791,12 @@ function update_fire()
         local flame_decay = 0.99
         GAMEPLAY_STATE.flame_amount *= flame_decay
 
-        if (GAMEPLAY_STATE.flame_amount > 0.8) then
+        if GAMEPLAY_STATE.flame_amount > 0.8 then
             if not SOUND.fire_blow:isPlaying() or blow_sound_timer.value == 1 then
                 SOUND.fire_blow:playAt(1)
                 blow_sound_timer:remove()
                 blow_sound_timer = playdate.timer.new(1.5 * 1000, 0, 1)
-                    if GAMEPLAY_STATE.heat_amount < 0.2 then
+                    if GAMEPLAY_STATE.heat_amount < 0.5 then
                         FROG:fire_reaction()
                     end
             end
