@@ -481,10 +481,10 @@ function Froggo:think(automated)
         self:select_next_sentence(sayings.tutorial[idx])
 
     else
-        local struggle_lvl = PLAYER_STRUGGLES.recipe_struggle_lvl
+        local struggle_lvl = STRUGGLE_PROGRESS.recipe_struggle_lvl
         -- How often you can cycle through hints before they disappear
-        local struggles_unread = PLAYER_STRUGGLES.struggle_hint_asked < 5
-        local recipe_struggle_unread = PLAYER_STRUGGLES.recipe_hint_asked < 1
+        local struggles_unread = STRUGGLE_PROGRESS.struggle_hint_asked < 5
+        local recipe_struggle_unread = STRUGGLE_PROGRESS.recipe_hint_asked < 1
 
         -- Frustration checks:
         -- PLAYER_STRUGGLES are usually on a timer before set to false again
@@ -528,7 +528,7 @@ function Froggo:think(automated)
 
         -- If they went through struggle tips too much, skip them
         if not struggles_unread then
-            PLAYER_STRUGGLES.struggle_hint_asked = 0
+            STRUGGLE_PROGRESS.struggle_hint_asked = 0
             PLAYER_STRUGGLES.no_fire = false
             PLAYER_STRUGGLES.too_much_fire = false
             PLAYER_STRUGGLES.too_little_fire = false
@@ -628,21 +628,21 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     -- Eventually this triggers a hint message
     if self.last_spoken_sentence_pool == sentence_pool
     and sentence_pool == sayings.help.fire then
-        PLAYER_STRUGGLES.fire_struggle_asked += 1
+        STRUGGLE_PROGRESS.fire_struggle_asked += 1
     elseif self.last_spoken_sentence_pool == sentence_pool
     and any_ingredient_direction then
-        PLAYER_STRUGGLES.ingredient_struggle_asked += 1
+        STRUGGLE_PROGRESS.ingredient_struggle_asked += 1
     -- Check if they already went through struggle/tips
     elseif self.last_spoken_sentence_pool == sentence_pool and
     struggle_tip then
-        PLAYER_STRUGGLES.struggle_hint_asked += 1
+        STRUGGLE_PROGRESS.struggle_hint_asked += 1
     elseif self.last_spoken_sentence_pool == sentence_pool and
     recipe_hint then
-        PLAYER_STRUGGLES.recipe_hint_asked += 1
+        STRUGGLE_PROGRESS.recipe_hint_asked += 1
     else
-        PLAYER_STRUGGLES.fire_struggle_asked = 0
-        PLAYER_STRUGGLES.ingredient_struggle_asked = 0
-        PLAYER_STRUGGLES.struggle_hint_asked = 0
+        STRUGGLE_PROGRESS.fire_struggle_asked = 0
+        STRUGGLE_PROGRESS.ingredient_struggle_asked = 0
+        STRUGGLE_PROGRESS.struggle_hint_asked = 0
     end
 
     -- Set the current sentence variables
