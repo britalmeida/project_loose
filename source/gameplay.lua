@@ -118,6 +118,7 @@ STRUGGLE_PROGRESS = {
     too_little_fire_tracking = 0,
     no_shake_tracking = 0,
     too_much_stir_tracking = 0,
+    too_much_stir_repeated = 0,
     too_much_shaking_tracking = 0,
 }
 
@@ -126,7 +127,7 @@ RECIPE_STRUGGLE_STEPS = nil
 
 -- Constants to detect struggle
 local min_drops_without_stirring <const> = 6
-local excess_stirring_factor <const> = 0.008
+local excess_stirring_factor <const> = 0.005
 local struggle_reminder_timout <const> = 7*1000
 
 
@@ -360,6 +361,7 @@ function Reset_gameplay()
     STRUGGLE_PROGRESS.too_little_fire_tracking = 0
     STRUGGLE_PROGRESS.no_shake_tracking = 0
     STRUGGLE_PROGRESS.too_much_stir_tracking = 0
+    STRUGGLE_PROGRESS. too_much_stir_repeated = 0
     STRUGGLE_PROGRESS.too_much_shaking_tracking = 0
 
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
@@ -1197,24 +1199,39 @@ function Cauldron_ingredient_was_shaken()
 end
 
 function Check_too_much_stirring_struggle()
+
+    -- Increase or reset tracking variables
     if GAMEPLAY_STATE.dropped_ingredients == 0 and math.abs(STIR_SPEED) > 7.5 then
         -- Start tracking stirring
         STRUGGLE_PROGRESS.too_much_stir_tracking += excess_stirring_factor
-        if STRUGGLE_PROGRESS.too_much_stir_tracking > 1 then
-            --print("Stirring reached struggling amount.")
-            PLAYER_STRUGGLES.too_much_stir = true
-            Shorten_talk_reminder()
-            FROG:wants_to_talk()
-            Restart_timer(GAMEPLAY_TIMERS.too_much_stir_timeout, struggle_reminder_timout)
-            STRUGGLE_PROGRESS.too_much_stir_tracking = 0
-        end
     elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
         -- New ingredients dropped in. Reset tracked stirring and timeout
         STRUGGLE_PROGRESS.too_much_stir_tracking = 0
+        STRUGGLE_PROGRESS.too_much_stir_repeated = 0
         PLAYER_STRUGGLES.too_much_stir = false
         GAMEPLAY_TIMERS.too_much_stir_timeout:pause()
     end
+
+    -- Trigger struggle checks
+    if STRUGGLE_PROGRESS.too_much_stir_tracking > 1 then
+        --print("Stirring reached struggling amount.")
+        PLAYER_STRUGGLES.too_much_stir = true
+        Shorten_talk_reminder()
+        FROG:wants_to_talk()
+        Restart_timer(GAMEPLAY_TIMERS.too_much_stir_timeout, struggle_reminder_timout)
+        STRUGGLE_PROGRESS.too_much_stir_tracking = 0
+        STRUGGLE_PROGRESS.too_much_stir_repeated += 1
+    elseif STRUGGLE_PROGRESS.too_much_stir_repeated >=3 then
+        --print("They just keep stirring! Remind them to throw something in.")
+        PLAYER_STRUGGLES.no_shake = true
+        Shorten_talk_reminder()
+        FROG:wants_to_talk()
+        Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
+        STRUGGLE_PROGRESS.too_much_stir_tracking = 0
+        STRUGGLE_PROGRESS.too_much_stir_repeated = 0
+    end
     --print("Too much stir tracking: " .. STRUGGLE_PROGRESS.too_much_stir_tracking)
+    --print("Repeated stir tracking: " .. STRUGGLE_PROGRESS.too_much_stir_repeated)
 end
 
 function Next_recipe_struggle_tip()

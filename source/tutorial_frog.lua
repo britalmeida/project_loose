@@ -77,7 +77,7 @@ local grab_tutorials <const> = {
     "Let it go over the cauldron.",
 }
 local drop_tutorials <const> = {
-    "Place the ingredient over\nthe cauldron and shake!",
+    "Place an ingredient over\nthe cauldron and shake!",
     "Shake, shake. Shake it off!!",
     "13",
 }
