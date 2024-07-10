@@ -1010,7 +1010,7 @@ function Check_player_struggle()
 
     -- Cocktail struggle (Pointing towards cocktail artwork or clues)
     -- If you used too many different ingredients
-    if GAMEPLAY_STATE.used_ingredients > 6 and not PLAYER_STRUGGLES.cocktail_struggle
+    if GAMEPLAY_STATE.used_ingredients > 5 and not PLAYER_STRUGGLES.cocktail_struggle
     and TARGET_COCKTAIL.type_idx < 5 then
         print("Player used too many ingredient types.")
         PLAYER_STRUGGLES.cocktail_struggle = true
