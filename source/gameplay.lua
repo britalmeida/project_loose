@@ -972,7 +972,7 @@ end
 function Check_player_struggle()
 
     -- Only once tutorial is complete
-    if not TUTORIAL_COMPLETED and not Is_potion_good_enough() then
+    if not TUTORIAL_COMPLETED and not Are_ingredients_good_enough() then
         return
     end
 
@@ -1022,7 +1022,7 @@ function Check_player_struggle()
         end
         -- Timeout to stop cocktail hint dialogue
         Restart_timer(GAMEPLAY_TIMERS.cocktail_struggle_timeout, struggle_reminder_timout)
-        FROG:Ask_the_frog()
+        FROG:wants_to_talk()
     end
 
     -- Recipe struggle (General gameplay hints)
@@ -1210,7 +1210,7 @@ function Next_recipe_struggle_tip()
         PLAYER_STRUGGLES.recipe_struggle_lvl = lines
     end
     print("Giving gameplay hint Nr. " .. PLAYER_STRUGGLES.recipe_struggle_lvl)
-    FROG:Ask_the_frog()
+    FROG:wants_to_talk()
 
 end
 
