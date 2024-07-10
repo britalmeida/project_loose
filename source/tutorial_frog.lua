@@ -223,6 +223,7 @@ end
 -- Events for transition
 
 function Froggo:Ask_the_frog(automated)
+    self:stop_urgent_animations()
     if self.state == ACTION_STATE.idle or self.state == ACTION_STATE.reacting then
         -- Possibly interrupt an emoting animation.
         -- Start speaking.
@@ -320,6 +321,14 @@ function Froggo:wants_to_talk()
         duration += self.anim_urgent_end.delay + 100
         Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, duration)
     end
+end
+
+
+function Froggo:stop_urgent_animations()
+    -- Make sure the sequence of anim timers are stopped
+    GAMEPLAY_TIMERS.frog_go_urgent:pause()
+    GAMEPLAY_TIMERS.frog_go_urgent_end:pause()
+    GAMEPLAY_TIMERS.frog_go_idle:pause()
 end
 
 
