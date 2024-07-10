@@ -413,7 +413,7 @@ local function draw_liquid_bubbles()
 
             if Bubbles_types[x] > 0 then
                 -- This is the spot for adding a factor. Might need to split the bubble sinking time from drop sprites.
-                local sink = sin(GAMEPLAY_STATE.game_tick / TWO_PI * 0.7 + Bubbles_tick_offset[x]) * 0.3 + (anim_tick / anim_length)
+                local sink = sin(GAMEPLAY_STATE.game_tick / TWO_PI * 0.7 + Bubbles_tick_offset[x]) * 0.1 + (anim_tick / anim_length)
                 local drop_sprite = INGREDIENT_TYPES[Bubbles_types[x]].drop
                 local offset_y = drop_sprite.height * sink
                 local mask = geo.rect.new(0, 0, drop_sprite.width, drop_sprite.height - offset_y)
