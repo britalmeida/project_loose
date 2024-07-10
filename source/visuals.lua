@@ -648,11 +648,11 @@ local function draw_ui_prompts()
     local min_y_offset = 240
     local shift_speed = 1.5
 
-    -- If hovering over the prompt, start expanding it for 10 seconds
-    if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos:unpack()) then
+    -- If grabbing the prompt, start expanding it for 10 seconds
+    if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos:unpack()) and
+    playdate.buttonIsPressed( playdate.kButtonA ) then
         GAMEPLAY_STATE.instructions_prompt_expanded = true
         Restart_timer(GAMEPLAY_TIMERS.instructions_expanded, 10*1000)
-        -- if done for the first time, enable the arrow buttons?
     end
 
     -- iteratively move the instructions_offset_y
