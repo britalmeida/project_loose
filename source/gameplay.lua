@@ -86,9 +86,10 @@ PREV_RUNE_COUNT = {0, 0, 0}
 CHECK_IF_DELICIOUS = false
 
 PLAYER_LEARNED = {
-    how_to_fire = false,
     how_to_grab = false,
+    how_to_release = false,
     how_to_shake = false,
+    how_to_fire = false,
     how_to_stir = false,
 }
 
@@ -334,10 +335,10 @@ function Reset_gameplay()
         Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
     end
 
-    PLAYER_LEARNED.how_to_fire = false
     PLAYER_LEARNED.how_to_grab = false
     PLAYER_LEARNED.how_to_release = false
     PLAYER_LEARNED.how_to_shake = false
+    PLAYER_LEARNED.how_to_fire = false
     PLAYER_LEARNED.how_to_stir = false
 
     TUTORIAL_COMPLETED = false
