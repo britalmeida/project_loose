@@ -146,7 +146,9 @@ function Recipe_draw_success(y, recipe_steps_text)
     local insert_height <const> = TEXTURES.recipe_middle[1].height
     local number_of_inserts <const> = math.ceil(((number_of_lines * line_height) + text_y - TEXTURES.recipe_top.height ) / insert_height)
 
-    -- Set consistent random seed based on recipe length
+    -- FIXME: this makes the game not random anymore.
+    -- Recipe backgrounds should be picked based on recipe/length or something that doesn't vary every frame.
+    -- Removing this needs checks that everywhere else where random() is used won't introduce new problems.
     math.randomseed(num_steps)
 
     local y_paper_top <const> = 0 -- margin from the recipe to the top of the screen.
