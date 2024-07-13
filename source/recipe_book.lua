@@ -32,41 +32,57 @@ end
 
 
 -- Generate recipe text from the list of steps.
-function Recipe_steps_to_text_success(recipe_steps)
+function Recipe_steps_to_text(recipe_steps)
 
     local text_lines = {}
+    -- Pre-size the array to the necessary number of text line steps to avoid resizes.
+    table.setn(#recipe_steps)
 
-    for step = 1, #recipe_steps, 1 do
-        local line = "" .. tostring(step) .. ". "
-        local step_type = recipe_steps[step][1]
+    -- Construct a text line for each recipe step. e.g.:
+    -- "1. Add 3 peppermints"
+    for i = 1, #recipe_steps, 1 do
+        -- Line starts with step number.
+        local line = "" .. tostring(i) .. ". "
+
+        local step_type = recipe_steps[i][1]
+        local quantity = recipe_steps[i][2]
         if step_type > 0 then
-            if recipe_steps[step][2] == 1 then
-                line = line .. "Add a"
+            -- Step type: added an ingredient.
+            local ingredient_name = INGREDIENT_TYPES[step_type].drop_name
+
+            if quantity == 1 then
+                line = line .. "Add a "
             else
-                line = line .. "Add " .. recipe_steps[step][2]
+                line = line .. "Add " .. quantity .. " "
             end
-            if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
-                line = line .. " pinches of"
-            elseif INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] == 1 then
-                line = line .. " pinch of"
-            end
-            line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
-            if recipe_steps[step][2] > 1 and INGREDIENT_TYPES[step_type].drop_name ~= "salt" then
-                line = line .. "s"
+            if ingredient_name == "salt" then
+                if quantity > 1 then
+                    line = line .. "pinches"
+                else
+                    line = line .. "pinch"
+                end
+                line = line .. " of " .. ingredient_name
+            else
+                line = line .. ingredient_name
+                if quantity > 1 then
+                    line = line .. "s"
+                end
             end
         else
-            if recipe_steps[step][2] >= 12 then
+            -- Step type: stirred.
+            if quantity >= 12 then
                 line = line .. "Stir forever ..."
-            elseif recipe_steps[step][2] >= 10 then
+            elseif quantity >= 10 then
                 line = line .. "Stir for a while"
-            elseif recipe_steps[step][2] >= 8 then
+            elseif quantity >= 8 then
                 line = line .. "Stir it a lot"
-            elseif recipe_steps[step][2] >= 5 then
+            elseif quantity >= 5 then
                 line = line .. "Stir it in"
-            elseif recipe_steps[step][2] < 5 then
+            else
                 line = line .. "Stir a bit"
             end
         end
+
         text_lines[#text_lines+1] = line
     end
 
@@ -74,49 +90,9 @@ function Recipe_steps_to_text_success(recipe_steps)
 end
 
 
-function Recipe_steps_to_text_menu(recipe_steps)
-    if recipe_steps == nil then
-        return {}
-    elseif next(recipe_steps) == nil then
-        return {}
-    end
-    local text_lines = {}
-    for step = 1, #recipe_steps, 1 do
-        local test = recipe_steps[step]
-        local step_type = recipe_steps[step][1]
-        local line = ""
-        line = "-"
-        if step_type > 0 then
-            line = line .. recipe_steps[step][2]
-            if INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] > 1 then
-                line = line .. " pinches of "
-            elseif INGREDIENT_TYPES[step_type].drop_name == "salt" and recipe_steps[step][2] == 1 then
-                line = line .. " pinch of "
-            end
-            line = line .. " " .. INGREDIENT_TYPES[step_type].drop_name
-            if recipe_steps[step][2] > 1 and INGREDIENT_TYPES[step_type].drop_name ~= "salt" then
-                line = line .. "s"
-            end
-        else
-            if recipe_steps[step][2] >= 12 then
-                line = line .. "stir forever . . ."
-            elseif recipe_steps[step][2] >= 10 then
-                line = line .. "stir for a while"
-            elseif recipe_steps[step][2] >= 8 then
-                line = line .. "stir it a lot"
-            elseif recipe_steps[step][2] >= 5 then
-                line = line .. "stir it in"
-            elseif recipe_steps[step][2] < 5 then
-                line = line .. "stir a bit"
-            end
-        end
-        text_lines[#text_lines+1] = line
-    end
-    return text_lines
-end
 
 function Recipe_update_current()
-    RECIPE_TEXT = Recipe_steps_to_text_success(Recipe_to_steps(CURRENT_RECIPE))
+    RECIPE_TEXT = Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE))
     RECIPE_TEXT_SMALL = (Recipe_to_steps(CURRENT_RECIPE))
     -- The steps where the frog speaks up and gives a hint (20th step and then ever 15 steps)
     RECIPE_STRUGGLE_STEPS = #RECIPE_TEXT_SMALL >= 20 and math.fmod(#RECIPE_TEXT_SMALL - 20, 15) == 0
