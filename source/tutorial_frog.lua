@@ -8,7 +8,7 @@ local animloop <const> = playdate.graphics.animation.loop
 --- The Action State indicates what the frog is currently doing, e.g. speaking or emoting/reacting.
 --- It ensures animations play to completion, and valid transitions (e.g. no emoting when already speaking).
 --- The Frog is always in one and only one state and changes state on events (e.g. player pressed B, time passed).
-local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, drinking = 3 }
+local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, alarmed = 3, drinking = 4 }
 
 -- Froggo content machine
 --- A separate multi-level state machine to select the sentence the frog says when speaking.
@@ -224,7 +224,7 @@ end
 
 function Froggo:Ask_the_frog(automated)
     self:stop_urgent_animations()
-    if self.state == ACTION_STATE.idle or self.state == ACTION_STATE.reacting then
+    if self.state == ACTION_STATE.idle or self.state == ACTION_STATE.reacting or ACTION_STATE.alarmed then
         -- Possibly interrupt an emoting animation.
         -- Start speaking.
         self:think(automated)
@@ -297,7 +297,7 @@ end
 
 
 function Froggo:wants_to_talk()
-    self.state = ACTION_STATE.reacting
+    self.state = ACTION_STATE.alarmed
 
     local total_time = 6*1000
 
@@ -338,7 +338,7 @@ end
 
 
 function Froggo:fire_reaction()
-    self.state = ACTION_STATE.reacting
+    self.state = ACTION_STATE.alarmed
     self:start_animation(self.anim_frogfire)
     self:prepare_to_idle()
 end
@@ -395,7 +395,7 @@ end
 
 
 function Froggo:froggo_tickleface()
-    self.state = ACTION_STATE.reacting
+    self.state = ACTION_STATE.alarmed
     self:start_animation(self.anim_tickleface)
     self:prepare_to_idle(2.9*1000)
 end
