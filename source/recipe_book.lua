@@ -72,6 +72,18 @@ function Recipe_steps_to_text(recipe_steps, is_win_recipe)
                     line = line .. "pinch"
                 end
                 line = line .. " of " .. ingredient_name
+            elseif ingredient_name == "perfume" and is_win_recipe then
+                if quantity > 1 then
+                    line = line .. "drops"
+                else
+                    line = line .. "drop"
+                end
+                line = line .. " of " .. ingredient_name
+            elseif ingredient_name == "perfume" and not is_win_recipe then
+                line = line .. ingredient_name .. " drop"
+                if quantity > 1 then
+                    line = line .. "s"
+                end
             else
                 line = line .. ingredient_name
                 if quantity > 1 then
