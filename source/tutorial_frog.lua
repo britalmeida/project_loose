@@ -301,7 +301,7 @@ function Froggo:wants_to_talk()
 
     local total_time = 6*1000
 
-    -- IF the frog is not automatically speaking anyway or the game is over:
+    -- Unless the game is over:
     -- Start with a very brief intro animation for the animation loop. Once ended, trigger urgent loop
     if not GAME_ENDED then
         local duration = (self.anim_urgent_start.delay * self.anim_urgent_start.endFrame) - 50
@@ -311,6 +311,7 @@ function Froggo:wants_to_talk()
         -- Sequence of animation transitions, ending with going idle
         self:start_animation(self.anim_urgent_start)
         Restart_timer(GAMEPLAY_TIMERS.frog_go_urgent, duration)
+        -- Make this only 2 seconds long if frog is automated. Then make the frog speak up
         if GAMEPLAY_STATE.asked_frog_count < FROG_AUTOMATED then
             duration = 2*1000
             total_time = duration

@@ -640,11 +640,9 @@ local function draw_cauldron_front()
     if STIR_SPEED > min_stir_speed and splish_left_detected and splish_left_paused then
         Restart_timer(GAMEPLAY_TIMERS.splish_left, splish_duration)
         ANIMATIONS.splish.left.frame = 1
-        print("Starting splish left")
     elseif STIR_SPEED > min_stir_speed and splish_right_detected and splish_right_paused then
         Restart_timer(GAMEPLAY_TIMERS.splish_right, splish_duration)
         ANIMATIONS.splish.right.frame = 1
-        print("Starting splish right")
     end
     gfx.pushContext()
     if not splish_left_paused then
