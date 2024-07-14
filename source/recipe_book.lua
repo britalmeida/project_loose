@@ -89,7 +89,7 @@ function Recipe_steps_to_text(recipe_steps, is_win_recipe)
             elseif quantity >= 5 then
                 line = line .. "Stir it in"
             else
-                line = line .. "Stir a bit"
+                line = line .. "Stir just a bit"
             end
         end
 
