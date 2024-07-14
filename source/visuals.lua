@@ -628,6 +628,32 @@ local function draw_cauldron_front()
             ANIMATIONS.flame.ember:draw(10, 0)
         end
     gfx.popContext()
+
+    -- Draw splish animations
+    local splish_detect_area <const> = 0.3
+    local min_stir_speed <const> = 20
+    local splish_right_detected <const> = STIR_POSITION > PI/2 - splish_detect_area and STIR_POSITION < PI/2 + splish_detect_area
+    local splish_left_detected <const> = STIR_POSITION > PI*1.5 - splish_detect_area and STIR_POSITION < PI*1.5 + splish_detect_area
+    local splish_duration <const> = ANIMATIONS.splish.right.delay * ANIMATIONS.splish.right.endFrame - 33
+    local splish_left_paused <const> = GAMEPLAY_TIMERS.splish_left.paused
+    local splish_right_paused <const> = GAMEPLAY_TIMERS.splish_right.paused
+    if STIR_SPEED > min_stir_speed and splish_left_detected and splish_left_paused then
+        Restart_timer(GAMEPLAY_TIMERS.splish_left, splish_duration)
+        ANIMATIONS.splish.left.frame = 1
+        print("Starting splish left")
+    elseif STIR_SPEED > min_stir_speed and splish_right_detected and splish_right_paused then
+        Restart_timer(GAMEPLAY_TIMERS.splish_right, splish_duration)
+        ANIMATIONS.splish.right.frame = 1
+        print("Starting splish right")
+    end
+    gfx.pushContext()
+    if not splish_left_paused then
+        ANIMATIONS.splish.left:draw(25, 120)
+    end
+    if not splish_right_paused then
+        ANIMATIONS.splish.right:draw(220, 130)
+    end
+    gfx.popContext()
 end
 
 
@@ -847,6 +873,10 @@ function Init_visuals()
         small  = animloop.new(3.75 * frame_ms, gfxit.new("images/fx/stirring_bubble_small"), true),
         big  = animloop.new(3.75 * frame_ms, gfxit.new("images/fx/stirring_bubble_big"), true),
         puff  = animloop.new(3.75 * frame_ms, gfxit.new("images/fx/stirring_bubble_puff"), true),
+    }
+    ANIMATIONS.splish = {
+        left  = animloop.new(3.125 * frame_ms, gfxit.new("images/fx/cauldron_splish_left"), true),
+        right = animloop.new(3.125 * frame_ms, gfxit.new("images/fx/cauldron_splish_right"), true),
     }
     TEXTURES.flame_buildup = gfxi.new("images/fx/buildupflame")
     ANIMATIONS.flame = {

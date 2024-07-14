@@ -221,6 +221,12 @@ GAMEPLAY_TIMERS = {
         Set_target_potion(MENU_STATE.focused_option + 1)
         Enter_gameplay()
     end),
+    splish_left = playdate.timer.new(100, function ()
+        GAMEPLAY_TIMERS.splish_left:pause()
+    end),
+    splish_right = playdate.timer.new(100, function ()
+        GAMEPLAY_TIMERS.splish_right:pause()
+    end),
 }
 -- Make sure none of the gameplay timers are removed on completion
 for k in pairs(GAMEPLAY_TIMERS) do
