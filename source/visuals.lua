@@ -630,8 +630,8 @@ local function draw_cauldron_front()
     gfx.popContext()
 
     -- Draw splish animations
-    local splish_detect_area <const> = 0.3
-    local min_stir_speed <const> = 20
+    local splish_detect_area <const> = 0.4
+    local min_stir_speed <const> = 35
     local splish_right_detected <const> = STIR_POSITION > PI/2 - splish_detect_area and STIR_POSITION < PI/2 + splish_detect_area
     local splish_left_detected <const> = STIR_POSITION > PI*1.5 - splish_detect_area and STIR_POSITION < PI*1.5 + splish_detect_area
     local splish_duration <const> = ANIMATIONS.splish.right.delay * ANIMATIONS.splish.right.endFrame - 33
@@ -646,7 +646,7 @@ local function draw_cauldron_front()
     end
     gfx.pushContext()
     if not splish_left_paused then
-        ANIMATIONS.splish.left:draw(25, 120)
+        ANIMATIONS.splish.left:draw(27, 122)
     end
     if not splish_right_paused then
         ANIMATIONS.splish.right:draw(220, 130)
@@ -873,8 +873,8 @@ function Init_visuals()
         puff  = animloop.new(3.75 * frame_ms, gfxit.new("images/fx/stirring_bubble_puff"), true),
     }
     ANIMATIONS.splish = {
-        left  = animloop.new(3.125 * frame_ms, gfxit.new("images/fx/cauldron_splish_left"), true),
-        right = animloop.new(3.125 * frame_ms, gfxit.new("images/fx/cauldron_splish_right"), true),
+        left  = animloop.new(3.5 * frame_ms, gfxit.new("images/fx/cauldron_splish_left"), true),
+        right = animloop.new(3.5 * frame_ms, gfxit.new("images/fx/cauldron_splish_right"), true),
     }
     TEXTURES.flame_buildup = gfxi.new("images/fx/buildupflame")
     ANIMATIONS.flame = {
