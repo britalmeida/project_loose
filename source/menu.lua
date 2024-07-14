@@ -115,7 +115,7 @@ function Load_high_scores()
     for a = 1, #COCKTAILS, 1 do
         local cocktail_name = COCKTAILS[a].name
         FROGS_FAVES_STEPS[cocktail_name] = Recipe_to_steps(FROGS_FAVES.recipes[cocktail_name])
-        FROGS_FAVES_TEXT[cocktail_name] = Recipe_steps_to_text(FROGS_FAVES_STEPS[cocktail_name])
+        FROGS_FAVES_TEXT[cocktail_name] = Recipe_steps_to_text(FROGS_FAVES_STEPS[cocktail_name], false)
     end
 end
 

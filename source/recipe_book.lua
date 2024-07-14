@@ -32,17 +32,25 @@ end
 
 
 -- Generate recipe text from the list of steps.
-function Recipe_steps_to_text(recipe_steps)
+function Recipe_steps_to_text(recipe_steps, is_win_recipe)
 
     local text_lines = {}
     -- Pre-size the array to the necessary number of text line steps to avoid resizes.
-    table.setn(#recipe_steps)
+    --commented out for now until it works.
+    -- table.setn(#recipe_steps)
 
     -- Construct a text line for each recipe step. e.g.:
-    -- "1. Add 3 peppermints"
+    -- "1. Add 3 peppermints" or "- 3 peppermints"
+    -- The style depends on the type of recipe screen
     for i = 1, #recipe_steps, 1 do
-        -- Line starts with step number.
-        local line = "" .. tostring(i) .. ". "
+        local line = ""
+        if is_win_recipe then
+            -- Line starts with step number.
+            line = tostring(i) .. ". "
+        else
+            -- Line starts with a dash
+            line = "- "
+        end
 
         local step_type = recipe_steps[i][1]
         local quantity = recipe_steps[i][2]
@@ -50,10 +58,12 @@ function Recipe_steps_to_text(recipe_steps)
             -- Step type: added an ingredient.
             local ingredient_name = INGREDIENT_TYPES[step_type].drop_name
 
-            if quantity == 1 then
+            if is_win_recipe and quantity == 1 then
                 line = line .. "Add a "
-            else
+            elseif is_win_recipe and quantity > 1 then
                 line = line .. "Add " .. quantity .. " "
+            elseif not is_win_recipe then
+                line = line .. quantity .. " "
             end
             if ingredient_name == "salt" then
                 if quantity > 1 then
@@ -92,7 +102,7 @@ end
 
 
 function Recipe_update_current()
-    RECIPE_TEXT = Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE))
+    RECIPE_TEXT = Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE), true)
     RECIPE_TEXT_SMALL = (Recipe_to_steps(CURRENT_RECIPE))
     -- The steps where the frog speaks up and gives a hint (20th step and then ever 15 steps)
     RECIPE_STRUGGLE_STEPS = #RECIPE_TEXT_SMALL >= 20 and math.fmod(#RECIPE_TEXT_SMALL - 20, 15) == 0
