@@ -164,6 +164,8 @@ end
 -- Menu State Transitions
 
 function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
+    local prev_menu_state = MENU_STATE.screen
+
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0
     MENU_STATE.first_option_in_view = 0
@@ -182,6 +184,9 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
     end
+    if prev_menu_state == MENU_SCREEN.mission then
+        SOUND.into_main_menu:play()
+    end
 
     -- Reset menu positions if needed
     global_origin[1], global_origin[2] = new_global_x, new_global_y
@@ -189,6 +194,7 @@ end
 
 
 function enter_menu_mission(enter_from_gameplay)
+    local prev_menu_state = MENU_STATE.screen
 
     Load_high_scores()
     add_system_menu_entries_cocktails()
@@ -227,6 +233,9 @@ function enter_menu_mission(enter_from_gameplay)
         Sticker_slap()
     else
         MENU_STATE.screen = MENU_SCREEN.mission
+    end
+    if prev_menu_state == MENU_SCREEN.start then
+        SOUND.into_cocktail_menu:play()
     end
 
 end
