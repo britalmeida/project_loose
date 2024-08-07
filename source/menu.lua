@@ -150,6 +150,9 @@ function Launch_menu_start()
     -- Start launch animation
     UI_TEXTURES.launch.frame = 1
 
+    -- Start sounds
+    SOUND.folding_close:play()
+
     -- After the launch animation is finished
     playdate.timer.new(duration, function ()
         Enter_menu_start(0, 0, true)

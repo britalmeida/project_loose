@@ -5,3 +5,4 @@ bundleID=com.playjam.frogotten
 version=1.0.0
 buildNumber=1
 imagePath=images/launcher
+launchSoundPath=sound/folding_open

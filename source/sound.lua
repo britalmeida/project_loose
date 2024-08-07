@@ -11,4 +11,6 @@ SOUND = {
   bg_loop_menu = fp.new("sound/menu_music_loop"),
   bg_loop_gameplay = fp.new("sound/gameplay_music_loop"),
   menu_confirm = sp.new("sound/menu_item_confirm"),
+  folding_open = sp.new("sound/folding_open"),
+  folding_close = sp.new("sound/folding_close"),
 }
