@@ -132,6 +132,7 @@ end
 
 function Selection_finger()
     MENU_STATE.screen = MENU_SCREEN.mission_confirm
+    SOUND.finger_double_tap:play()
     -- Set start and timer for anim
     -- Once that timer ends, gameplay is started
     local duration = UI_TEXTURES.selection_finger.delay * UI_TEXTURES.selection_finger.endFrame

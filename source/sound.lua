@@ -13,4 +13,5 @@ SOUND = {
   menu_confirm = sp.new("sound/menu_item_confirm"),
   folding_open = sp.new("sound/folding_open"),
   folding_close = sp.new("sound/folding_close"),
+  finger_double_tap = sp.new("sound/finger_double_tap_frog"),
 }
