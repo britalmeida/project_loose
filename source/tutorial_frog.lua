@@ -361,7 +361,9 @@ end
 
 
 function Froggo:go_idle()
+
     self.state = ACTION_STATE.idle
+    self:stop_frog_sounds()
     self:start_animation(self.anim_idle)
 end
 
@@ -428,6 +430,12 @@ end
 -- Actions
 
 function Froggo:croak()
+    -- Start sound
+    if not SOUND.frog_talk:isPlaying() then
+        -- Looping frog talking sound. Will be stopped when going back to idle
+        SOUND.frog_talk:play(0)
+    end
+
     -- Speak!
     self.state = ACTION_STATE.speaking
 
@@ -765,5 +773,13 @@ function Froggo:animation_tick()
     if self.anim_current then
         self:setImage(self.anim_current:image())
         self:moveTo(350 + self.x_offset, 148 + self.y_offset)
+    end
+end
+
+
+function Froggo:stop_frog_sounds()
+    -- Stops any frog sounds that could be playing.
+    if SOUND.frog_talk:isPlaying() then
+        SOUND.frog_talk:stop()
     end
 end
