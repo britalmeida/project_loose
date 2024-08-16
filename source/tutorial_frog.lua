@@ -240,7 +240,7 @@ end
 
 function Froggo:Ask_the_frog(automated)
     self:stop_urgent_animations()
-    if self.state == ACTION_STATE.idle or self.state == ACTION_STATE.reacting or ACTION_STATE.alarmed then
+    if self.state == ACTION_STATE.idle or self.state == ACTION_STATE.reacting or self.state == ACTION_STATE.alarmed then
         -- Possibly interrupt an emoting animation.
         -- Start speaking.
         self:think(automated)
