@@ -16,6 +16,16 @@ SOUND = {
   finger_double_tap = sp.new("sound/finger_double_tap_frog"),
   into_cocktail_menu = sp.new("sound/into_cocktail_menu_slide"),
   into_main_menu = sp.new("sound/into_main_menu_slide"),
-  frog_talk = sp.new("sound/frog_blabla"),
-  frog_excited = sp.new("sound/frog_excited"),
+}
+
+FROG_SOUND = {
+	speaking 	= sp.new("sound/frog_blabla"),
+	excited 	= sp.new("sound/frog_excited"),
+	headshake 	= sp.new("sound/frog_excited"),
+	facepalm 	= sp.new("sound/frog_excited"),
+	tickleface 	= sp.new("sound/frog_excited"),
+	urgent 		= sp.new("sound/frog_excited"),
+	eyelick 	= sp.new("sound/frog_excited"),
+	drinking 	= sp.new("sound/frog_excited"),
+	burp 		= sp.new("sound/frog_excited"),
 }

@@ -10,6 +10,21 @@ local animloop <const> = playdate.graphics.animation.loop
 --- The Frog is always in one and only one state and changes state on events (e.g. player pressed B, time passed).
 local ACTION_STATE <const> = { idle = 0, speaking = 1, reacting = 2, alarmed = 3, drinking = 4 }
 
+-- Froggo sounds state machine
+---- Each sound the frog makes is mutually exclusive. Some loop. All can be interrupted by another.
+local SOUND_STATE <const> = {
+    silent      = 0,
+    speaking    = 1,
+    excited     = 2,
+    headshake   = 3,
+    facepalm   = 4,
+    tickleface  = 5,
+    urgent      = 6,
+    eyelick     = 7,
+    drinking    = 8,
+    burp        = 9,
+}
+
 -- Froggo content machine
 --- A separate multi-level state machine to select the sentence the frog says when speaking.
 local TUTORIAL_STATE <const> = { start = 1, grab = 1, shake = 2, fire = 3, stir = 4, complete = 5 }
@@ -181,6 +196,7 @@ function Froggo:reset()
     self.y_offset = 0
 
     -- Reset speech content state machine.
+    self.sound_state = SOUND_STATE.silent
     self.tutorial_state = TUTORIAL_STATE.start
     self.last_spoken_sentence_topic = nil
     self.last_spoken_sentence_pool = nil
@@ -286,6 +302,8 @@ function Froggo:Lick_eyeballs()
         -- - The potion was good already, some new ingredients were thrown in but it should still be the same
         if (Is_potion_good_enough() and CHECK_IF_DELICIOUS) or
         (Are_ingredients_good_enough() and CHECK_IF_DELICIOUS and rune_count_unchanged) then
+            self.sound_state = SOUND_STATE.eyelick
+            self:set_frog_sounds()
             self:flash_b_prompt(60*1000)
             self:start_animation(self.anim_eyeball)
             self.x_offset = -11
@@ -307,6 +325,9 @@ function Froggo:wants_to_talk()
         local duration = (self.anim_urgent_start.delay * self.anim_urgent_start.endFrame) - 50
 
         self:stop_speech_bubble()
+        
+        self.sound_state = SOUND_STATE.urgent
+        self:set_frog_sounds()
 
         -- Sequence of animation transitions, ending with going idle
         self:start_animation(self.anim_urgent_start)
@@ -339,6 +360,8 @@ end
 
 function Froggo:fire_reaction()
     self.state = ACTION_STATE.alarmed
+    self.sound_state = SOUND_STATE.silent
+    self:set_frog_sounds()
     self:start_animation(self.anim_frogfire)
     self:prepare_to_idle()
 end
@@ -363,7 +386,8 @@ end
 function Froggo:go_idle()
 
     self.state = ACTION_STATE.idle
-    self:stop_frog_sounds()
+    self.sound_state = SOUND_STATE.silent
+    self:set_frog_sounds()
     self:start_animation(self.anim_idle)
 end
 
@@ -374,20 +398,31 @@ function Froggo:go_reacting()
     if self.anim_current == self.anim_eyeball and TUTORIAL_COMPLETED then
         local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
 
+        self.sound_state = SOUND_STATE.facepalm
+        self:set_frog_sounds()
+
         self:start_animation(self.anim_facepalm)
         self.x_offset = -10
         self.y_offset = 9
         self:prepare_to_idle(runtime)
     elseif self.anim_current == self.anim_eyeball and not TUTORIAL_COMPLETED then
+        self.sound_state = SOUND_STATE.headshake
+        self:set_frog_sounds()
+
         self:start_animation(self.anim_headshake)
         self:prepare_to_idle()
 
     -- Otherwise react to ingredient direction
     elseif TREND > 0 and TUTORIAL_COMPLETED then
+        self.sound_state = SOUND_STATE.excited
+        self:set_frog_sounds()
+
         self:start_animation(self.anim_happy)
-        SOUND.frog_excited:play()
         self:prepare_to_idle()
     elseif TREND < 0 and TUTORIAL_COMPLETED then
+        self.sound_state = SOUND_STATE.headshake
+        self:set_frog_sounds()
+
         self:start_animation(self.anim_headshake)
         self:prepare_to_idle()
     else
@@ -399,6 +434,8 @@ end
 
 function Froggo:froggo_tickleface()
     self.state = ACTION_STATE.alarmed
+    self.sound_state = SOUND_STATE.tickleface
+    self:set_frog_sounds()
     self:start_animation(self.anim_tickleface)
     self:prepare_to_idle(2.9*1000)
 end
@@ -415,6 +452,8 @@ function Froggo:go_drinking()
     local runtime = 0
 
     self.state = ACTION_STATE.drinking
+    self.sound_state = SOUND_STATE.drinking
+    self:set_frog_sounds()
     self:start_animation(self.anim_burp)
     self.x_offset = -9
 
@@ -431,14 +470,11 @@ end
 -- Actions
 
 function Froggo:croak()
-    -- Start sound
-    if not SOUND.frog_talk:isPlaying() then
-        -- Looping frog talking sound. Will be stopped when going back to idle
-        SOUND.frog_talk:play(0)
-    end
 
     -- Speak!
     self.state = ACTION_STATE.speaking
+    self.sound_state = SOUND_STATE.speaking
+    self:set_frog_sounds()
 
     if GAME_ENDED then
         -- The potion is correct!
@@ -778,9 +814,45 @@ function Froggo:animation_tick()
 end
 
 
-function Froggo:stop_frog_sounds()
-    -- Stops any frog sounds that could be playing.
-    if SOUND.frog_talk:isPlaying() then
-        SOUND.frog_talk:stop()
+-- Start and stop frog sounds depending on the Froggo.sound_state
+function Froggo:set_frog_sounds()
+    if self.sound_state == SOUND_STATE.silent then
+        self:stop_sounds()
+    
+    -- For frog talking, to prevent sudden restarting, the sound loops until the state changes 
+    elseif self.sound_state == SOUND_STATE.speaking and not FROG_SOUND.speaking:isPlaying() then
+        self:stop_sounds()
+        FROG_SOUND.speaking:play(0)
+    elseif self.sound_state == SOUND_STATE.excited then
+        self:stop_sounds()
+        FROG_SOUND.excited:play()
+    elseif self.sound_state == SOUND_STATE.headshake then
+        -- FROG_SOUND.headshake:play()
+        self:stop_sounds()
+    elseif self.sound_state == SOUND_STATE.facepalm then
+        -- FROG_SOUND.facepalm:play()
+        self:stop_sounds()
+    elseif self.sound_state == SOUND_STATE.tickleface then
+        -- FROG_SOUND.tickleface:play()
+        self:stop_sounds()
+    elseif self.sound_state == SOUND_STATE.urgent then
+        -- FROG_SOUND.urgent:play()
+        self:stop_sounds()
+    elseif self.sound_state == SOUND_STATE.eyelick then
+        -- FROG_SOUND.eyelick:play()
+        self:stop_sounds()
+    elseif self.sound_state == SOUND_STATE.drinking then
+        -- FROG_SOUND.drinking:play()
+        self:stop_sounds()
+    elseif self.sound_state == SOUND_STATE.burp then
+        -- FROG_SOUND.burp:play()
+        self:stop_sounds()
+    end
+end
+
+
+function Froggo:stop_sounds()
+    for sound in pairs(FROG_SOUND) do
+        FROG_SOUND[sound]:stop()
     end
 end
