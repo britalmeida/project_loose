@@ -466,6 +466,26 @@ function Froggo:go_drinking()
 end
 
 
+-- These are functions that the timers execute. 
+-- ToDo: It would be better to have the timers cleaned up and tied to the states?
+function Froggo:burp_anim_timer_function()
+    self.sound_state = SOUND_STATE.speaking
+    self:set_frog_sounds()
+    self:start_animation(FROG.anim_burptalk)
+    self.x_offset = -9
+    self:start_speech_bubble()
+end
+
+
+function Froggo:burptalk_anim_timer_function()
+    self.sound_state = SOUND_STATE.drinking
+    self:set_frog_sounds()
+    self:stop_speech_bubble()
+    self:start_animation(FROG.anim_drink)
+    self.x_offset = -9
+    GAMEPLAY_STATE.showing_recipe = true
+end
+
 
 -- Actions
 
