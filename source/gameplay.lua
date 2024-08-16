@@ -171,11 +171,15 @@ GAMEPLAY_TIMERS = {
         ANIMATIONS.thought_bubble.frame = 1
         end),
     burp_anim = playdate.timer.new(100, function()
+        FROG.sound_state = SOUND_STATE.speaking
+        FROG:set_frog_sounds()
         FROG:start_animation(FROG.anim_burptalk)
         FROG.x_offset = -9
         FROG:start_speech_bubble()
         end),
     burptalk_anim = playdate.timer.new(100, function()
+        FROG.sound_state = SOUND_STATE.drinking
+        FROG:set_frog_sounds()
         FROG:stop_speech_bubble()
         FROG:start_animation(FROG.anim_drink)
         FROG.x_offset = -9

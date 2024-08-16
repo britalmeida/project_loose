@@ -452,7 +452,7 @@ function Froggo:go_drinking()
     local runtime = 0
 
     self.state = ACTION_STATE.drinking
-    self.sound_state = SOUND_STATE.drinking
+    self.sound_state = SOUND_STATE.burp
     self:set_frog_sounds()
     self:start_animation(self.anim_burp)
     self.x_offset = -9
@@ -819,40 +819,44 @@ function Froggo:set_frog_sounds()
     if self.sound_state == SOUND_STATE.silent then
         self:stop_sounds()
     
-    -- For frog talking, to prevent sudden restarting, the sound loops until the state changes 
+    -- For frog talking/eyelick the sound loops until the state changes 
     elseif self.sound_state == SOUND_STATE.speaking and not FROG_SOUND.speaking:isPlaying() then
         self:stop_sounds()
         FROG_SOUND.speaking:play(0)
+    elseif self.sound_state == SOUND_STATE.eyelick and not FROG_SOUND.eyelick:isPlaying() then
+        self:stop_sounds()
+        -- FROG_SOUND.eyelick:play(0)
+
+    -- All other sounds aare just played once if the state matches
     elseif self.sound_state == SOUND_STATE.excited then
         self:stop_sounds()
         FROG_SOUND.excited:play()
     elseif self.sound_state == SOUND_STATE.headshake then
+        self:stop_sounds()
         -- FROG_SOUND.headshake:play()
-        self:stop_sounds()
     elseif self.sound_state == SOUND_STATE.facepalm then
+        self:stop_sounds()
         -- FROG_SOUND.facepalm:play()
-        self:stop_sounds()
     elseif self.sound_state == SOUND_STATE.tickleface then
+        self:stop_sounds()
         -- FROG_SOUND.tickleface:play()
-        self:stop_sounds()
     elseif self.sound_state == SOUND_STATE.urgent then
+        self:stop_sounds()
         -- FROG_SOUND.urgent:play()
-        self:stop_sounds()
-    elseif self.sound_state == SOUND_STATE.eyelick then
-        -- FROG_SOUND.eyelick:play()
-        self:stop_sounds()
     elseif self.sound_state == SOUND_STATE.drinking then
+        self:stop_sounds()
         -- FROG_SOUND.drinking:play()
-        self:stop_sounds()
     elseif self.sound_state == SOUND_STATE.burp then
-        -- FROG_SOUND.burp:play()
         self:stop_sounds()
+        -- FROG_SOUND.burp:play()
     end
 end
 
-
+-- stop all sounds from the frog
 function Froggo:stop_sounds()
     for sound in pairs(FROG_SOUND) do
-        FROG_SOUND[sound]:stop()
+        if FROG_SOUND[sound]:isPlaying() then
+            FROG_SOUND[sound]:stop()
+        end
     end
 end
