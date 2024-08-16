@@ -486,9 +486,15 @@ local function draw_overlayed_instructions()
     end
 
     if GAMEPLAY_STATE.showing_instructions then
-        gfx.pushContext()
-            TEXTURES.instructions:draw(400-TEXTURES.instructions.width, 0)
-        gfx.popContext()
+        if TUTORIAL_COMPLETED or INTRO_COMPLETED then
+            gfx.pushContext()
+                TEXTURES.instructions:draw(400-TEXTURES.instructions.width, 0)
+            gfx.popContext()
+        else
+            gfx.pushContext()
+                TEXTURES.instructions_blank:draw(400-TEXTURES.instructions.width, 0)
+            gfx.popContext()
+        end
     end
 end
 
@@ -804,8 +810,10 @@ function Init_visuals()
     ANIMATIONS.thought_bubble_start = animloop.new(6 * frame_ms, gfxit.new("images/speech/animation-dream-cocktail_start"), true)
     ANIMATIONS.thought_bubble = animloop.new(6 * frame_ms, gfxit.new("images/speech/animation-dream-cocktail"), true)
     TEXTURES.instructions = gfxi.new("images/instructions")
+    TEXTURES.instructions_blank = gfxi.new("images/instructions_blank")
     if playdate.isSimulator then
         TEXTURES.instructions = gfxi.new("images/instructions_sim")
+        TEXTURES.instructions_blank = gfxi.new("images/instructions_blank_sim")
     end
     TEXTURES.recipe_top = gfxi.new("images/recipes/recipe_top_section")
     TEXTURES.recipe_bottom = gfxi.new("images/recipes/recipe_bottom_section")
