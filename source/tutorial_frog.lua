@@ -845,7 +845,7 @@ function Froggo:set_frog_sounds()
         FROG_SOUND.speaking:play(0)
     elseif self.sound_state == SOUND_STATE.eyelick and not FROG_SOUND.eyelick:isPlaying() then
         self:stop_sounds()
-        -- FROG_SOUND.eyelick:play(0)
+        FROG_SOUND.eyelick:play(0)
 
     -- All other sounds aare just played once if the state matches
     elseif self.sound_state == SOUND_STATE.excited then
