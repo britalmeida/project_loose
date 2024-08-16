@@ -853,7 +853,7 @@ function Froggo:set_frog_sounds()
         FROG_SOUND.excited:play()
     elseif self.sound_state == SOUND_STATE.headshake then
         self:stop_sounds()
-        -- FROG_SOUND.headshake:play()
+        FROG_SOUND.headshake:play()
     elseif self.sound_state == SOUND_STATE.facepalm then
         self:stop_sounds()
         -- FROG_SOUND.facepalm:play()
