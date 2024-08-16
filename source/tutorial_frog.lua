@@ -385,6 +385,7 @@ function Froggo:go_reacting()
     -- Otherwise react to ingredient direction
     elseif TREND > 0 and TUTORIAL_COMPLETED then
         self:start_animation(self.anim_happy)
+        SOUND.frog_excited:play()
         self:prepare_to_idle()
     elseif TREND < 0 and TUTORIAL_COMPLETED then
         self:start_animation(self.anim_headshake)

@@ -17,4 +17,5 @@ SOUND = {
   into_cocktail_menu = sp.new("sound/into_cocktail_menu_slide"),
   into_main_menu = sp.new("sound/into_main_menu_slide"),
   frog_talk = sp.new("sound/frog_blabla"),
+  frog_excited = sp.new("sound/frog_excited"),
 }
