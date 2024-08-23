@@ -185,9 +185,6 @@ GAMEPLAY_TIMERS = {
     cocktail_struggle_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.cocktail_struggle = false
         end),
-    recipe_struggle_timeout = playdate.timer.new(100, function ()
-        PLAYER_STRUGGLES.recipe_struggle = false
-        end),
     no_fire_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.no_fire = false
         end),
@@ -1060,10 +1057,9 @@ function Check_player_struggle()
         -- Only when not cycling through dialogue, use the urgent reaction of the frog
         if RECIPE_STRUGGLE_STEPS == true then
             FROG:wants_to_talk()
-            Restart_timer(GAMEPLAY_TIMERS.recipe_struggle_timeout, struggle_reminder_timout)
         end
     -- Reset so the struggle can be detected and triggered again
-    elseif not RECIPE_STRUGGLE_STEPS and GAMEPLAY_TIMERS.recipe_struggle_timeout.paused then
+    elseif not RECIPE_STRUGGLE_STEPS then
         if PLAYER_STRUGGLES.recipe_struggle then
             PLAYER_STRUGGLES.recipe_struggle = false
         end
