@@ -402,6 +402,13 @@ function Update_rune_count(drop_rune_count)
         end
     end
 
+    -- Add together the predicted total unclamped rune change
+    for a in ipairs(CURRENT_DROPS) do
+        for rune in ipairs(CURRENT_DROPS[a][1]) do
+            GAMEPLAY_STATE.rune_count_unclamped[rune] += rune_change[rune]
+        end
+    end
+
     -- Calculate how much space is left to change runes in their 0-1 range
     -- Then clamp the rune_change to fit in that leftover space
     -- This keeps all new CURRENT_DROPS entries within the total 0-1 range
@@ -424,18 +431,11 @@ function Update_rune_count(drop_rune_count)
     -- TODO: Rework rune_count_unclamped to be just a pure addition of unclamped rune_changes of each drop.
         -- This way they are a pure prepresentation of potentual rune movement
     
-    -- Add together the predicted total unclamped rune count
-    GAMEPLAY_STATE.rune_count_unclamped = {0, 0, 0}
+    -- Add together the predicted total rune count
+    GAMEPLAY_STATE.rune_count = {0, 0, 0}
     for a in ipairs(CURRENT_DROPS) do
         for rune in ipairs(CURRENT_DROPS[a][1]) do
-            GAMEPLAY_STATE.rune_count_unclamped[rune] += CURRENT_DROPS[a][1][rune]
-        end
-    end
-
-    -- Clamp the rune count total predict the positons of runes when stirred compeltely
-    for a = 1, NUM_RUNES, 1 do
-        if TARGET_COCKTAIL.rune_count[a] > 0 then
-            GAMEPLAY_STATE.rune_count[a] = Clamp(GAMEPLAY_STATE.rune_count_unclamped[a], 0, 1)
+            GAMEPLAY_STATE.rune_count[rune] += CURRENT_DROPS[a][1][rune]
         end
     end
 
@@ -944,7 +944,7 @@ function update_liquid()
     -- Reset rune travel variables and mark stirring as complete
     if STIR_FACTOR >= 1 then
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
-        table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unclamped)
+        GAMEPLAY_STATE.rune_count_unclamped = {0, 0, 0}
         GAMEPLAY_STATE.dropped_ingredients = 0
         -- Even though there are no drops in the cauldron, the first is always the current rune count
         CURRENT_DROPS = {{
