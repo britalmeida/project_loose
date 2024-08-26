@@ -928,16 +928,17 @@ function update_liquid()
     end
     -- Subtract the starting entry from CURRENT_DROPS
     -- and divide the result so it's in a 0-1 range
-    if #CURRENT_DROPS > 1 then
+    if #CURRENT_DROPS == 1 then
+        STIR_FACTOR -= 0.08
+    else
         combined_stir_factor -= 1
         combined_stir_factor /= #CURRENT_DROPS - 1
+        STIR_FACTOR = combined_stir_factor
     end
 
     -- TODO: The stir factor seems to change much faster than before
     -- TODO: The global stir factor can change directions half way through stirring. See if this can be improved
 
-    -- Add change to the global stir factor
-    STIR_FACTOR = combined_stir_factor
     -- Clamp global stir factor
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
 
