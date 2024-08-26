@@ -427,9 +427,6 @@ function Update_rune_count(drop_rune_count)
 
     -- Insert new drop values and stir factor into list
     table.insert(CURRENT_DROPS, {table.shallowcopy(rune_change), 0})
-
-    -- TODO: Rework rune_count_unclamped to be just a pure addition of unclamped rune_changes of each drop.
-        -- This way they are a pure prepresentation of potentual rune movement
     
     -- Add together the predicted total rune count
     GAMEPLAY_STATE.rune_count = {0, 0, 0}
@@ -936,9 +933,6 @@ function update_liquid()
         STIR_FACTOR = combined_stir_factor
     end
 
-    -- TODO: The stir factor seems to change much faster than before
-    -- TODO: The global stir factor can change directions half way through stirring. See if this can be improved
-
     -- Clamp global stir factor
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
 
@@ -979,7 +973,7 @@ function update_liquid()
     --printTable(GAMEPLAY_STATE.rune_count_current)
     --printTable(GAMEPLAY_STATE.rune_count)
     --printTable(GAMEPLAY_STATE.rune_count_change)
-    print("combined_stir_factor = " .. combined_stir_factor)
+    --print("combined_stir_factor = " .. combined_stir_factor)
     print("STIR_FACTOR = " .. STIR_FACTOR)
 
     table.shallowcopy(new_rune_count, GAMEPLAY_STATE.rune_count_current)
