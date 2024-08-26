@@ -27,8 +27,8 @@ GAMEPLAY_STATE = {
     -- Current potion mix
     potion_bubbliness = 0.0,
     rune_count = {0, 0, 0}, -- The destination rune count once it is fully stirred in
-    rune_count_unstirred = {0, 0, 0}, -- previous rune count positions before stirring drops in
     -- To check which directions runes would travel in. Reset regularly when ingredients are stirred in
+    rune_count_unstirred = {0, 0, 0}, -- Previous rune count positions before stirring drops in
     rune_count_change = {0, 0, 0}, -- Pure change of runes via current ingredient drops
     rune_count_current = {0, 0, 0}, -- Currently stirred positions of rune count. Eventually becomes rune_count
     held_ingredient = 0, -- index of currently helf ingredient
@@ -65,7 +65,7 @@ GAMEPLAY_STATE = {
 
 CURRENT_RECIPE = {}
 
--- List of rune count of unstirred drops and their live STIR_FACTOR
+-- List of rune change of unstirred drops and their live STIR_FACTOR
 -- Used to calulate the rune positions while stirring
 CURRENT_DROPS = {{
     {0, 0, 0},  -- rune change per new drop
@@ -387,22 +387,26 @@ function Reset_gameplay()
     end_recipe_y = 0
 end
 
-
+-- Add a new ingredient drop and recalculate rune count variables
 function Update_rune_count(drop_rune_count)
     -- Calculate new rune count
-
-    GAMEPLAY_STATE.dropped_ingredients += 1
-
     local rune_change = {0, 0, 0}
     local drops = GAMEPLAY_STATE.dropped_ingredients
 
+    GAMEPLAY_STATE.dropped_ingredients += 1
+
+    -- Save rune change that the new ingredient drop has on the rune count
     for a = 1, NUM_RUNES, 1 do
         if TARGET_COCKTAIL.rune_count[a] > 0 then
-            rune_change[a] = ((drop_rune_count[a]/6) * 0.3)
+            -- Ingredient strengths are defined in a -6 to 6 ratio.
+            -- This needs to be converted to the 0-1 rune ratio
+            local converted_drop_rune_count = drop_rune_count[a]/6
+            local drop_strength = 0.3
+            rune_change[a] = converted_drop_rune_count * drop_strength
         end
     end
 
-    -- Add together the predicted total unclamped rune change
+    -- Add together the total unclamped rune change
     for a in ipairs(CURRENT_DROPS) do
         for rune in ipairs(CURRENT_DROPS[a][1]) do
             GAMEPLAY_STATE.rune_count_change[rune] += rune_change[rune]
@@ -425,10 +429,10 @@ function Update_rune_count(drop_rune_count)
         end
     end
 
-    -- Insert new drop values and stir factor into list
+    -- Insert new drop rune change values and stir factor into list
     table.insert(CURRENT_DROPS, {table.shallowcopy(rune_change), 0})
     
-    -- Add together the predicted total rune count
+    -- Add together the total rune count destination
     GAMEPLAY_STATE.rune_count = {0, 0, 0}
     for a in ipairs(CURRENT_DROPS) do
         for rune in ipairs(CURRENT_DROPS[a][1]) do
@@ -890,7 +894,7 @@ function update_liquid()
 
     STIR_CHANGE = Clamp(stir_change_unclamped, min_stir_change, max_stir_change)
 
-    -- Calculate current stirring effect from stirring.
+    -- Calculate current stirring effect.
     -- For the added total each STIR_FACTOR in CURRENT_DROPS, and then combined into the global STIR_FACTOR
     if stir_change_unclamped >= idle_stir_change then
         -- Actual addition for STIR_FACTOR this frame
@@ -900,9 +904,7 @@ function update_liquid()
     end
     -- Automatic STIR_FACTOR changes if close to done or if done
     if floating_drops > 0 and STIR_FACTOR > 0.9 then
-        STIR_CHANGE += STIR_FACTOR * 0.002 -- tmp for some reason this is done for a few more frames after the stir factor is reset to 0
-    elseif floating_drops == 0 then
-        STIR_CHANGE -= 0.08
+        STIR_CHANGE += STIR_FACTOR * 0.002 -- TODO: for some reason this is done for a few more frames after the stir factor is reset to 0. Find a fix?
     end
     -- Disregard stir change if it's too small
     if stir_change_unclamped < idle_stir_change then
@@ -968,13 +970,6 @@ function update_liquid()
     for rune in pairs(new_rune_count) do
         new_rune_count[rune] = Clamp(new_rune_count[rune], 0, 1)
     end
-
-    -- DEBUG
-    --printTable(GAMEPLAY_STATE.rune_count_current)
-    --printTable(GAMEPLAY_STATE.rune_count)
-    --printTable(GAMEPLAY_STATE.rune_count_change)
-    --print("combined_stir_factor = " .. combined_stir_factor)
-    print("STIR_FACTOR = " .. STIR_FACTOR)
 
     table.shallowcopy(new_rune_count, GAMEPLAY_STATE.rune_count_current)
 
