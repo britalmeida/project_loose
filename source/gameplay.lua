@@ -26,11 +26,11 @@ GAMEPLAY_STATE = {
     liquid_momentum = 0.0,
     -- Current potion mix
     potion_bubbliness = 0.0,
-    rune_count = {0, 0, 0},
-    rune_count_unstirred = {0, 0, 0},
+    rune_count = {0, 0, 0}, -- The destination rune count once it is fully stirred in
+    rune_count_unstirred = {0, 0, 0}, -- previous rune count positions before stirring drops in
     -- To check which directions runes would travel in. Reset regularly when ingredients are stirred in
-    rune_count_unclamped = {0, 0, 0},
-    rune_count_current = {0, 0, 0},
+    rune_count_change = {0, 0, 0}, -- Pure change of runes via current ingredient drops
+    rune_count_current = {0, 0, 0}, -- Currently stirred positions of rune count. Eventually becomes rune_count
     held_ingredient = 0, -- index of currently helf ingredient
     dropped_ingredients = 0,
     counting_stirs = false,
@@ -306,7 +306,7 @@ function Reset_gameplay()
     for a = 1, NUM_RUNES, 1 do
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_count_unstirred[a] = 0
-        GAMEPLAY_STATE.rune_count_unclamped[a] = 0
+        GAMEPLAY_STATE.rune_count_change[a] = 0
         GAMEPLAY_STATE.rune_count_current[a] = 0
     end
     for k, v in pairs(GAMEPLAY_STATE.used_ingredients_table) do
@@ -405,7 +405,7 @@ function Update_rune_count(drop_rune_count)
     -- Add together the predicted total unclamped rune change
     for a in ipairs(CURRENT_DROPS) do
         for rune in ipairs(CURRENT_DROPS[a][1]) do
-            GAMEPLAY_STATE.rune_count_unclamped[rune] += rune_change[rune]
+            GAMEPLAY_STATE.rune_count_change[rune] += rune_change[rune]
         end
     end
 
@@ -944,7 +944,7 @@ function update_liquid()
     -- Reset rune travel variables and mark stirring as complete
     if STIR_FACTOR >= 1 then
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
-        GAMEPLAY_STATE.rune_count_unclamped = {0, 0, 0}
+        GAMEPLAY_STATE.rune_count_change = {0, 0, 0}
         GAMEPLAY_STATE.dropped_ingredients = 0
         -- Even though there are no drops in the cauldron, the first is always the current rune count
         CURRENT_DROPS = {{
@@ -977,7 +977,7 @@ function update_liquid()
     -- DEBUG
     --printTable(GAMEPLAY_STATE.rune_count_current)
     --printTable(GAMEPLAY_STATE.rune_count)
-    --printTable(GAMEPLAY_STATE.rune_count_unclamped)
+    --printTable(GAMEPLAY_STATE.rune_count_change)
     print("combined_stir_factor = " .. combined_stir_factor)
     print("STIR_FACTOR = " .. STIR_FACTOR)
 
