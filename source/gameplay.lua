@@ -402,6 +402,22 @@ function Update_rune_count(drop_rune_count)
         end
     end
 
+    -- Calculate how much space is left to change runes in their 0-1 range
+    -- Then clamp the rune_change to fit in that leftover space
+    -- This keeps all new CURRENT_DROPS entries within the total 0-1 range
+    local rune_travel_space_remaining = {0, 0, 0}
+    for rune in pairs(GAMEPLAY_STATE.rune_count) do
+        if rune_change[rune] > 0 then
+            -- If the rune adds change, clamp it to this maximum
+            rune_travel_space_remaining[rune] = 1 - GAMEPLAY_STATE.rune_count[rune]
+            rune_change[rune] = math.min(rune_change[rune], rune_travel_space_remaining[rune])
+        elseif rune_change[rune] < 0 then
+            -- If the rune subtracts change, clamp it to this minimum
+            rune_travel_space_remaining[rune] = -GAMEPLAY_STATE.rune_count[rune]
+            rune_change[rune] = math.max(rune_change[rune], rune_travel_space_remaining[rune])
+        end
+    end
+
     -- Insert new drop values and stir factor into list
     table.insert(CURRENT_DROPS, {table.shallowcopy(rune_change), 0})
 
