@@ -421,9 +421,6 @@ function Update_rune_count(drop_rune_count)
     -- Insert new drop values and stir factor into list
     table.insert(CURRENT_DROPS, {table.shallowcopy(rune_change), 0})
 
-    -- Adjust stir factor to new count of drops
-    STIR_FACTOR = (STIR_FACTOR / drops) * (drops - 1)
-
     -- TODO: Rework rune_count_unclamped to be just a pure addition of unclamped rune_changes of each drop.
         -- This way they are a pure prepresentation of potentual rune movement
     
@@ -897,7 +894,7 @@ function update_liquid()
     STIR_CHANGE = Clamp(stir_change_unclamped, min_stir_change, max_stir_change)
 
     -- Calculate current stirring effect from stirring.
-    -- For the global STIR_FACTOR and each STIR_FACTOR in CURRENT_DROPS
+    -- For the added total each STIR_FACTOR in CURRENT_DROPS, and then combined into the global STIR_FACTOR
     if stir_change_unclamped >= idle_stir_change then
         -- Actual addition for STIR_FACTOR this frame
         STIR_CHANGE = Clamp(stir_change_unclamped, min_stir_change, max_stir_change)
@@ -910,11 +907,38 @@ function update_liquid()
     elseif floating_drops == 0 then
         STIR_CHANGE -= 0.08
     end
-    if stir_change_unclamped >= idle_stir_change then
-        STIR_FACTOR += STIR_CHANGE
-    else
+    -- Disregard stir change if it's too small
+    if stir_change_unclamped < idle_stir_change then
         STIR_CHANGE = 0
     end
+
+    -- This is where it adds stir change to the CURRENT_DROPS stir factors
+    -- It also adds together the global stir factor value
+    local combined_stir_factor = 0
+    for a in pairs(CURRENT_DROPS) do
+        -- Update local STIR_FACTOR of each drop in CURRENT_DROPS
+        -- (excluding the base drop which represents the previous stirred rune count)
+
+        -- Add current stir chang and clamp stir factor within 0-1 range
+        if CURRENT_DROPS[a][2] < 1 then
+            CURRENT_DROPS[a][2] = Clamp(CURRENT_DROPS[a][2] + STIR_CHANGE, 0, 1)
+        end
+        local current_stir_factor = (CURRENT_DROPS[a][2])
+        combined_stir_factor += current_stir_factor
+    end
+    -- Subtract the starting entry from CURRENT_DROPS
+    -- and divide the result so it's in a 0-1 range
+    if #CURRENT_DROPS > 1 then
+        combined_stir_factor -= 1
+        combined_stir_factor /= #CURRENT_DROPS - 1
+    end
+
+    -- TODO: The stir factor seems to change much faster than before
+    -- TODO: The global stir factor can change directions half way through stirring. See if this can be improved
+
+    -- Add change to the global stir factor
+    STIR_FACTOR = combined_stir_factor
+    -- Clamp global stir factor
     STIR_FACTOR = Clamp(STIR_FACTOR, 0, 1)
 
     -- Reset rune travel variables and mark stirring as complete
@@ -936,9 +960,7 @@ function update_liquid()
 
     -- Update current rune count for rune drawing
     local new_rune_count = {0, 0, 0}
-    local combined_stir_factor = 0
     for a in pairs(CURRENT_DROPS) do
-        -- Update local STIR_FACTOR of each drop in CURRENT_DROPS
         -- (excluding the base drop which represents the previous stirred rune count)
         if CURRENT_DROPS[a][2] < 1 then
             CURRENT_DROPS[a][2] = Clamp(CURRENT_DROPS[a][2] + STIR_CHANGE, 0, 1)
@@ -947,21 +969,12 @@ function update_liquid()
         for rune in pairs(new_rune_count) do
             new_rune_count[rune] += CURRENT_DROPS[a][1][rune] * CURRENT_DROPS[a][2]
         end
-        local current_stir_factor = (CURRENT_DROPS[a][2]) / (#CURRENT_DROPS - 1)
-        if (CURRENT_DROPS[a][2]) == 1 then
-            current_stir_factor = 0
-        end
-        combined_stir_factor += current_stir_factor
-    end
-    if combined_stir_factor == 0 and #CURRENT_DROPS == 1 then
-        combined_stir_factor = 1
     end
     for rune in pairs(new_rune_count) do
         new_rune_count[rune] = Clamp(new_rune_count[rune], 0, 1)
     end
 
     -- DEBUG
-
     --printTable(GAMEPLAY_STATE.rune_count_current)
     --printTable(GAMEPLAY_STATE.rune_count)
     --printTable(GAMEPLAY_STATE.rune_count_unclamped)
