@@ -424,6 +424,9 @@ function Update_rune_count(drop_rune_count)
     -- Adjust stir factor to new count of drops
     STIR_FACTOR = (STIR_FACTOR / drops) * (drops - 1)
 
+    -- TODO: Rework rune_count_unclamped to be just a pure addition of unclamped rune_changes of each drop.
+        -- This way they are a pure prepresentation of potentual rune movement
+    
     -- Add together the predicted total unclamped rune count
     GAMEPLAY_STATE.rune_count_unclamped = {0, 0, 0}
     for a in ipairs(CURRENT_DROPS) do
@@ -944,14 +947,26 @@ function update_liquid()
         for rune in pairs(new_rune_count) do
             new_rune_count[rune] += CURRENT_DROPS[a][1][rune] * CURRENT_DROPS[a][2]
         end
-        combined_stir_factor += (CURRENT_DROPS[a][2]) / #CURRENT_DROPS
+        local current_stir_factor = (CURRENT_DROPS[a][2]) / (#CURRENT_DROPS - 1)
+        if (CURRENT_DROPS[a][2]) == 1 then
+            current_stir_factor = 0
+        end
+        combined_stir_factor += current_stir_factor
+    end
+    if combined_stir_factor == 0 and #CURRENT_DROPS == 1 then
+        combined_stir_factor = 1
     end
     for rune in pairs(new_rune_count) do
         new_rune_count[rune] = Clamp(new_rune_count[rune], 0, 1)
     end
+
+    -- DEBUG
+
     --printTable(GAMEPLAY_STATE.rune_count_current)
-    --print(combined_stir_factor)
-    --print(STIR_FACTOR)
+    --printTable(GAMEPLAY_STATE.rune_count)
+    --printTable(GAMEPLAY_STATE.rune_count_unclamped)
+    print("combined_stir_factor = " .. combined_stir_factor)
+    print("STIR_FACTOR = " .. STIR_FACTOR)
 
     table.shallowcopy(new_rune_count, GAMEPLAY_STATE.rune_count_current)
 
