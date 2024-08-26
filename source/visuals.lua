@@ -149,16 +149,12 @@ local function draw_symbols()
 
     local should_draw_on_target_anim = GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.heat_amount > 0.3
     local heat_response = min(sqrt(max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
+    -- DEBUG TEMP CODE
+    heat_response = 1.0
     local glow_strength = (lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response)
     glow_strength = Clamp(glow_strength, 0, 1) * 0.75
     local glyph_fade = Clamp(glow_strength, 0.2, 0.6)
     local target_fade = Clamp(glow_strength, 0.0, 0.5)
-
-
-    local rune_count_travel = {0, 0, 0}
-    for k, v in pairs(rune_count_travel) do
-        rune_count_travel[k] = GAMEPLAY_STATE.rune_count_unstirred[k] * (1 - STIR_FACTOR) + (GAMEPLAY_STATE.rune_count[k] * STIR_FACTOR)
-    end
 
     gfx.pushContext()
         for a = 1, NUM_RUNES do
@@ -170,8 +166,10 @@ local function draw_symbols()
             local wiggle = sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + PI * 0.3)
 
             local glyph_x = rune_area_x + rune_area_width * 0.5 * (a - 2)
-            local glyph_y = rune_area_y - (rune_count_travel[a] - 0.5) * rune_area_height + wiggle
+            local glyph_y = rune_area_y - (GAMEPLAY_STATE.rune_count_current[a] - 0.5) * rune_area_height + wiggle
             local target_y = rune_area_y - (TARGET_COCKTAIL.rune_count[a] - 0.5) * rune_area_height + wiggle
+            -- DEBUG TEMP CODE
+            target_y = rune_area_y - (GAMEPLAY_STATE.rune_count[a] - 0.5) * rune_area_height + wiggle
             local target_topleft_y = target_y - ANIMATIONS.rune_idle[a]:image().height * 0.5
             local glyph_topleft_x = glyph_x - ANIMATIONS.rune_idle[a]:image().width * 0.5
             local glyph_topleft_y = glyph_y - ANIMATIONS.rune_idle[a]:image().height * 0.5

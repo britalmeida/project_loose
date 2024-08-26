@@ -30,6 +30,7 @@ GAMEPLAY_STATE = {
     rune_count_unstirred = {0, 0, 0},
     -- To check which directions runes would travel in. Reset regularly when ingredients are stirred in
     rune_count_unclamped = {0, 0, 0},
+    rune_count_current = {0, 0, 0},
     held_ingredient = 0, -- index of currently helf ingredient
     dropped_ingredients = 0,
     counting_stirs = false,
@@ -63,6 +64,13 @@ GAMEPLAY_STATE = {
 }
 
 CURRENT_RECIPE = {}
+
+-- List of rune count of unstirred drops and their live STIR_FACTOR
+-- Used to calulate the rune positions while stirring
+CURRENT_DROPS = {{
+    {0, 0, 0},  -- rune change per new drop
+    1           -- It's own stir factor
+}}
 
 DIFF_TO_TARGET = {
     ingredients_abs = 1,
@@ -299,6 +307,7 @@ function Reset_gameplay()
         GAMEPLAY_STATE.rune_count[a] = 0
         GAMEPLAY_STATE.rune_count_unstirred[a] = 0
         GAMEPLAY_STATE.rune_count_unclamped[a] = 0
+        GAMEPLAY_STATE.rune_count_current[a] = 0
     end
     for k, v in pairs(GAMEPLAY_STATE.used_ingredients_table) do
         GAMEPLAY_STATE.used_ingredients_table[k] = false
@@ -313,6 +322,11 @@ function Reset_gameplay()
     GAMEPLAY_STATE.new_mastered = false
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
+
+    CURRENT_DROPS = {{
+        {0, 0, 0},
+        1
+    }}
 
     -- Reset active timers
     for k in pairs(GAMEPLAY_TIMERS) do
@@ -375,20 +389,39 @@ end
 
 
 function Update_rune_count(drop_rune_count)
-
     -- Calculate new rune count
+
+    GAMEPLAY_STATE.dropped_ingredients += 1
+
+    local rune_change = {0, 0, 0}
+    local drops = GAMEPLAY_STATE.dropped_ingredients
+
     for a = 1, NUM_RUNES, 1 do
         if TARGET_COCKTAIL.rune_count[a] > 0 then
-            GAMEPLAY_STATE.rune_count_unclamped[a] = GAMEPLAY_STATE.rune_count[a] + ((drop_rune_count[a]/6) * 0.3)
-            GAMEPLAY_STATE.rune_count[a] = Clamp(GAMEPLAY_STATE.rune_count_unclamped[a], 0, 1)
+            rune_change[a] = ((drop_rune_count[a]/6) * 0.3)
         end
     end
 
-    -- Update variables
-    GAMEPLAY_STATE.dropped_ingredients += 1
-    -- Adjust stir factor relative to new count of drops
-    local drops = GAMEPLAY_STATE.dropped_ingredients
+    -- Insert new drop values and stir factor into list
+    table.insert(CURRENT_DROPS, {table.shallowcopy(rune_change), 0})
+
+    -- Adjust stir factor to new count of drops
     STIR_FACTOR = (STIR_FACTOR / drops) * (drops - 1)
+
+    -- Add together the predicted total unclamped rune count
+    GAMEPLAY_STATE.rune_count_unclamped = {0, 0, 0}
+    for a in ipairs(CURRENT_DROPS) do
+        for rune in ipairs(CURRENT_DROPS[a][1]) do
+            GAMEPLAY_STATE.rune_count_unclamped[rune] += CURRENT_DROPS[a][1][rune]
+        end
+    end
+
+    -- Clamp the rune count total predict the positons of runes when stirred compeltely
+    for a = 1, NUM_RUNES, 1 do
+        if TARGET_COCKTAIL.rune_count[a] > 0 then
+            GAMEPLAY_STATE.rune_count[a] = Clamp(GAMEPLAY_STATE.rune_count_unclamped[a], 0, 1)
+        end
+    end
 
     -- Set neutral recorded trend if the rune count is the same
     local matching_runes = 0
@@ -415,13 +448,8 @@ function Update_rune_count(drop_rune_count)
         end
     end
 
-
-    local prev_rune_avg = (PREV_RUNE_COUNT[1] + PREV_RUNE_COUNT[2] + PREV_RUNE_COUNT[3]) /3
-    local current_rune_avg = (GAMEPLAY_STATE.rune_count[1] + GAMEPLAY_STATE.rune_count[2] + GAMEPLAY_STATE.rune_count[3]) / 3
-
     PREV_RUNE_COUNT = table.shallowcopy(GAMEPLAY_STATE.rune_count)
 
-    --print("Rune Count = " .. tostring(GAMEPLAY_STATE.rune_count[1] .. ", " .. tostring(GAMEPLAY_STATE.rune_count[2]) .. ", " .. tostring(GAMEPLAY_STATE.rune_count[3])))
 end
 
 
@@ -838,6 +866,7 @@ end
 
 
 function update_liquid()
+
     -- Update liquid stir effect
 
     local stir_change_unclamped <const> = math.abs(STIR_SPEED) * 0.001
@@ -848,12 +877,19 @@ function update_liquid()
 
     STIR_CHANGE = Clamp(stir_change_unclamped, min_stir_change, max_stir_change)
 
-    -- Calculate current stirring effect.
+    -- Calculate current stirring effect from stirring.
+    -- For the global STIR_FACTOR and each STIR_FACTOR in CURRENT_DROPS
+    if stir_change_unclamped >= idle_stir_change then
+        -- Actual addition for STIR_FACTOR this frame
+        STIR_CHANGE = Clamp(stir_change_unclamped, min_stir_change, max_stir_change)
+    else
+        STIR_CHANGE = 0
+    end
+    -- Automatic STIR_FACTOR changes if close to done or if done
     if floating_drops > 0 and STIR_FACTOR > 0.9 then
-        STIR_FACTOR += STIR_FACTOR * 0.002
-        STIR_FACTOR = math.min(STIR_FACTOR, 1)
+        STIR_CHANGE += STIR_FACTOR * 0.002 -- tmp for some reason this is done for a few more frames after the stir factor is reset to 0
     elseif floating_drops == 0 then
-        STIR_FACTOR -= 0.08
+        STIR_CHANGE -= 0.08
     end
     if stir_change_unclamped >= idle_stir_change then
         STIR_FACTOR += STIR_CHANGE
@@ -867,12 +903,41 @@ function update_liquid()
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unclamped)
         GAMEPLAY_STATE.dropped_ingredients = 0
+        -- Even though there are no drops in the cauldron, the first is always the current rune count
+        CURRENT_DROPS = {{
+            table.shallowcopy(GAMEPLAY_STATE.rune_count),
+            1
+        }}
         CHECK_IF_DELICIOUS = true
         if not GAMEPLAY_STATE.stirring_complete and GAMEPLAY_STATE.counting_stirs then
             GAMEPLAY_STATE.stirring_complete = true
             GAMEPLAY_STATE.puff_anim_started = false
         end
     end
+
+    -- Update current rune count for rune drawing
+    local new_rune_count = {0, 0, 0}
+    local combined_stir_factor = 0
+    for a in pairs(CURRENT_DROPS) do
+        -- Update local STIR_FACTOR of each drop in CURRENT_DROPS
+        -- (excluding the base drop which represents the previous stirred rune count)
+        if CURRENT_DROPS[a][2] < 1 then
+            CURRENT_DROPS[a][2] = Clamp(CURRENT_DROPS[a][2] + STIR_CHANGE, 0, 1)
+        end
+
+        for rune in pairs(new_rune_count) do
+            new_rune_count[rune] += CURRENT_DROPS[a][1][rune] * CURRENT_DROPS[a][2]
+        end
+        combined_stir_factor += (CURRENT_DROPS[a][2]) / #CURRENT_DROPS
+    end
+    for rune in pairs(new_rune_count) do
+        new_rune_count[rune] = Clamp(new_rune_count[rune], 0, 1)
+    end
+    --printTable(GAMEPLAY_STATE.rune_count_current)
+    --print(combined_stir_factor)
+    --print(STIR_FACTOR)
+
+    table.shallowcopy(new_rune_count, GAMEPLAY_STATE.rune_count_current)
 
     -- Update liquid state
     GAMEPLAY_STATE.liquid_momentum += Clamp(STIR_SPEED, -8, 8) / 10
