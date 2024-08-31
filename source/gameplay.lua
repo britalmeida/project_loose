@@ -578,21 +578,25 @@ function Handle_input()
             GAMEPLAY_STATE.flame_amount = mic_lvl
         end
 
-        
         -- Check hand context to choose which A interactions to use
         -- Then check for pressed buttons
         local bubble_type = get_speech_bubble_type()
         local bubble_bounds = get_speech_bubble_bounds()
+        local frog_bounds = FROG:getBoundsRect()
         local speech_min_time = GAMEPLAY_TIMERS.speech_timer.currentTime > 300
         local is_speech_bubble = bubble_type ~= SPEECH_BUBBLES.none
         local cursor_on_bubble = false
+
         if bubble_bounds ~= nil then
-            if bubble_bounds:containsPoint(GAMEPLAY_STATE.cursor_pos:unpack()) then
+            if bubble_bounds:containsPoint(GAMEPLAY_STATE.cursor_pos:unpack())
+            or frog_bounds:containsPoint(GAMEPLAY_STATE.cursor_pos:unpack()) then
                 cursor_on_bubble = true
             end
         end
+
         local is_bubble_blocking = is_speech_bubble and cursor_on_bubble
         local can_pop_speech_bubble = is_bubble_blocking and speech_min_time
+
         if is_bubble_blocking then
             -- Popping the speech bubble that is covering the screen
             -- Also allow the tickleface frog reaction, with a bubble pop animation
