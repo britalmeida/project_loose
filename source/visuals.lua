@@ -547,6 +547,27 @@ local function draw_dialog_bubble()
             end
         gfx.popContext()
 
+    elseif SPEECH_BUBBLE_POP then
+        local pop_animation
+        local anim_offset_x = 0
+        local anim_offset_y = 0
+        -- Draw pop animation
+        gfx.pushContext()
+            if SPEECH_BUBBLE_POP == SPEECH_BUBBLES.small then
+                pop_animation = ANIMATIONS.dialog_bubble_oneline_pop
+                anim_offset_x = 13
+                anim_offset_y = 5
+            elseif SPEECH_BUBBLE_POP == SPEECH_BUBBLES.big then
+                pop_animation = ANIMATIONS.dialog_bubble_twoline_pop
+            elseif SPEECH_BUBBLE_POP == SPEECH_BUBBLES.animation then
+                pop_animation = ANIMATIONS.dialog_bubble_anim_pop
+            end
+            pop_animation:image():draw(anim_offset_x, anim_offset_y)
+            -- Stop drawing when done
+            if pop_animation.frame == pop_animation.endFrame then
+                SPEECH_BUBBLE_POP = nil
+            end
+        gfx.popContext()
     elseif THOUGHT_BUBBLE_ANIM then
         -- Animated thought bubble when frog wants to say something
         gfx.pushContext()
@@ -745,11 +766,33 @@ local function draw_ingredient_grab_cursor()
     end
 
     gfx.pushContext()
-        if GAMEPLAY_STATE.cursor_hold then
+
+        -- Set which hand cursor is drawn 
+        if GAMEPLAY_STATE.cursor == CURSORS.hold then
             TEXTURES.cursor_hold:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
-        else
+        elseif GAMEPLAY_STATE.cursor == CURSORS.open then
             TEXTURES.cursor:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
+        elseif GAMEPLAY_STATE.cursor == CURSORS.flick_hold then
+            TEXTURES.cursor_flick_hold:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
+        elseif GAMEPLAY_STATE.cursor == CURSORS.flick then
+            ANIMATIONS.cursor_flick:image():drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
         end
+
+        -- Reset flick animation if it just started
+        if GAMEPLAY_STATE.cursor == CURSORS.flick
+        and GAMEPLAY_STATE.cursor_prev ~= CURSORS.flick then
+            ANIMATIONS.cursor_flick.frame = 1
+        end
+
+        -- Switch to regular open hand once flick anim is done
+        if GAMEPLAY_STATE.cursor == CURSORS.flick
+        and ANIMATIONS.cursor_flick.frame == ANIMATIONS.cursor_flick.endFrame then
+            GAMEPLAY_STATE.cursor = CURSORS.open
+        end
+
+        -- Save cursor state for to compare next frame
+        GAMEPLAY_STATE.cursor_prev = GAMEPLAY_STATE.cursor
+            
     gfx.popContext()
 end
 
@@ -761,7 +804,10 @@ local function draw_ingredient_place_hint()
     end
 
     gfx.pushContext()
-    if GAMEPLAY_STATE.cursor_hold and GAMEPLAY_STATE.cauldron_ingredient == nil and GAMEPLAY_STATE.held_ingredient ~= 0 then
+    if GAMEPLAY_STATE.cursor == CURSORS.hold
+    and GAMEPLAY_STATE.cauldron_ingredient == nil
+    and GAMEPLAY_STATE.held_ingredient ~= 0 
+    then
         local held_ingredient = ANIMATIONS.place_hints[GAMEPLAY_STATE.held_ingredient]
         local hint_x = MAGIC_TRIANGLE_CENTER_X - (held_ingredient:image().width / 2)
         local hint_y = MAGIC_TRIANGLE_CENTER_Y - (held_ingredient:image().height / 2)
@@ -801,6 +847,9 @@ function Init_visuals()
     TEXTURES.instructions_prompt = gfxi.new("images/instructions_prompt")
     TEXTURES.dialog_bubble_oneline = gfxi.new("images/speech/speechbubble_oneline_wide")
     TEXTURES.dialog_bubble_twolines = gfxi.new("images/speech/speechbubble_twolines_extrawide")
+    ANIMATIONS.dialog_bubble_anim_pop = animloop.new(3 * frame_ms, gfxit.new("images/speech/animation-bubble-pop-icon"), true)
+    ANIMATIONS.dialog_bubble_oneline_pop = animloop.new(3 * frame_ms, gfxit.new("images/speech/animation-bubble-pop-one-line"), true)
+    ANIMATIONS.dialog_bubble_twoline_pop = animloop.new(3 * frame_ms, gfxit.new("images/speech/animation-bubble-pop-two-lines"), true)
     ANIMATIONS.thought_bubble_start = animloop.new(6 * frame_ms, gfxit.new("images/speech/animation-dream-cocktail_start"), true)
     ANIMATIONS.thought_bubble = animloop.new(6 * frame_ms, gfxit.new("images/speech/animation-dream-cocktail"), true)
     TEXTURES.instructions = gfxi.new("images/instructions")
@@ -828,6 +877,8 @@ function Init_visuals()
     -- Load images
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
+    TEXTURES.cursor_flick_hold = gfxi.new("images/cursor/finger_snip_held")
+    ANIMATIONS.cursor_flick = animloop.new(4 * frame_ms, gfxit.new("images/cursor/animation-finger-snip-table-1"), true)
     ANIMATIONS.place_hints = {
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_peppermints_blink"), true), -- peppermints
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_perfume_blink"), true), -- perfume
@@ -915,8 +966,8 @@ function Init_visuals()
     table.insert(DRAW_PASSES, Set_draw_pass(21, draw_ui_prompts))
     table.insert(DRAW_PASSES, Set_draw_pass(23, draw_ingredient_place_hint))
     -- 24: grabbed ingredients
-    table.insert(DRAW_PASSES, Set_draw_pass(25, draw_ingredient_grab_cursor))
-    table.insert(DRAW_PASSES, Set_draw_pass(27, draw_dialog_bubble))
+    table.insert(DRAW_PASSES, Set_draw_pass(27, draw_ingredient_grab_cursor))
+    table.insert(DRAW_PASSES, Set_draw_pass(25, draw_dialog_bubble))
     -- depth 30+: overlayed modal instructions
     table.insert(DRAW_PASSES, Set_draw_pass(30, draw_overlayed_instructions))
     table.insert(DRAW_PASSES, Set_draw_pass(35, draw_overlayed_recipe))

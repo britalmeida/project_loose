@@ -4,6 +4,9 @@ local vec2d <const> = playdate.geometry.vector2D
 NUM_RUNES = 3
 RUNES = { love = 1, doom = 2, weed = 3 }
 DIR = { need_more_of = 1, need_less_of = 2 }
+CURSORS = { open = 1, hold = 2, flick_hold = 3, flick = 4}
+SPEECH_BUBBLES = { none = 1, small = 2, big = 3, animation = 4}
+
 
 GAMEPLAY_STATE = {
     -- User modal interation
@@ -13,7 +16,8 @@ GAMEPLAY_STATE = {
     instructions_offset_x = -10,
     instructions_offset_y = 275,
     showing_recipe = false,
-    cursor_hold = false,  -- The gyro hand cursor is held down.
+    cursor = CURSORS.open,  -- State of the cursor (and it's visualization)
+    cursor_prev = CURSORS.open, -- previous state to comapare and reset flick animation
     cursor_pos = point.new(200, 120),
     -- Fire!
     flame_amount = 0.0,
@@ -288,6 +292,8 @@ function Reset_gameplay()
     GAMEPLAY_STATE.instructions_offset_x = -10
     GAMEPLAY_STATE.instructions_offset_y = 275
     GAMEPLAY_STATE.showing_recipe = false
+    GAMEPLAY_STATE.cursor = CURSORS.open
+    GAMEPLAY_STATE.cursor_prev = CURSORS.open
     GAMEPLAY_STATE.flame_amount = 0.0
     GAMEPLAY_STATE.heat_amount = 0.0
     GAMEPLAY_STATE.fire_stoke_count = 0
@@ -572,39 +578,73 @@ function Handle_input()
             GAMEPLAY_STATE.flame_amount = mic_lvl
         end
 
-        -- Check for pressed buttons.
-        if playdate.buttonJustPressed( playdate.kButtonA ) then
-            local picked_up = false
-            GAMEPLAY_STATE.cursor_hold = true
-            for i, ingredient in pairs(INGREDIENTS) do
-                if ingredient:try_pickup() then
-                    picked_up = true
-                    if not PLAYER_LEARNED.how_to_grab then
-                        PLAYER_LEARNED.how_to_grab = true
-                        if TARGET_COCKTAIL.type_idx < 5 then
-                            FROG:flash_b_prompt()
-                        end
-                        Check_tutorial_completion()
-                        print('Learned how to grab.')
-                    end
-                    break
-                end
+        
+        -- Check hand context to choose which A interactions to use
+        -- Then check for pressed buttons
+        local bubble_type = get_speech_bubble_type()
+        local bubble_bounds = get_speech_bubble_bounds()
+        local speech_min_time = GAMEPLAY_TIMERS.speech_timer.currentTime > 300
+        local is_speech_bubble = bubble_type ~= SPEECH_BUBBLES.none
+        local cursor_on_bubble = false
+        if bubble_bounds ~= nil then
+            if bubble_bounds:containsPoint(GAMEPLAY_STATE.cursor_pos:unpack()) then
+                cursor_on_bubble = true
             end
-            for i, ingredient in pairs(INGREDIENTS) do
-                if ingredient.state == INGREDIENT_STATE.is_over_cauldron and picked_up then
-                    ingredient.state = INGREDIENT_STATE.is_in_air
-                end
-            end
-            FROG:Click_the_frog()
         end
-        if playdate.buttonJustReleased(playdate.kButtonA) then
-            GAMEPLAY_STATE.cursor_hold = false
-            for i, ingredient in pairs(INGREDIENTS) do
-                if ingredient.state == INGREDIENT_STATE.is_picked_up then
-                    ingredient:release()
-                end
+        local is_bubble_blocking = is_speech_bubble and cursor_on_bubble
+        local can_pop_speech_bubble = is_bubble_blocking and speech_min_time
+        if is_bubble_blocking then
+            -- Popping the speech bubble that is covering the screen
+            -- Also allow the tickleface frog reaction, with a bubble pop animation
+            if can_pop_speech_bubble then
+                GAMEPLAY_STATE.cursor = CURSORS.flick_hold
             end
-            FROG:Click_the_frog()
+            if can_pop_speech_bubble and playdate.buttonJustReleased( playdate.kButtonA ) then
+                GAMEPLAY_STATE.cursor = CURSORS.flick
+                FROG:pop_speech_bubble()
+                FROG:go_idle()
+                FROG:Click_the_frog(can_pop_speech_bubble)
+            end
+            
+        else
+            -- Reset flick hold if it was previously used
+            if GAMEPLAY_STATE.cursor == CURSORS.flick_hold then
+                GAMEPLAY_STATE.cursor = CURSORS.open
+            end
+            -- All usual interactions on screen
+            if playdate.buttonJustPressed( playdate.kButtonA ) then
+                local picked_up = false
+                GAMEPLAY_STATE.cursor = CURSORS.hold
+                for i, ingredient in pairs(INGREDIENTS) do
+                    if ingredient:try_pickup() then
+                        picked_up = true
+                        if not PLAYER_LEARNED.how_to_grab then
+                            PLAYER_LEARNED.how_to_grab = true
+                            if TARGET_COCKTAIL.type_idx < 5 then
+                                FROG:flash_b_prompt()
+                            end
+                            Check_tutorial_completion()
+                            print('Learned how to grab.')
+                        end
+                        break
+                    end
+                end
+                for i, ingredient in pairs(INGREDIENTS) do
+                    if ingredient.state == INGREDIENT_STATE.is_over_cauldron and picked_up then
+                        ingredient.state = INGREDIENT_STATE.is_in_air
+                    end
+                end
+                FROG:Click_the_frog()
+            end
+            if playdate.buttonJustReleased(playdate.kButtonA) then
+                GAMEPLAY_STATE.cursor = CURSORS.open
+                for i, ingredient in pairs(INGREDIENTS) do
+                    if ingredient.state == INGREDIENT_STATE.is_picked_up then
+                        ingredient:release()
+                    end
+                end
+                FROG:Click_the_frog()
+            end
         end
 
         if playdate.buttonJustReleased( playdate.kButtonB ) then
@@ -677,6 +717,45 @@ function playdate.keyReleased(key)
     elseif key == 'm' then
         IS_SIMULATING_SHAKE = false
     end
+end
+
+
+-- Check if there is a speech bubble and what type
+-- Returns a SPEECH_BUBBLES variable
+function get_speech_bubble_type()
+
+    local bubble_type = SPEECH_BUBBLES.none
+
+    if SPEECH_BUBBLE_ANIM then
+        bubble_type = SPEECH_BUBBLES.animation
+    elseif SPEECH_BUBBLE_TEXT == nil then
+        return bubble_type
+    elseif #SPEECH_BUBBLE_TEXT == 1 then
+        bubble_type = SPEECH_BUBBLES.small
+    elseif #SPEECH_BUBBLE_TEXT > 1 then
+        bubble_type = SPEECH_BUBBLES.big
+    end
+
+    return bubble_type
+
+end
+
+-- Return a rect geometry at the position and size of the current speech bubble
+function get_speech_bubble_bounds()
+    local bubble_type = get_speech_bubble_type()
+    local bubble_bounds
+    if bubble_type == SPEECH_BUBBLES.small then
+        bubble_bounds = playdate.geometry.rect.new(127, 65, 240, 70)
+    elseif bubble_type == SPEECH_BUBBLES.big then
+        bubble_bounds = playdate.geometry.rect.new(116, 56, 260, 90)
+    elseif bubble_type == SPEECH_BUBBLES.animation then
+        bubble_bounds = playdate.geometry.rect.new(254, 60, 80, 70)
+    else
+        return nil
+    end
+
+    return bubble_bounds
+
 end
 
 

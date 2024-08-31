@@ -262,13 +262,17 @@ function Froggo:Ask_for_cocktail()
     self:croak()
 end
 
-
-function Froggo:Click_the_frog()
+-- Will trigger tickleface reaction of the frog if it is clicked on.
+-- Takes an extra argument for cases where the bubble pop flicking is used (shortens the animation)
+function Froggo:Click_the_frog(is_reacting_to_flick)
     local bounds = self:getBoundsRect()
+    if is_reacting_to_flick == nil then
+        is_reacting_to_flick = false
+    end
     -- Make it a bit smaller, so we don't accedentially click on the frog
     bounds:inset(15, 15)
     if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos) and self.state == ACTION_STATE.idle then
-        self:froggo_tickleface()
+        self:froggo_tickleface(is_reacting_to_flick)
     end
 end
 
@@ -432,12 +436,19 @@ function Froggo:go_reacting()
 end
 
 
-function Froggo:froggo_tickleface()
+function Froggo:froggo_tickleface(is_reacting_to_flick)
     self.state = ACTION_STATE.alarmed
     self.sound_state = SOUND_STATE.tickleface
     self:set_frog_sounds()
     self:start_animation(self.anim_tickleface)
-    self:prepare_to_idle(2.9*1000)
+    -- If the animation is triggered by a flick, skip the first 3 frames
+    if is_reacting_to_flick then
+        local three_frames_skipped = 7.5 * frame_ms
+        self.anim_current.frame = 4
+        self:prepare_to_idle(2.9*1000 - three_frames_skipped)
+    else
+        self:prepare_to_idle(2.9*1000)
+    end
 end
 
 
@@ -795,6 +806,18 @@ function Froggo:start_speech_bubble()
         -- Return the time that the speech bubble should be displayed.
         return math.max(2500, #text_lines*1600 + extra_time)
     end
+end
+
+-- Stops speech bubbles and sets variables for the popping animation to start.
+function Froggo:pop_speech_bubble()
+    -- replace speech bubble with the corresponiding pop animation
+    local bubble_type = get_speech_bubble_type()
+    Froggo:stop_speech_bubble()
+    -- Set active bubble animation and reset pop animations
+    SPEECH_BUBBLE_POP = bubble_type
+    ANIMATIONS.dialog_bubble_anim_pop.frame = 1
+    ANIMATIONS.dialog_bubble_oneline_pop.frame = 1
+    ANIMATIONS.dialog_bubble_twoline_pop.frame = 1
 end
 
 
