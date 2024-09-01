@@ -132,7 +132,7 @@ function Recipe_draw_success(y, recipe_steps_text)
     local text_x <const> = 24
     local text_y <const> = 180
     local line_height <const> = 23
-    local extra_lines <const> = 4
+    local extra_lines <const> = 3
     local flip_table <const> = {"flipX", "flipY", "flipXY"}
 
     local num_steps <const> = #recipe_steps_text
