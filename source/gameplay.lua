@@ -597,7 +597,9 @@ function Handle_input()
         local is_bubble_blocking = is_speech_bubble and cursor_on_bubble
         local can_pop_speech_bubble = is_bubble_blocking and speech_min_time
 
-        if is_bubble_blocking then
+        -- Use bubble popping interaction instead of picking up ingredients,
+        -- if cursor is above the speech bubble/frog and not already holding something 
+        if is_bubble_blocking and GAMEPLAY_STATE.cursor ~= CURSORS.hold then
             -- Popping the speech bubble that is covering the screen
             -- Also allow the tickleface frog reaction, with a bubble pop animation
             if can_pop_speech_bubble then

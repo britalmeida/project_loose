@@ -983,5 +983,5 @@ Z_DEPTH = {
     indredient_drops = 3,
     ingredient_slotted_over_cauldron = 4,
     ingredient_drop_splash = 6,
-    grabbed_ingredient = 24
+    grabbed_ingredient = 26
 }
