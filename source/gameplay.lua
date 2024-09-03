@@ -274,6 +274,7 @@ end
 function Stop_gameplay()
     -- Done on every game over/win to stop ongoing sounds and events.
     -- Not a complete tear down of resources.
+    FROG:stop_sounds()
 end
 
 
