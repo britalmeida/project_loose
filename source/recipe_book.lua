@@ -141,8 +141,8 @@ function Recipe_draw_success(y, recipe_steps_text)
     local header_img <const> = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_img
 
     -- figure out amount of insert pieces for the text
-    local insert_height <const> = TEXTURES.recipe_middle[1].height
-    local number_of_inserts <const> = math.ceil(((number_of_lines * line_height) + text_y - TEXTURES.recipe_top.height ) / insert_height)
+    local insert_height <const> = TEXTURES.recipe.middle[1].height
+    local number_of_inserts <const> = math.ceil(((number_of_lines * line_height) + text_y - TEXTURES.recipe.top.height ) / insert_height)
 
     -- FIXME: this makes the game not random anymore.
     -- Recipe backgrounds should be picked based on recipe/length or something that doesn't vary every frame.
@@ -150,7 +150,7 @@ function Recipe_draw_success(y, recipe_steps_text)
     math.randomseed(num_steps)
 
     local y_paper_top <const> = 0 -- margin from the recipe to the top of the screen.
-    local y_first_insert <const> = y_paper_top + TEXTURES.recipe_top.height
+    local y_first_insert <const> = y_paper_top + TEXTURES.recipe.top.height
     local y_recipe_step_start <const> = line_height * 2.2
     local y_header_img <const> = 0
     local y_win_sticker <const> = 124
@@ -170,7 +170,7 @@ function Recipe_draw_success(y, recipe_steps_text)
     -- Draw recipe paper background.
     gfx.pushContext()
         if scroll_offset < y_first_insert then
-            TEXTURES.recipe_top:draw(recipe_x, y + y_paper_top)
+            TEXTURES.recipe.top:draw(recipe_x, y + y_paper_top)
         end
 
         -- Set random positions and flip of each mid section before drawing it
@@ -187,11 +187,11 @@ function Recipe_draw_success(y, recipe_steps_text)
         for a = 1, number_of_inserts, 1 do
             local y_paper_insert <const> = y_first_insert + (a-1) * insert_height
             if y_paper_insert < scroll_window_end and y_paper_insert + insert_height > scroll_offset then
-                TEXTURES.recipe_middle[mid_sections[a].section]:draw(recipe_x, y + y_paper_insert, flip_table[mid_sections[a].flip])
+                TEXTURES.recipe.middle[mid_sections[a].section]:draw(recipe_x, y + y_paper_insert, flip_table[mid_sections[a].flip])
             end
         end
         if y_paper_bottom < scroll_window_end then
-            TEXTURES.recipe_bottom:draw(recipe_x, y + y_paper_bottom)
+            TEXTURES.recipe.bottom:draw(recipe_x, y + y_paper_bottom)
         end
     gfx.popContext()
 
@@ -241,7 +241,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw scrollable top recipe in menu
     local text_x <const> = 13
     local text_y <const> = 54
-    local text_x_aligned <const> = TEXTURES.recipe_small_middle[1].width/2
+    local text_x_aligned <const> = TEXTURES.recipe_small.middle[1].width/2
     local line_height <const> = 21
     local extra_lines <const> = 4
     local flip_table <const> = {"flipX", "flipY", "flipXY"}
@@ -251,9 +251,9 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     math.randomseed(num_steps)
 
     -- figure out number of middle inserts
-    local insert_height <const> = TEXTURES.recipe_small_middle[1].height
-    local top_height <const> = TEXTURES.recipe_small_top.height
-    local bottom_height <const> = TEXTURES.recipe_small_bottom.height
+    local insert_height <const> = TEXTURES.recipe_small.middle[1].height
+    local top_height <const> = TEXTURES.recipe_small.top.height
+    local bottom_height <const> = TEXTURES.recipe_small.bottom.height
     local number_of_lines <const> = #recipe_text + extra_lines
     local number_of_inserts <const> = math.max(0, math.ceil(((number_of_lines * line_height) - top_height ) / insert_height))
     RECIPE_MAX_HEIGHT = top_height + number_of_inserts * insert_height + bottom_height
@@ -261,11 +261,11 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
 
     -- draw recipe background
     gfx.pushContext()
-        TEXTURES.recipe_small_top:draw(x, y)
+        TEXTURES.recipe_small.top:draw(x, y)
         for a = 1, number_of_inserts, 1 do
-            TEXTURES.recipe_small_middle[math.random(5)]:draw(x, y + top_height + (a-1) * insert_height, flip_table[math.random(3)])
+            TEXTURES.recipe_small.middle[math.random(5)]:draw(x, y + top_height + (a-1) * insert_height, flip_table[math.random(3)])
         end
-        TEXTURES.recipe_small_bottom:draw(x, y + top_height + number_of_inserts * insert_height)
+        TEXTURES.recipe_small.bottom:draw(x, y + top_height + number_of_inserts * insert_height)
     gfx.popContext()
 
     -- draw recipe content
