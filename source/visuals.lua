@@ -37,85 +37,8 @@ MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 158, 124
 MAGIC_TRIANGLE_SIZE = 100
 CAULDRON_SLOT_X, CAULDRON_SLOT_Y = MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y
 
--- Debug / Development
 
-local function draw_test_dither_patterns()
-
-    local dither_types = {
-        gfxi.kDitherTypeNone,
-        gfxi.kDitherTypeDiagonalLine,
-        gfxi.kDitherTypeVerticalLine,
-        gfxi.kDitherTypeHorizontalLine,
-        gfxi.kDitherTypeScreen,
-        gfxi.kDitherTypeBayer2x2,
-        gfxi.kDitherTypeBayer4x4,
-        gfxi.kDitherTypeBayer8x8,
-        gfxi.kDitherTypeFloydSteinberg,
-        gfxi.kDitherTypeBurkes,
-        gfxi.kDitherTypeAtkinson
-    }
-    local size = 20
-    local x = 2
-    local y = 2
-
-    gfx.pushContext()
-        gfx.setColor(gfx.kColorWhite)
-
-        -- kDitherTypeBayer8x8 gradient
-        local dither_type = gfxi.kDitherTypeBayer8x8
-        local pattern_img = gfxi.new(size, size, gfx.kColorBlack)
-        for i = 0, 10, 1 do
-            pattern_img:clear(gfx.kColorBlack)
-            gfx.pushContext(pattern_img)
-                gfx.setDitherPattern(i/10, dither_type)
-                gfx.fillRect(0, 0, size, size)
-            gfx.popContext()
-            pattern_img:draw(x, y)
-            y += size+2
-        end
-
-        -- different types
-        local alpha = 0.0
-        for a = 0, 10, 1 do
-            y = 2
-            x += size
-            for i = 0, 10, 1 do
-                pattern_img:clear(gfx.kColorBlack)
-                gfx.pushContext(pattern_img)
-                    gfx.setDitherPattern(alpha, dither_types[i+1])
-                    gfx.fillRect(0, 0, size, size)
-                gfx.popContext()
-                pattern_img:draw(x, y)
-                y += size+2
-            end
-            alpha += 0.1
-        end
-     gfx.popContext()
-
-end
-
-
--- Draw passes
-
-local function draw_soft_circle(x_center, y_center, radius, steps, blend, alpha, color)
-    gfx.pushContext()
-        for a = 1, steps, 1 do
-            gfx.setColor(color)
-            gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
-            gfx.fillCircleAtPoint(x_center, y_center, (1 - a / steps) * radius * blend + radius)
-        end
-    gfx.popContext()
-end
-
-local function draw_soft_ring(x_center, y_center, radius, steps, blend, alpha, color)
-    gfx.pushContext()
-        for a = 1, steps, 1 do
-            gfx.setColor(color)
-            gfx.setDitherPattern((1 - a / steps * alpha), gfxi.kDitherTypeBayer4x4)
-            gfx.drawCircleAtPoint(x_center, y_center, (1 - a / steps) * radius * blend + radius)
-        end
-    gfx.popContext()
-end
+-- Draw utilities
 
 local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend, alpha, color)
     gfx.pushContext()
@@ -133,6 +56,8 @@ local function draw_soft_ellipse(x_center, y_center, width, height, steps, blend
     gfx.popContext()
 end
 
+
+-- Draw passes
 
 local function draw_symbols()
     local PI <const> = 3.141592653589793
@@ -974,7 +899,6 @@ function Init_visuals()
     -- Development
     --table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug))
     table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug_fps))
-    --table.insert(DRAW_PASSES, Set_draw_pass(50, draw_test_dither_patterns))
 end
 
 Z_DEPTH = {
