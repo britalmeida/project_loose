@@ -97,8 +97,8 @@ local drop_tutorials <const> = {
     "13",
 }
 local drop_tips <const> = {
-    "Seems a bit excessive ...\nFewer shakes are also fine.",
-    "Remember to stir it all in.",
+    "Seems a bit excessive?\nMind how much you drop in.",
+    "Remember to stir it in too.",
     "11",
 }
 local recipe_struggle <const> = {

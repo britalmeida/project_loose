@@ -36,7 +36,8 @@ GAMEPLAY_STATE = {
     rune_count_change = {0, 0, 0}, -- Pure change of runes via current ingredient drops
     rune_count_current = {0, 0, 0}, -- Currently stirred positions of rune count. Eventually becomes rune_count
     held_ingredient = 0, -- index of currently helf ingredient
-    dropped_ingredients = 0,
+    dropped_ingredients = 0, -- how many ingredients have been dropped now, before stirred in
+    multi_drop_sequence = 0, -- how many times in a row multiple drops have been stirred in
     counting_stirs = false,
     stirring_complete = false,
     puff_anim_started = false, -- specific for the anim when stirring is complete
@@ -53,6 +54,7 @@ GAMEPLAY_STATE = {
     },
     used_ingredients = 0,
     -- Variables for primarily detecting player struggle
+    mixed_ingredients = false, -- Multiple types of ingredients are mixed before stirring
     cauldron_ingredient = nil,
     last_cauldron_ingredient = nil,
     last_shaken_ingredient = nil,
@@ -140,6 +142,7 @@ RECIPE_STRUGGLE_STEPS = nil
 
 -- Constants to detect struggle
 local min_drops_without_stirring <const> = 6
+local min_mixed_drops_without_stirring <const> = 10
 local excess_stirring_factor <const> = 0.005
 local struggle_reminder_timout <const> = 7*1000
 
@@ -305,6 +308,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.potion_bubbliness = 0.0
     GAMEPLAY_STATE.cauldron_ingredient = nil
     GAMEPLAY_STATE.held_ingredient = 0
+    GAMEPLAY_STATE.mixed_ingredients = false
     GAMEPLAY_STATE.last_cauldron_ingredient = nil
     GAMEPLAY_STATE.last_shaken_ingredient = nil
     GAMEPLAY_STATE.cauldron_swap_count = 0
@@ -321,6 +325,7 @@ function Reset_gameplay()
     end
     GAMEPLAY_STATE.used_ingredients = 0
     GAMEPLAY_STATE.dropped_ingredients = 0
+    GAMEPLAY_STATE.multi_drop_sequence = 0
     GAMEPLAY_STATE.counting_stirs = false
     GAMEPLAY_STATE.stirring_complete = false
     GAMEPLAY_STATE.puff_anim_started = false
@@ -381,7 +386,7 @@ function Reset_gameplay()
     STRUGGLE_PROGRESS.too_little_fire_tracking = 0
     STRUGGLE_PROGRESS.no_shake_tracking = 0
     STRUGGLE_PROGRESS.too_much_stir_tracking = 0
-    STRUGGLE_PROGRESS. too_much_stir_repeated = 0
+    STRUGGLE_PROGRESS.too_much_stir_repeated = 0
     STRUGGLE_PROGRESS.too_much_shaking_tracking = 0
 
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
@@ -398,9 +403,13 @@ end
 function Update_rune_count(drop_rune_count)
     -- Calculate new rune count
     local rune_change = {0, 0, 0}
-    local drops = GAMEPLAY_STATE.dropped_ingredients
 
     GAMEPLAY_STATE.dropped_ingredients += 1
+
+    if GAMEPLAY_STATE.cauldron_ingredient ~= GAMEPLAY_STATE.last_shaken_ingredient
+    and GAMEPLAY_STATE.dropped_ingredients > 1 then
+        GAMEPLAY_STATE.mixed_ingredients = true
+    end
 
     -- Save rune change that the new ingredient drop has on the rune count
     for a = 1, NUM_RUNES, 1 do
@@ -1028,7 +1037,14 @@ function update_liquid()
     if STIR_FACTOR >= 1 then
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
         GAMEPLAY_STATE.rune_count_change = {0, 0, 0}
+        -- 
+        if GAMEPLAY_STATE.dropped_ingredients > 1 then
+            GAMEPLAY_STATE.multi_drop_sequence += 1
+        else
+            GAMEPLAY_STATE.multi_drop_sequence = 0
+        end
         GAMEPLAY_STATE.dropped_ingredients = 0
+        GAMEPLAY_STATE.mixed_ingredients = false
         -- Even though there are no drops in the cauldron, the first is always the current rune count
         CURRENT_DROPS = {{
             table.shallowcopy(GAMEPLAY_STATE.rune_count),
@@ -1197,7 +1213,12 @@ function Check_player_struggle()
     end
 
     -- Too much shaking
-    if GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring then
+    -- Either in too much wihtout stirring, with otu without mixed ingredients, or never shaking in single drops
+    if GAMEPLAY_STATE.dropped_ingredients >= min_mixed_drops_without_stirring
+    or (GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring
+    and GAMEPLAY_STATE.mixed_ingredients == false)
+    or (GAMEPLAY_STATE.multi_drop_sequence >= 4 
+    and GAMEPLAY_STATE.dropped_ingredients >= 2) then
         Check_too_much_shaking_struggle()
     end
 
