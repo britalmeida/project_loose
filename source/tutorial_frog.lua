@@ -337,7 +337,7 @@ function Froggo:wants_to_talk()
         self:start_animation(self.anim_urgent_start)
         Restart_timer(GAMEPLAY_TIMERS.frog_go_urgent, duration)
         -- Make this only 2 seconds long if frog is automated. Then make the frog speak up
-        if GAMEPLAY_STATE.asked_frog_count < FROG_AUTOMATED then
+        if GAMEPLAY_STATE.asked_frog_count < MINIMUM_FROG_INTERACTIONS then
             duration = 2*1000
             total_time = duration
             Restart_timer(GAMEPLAY_TIMERS.talk_reminder, duration)

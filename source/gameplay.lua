@@ -7,6 +7,7 @@ DIR = { need_more_of = 1, need_less_of = 2 }
 CURSORS = { open = 1, hold = 2, flick_hold = 3, flick = 4}
 SPEECH_BUBBLES = { none = 1, small = 2, big = 3, animation = 4}
 
+local frog_speech_interval_duration <const> = 25*1000 -- Time waiting to speek up again while automated
 
 GAMEPLAY_STATE = {
     -- User modal interation
@@ -89,7 +90,7 @@ GOAL_TOLERANCE = 0.1
 GAME_ENDED = false
 
 -- Minimum number of frog interactions before no longer automated
-FROG_AUTOMATED = 3
+MINIMUM_FROG_INTERACTIONS = 2
 
 -- Trend on the current tick
 TREND = 0
@@ -163,7 +164,7 @@ GAMEPLAY_TIMERS = {
         local automated = true
         FROG:Ask_the_frog(automated)
         FROG:flash_b_prompt(6*1000)
-        Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
+        Restart_timer(GAMEPLAY_TIMERS.talk_reminder, frog_speech_interval_duration)
         end),
     speech_timer = playdate.timer.new(100, function()
         FROG:stop_speech_bubble()
@@ -356,7 +357,7 @@ function Reset_gameplay()
     end)
     -- Regular talk reminders on the beginner cocktails
     if TARGET_COCKTAIL.type_idx < 4 then
-        Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
+        Restart_timer(GAMEPLAY_TIMERS.talk_reminder, frog_speech_interval_duration)
     end
 
     PLAYER_LEARNED.how_to_grab = false
@@ -618,6 +619,7 @@ function Handle_gameplay_input()
             if can_pop_speech_bubble and playdate.buttonJustReleased( playdate.kButtonA ) then
                 GAMEPLAY_STATE.cursor = CURSORS.flick
                 FROG:pop_speech_bubble()
+                increase_frog_interaction_count()
                 FROG:go_idle()
                 FROG:Click_the_frog(can_pop_speech_bubble)
             end
@@ -667,17 +669,7 @@ function Handle_gameplay_input()
 
             -- Stop the flasshing B.
             GAMEPLAY_TIMERS.stop_b_flashing.duration -= GAMEPLAY_TIMERS.stop_b_flashing.timeLeft
-
-            -- Press B 3 times for the frog to stop speaking by himself (Unless it's late cocktails)
-            if GAMEPLAY_STATE.asked_frog_count < FROG_AUTOMATED then
-                GAMEPLAY_STATE.asked_frog_count += 1
-                if TARGET_COCKTAIL.type_idx < 4 then
-                    Restart_timer(GAMEPLAY_TIMERS.talk_reminder, 20*1000)
-                end
-            end
-            if GAMEPLAY_STATE.asked_frog_count >= FROG_AUTOMATED then
-                GAMEPLAY_TIMERS.talk_reminder:pause()
-            end
+            increase_frog_interaction_count()
 
             -- Start frog player initiated dialogue
             local automated = false
@@ -1474,4 +1466,19 @@ function Restart_timer(timer, duration)
     timer:start()
     timer:reset()
     timer.duration = duration
+end
+
+
+-- Used when stopping/triggering frog dialogue by player.
+-- Increase counted frog interactions to stop speaking by himself (Unless it's late cocktails)
+function increase_frog_interaction_count()
+    if GAMEPLAY_STATE.asked_frog_count < MINIMUM_FROG_INTERACTIONS then
+        GAMEPLAY_STATE.asked_frog_count += 1
+        if TARGET_COCKTAIL.type_idx < 4 then
+            Restart_timer(GAMEPLAY_TIMERS.talk_reminder, frog_speech_interval_duration)
+        end
+    end
+    if GAMEPLAY_STATE.asked_frog_count >= MINIMUM_FROG_INTERACTIONS then
+        GAMEPLAY_TIMERS.talk_reminder:pause()
+    end
 end
