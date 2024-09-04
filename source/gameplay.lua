@@ -527,7 +527,7 @@ local scroll_speed = 1.8
 
 -- Update Loop: input
 
-function Handle_input()
+function Handle_gameplay_input()
 
     -- When transitioning to end game, stop processing and reacting to new input.
     if GAME_ENDED then

@@ -22,16 +22,19 @@ frame_ms = 1000 / 30
 
 local function initialize()
     -- Start all systems needed by the game to start ticking
-    playdate.sound.micinput.startListening()
 
     -- Make it different, every time!
     math.randomseed(playdate.getSecondsSinceEpoch())
+
+    -- Microphone is off by default, needs manual enabling.
+    playdate.sound.micinput.startListening()
 
     -- Init all the things!
     Init_gameplay()
     Init_visuals()
     Init_menus()
 
+    -- Start counting time.
     playdate.resetElapsedTime()
 end
 
@@ -49,8 +52,9 @@ end
 
 
 function playdate.update()
-    -- Called before every frame is drawn.
+    -- Called every frame.
 
+    -- Handle logic.
     if MENU_STATE.screen == MENU_SCREEN.launch then
         -- Wait for launch to finish
     elseif MENU_STATE.screen ~= MENU_SCREEN.gameplay then
@@ -60,15 +64,23 @@ function playdate.update()
     -- Intentionally check again (no else), the menu might have just started gameplay
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
         -- In gameplay.
-        Handle_input()
+        Handle_gameplay_input()
         Tick_gameplay()
         Calculate_goodness()
         Check_player_learnings()
         Check_player_struggle()
+
     end
 
-    -- Always redraw and update entities (sprites) and timers.
+    -- Redraw
     gfx.clear()
-    gfx.sprite.update()
+    if MENU_STATE.screen == MENU_SCREEN.gameplay then
+        -- The gameplay draws via Playdate's sprite system.
+        gfx.sprite.update()
+    else
+        Draw_menu()
+    end
+
+    -- Always update timers.
     playdate.timer.updateTimers()
 end

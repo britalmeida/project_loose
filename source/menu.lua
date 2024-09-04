@@ -176,10 +176,6 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
     remove_system_menu_entries()
     Stop_gameplay()
 
-    for _, pass in ipairs(DRAW_PASSES) do
-        pass:remove()
-    end
-
     SOUND.bg_loop_gameplay:stop()
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
@@ -249,10 +245,6 @@ end
 function Enter_gameplay()
     MENU_STATE.screen = MENU_SCREEN.gameplay
 
-    for _, pass in ipairs(DRAW_PASSES) do
-        pass:add()
-    end
-
     SOUND.bg_loop_menu:stop()
     if not SOUND.bg_loop_gameplay:isPlaying() then
         SOUND.bg_loop_gameplay:play(0)
@@ -307,7 +299,7 @@ local side_scroll_direction = 1
 local side_scroll_speed = 40
 local credits_return = false
 
-local function draw_ui()
+function Draw_menu()
 
     -- Timing to the music for credits animation
     music_tick += 1
@@ -737,7 +729,4 @@ function Init_menus()
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0
     MENU_STATE.first_option_in_view = 0
-
-    -- Set the multiple things in their Z order of what overlaps what.
-    Set_draw_pass(100, draw_ui) -- UI goes on top of everything.
 end
