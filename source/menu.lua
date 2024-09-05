@@ -47,7 +47,7 @@ local function add_system_menu_entries_gameplay()
     local menuItem, error = menu:addMenuItem("restart", function()
         Reset_gameplay()
     end)
-    local menuItem, error = menu:addMenuItem("main menu", function()
+    local menuItem, error = menu:addMenuItem("drink menu", function()
         Enter_menu_start(0, 0, true)
     end)
 end
