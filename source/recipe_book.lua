@@ -140,11 +140,6 @@ function Recipe_draw_success(y, recipe_steps_text)
     local number_of_inserts <const> = 2 + math.ceil( (num_steps * line_height) / insert_height )
     -- +2 midsections for extra lines at top and bottom.
 
-    -- FIXME: this makes the game not random anymore.
-    -- Recipe backgrounds should be picked based on recipe/length or something that doesn't vary every frame.
-    -- Removing this needs checks that everywhere else where random() is used won't introduce new problems.
-    math.randomseed(num_steps)
-
     local y_paper_top <const> = 0 -- margin from the recipe to the top of the screen.
     local y_first_insert <const> = y_paper_top + TEXTURES.recipe.top.height
     local y_recipe_step_start <const> = line_height * 2.2
@@ -237,15 +232,13 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     local line_height <const> = 21
     local extra_lines <const> = 4
 
-    -- Set consistent random seed based on recipe length
     local num_steps <const> = #recipe_text
-    math.randomseed(num_steps)
 
     -- figure out number of middle inserts
     local insert_height <const> = TEXTURES.recipe_small.middle[1].height
     local top_height <const> = TEXTURES.recipe_small.top.height
     local bottom_height <const> = TEXTURES.recipe_small.bottom.height
-    local number_of_lines <const> = #recipe_text + extra_lines
+    local number_of_lines <const> = num_steps + extra_lines
     local number_of_inserts <const> = math.max(0, math.ceil(((number_of_lines * line_height) - top_height ) / insert_height))
     RECIPE_MAX_HEIGHT = top_height + number_of_inserts * insert_height + bottom_height
     local selected_recipe <const> = COCKTAILS[MENU_STATE.focused_option+1]
