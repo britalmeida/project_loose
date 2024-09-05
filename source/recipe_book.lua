@@ -132,16 +132,13 @@ function Recipe_draw_success(y, recipe_steps_text)
     local text_x <const> = 24
     local text_y <const> = 180
     local line_height <const> = 23
-    local extra_lines <const> = 3
-
-    local num_steps <const> = #recipe_steps_text
-    local number_of_lines <const> = num_steps + extra_lines
+    local insert_height <const> = 30 -- height of midsection textures.
 
     local header_img <const> = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_img
-
+    local num_steps <const> = #recipe_steps_text
     -- figure out amount of insert pieces for the text
-    local insert_height <const> = TEXTURES.recipe.middle[1].height
-    local number_of_inserts <const> = math.ceil(((number_of_lines * line_height) + text_y - TEXTURES.recipe.top.height ) / insert_height)
+    local number_of_inserts <const> = 2 + math.ceil( (num_steps * line_height) / insert_height )
+    -- +2 midsections for extra lines at top and bottom.
 
     -- FIXME: this makes the game not random anymore.
     -- Recipe backgrounds should be picked based on recipe/length or something that doesn't vary every frame.
@@ -173,7 +170,7 @@ function Recipe_draw_success(y, recipe_steps_text)
         end
 
         -- Draw mid sections
-        for a = 0, number_of_inserts -1, 1 do
+        for a = 0, number_of_inserts-1, 1 do
             local y_paper_insert <const> = y_first_insert + a * insert_height
             if y_paper_insert < scroll_window_end and y_paper_insert + insert_height > scroll_offset then
                  -- Get the mid section image and flip from this cocktail's random generated sequence.
@@ -256,7 +253,7 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw recipe background
     gfx.pushContext()
         TEXTURES.recipe_small.top:draw(x, y)
-        for a = 0, number_of_inserts + 1, 1 do
+        for a = 0, number_of_inserts-1, 1 do
             -- Get the mid section image and flip from this cocktail's random generated sequence.
             -- Repeat the 10 options (+1 for Lua arrays).
             local i = (a % 10) + 1
