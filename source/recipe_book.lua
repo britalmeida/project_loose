@@ -133,7 +133,6 @@ function Recipe_draw_success(y, recipe_steps_text)
     local text_y <const> = 180
     local line_height <const> = 23
     local extra_lines <const> = 3
-    local flip_table <const> = {"flipX", "flipY", "flipXY"}
 
     local num_steps <const> = #recipe_steps_text
     local number_of_lines <const> = num_steps + extra_lines
@@ -173,23 +172,19 @@ function Recipe_draw_success(y, recipe_steps_text)
             TEXTURES.recipe.top:draw(recipe_x, y + y_paper_top)
         end
 
-        -- Set random positions and flip of each mid section before drawing it
-        local mid_sections = { }
-        for a = 1, number_of_inserts, 1 do
-            local randomseed = {
-                section = math.random(6),
-                flip = math.random(3),
-            }
-            table.insert(mid_sections, randomseed)
-        end
-
         -- Draw mid sections
-        for a = 1, number_of_inserts, 1 do
-            local y_paper_insert <const> = y_first_insert + (a-1) * insert_height
+        for a = 0, number_of_inserts -1, 1 do
+            local y_paper_insert <const> = y_first_insert + a * insert_height
             if y_paper_insert < scroll_window_end and y_paper_insert + insert_height > scroll_offset then
-                TEXTURES.recipe.middle[mid_sections[a].section]:draw(recipe_x, y + y_paper_insert, flip_table[mid_sections[a].flip])
+                 -- Get the mid section image and flip from this cocktail's random generated sequence.
+                -- Repeat the 10 options (+1 for Lua arrays).
+                local i = (a % 10) + 1
+                local img_idx = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_idxs[i]
+                local flip = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_flips[i]
+                TEXTURES.recipe.middle[img_idx]:draw(recipe_x, y + y_paper_insert, flip)
             end
         end
+
         if y_paper_bottom < scroll_window_end then
             TEXTURES.recipe.bottom:draw(recipe_x, y + y_paper_bottom)
         end
@@ -244,7 +239,6 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     local text_x_aligned <const> = TEXTURES.recipe_small.middle[1].width/2
     local line_height <const> = 21
     local extra_lines <const> = 4
-    local flip_table <const> = {"flipX", "flipY", "flipXY"}
 
     -- Set consistent random seed based on recipe length
     local num_steps <const> = #recipe_text
@@ -262,8 +256,13 @@ function Recipe_draw_menu(x, y, recipe_text, step_types)
     -- draw recipe background
     gfx.pushContext()
         TEXTURES.recipe_small.top:draw(x, y)
-        for a = 1, number_of_inserts, 1 do
-            TEXTURES.recipe_small.middle[math.random(5)]:draw(x, y + top_height + (a-1) * insert_height, flip_table[math.random(3)])
+        for a = 0, number_of_inserts + 1, 1 do
+            -- Get the mid section image and flip from this cocktail's random generated sequence.
+            -- Repeat the 10 options (+1 for Lua arrays).
+            local i = (a % 10) + 1
+            local img_idx = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_idxs[i]
+            local flip = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_flips[i]
+            TEXTURES.recipe_small.middle[img_idx]:draw(x, y + top_height + a * insert_height, flip)
         end
         TEXTURES.recipe_small.bottom:draw(x, y + top_height + number_of_inserts * insert_height)
     gfx.popContext()
