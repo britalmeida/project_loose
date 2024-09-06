@@ -484,7 +484,7 @@ function Update_rune_count(drop_rune_count)
 end
 
 
-win_text = ""
+WIN_TEXT = ""
 
 function Win_game()
     GAME_ENDED = true
@@ -501,12 +501,12 @@ function Win_game()
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then
         GAMEPLAY_STATE.new_high_score = true
         GAMEPLAY_STATE.cocktail_learned = true
-        win_text = "RECIPE\nLEARNED!"
+        WIN_TEXT = "RECIPE\nLEARNED!"
     elseif Score_of_recipe(CURRENT_RECIPE) < Score_of_recipe(FROGS_FAVES.recipes[TARGET_COCKTAIL.name]) then
         GAMEPLAY_STATE.new_high_score = true
-        win_text = "RECIPE\nIMPROVED!"
+        WIN_TEXT = "RECIPE\nIMPROVED!"
     else
-        win_text = "RECIPE\nDONE!"
+        WIN_TEXT = "RECIPE\nDONE!"
     end
     if GAMEPLAY_STATE.new_high_score then
         FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE

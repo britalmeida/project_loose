@@ -121,105 +121,95 @@ function Recipe_update_current()
 end
 
 function Recipe_draw_success(y, recipe_steps_text)
-    -- draw full scrollable recipe on success
 
-    -- Scroll window: which part of the recipe is in view. (window relative to the recipe)
-    -- y can be negative: it's where the recipe starts relative to the playdate viewport.
-    local scroll_offset <const> = -y
-    local scroll_window_end <const> = scroll_offset + 240
+    local num_steps <const> = #recipe_steps_text
+    if num_steps > TARGET_COCKTAIL.step_ratings[3] then
+        WIN_TEXT_2 = "Yep ... that was " .. tostring(num_steps) .. " steps."
+    elseif num_steps > TARGET_COCKTAIL.step_ratings[2] then
+        WIN_TEXT_2 = "Well done. Just " .. tostring(num_steps) .. " steps."
+    elseif num_steps > TARGET_COCKTAIL.step_ratings[1] then
+        WIN_TEXT_2 = "Fantastic! In only " .. tostring(num_steps) .. " steps!"
+    else
+        WIN_TEXT_2 = "No way to beat " .. tostring(num_steps) .. " steps!!!"
+    end
 
-    local recipe_x <const> = 40
-    local text_x <const> = 24
-    local text_y <const> = 180
-    local line_height <const> = 23
-    local insert_height <const> = 30 -- height of midsection textures.
+    -- Draw full scrollable recipe on game ended.
+
+    -- Notes: the recipe top texture fits all of the header parts.
+    -- The variable length steps go in paper inserts, as many as needed.
+    -- At a fixed offset from the last step, starts the footer background on top of the remainder of the last insert.
+    -- All the footer bits fit on the footer texture.
+
+    -- The recipe layout is in its own coordinates: 0 is the top left-corner of the paper,
+    -- no matter where it is placed on screen and if scrolled out of view.
+    -- The draw code uses scroll_offset as the origin.
+    local scroll_offset <const> = y -- 0 or negative. It's where the recipe starts offscreen.
+    local visible_top_y <const> = -y -- Part of the recipe which is shown, in recipe coordinates. For clipping.
+    local visible_bottom_y <const> = visible_top_y + 240
 
     local header_img <const> = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_img
     local num_steps <const> = #recipe_steps_text
-    -- figure out amount of insert pieces for the text
-    local number_of_inserts <const> = 2 + math.ceil( (num_steps * line_height) / insert_height )
-    -- +2 midsections for extra lines at top and bottom.
 
-    local y_paper_top <const> = 0 -- margin from the recipe to the top of the screen.
-    local y_first_insert <const> = y_paper_top + TEXTURES.recipe.top.height
-    local y_recipe_step_start <const> = line_height * 2.2
-    local y_header_img <const> = 0
-    local y_win_sticker <const> = 124
-    local y_first_text <const> = text_y
-    local y_paper_bottom <const> = y_first_text + y_recipe_step_start + (line_height * (num_steps + 1))
+    local recipe_x <const> = 40
+    local text_x <const> = recipe_x + 24
+    local line_height <const> = 23
+    local insert_height <const> = 30 -- height of midsection textures.
+    local y_first_insert <const> = TEXTURES.recipe.top.height
+    local y_first_step <const> = y_first_insert + line_height
+    local y_paper_bottom <const> = y_first_step + (line_height * num_steps) + line_height * 0.5
+    local num_inserts <const> = math.ceil( (y_paper_bottom - y_first_insert) / insert_height )
 
     -- Draw a dark dither background.
     gfx.pushContext()
         gfx.setDitherPattern(0.6, gfxi.kDitherTypeBayer4x4)
         gfx.fillRect(0, 0, 400, 240)
-        -- Note: would it help perf to draw the bg only where it wouldn't be occluded?
-        -- local recipe_x2 = recipe_x + header_img.width
-        -- gfx.fillRect(0, 0, recipe_x+10, 240)
-        -- gfx.fillRect(recipe_x2-10, 0, 400-recipe_x2+10, 240)
     gfx.popContext()
 
-    -- Draw recipe paper background.
     gfx.pushContext()
-        if scroll_offset < y_first_insert then
-            TEXTURES.recipe.top:draw(recipe_x, y + y_paper_top)
-        end
-
-        -- Draw mid sections
-        for a = 0, number_of_inserts-1, 1 do
-            local y_paper_insert <const> = y_first_insert + a * insert_height
-            if y_paper_insert < scroll_window_end and y_paper_insert + insert_height > scroll_offset then
-                 -- Get the mid section image and flip from this cocktail's random generated sequence.
-                -- Repeat the 10 options (+1 for Lua arrays).
-                local i = (a % 10) + 1
-                local img_idx = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_idxs[i]
-                local flip = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_flips[i]
-                TEXTURES.recipe.middle[img_idx]:draw(recipe_x, y + y_paper_insert, flip)
-            end
-        end
-
-        if y_paper_bottom < scroll_window_end then
-            TEXTURES.recipe.bottom:draw(recipe_x, y + y_paper_bottom)
-        end
-    gfx.popContext()
-
-    -- Draw recipe content
-    gfx.pushContext()
-
-        if scroll_offset < y_first_text then
-            header_img:draw(recipe_x-40, y + y_header_img)
-        end
-
         gfx.setFont(FONTS.speech_font)
-        gfx.drawTextAligned(win_text, recipe_x + 66, y + y_win_sticker, kTextAlignment.center)
 
-        y = y + y_first_text
-        gfx.drawText("So the recipe goes\nlike this?", recipe_x + text_x, y)
-
-        y += line_height * 2.2
-        for a = 1, #recipe_steps_text, 1 do
-            if y + line_height > 0 then
-                gfx.drawText(recipe_steps_text[a], recipe_x + text_x, y)
-            end
-            y += line_height
-            if y > 240 then
-                break
-            end
+        -- Draw header.
+        if visible_top_y < y_first_insert then
+            -- Paper background.
+            TEXTURES.recipe.top:draw(recipe_x, scroll_offset)
+            -- Cocktail image.
+            header_img:draw(recipe_x - 40, scroll_offset)
+            -- Sticker: "Recipe Done" / "Recipe Improved".
+            gfx.drawTextAligned(WIN_TEXT, recipe_x + 66, scroll_offset + 124, kTextAlignment.center)
+            -- Starting the recipe.
+            gfx.drawText("So the recipe goes\nlike this?", text_x, scroll_offset + 180)
         end
 
-        -- Show "rating" text.
-        y += line_height * 0.5
-        if y > 0 and y < 240 then
-            if num_steps > TARGET_COCKTAIL.step_ratings[3] then
-                gfx.drawText("Yep ... that was " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
-            elseif num_steps > TARGET_COCKTAIL.step_ratings[2] then
-                gfx.drawText("Well done. Just " .. tostring(num_steps) .. " steps.", recipe_x + text_x, y)
-            elseif num_steps > TARGET_COCKTAIL.step_ratings[1] then
-                gfx.drawText("Fantastic! In only " .. tostring(num_steps) .. " steps!", recipe_x + text_x, y)
-            else
-                gfx.drawText("No way to beat " .. tostring(num_steps) .. " steps!!!", recipe_x + text_x, y)
-            end
+        -- Determine the range of paper mid sections and recipe steps that are visible in the scroll window.
+        local first_insert_to_draw <const> = ( math.max(0, visible_top_y - y_first_insert) // insert_height ) + 1 -- +1 for Lua arrays
+        local last_insert_to_draw <const> = math.min(num_inserts,
+                                             ( math.max(0, visible_bottom_y - y_first_insert) // insert_height ) + 1 )
+        local first_step_to_draw <const> =   ( math.max(0, visible_top_y - y_first_step) // line_height ) + 1
+        local last_step_to_draw <const> = math.min(num_steps,
+                                             ( math.max(0, visible_bottom_y - y_first_step) // line_height ) + 1 )
+
+        -- Draw recipe steps paper background.
+        for a = first_insert_to_draw, last_insert_to_draw, 1 do
+            local y_paper_insert <const> = y_first_insert + (a-1) * insert_height
+            -- Get the mid section image and its flip from this cocktail's random generated sequence.
+            -- Repeat the 10 options (+1/-1 for Lua arrays yay).
+            local i = ((a-1) % 10) + 1
+            local img_idx = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_idxs[i]
+            local flip = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_flips[i]
+            TEXTURES.recipe.middle[img_idx]:draw(recipe_x, scroll_offset + y_paper_insert, flip)
+        end
+        -- Draw steps.
+        for a = first_step_to_draw, last_step_to_draw, 1 do
+            gfx.drawText(recipe_steps_text[a], text_x, scroll_offset + y_first_step + (a-1) * line_height)
         end
 
+        -- Draw footer.
+        if visible_bottom_y > y_paper_bottom then
+            -- Paper background.
+            TEXTURES.recipe.bottom:draw(recipe_x, scroll_offset + y_paper_bottom)
+            -- Show "rating" text.
+            gfx.drawText(WIN_TEXT_2, text_x, scroll_offset + y_paper_bottom)
+        end
     gfx.popContext()
 end
 
