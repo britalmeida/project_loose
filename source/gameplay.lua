@@ -536,15 +536,20 @@ local scroll_speed = 1.8
 
 function Handle_gameplay_input()
 
-    -- When transitioning to end game, stop processing and reacting to new input.
     if GAME_ENDED then
-        -- Wait for recipe to show up before handling more input
-        if not GAMEPLAY_STATE.showing_recipe and playdate.buttonJustReleased( playdate.kButtonB ) then
-            -- stop burp_anim timer
-            GAMEPLAY_TIMERS.burp_anim:pause()
-            -- trim time off burptalk_anim timer to trigger its function
-            GAMEPLAY_TIMERS.burptalk_anim.duration -= 10*1000
-        elseif GAMEPLAY_STATE.showing_recipe then
+        -- When the game is on, stop processing the usual gameplay input.
+
+        -- First there is a transition before showing the recipe where the frog drinks the cocktail.
+        if not GAMEPLAY_STATE.showing_recipe then
+            -- Possibly skip the drinking animation. Don't react to other input.
+            if playdate.buttonJustReleased( playdate.kButtonB ) then
+                -- stop burp_anim timer
+                GAMEPLAY_TIMERS.burp_anim:pause()
+                -- trim time off burptalk_anim timer to trigger its function
+                GAMEPLAY_TIMERS.burptalk_anim.duration -= 10*1000
+            end
+        else
+            -- Handle recipe scrolling.
             local crankTicks = playdate.getCrankTicks(100)
             end_recipe_y += -crankTicks
             if playdate.buttonIsPressed( playdate.kButtonUp ) then
@@ -552,7 +557,6 @@ function Handle_gameplay_input()
             elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
                 end_recipe_y += -scroll_speed * 2
             end
-
             -- Cap scrollable range
             local line_height = 23
             local extra_lines = 4
@@ -563,7 +567,7 @@ function Handle_gameplay_input()
                 end_recipe_y = -recipe_scroll_range
             end
 
-            -- Back to menus
+            -- Back transition back to menus
             if playdate.buttonJustReleased( playdate.kButtonB ) or
             playdate.buttonJustReleased( playdate.kButtonA ) then
                 -- A few ticks timer so it doesn't overap with the mission menu controlls
