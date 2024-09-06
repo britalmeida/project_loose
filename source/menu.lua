@@ -281,14 +281,14 @@ function Small_recipe_hover(TOP_RECIPE_OFFSET)
         local x_hover = x_offset * 2.5 * recipe_hover_tick / (recipe_hover_time)
         local y_hover = y_offset * 2.5 * recipe_hover_tick / recipe_hover_time
 
-        return {math.floor(x_hover), math.floor(y_hover + TOP_RECIPE_OFFSET)}
+        return math.floor(x_hover), math.floor(y_hover + TOP_RECIPE_OFFSET)
     else
         if recipe_is_hovering then
             recipe_is_hovering = false
-            return {0, TOP_RECIPE_OFFSET}
+            return 0, TOP_RECIPE_OFFSET
         end
     end
-    return {0, TOP_RECIPE_OFFSET}
+    return 0, TOP_RECIPE_OFFSET
 end
 
 
@@ -479,7 +479,7 @@ function Draw_menu()
             local recipe_text = FROGS_FAVES_TEXT[recipe_cocktail_name]
             local recipe_steps = FROGS_FAVES_STEPS[recipe_cocktail_name]
 
-            local x_hover, y_hover = Small_recipe_hover(TOP_RECIPE_OFFSET)[1], Small_recipe_hover(TOP_RECIPE_OFFSET)[2]
+            local x_hover, y_hover = Small_recipe_hover(TOP_RECIPE_OFFSET)
             if FROGS_FAVES_TEXT[recipe_cocktail_name] ~= nil then
                 Recipe_draw_menu(recipe_x - x_hover, 240 - y_hover + 6, recipe_text, recipe_steps)
             end
