@@ -36,8 +36,7 @@ function Recipe_steps_to_text(recipe_steps, is_win_recipe)
 
     local text_lines = {}
     -- Pre-size the array to the necessary number of text line steps to avoid resizes.
-    --commented out for now until it works.
-    -- table.setn(#recipe_steps)
+    table.create(#recipe_steps, 0)
 
     -- Construct a text line for each recipe step. e.g.:
     -- "1. Add 3 peppermints" or "- 3 peppermints"
