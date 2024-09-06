@@ -4,6 +4,14 @@ local gfxi <const> = playdate.graphics.image
 RECIPE_TEXT = {}
 RECIPE_MAX_HEIGHT = 0
 
+GAME_END_RECIPE = {
+    cocktail = nil, -- reference to the COCKTAILS table entry.
+    win_sticker = "", -- e.g. "Recipe\nImproved"
+    text_steps = {}, -- e.g. {"1. Add 3 peppermints", "2. Stir just a bit", ...}
+    num_text_steps = 0, -- precalculated number of text steps. Looks like this is O(n) in Lua.
+    rating_text = "", -- e.g. "No way to beat X steps!!!"
+}
+
 
 -- Convert a list of ingredient drop types to a counted list of consecutive drops.
 -- e.g.: { 1, 1, 1, 4, 1, 1 } -> { {1, 3}, {4, 1}, {1, 2} }
@@ -119,19 +127,8 @@ function Recipe_update_current()
     RECIPE_STRUGGLE_STEPS = #RECIPE_TEXT_SMALL >= 20 and math.fmod(#RECIPE_TEXT_SMALL - 20, 15) == 0
 end
 
-function Recipe_draw_success(y, recipe_steps_text)
 
-    local num_steps <const> = #recipe_steps_text
-    if num_steps > TARGET_COCKTAIL.step_ratings[3] then
-        WIN_TEXT_2 = "Yep ... that was " .. tostring(num_steps) .. " steps."
-    elseif num_steps > TARGET_COCKTAIL.step_ratings[2] then
-        WIN_TEXT_2 = "Well done. Just " .. tostring(num_steps) .. " steps."
-    elseif num_steps > TARGET_COCKTAIL.step_ratings[1] then
-        WIN_TEXT_2 = "Fantastic! In only " .. tostring(num_steps) .. " steps!"
-    else
-        WIN_TEXT_2 = "No way to beat " .. tostring(num_steps) .. " steps!!!"
-    end
-
+function Recipe_draw_success(y)
     -- Draw full scrollable recipe on game ended.
 
     -- Notes: the recipe top texture fits all of the header parts.
@@ -146,8 +143,7 @@ function Recipe_draw_success(y, recipe_steps_text)
     local visible_top_y <const> = -y -- Part of the recipe which is shown, in recipe coordinates. For clipping.
     local visible_bottom_y <const> = visible_top_y + 240
 
-    local header_img <const> = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_img
-    local num_steps <const> = #recipe_steps_text
+    local num_steps <const> = GAME_END_RECIPE.num_text_steps
 
     local recipe_x <const> = 40
     local text_x <const> = recipe_x + 24
@@ -172,9 +168,9 @@ function Recipe_draw_success(y, recipe_steps_text)
             -- Paper background.
             TEXTURES.recipe.top:draw(recipe_x, scroll_offset)
             -- Cocktail image.
-            header_img:draw(recipe_x - 40, scroll_offset)
+            GAME_END_RECIPE.cocktail.recipe_img:draw(recipe_x - 40, scroll_offset)
             -- Sticker: "Recipe Done" / "Recipe Improved".
-            gfx.drawTextAligned(WIN_TEXT, recipe_x + 66, scroll_offset + 124, kTextAlignment.center)
+            gfx.drawTextAligned(GAME_END_RECIPE.win_sticker, recipe_x + 66, scroll_offset + 124, kTextAlignment.center)
             -- Starting the recipe.
             gfx.drawText("So the recipe goes\nlike this?", text_x, scroll_offset + 180)
         end
@@ -193,13 +189,13 @@ function Recipe_draw_success(y, recipe_steps_text)
             -- Get the mid section image and its flip from this cocktail's random generated sequence.
             -- Repeat the 10 options (+1/-1 for Lua arrays yay).
             local i = ((a-1) % 10) + 1
-            local img_idx = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_idxs[i]
-            local flip = COCKTAILS[TARGET_COCKTAIL.type_idx].recipe_mid_flips[i]
+            local img_idx = GAME_END_RECIPE.cocktail.recipe_mid_idxs[i]
+            local flip = GAME_END_RECIPE.cocktail.recipe_mid_flips[i]
             TEXTURES.recipe.middle[img_idx]:draw(recipe_x, scroll_offset + y_paper_insert, flip)
         end
         -- Draw steps.
         for a = first_step_to_draw, last_step_to_draw, 1 do
-            gfx.drawText(recipe_steps_text[a], text_x, scroll_offset + y_first_step + (a-1) * line_height)
+            gfx.drawText(GAME_END_RECIPE.text_steps[a], text_x, scroll_offset + y_first_step + (a-1) * line_height)
         end
 
         -- Draw footer.
@@ -207,7 +203,7 @@ function Recipe_draw_success(y, recipe_steps_text)
             -- Paper background.
             TEXTURES.recipe.bottom:draw(recipe_x, scroll_offset + y_paper_bottom)
             -- Show "rating" text.
-            gfx.drawText(WIN_TEXT_2, text_x, scroll_offset + y_paper_bottom)
+            gfx.drawText(GAME_END_RECIPE.rating_text, text_x, scroll_offset + y_paper_bottom)
         end
     gfx.popContext()
 end

@@ -136,9 +136,3 @@ function Set_target_potion(chosen_cocktail_idx)
     TARGET_COCKTAIL.rune_count[a] = chosen_cocktail.rune_composition[a]
   end
 end
-
-
-function Score_of_recipe(recipe)
-  local score = #recipe
-  return score
-end

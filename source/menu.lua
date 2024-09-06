@@ -224,7 +224,7 @@ function enter_menu_mission(enter_from_gameplay)
 
     -- First do sticker animation or directly enter mission selection state
     -- Needed to lock inputs during animation
-    if enter_from_gameplay and (GAMEPLAY_STATE.cocktail_learned or GAMEPLAY_STATE.new_mastered) then
+    if enter_from_gameplay and (GAME_END_STICKERS.cocktail_learned or GAME_END_STICKERS.new_mastered) then
         MENU_STATE.screen = MENU_SCREEN.mission_sticker
         Sticker_slap()
     else
@@ -493,10 +493,10 @@ function Draw_menu()
                 x = UI_TEXTURES.stickerslap:image().width/2 ,
                 y = UI_TEXTURES.stickerslap:image().height*0.35 ,
             }
-            if UI_TEXTURES.stickerslap.frame >= 7 and GAMEPLAY_STATE.new_mastered then
+            if UI_TEXTURES.stickerslap.frame >= 7 and GAME_END_STICKERS.new_mastered then
                 hand_x = focused_sticker_mastered.x - hand_anchor.x
                 hand_y = focused_sticker_mastered.y - hand_anchor.y
-            elseif UI_TEXTURES.stickerslap.frame >= 7 and GAMEPLAY_STATE.cocktail_learned then
+            elseif UI_TEXTURES.stickerslap.frame >= 7 and GAME_END_STICKERS.cocktail_learned then
                 hand_x = focused_sticker_served.x - hand_anchor.x
                 hand_y = focused_sticker_served.y - hand_anchor.y
             end
@@ -504,10 +504,10 @@ function Draw_menu()
             -- Set position of sticker glitter
             local glitter_x = 0
             local glitter_y = 0
-            if GAMEPLAY_STATE.new_mastered then
+            if GAME_END_STICKERS.new_mastered then
                 glitter_x = focused_sticker_mastered.x
                 glitter_y = focused_sticker_mastered.y
-            elseif GAMEPLAY_STATE.cocktail_learned then
+            elseif GAME_END_STICKERS.cocktail_learned then
                 glitter_x = focused_sticker_served.x
                 glitter_y = focused_sticker_served.y
             end

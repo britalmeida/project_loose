@@ -61,10 +61,6 @@ GAMEPLAY_STATE = {
     last_shaken_ingredient = nil,
     cauldron_swap_count = 0,
     asked_frog_count = 0,
-    -- If new stickers were unlocked after beating the cocktail
-    cocktail_learned = false,
-    new_high_score = false,
-    new_mastered = false,
     -- DEPRECATED - this 'tick' is used for progressing animations, but it should be removed
     -- as it makes animations framerate dependent.
     game_tick = 0,
@@ -88,6 +84,12 @@ DIFF_TO_TARGET = {
 }
 GOAL_TOLERANCE = 0.1
 GAME_ENDED = false
+GAME_END_STICKERS = {
+    -- If new stickers were unlocked after beating the cocktail
+    cocktail_learned = false,
+    new_high_score = false,
+    new_mastered = false,
+}
 
 -- Minimum number of frog interactions before no longer automated
 MINIMUM_FROG_INTERACTIONS = 2
@@ -327,9 +329,6 @@ function Reset_gameplay()
     GAMEPLAY_STATE.counting_stirs = false
     GAMEPLAY_STATE.stirring_complete = false
     GAMEPLAY_STATE.puff_anim_started = false
-    GAMEPLAY_STATE.cocktail_learned = false
-    GAMEPLAY_STATE.new_high_score = false
-    GAMEPLAY_STATE.new_mastered = false
     CURRENT_RECIPE = {}
     RECIPE_TEXT = {}
 
@@ -484,7 +483,63 @@ function Update_rune_count(drop_rune_count)
 end
 
 
-WIN_TEXT = ""
+local function update_accomplishments()
+
+    GAME_END_RECIPE.cocktail = COCKTAILS[TARGET_COCKTAIL.type_idx]
+    GAME_END_RECIPE.text_steps = RECIPE_TEXT
+    GAME_END_RECIPE.num_text_steps = #RECIPE_TEXT
+
+    -- Determine accomplishments.
+    GAME_END_STICKERS.cocktail_learned = false
+    GAME_END_STICKERS.new_high_score = false
+    GAME_END_STICKERS.new_mastered = false
+
+    -- Set win recipe top text
+    if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then
+        -- Recipe finished for the first time.
+        GAME_END_STICKERS.new_high_score = true
+        GAME_END_STICKERS.cocktail_learned = true
+        GAME_END_RECIPE.win_sticker = "RECIPE\nLEARNED!"
+    elseif #CURRENT_RECIPE < #FROGS_FAVES.recipes[TARGET_COCKTAIL.name] then
+        -- Recipe done in less steps.
+        GAME_END_STICKERS.new_high_score = true
+        GAME_END_RECIPE.win_sticker = "RECIPE\nIMPROVED!"
+    else
+        GAME_END_RECIPE.win_sticker = "RECIPE\nDONE!"
+    end
+
+    -- Check if the cocktail has been mastered for the first time
+    local current_steps <const> = #RECIPE_TEXT
+    local prev_top_steps <const> = #FROGS_FAVES_TEXT[COCKTAILS[RECIPE_COCKTAIL].name]
+    if current_steps <= TARGET_COCKTAIL.step_ratings[1] and
+        (prev_top_steps > TARGET_COCKTAIL.step_ratings[1] or prev_top_steps == 0) then
+            GAME_END_STICKERS.new_mastered = true
+    end
+
+    -- Determine rating text.
+    local num_steps <const> = GAME_END_RECIPE.num_text_steps
+    if num_steps > TARGET_COCKTAIL.step_ratings[3] then
+        GAME_END_RECIPE.rating_text = "Yep ... that was "..tostring(num_steps).." steps."
+    elseif num_steps > TARGET_COCKTAIL.step_ratings[2] then
+        GAME_END_RECIPE.rating_text = "Well done. Just "..tostring(num_steps).." steps."
+    elseif num_steps > TARGET_COCKTAIL.step_ratings[1] then
+        GAME_END_RECIPE.rating_text = "Fantastic! In only "..tostring(num_steps).." steps!"
+    else
+        GAME_END_RECIPE.rating_text = "No way to beat "..tostring(num_steps).." steps!!!"
+    end
+
+    -- Register new highscores to FROGS_FAVES.
+
+    -- Mark cocktail as done.
+    FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] = true
+    -- Store new best recipe.
+    if GAME_END_STICKERS.new_high_score then
+        FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE
+    end
+    -- Persist the score to the player's Playdate disk.
+    Store_high_scores()
+end
+
 
 function Win_game()
     GAME_ENDED = true
@@ -496,34 +551,7 @@ function Win_game()
     GAMEPLAY_STATE.cursor_pos.x = 0
     GAMEPLAY_STATE.cursor_pos.y = 240
 
-    -- Set win recipe top text
-    GAMEPLAY_STATE.new_high_score = false
-    if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then
-        GAMEPLAY_STATE.new_high_score = true
-        GAMEPLAY_STATE.cocktail_learned = true
-        WIN_TEXT = "RECIPE\nLEARNED!"
-    elseif Score_of_recipe(CURRENT_RECIPE) < Score_of_recipe(FROGS_FAVES.recipes[TARGET_COCKTAIL.name]) then
-        GAMEPLAY_STATE.new_high_score = true
-        WIN_TEXT = "RECIPE\nIMPROVED!"
-    else
-        WIN_TEXT = "RECIPE\nDONE!"
-    end
-    if GAMEPLAY_STATE.new_high_score then
-        FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE
-    end
-
-    -- Check if the cocktail has been mastered for the first time
-    local current_steps <const> = #RECIPE_TEXT
-    local prev_top_steps <const> = #FROGS_FAVES_TEXT[COCKTAILS[RECIPE_COCKTAIL].name]
-    if current_steps <= TARGET_COCKTAIL.step_ratings[1] and
-        (prev_top_steps > TARGET_COCKTAIL.step_ratings[1] or prev_top_steps == 0) then
-            GAMEPLAY_STATE.new_mastered = true
-    else
-        GAMEPLAY_STATE.new_mastered = false
-    end
-
-    FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] = true
-    Store_high_scores()
+    update_accomplishments()
 end
 
 
