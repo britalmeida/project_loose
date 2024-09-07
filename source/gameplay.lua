@@ -391,9 +391,6 @@ function Reset_gameplay()
 
     -- Reset time delta
     playdate.resetElapsedTime()
-
-    -- Reset highscore recipe scroll
-    end_recipe_y = 0
 end
 
 -- Add a new ingredient drop and recalculate rune count variables
@@ -552,11 +549,12 @@ function Win_game()
     GAMEPLAY_STATE.cursor_pos.y = 240
 
     update_accomplishments()
+
+    -- Prepare recipe for display.
+    -- Set the scroll range to "some" less than the recipe height so it doesn't fully go offscreen.
+    RECIPE_MAX_SCROLL = Calculate_recipe_size_for_success_draw() - 180
+    RECIPE_SCROLL = 0
 end
-
-
-end_recipe_y = 0
-local scroll_speed = 1.8
 
 
 
@@ -579,21 +577,13 @@ function Handle_gameplay_input()
         else
             -- Handle recipe scrolling.
             local crankTicks = playdate.getCrankTicks(100)
-            end_recipe_y += -crankTicks
+            RECIPE_SCROLL += -crankTicks
             if playdate.buttonIsPressed( playdate.kButtonUp ) then
-                end_recipe_y += scroll_speed * 2
+                RECIPE_SCROLL += 4
             elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
-                end_recipe_y += -scroll_speed * 2
+                RECIPE_SCROLL -= 4
             end
-            -- Cap scrollable range
-            local line_height = 23
-            local extra_lines = 4
-            local recipe_scroll_range = #RECIPE_TEXT * line_height + (extra_lines * line_height) -- Line height from recipe_book.lua
-            if end_recipe_y > 0 then
-                end_recipe_y = 0
-            elseif end_recipe_y < -recipe_scroll_range then
-                end_recipe_y = -recipe_scroll_range
-            end
+            RECIPE_SCROLL = Clamp(RECIPE_SCROLL, -RECIPE_MAX_SCROLL, 0)
 
             -- Back transition back to menus
             if playdate.buttonJustReleased( playdate.kButtonB ) or

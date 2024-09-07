@@ -11,6 +11,8 @@ GAME_END_RECIPE = {
     num_text_steps = 0, -- precalculated number of text steps. Looks like this is O(n) in Lua.
     rating_text = "", -- e.g. "No way to beat X steps!!!"
 }
+RECIPE_SCROLL = 0 -- In px. 0 or negative. It's where the recipe starts offscreen relative to the top of the playdate screen.
+RECIPE_MAX_SCROLL = 0 -- In px. Maximum value that the recipe can go up. Less than the recipe height so it doesn't fully disappear.
 
 
 -- Convert a list of ingredient drop types to a counted list of consecutive drops.
@@ -128,7 +130,21 @@ function Recipe_update_current()
 end
 
 
-function Recipe_draw_success(y)
+function Calculate_recipe_size_for_success_draw()
+    local num_steps <const> = GAME_END_RECIPE.num_text_steps
+
+    local line_height <const> = 23
+    local half_line_height <const> = 12
+    local y_first_insert <const> = TEXTURES.recipe.top.height
+    local y_first_step <const> = y_first_insert + line_height
+    local y_paper_bottom <const> = y_first_step + (line_height * num_steps) + half_line_height
+    local recipe_height <const> = y_paper_bottom + TEXTURES.recipe.bottom.height
+
+    return recipe_height
+end
+
+
+function Recipe_draw_success()
     -- Draw full scrollable recipe on game ended.
 
     -- Notes: the recipe top texture fits all of the header parts.
@@ -139,8 +155,8 @@ function Recipe_draw_success(y)
     -- The recipe layout is in its own coordinates: 0 is the top left-corner of the paper,
     -- no matter where it is placed on screen and if scrolled out of view.
     -- The draw code uses scroll_offset as the origin.
-    local scroll_offset <const> = y -- 0 or negative. It's where the recipe starts offscreen.
-    local visible_top_y <const> = -y -- Part of the recipe which is shown, in recipe coordinates. For clipping.
+    local scroll_offset <const> = RECIPE_SCROLL -- 0 or negative. It's where the recipe starts offscreen.
+    local visible_top_y <const> = -RECIPE_SCROLL -- Part of the recipe which is shown, in recipe coordinates. For clipping.
     local visible_bottom_y <const> = visible_top_y + 240
 
     local num_steps <const> = GAME_END_RECIPE.num_text_steps
@@ -148,10 +164,11 @@ function Recipe_draw_success(y)
     local recipe_x <const> = 40
     local text_x <const> = recipe_x + 24
     local line_height <const> = 23
+    local half_line_height <const> = 12
     local insert_height <const> = 30 -- height of midsection textures.
     local y_first_insert <const> = TEXTURES.recipe.top.height
     local y_first_step <const> = y_first_insert + line_height
-    local y_paper_bottom <const> = y_first_step + (line_height * num_steps) + line_height * 0.5
+    local y_paper_bottom <const> = y_first_step + (line_height * num_steps) + half_line_height
     local num_inserts <const> = math.ceil( (y_paper_bottom - y_first_insert) / insert_height )
 
     -- Draw a dark dither background.
