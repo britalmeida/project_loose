@@ -134,10 +134,10 @@ function Calculate_recipe_size_for_success_draw()
     local num_steps <const> = GAME_END_RECIPE.num_text_steps
 
     local line_height <const> = 23
-    local half_line_height <const> = 12
+    local paragraph_space <const> = 18
     local y_first_insert <const> = TEXTURES.recipe.top.height
-    local y_first_step <const> = y_first_insert + line_height
-    local y_paper_bottom <const> = y_first_step + (line_height * num_steps) + half_line_height
+    local y_first_step <const> = y_first_insert + paragraph_space
+    local y_paper_bottom <const> = y_first_step + (line_height * num_steps) + paragraph_space
     local recipe_height <const> = y_paper_bottom + TEXTURES.recipe.bottom.height
 
     return recipe_height
@@ -164,11 +164,11 @@ function Recipe_draw_success()
     local recipe_x <const> = 40
     local text_x <const> = recipe_x + 24
     local line_height <const> = 23
-    local half_line_height <const> = 12
+    local paragraph_space <const> = 18
     local insert_height <const> = 30 -- height of midsection textures.
     local y_first_insert <const> = TEXTURES.recipe.top.height
-    local y_first_step <const> = y_first_insert + line_height
-    local y_paper_bottom <const> = y_first_step + (line_height * num_steps) + half_line_height
+    local y_first_step <const> = y_first_insert + paragraph_space
+    local y_paper_bottom <const> = y_first_step + (line_height * num_steps) + paragraph_space
     local num_inserts <const> = math.ceil( (y_paper_bottom - y_first_insert) / insert_height )
 
     -- Draw a dark dither background.
