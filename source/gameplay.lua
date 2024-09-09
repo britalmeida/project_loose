@@ -270,6 +270,7 @@ function Init_gameplay()
 
     playdate.startAccelerometer()
 
+    Init_cocktails()
     FROG = Froggo()
     INGREDIENT_SPLASH = IngredientSplash()
 end

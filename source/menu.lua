@@ -336,8 +336,8 @@ function Draw_menu()
                     local cocktail_x = first_cocktail_x + cocktail_width * cocktail_relative_to_window
                     if (i-1) == MENU_STATE.focused_option and MENU_STATE.screen == 3 then
                         -- Save some positions for later animation drawing
-                        focused_sticker_served.x = COCKTAILS[i].sticker_pos[1] + cocktail_x
-                        focused_sticker_served.y = COCKTAILS[i].sticker_pos[2] - 10
+                        focused_sticker_served.x = COCKTAILS[i].served_sticker_pos[1] + cocktail_x
+                        focused_sticker_served.y = COCKTAILS[i].served_sticker_pos[2] - 10
                         focused_sticker_mastered.x = COCKTAILS[i].mastered_sticker_pos[1] + cocktail_x
                         focused_sticker_mastered.y = COCKTAILS[i].mastered_sticker_pos[2] - 10
                         -- Locked or unlocked cocktail art
@@ -373,7 +373,7 @@ function Draw_menu()
                     -- draw served sticker
                     gfx.pushContext()
                     if cocktail_done then
-                        COCKTAILS[i].sticker:drawAnchored(cocktail_x + COCKTAILS[i].sticker_pos[1] , COCKTAILS[i].sticker_pos[2] - 10, 0.5, 0.5)
+                        COCKTAILS[i].served_sticker:drawAnchored(cocktail_x + COCKTAILS[i].served_sticker_pos[1] , COCKTAILS[i].served_sticker_pos[2] - 10, 0.5, 0.5)
                     end
                     gfx.popContext()
                 end
@@ -657,11 +657,11 @@ function Init_menus()
 
     -- Create animation loops for the cocktails.
     for i in pairs(COCKTAILS) do
-        table.insert(cocktail_anims, animloop.new(COCKTAILS[i].framerate * frame_ms * music_speed, COCKTAILS[i].table, true))
+        table.insert(cocktail_anims, animloop.new(16 * frame_ms * music_speed, COCKTAILS[i].table, true))
     end
 
     for i in pairs(COCKTAILS) do
-        table.insert(cocktail_anims_locked, animloop.new(COCKTAILS[i].framerate * frame_ms * music_speed, COCKTAILS[i].locked_table, true))
+        table.insert(cocktail_anims_locked, animloop.new(16 * frame_ms * music_speed, COCKTAILS[i].locked_table, true))
     end
 
     -- Create animation loops for the menu backgrounds
