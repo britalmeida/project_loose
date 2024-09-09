@@ -105,9 +105,7 @@ end
 
 function Load_high_scores()
     FROGS_FAVES = playdate.datastore.read('frogs_faves')
-    if FROGS_FAVES == nil then
-        Reset_high_scores()
-    elseif next(FROGS_FAVES) == nil then
+    if FROGS_FAVES == nil or next(FROGS_FAVES) == nil then
         Reset_high_scores()
     end
     

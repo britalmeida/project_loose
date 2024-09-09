@@ -42,11 +42,13 @@ end
 
 
 -- Generate recipe text from the list of steps.
+-- Steps are given as a list of consecutive drops e.g. { {1, 3}, {4, 1}, {1, 2} }
+-- is_win_recipe - if it is the gameplay ended version, false for the menu version.
+-- Outputs list of strings e.g. { "- 3 peppermints", "Stir forever ..." }
 function Recipe_steps_to_text(recipe_steps, is_win_recipe)
 
-    local text_lines = {}
     -- Pre-size the array to the necessary number of text line steps to avoid resizes.
-    table.create(#recipe_steps, 0)
+    local text_lines = table.create(#recipe_steps, 0)
 
     -- Construct a text line for each recipe step. e.g.:
     -- "1. Add 3 peppermints" or "- 3 peppermints"
@@ -67,31 +69,34 @@ function Recipe_steps_to_text(recipe_steps, is_win_recipe)
             -- Step type: added an ingredient.
             local ingredient_name = INGREDIENT_TYPES[step_type].drop_name
 
-            if is_win_recipe and quantity == 1 then
-                line = line .. "Add a "
-            elseif is_win_recipe and quantity > 1 then
-                line = line .. "Add " .. quantity .. " "
-            elseif not is_win_recipe then
+            if is_win_recipe then
+                if quantity == 1 then
+                    line = line .. "Add a "
+                else
+                    line = line .. "Add " .. quantity .. " "
+                end
+            else -- menu version
                 line = line .. quantity .. " "
             end
+
             if ingredient_name == "salt" then
                 if quantity > 1 then
-                    line = line .. "pinches"
+                    line = line .. "pinches" .." of "..ingredient_name
                 else
-                    line = line .. "pinch"
+                    line = line .. "pinch" .." of "..ingredient_name
                 end
-                line = line .. " of " .. ingredient_name
-            elseif ingredient_name == "perfume" and is_win_recipe then
-                if quantity > 1 then
-                    line = line .. "drops"
-                else
-                    line = line .. "drop"
-                end
-                line = line .. " of " .. ingredient_name
-            elseif ingredient_name == "perfume" and not is_win_recipe then
-                line = line .. ingredient_name .. " drop"
-                if quantity > 1 then
-                    line = line .. "s"
+            elseif ingredient_name == "perfume" then
+                if is_win_recipe then
+                    if quantity > 1 then
+                        line = line .. "drops".." of "..ingredient_name
+                    else
+                        line = line .. "drop".." of "..ingredient_name
+                    end
+                else -- menu version
+                    line = line .. ingredient_name .. " drop"
+                    if quantity > 1 then
+                        line = line .. "s"
+                    end
                 end
             else
                 line = line .. ingredient_name
