@@ -138,6 +138,8 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
 
     -- Reset menu positions if needed
     global_origin[1], global_origin[2] = new_global_x, new_global_y
+
+    Load_high_scores()
 end
 
 
@@ -429,10 +431,11 @@ function Draw_menu()
 
             local recipe_cocktail_name = COCKTAILS[RECIPE_COCKTAIL].name
             local recipe_text = FROGS_FAVES_TEXT[recipe_cocktail_name]
+            Prepare_recipe_for_menu_display(RECIPE_COCKTAIL, recipe_text)
 
             local x_hover, y_hover = Small_recipe_hover(TOP_RECIPE_OFFSET)
             if FROGS_FAVES_TEXT[recipe_cocktail_name] ~= nil then
-                Recipe_draw_menu(recipe_x - x_hover, 240 - y_hover + 6, recipe_text)
+                Recipe_draw_menu(recipe_x - x_hover, 240 - y_hover + 6)
             end
 
             -- Draw animations for getting a sticker

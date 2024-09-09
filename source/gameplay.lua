@@ -482,9 +482,9 @@ end
 
 local function update_accomplishments()
 
-    GAME_END_RECIPE.cocktail = COCKTAILS[TARGET_COCKTAIL.type_idx]
-    GAME_END_RECIPE.text_steps = RECIPE_TEXT
-    GAME_END_RECIPE.num_text_steps = #RECIPE_TEXT
+    DISPLAY_RECIPE.cocktail = COCKTAILS[TARGET_COCKTAIL.type_idx]
+    DISPLAY_RECIPE.text_steps = RECIPE_TEXT
+    DISPLAY_RECIPE.num_text_steps = #RECIPE_TEXT
 
     -- Determine accomplishments.
     GAME_END_STICKERS.cocktail_learned = false
@@ -496,13 +496,13 @@ local function update_accomplishments()
         -- Recipe finished for the first time.
         GAME_END_STICKERS.new_high_score = true
         GAME_END_STICKERS.cocktail_learned = true
-        GAME_END_RECIPE.win_sticker = "RECIPE\nLEARNED!"
+        DISPLAY_RECIPE.win_sticker = "RECIPE\nLEARNED!"
     elseif #CURRENT_RECIPE < #FROGS_FAVES.recipes[TARGET_COCKTAIL.name] then
         -- Recipe done in less steps.
         GAME_END_STICKERS.new_high_score = true
-        GAME_END_RECIPE.win_sticker = "RECIPE\nIMPROVED!"
+        DISPLAY_RECIPE.win_sticker = "RECIPE\nIMPROVED!"
     else
-        GAME_END_RECIPE.win_sticker = "RECIPE\nDONE!"
+        DISPLAY_RECIPE.win_sticker = "RECIPE\nDONE!"
     end
 
     -- Check if the cocktail has been mastered for the first time
@@ -514,15 +514,15 @@ local function update_accomplishments()
     end
 
     -- Determine rating text.
-    local num_steps <const> = GAME_END_RECIPE.num_text_steps
+    local num_steps <const> = DISPLAY_RECIPE.num_text_steps
     if num_steps > TARGET_COCKTAIL.step_ratings[3] then
-        GAME_END_RECIPE.rating_text = "Yep ... that was "..tostring(num_steps).." steps."
+        DISPLAY_RECIPE.rating_text = "Yep ... that was "..tostring(num_steps).." steps."
     elseif num_steps > TARGET_COCKTAIL.step_ratings[2] then
-        GAME_END_RECIPE.rating_text = "Well done. Just "..tostring(num_steps).." steps."
+        DISPLAY_RECIPE.rating_text = "Well done. Just "..tostring(num_steps).." steps."
     elseif num_steps > TARGET_COCKTAIL.step_ratings[1] then
-        GAME_END_RECIPE.rating_text = "Fantastic! In only "..tostring(num_steps).." steps!"
+        DISPLAY_RECIPE.rating_text = "Fantastic! In only "..tostring(num_steps).." steps!"
     else
-        GAME_END_RECIPE.rating_text = "No way to beat "..tostring(num_steps).." steps!!!"
+        DISPLAY_RECIPE.rating_text = "No way to beat "..tostring(num_steps).." steps!!!"
     end
 
     -- Register new highscores to FROGS_FAVES.
