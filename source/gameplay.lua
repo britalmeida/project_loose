@@ -66,8 +66,6 @@ GAMEPLAY_STATE = {
     game_tick = 0,
 }
 
-CURRENT_RECIPE = {}
-
 -- List of rune change of unstirred drops and their live STIR_FACTOR
 -- Used to calulate the rune positions while stirring
 CURRENT_DROPS = {{
@@ -329,8 +327,9 @@ function Reset_gameplay()
     GAMEPLAY_STATE.counting_stirs = false
     GAMEPLAY_STATE.stirring_complete = false
     GAMEPLAY_STATE.puff_anim_started = false
-    CURRENT_RECIPE = {}
-    RECIPE_TEXT = {}
+
+    CURRENT_RECIPE_FLATLIST = {}
+    CURRENT_RECIPE_STEPS = {}
 
     CURRENT_DROPS = {{
         {0, 0, 0},
@@ -392,6 +391,7 @@ function Reset_gameplay()
     -- Reset time delta
     playdate.resetElapsedTime()
 end
+
 
 -- Add a new ingredient drop and recalculate rune count variables
 function Update_rune_count(drop_rune_count)
@@ -482,48 +482,34 @@ end
 
 local function update_accomplishments()
 
-    DISPLAY_RECIPE.cocktail = COCKTAILS[TARGET_COCKTAIL.type_idx]
-    DISPLAY_RECIPE.text_steps = RECIPE_TEXT
-    DISPLAY_RECIPE.num_text_steps = #RECIPE_TEXT
-
     -- Determine accomplishments.
     GAME_END_STICKERS.cocktail_learned = false
     GAME_END_STICKERS.new_high_score = false
     GAME_END_STICKERS.new_mastered = false
 
     -- Set win recipe top text
+    local win_sticker = "RECIPE\nDONE!"
     if not FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] then
         -- Recipe finished for the first time.
         GAME_END_STICKERS.new_high_score = true
         GAME_END_STICKERS.cocktail_learned = true
-        DISPLAY_RECIPE.win_sticker = "RECIPE\nLEARNED!"
-    elseif #CURRENT_RECIPE < #FROGS_FAVES.recipes[TARGET_COCKTAIL.name] then
+        win_sticker = "RECIPE\nLEARNED!"
+    elseif #CURRENT_RECIPE_FLATLIST < #FROGS_FAVES.recipes[TARGET_COCKTAIL.name] then
         -- Recipe done in less steps.
         GAME_END_STICKERS.new_high_score = true
-        DISPLAY_RECIPE.win_sticker = "RECIPE\nIMPROVED!"
-    else
-        DISPLAY_RECIPE.win_sticker = "RECIPE\nDONE!"
+        win_sticker = "RECIPE\nIMPROVED!"
     end
 
     -- Check if the cocktail has been mastered for the first time
-    local current_steps <const> = #RECIPE_TEXT
+    local current_steps <const> = #CURRENT_RECIPE_STEPS
     local prev_top_steps <const> = #FROGS_FAVES_TEXT[COCKTAILS[RECIPE_COCKTAIL].name]
     if current_steps <= TARGET_COCKTAIL.step_ratings[1] and
         (prev_top_steps > TARGET_COCKTAIL.step_ratings[1] or prev_top_steps == 0) then
             GAME_END_STICKERS.new_mastered = true
     end
 
-    -- Determine rating text.
-    local num_steps <const> = DISPLAY_RECIPE.num_text_steps
-    if num_steps > TARGET_COCKTAIL.step_ratings[3] then
-        DISPLAY_RECIPE.rating_text = "Yep ... that was "..tostring(num_steps).." steps."
-    elseif num_steps > TARGET_COCKTAIL.step_ratings[2] then
-        DISPLAY_RECIPE.rating_text = "Well done. Just "..tostring(num_steps).." steps."
-    elseif num_steps > TARGET_COCKTAIL.step_ratings[1] then
-        DISPLAY_RECIPE.rating_text = "Fantastic! In only "..tostring(num_steps).." steps!"
-    else
-        DISPLAY_RECIPE.rating_text = "No way to beat "..tostring(num_steps).." steps!!!"
-    end
+
+    Prepare_recipe_for_success_draw(TARGET_COCKTAIL.type_idx, CURRENT_RECIPE_STEPS, win_sticker)
 
     -- Register new highscores to FROGS_FAVES.
 
@@ -531,7 +517,7 @@ local function update_accomplishments()
     FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] = true
     -- Store new best recipe.
     if GAME_END_STICKERS.new_high_score then
-        FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE
+        FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE_FLATLIST
     end
     -- Persist the score to the player's Playdate disk.
     Store_high_scores()
@@ -883,8 +869,7 @@ function check_crank_to_stir()
         STIR_REVOLUTION += delta_stir
         if STIR_REVOLUTION - STIR_COUNT > 0.2 then
             STIR_COUNT += 1
-            CURRENT_RECIPE[#CURRENT_RECIPE+1] = -1
-            Recipe_update_current()
+            Add_ingredient_to_current_recipe(-1)
         end
     end
 
@@ -1259,6 +1244,10 @@ function Check_player_struggle()
     -- Recipe struggle (General gameplay hints)
     -- If you used to many actions so far
     -- Or if you keep asking the same question
+    local num_steps = #CURRENT_RECIPE_STEPS
+    -- The steps where the frog speaks up and gives a hint (20th step and then every 15 steps).
+    RECIPE_STRUGGLE_STEPS = num_steps >= 20 and math.fmod(num_steps - 20, 15) == 0
+
     if not PLAYER_STRUGGLES.recipe_struggle and
     (RECIPE_STRUGGLE_STEPS == true or STRUGGLE_PROGRESS.ingredient_struggle_asked >= 4) then
         PLAYER_STRUGGLES.recipe_struggle = true

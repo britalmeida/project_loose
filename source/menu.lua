@@ -320,7 +320,6 @@ function Draw_menu()
 
             for i, cocktail in pairs(cocktail_anims) do
                 local cocktail_done = FROGS_FAVES.accomplishments[COCKTAILS[i].name]
-                local uncompleted_recipe = {}
                 local best_recipe = FROGS_FAVES_TEXT[COCKTAILS[i].name]
                 local cocktail_mastered = false
                 -- Check if the recipe completed

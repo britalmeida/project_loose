@@ -6,13 +6,14 @@ FROGS_FAVES = {
     accomplishments = {},
     recipes = {},
 }
-FROGS_FAVES_TEXT = {}
+FROGS_FAVES_TEXT = {} -- Per cocktail recipe step list as drawn in the menu.
 
 -- Runtime recipe updated during gameplay.
-RECIPE_TEXT = {}
+CURRENT_RECIPE_FLATLIST = {} -- List of every ingredient and stir added in order: e.g. { 1, 1, 1, 4, 1, 1 }
+CURRENT_RECIPE_STEPS = {} -- List of grouped added ingredients in order: e.g. { {1, 3}, {4, 1}, {1, 2} }
 
 -- Data to draw the recipe being shown in either the menu or game ended.
-DISPLAY_RECIPE = {
+local DISPLAY_RECIPE = {
     cocktail = nil, -- reference to the COCKTAILS table entry.
     win_sticker = "", -- e.g. "Recipe\nImproved" - game ended version only
     text_steps = {}, -- e.g. {"1. Add 3 peppermints", "2. Stir just a bit", ...}
@@ -21,6 +22,25 @@ DISPLAY_RECIPE = {
 }
 RECIPE_SCROLL = 0 -- In px. 0 or negative. It's where the recipe starts offscreen relative to the top of the playdate screen.
 RECIPE_MAX_SCROLL = 0 -- In px. Maximum value that the recipe can go up. Less than the recipe height so it doesn't fully disappear.
+
+
+
+function Add_ingredient_to_current_recipe(type_idx)
+    local num_ingredients = #CURRENT_RECIPE_FLATLIST
+    local prev_last_ingredient = nil
+    if num_ingredients > 0 then
+        prev_last_ingredient = CURRENT_RECIPE_FLATLIST[num_ingredients]
+    end
+    -- Add ingredient to the flat ordered list.
+    CURRENT_RECIPE_FLATLIST[num_ingredients+1] = type_idx
+    -- Add ingredient to the current step quantity or as a new step.
+    if type_idx == prev_last_ingredient then
+        step = CURRENT_RECIPE_STEPS[#CURRENT_RECIPE_STEPS]
+        step[2] += 1 -- Increase quantity
+    else
+        CURRENT_RECIPE_STEPS[#CURRENT_RECIPE_STEPS+1] = {type_idx, 1}
+    end
+end
 
 
 -- Convert a list of ingredient drop types to a counted list of consecutive drops.
@@ -135,15 +155,6 @@ end
 
 
 
-function Recipe_update_current()
-    RECIPE_TEXT = Recipe_steps_to_text(Recipe_to_steps(CURRENT_RECIPE), true)
-    RECIPE_TEXT_SMALL = (Recipe_to_steps(CURRENT_RECIPE))
-    -- The steps where the frog speaks up and gives a hint (20th step and then ever 15 steps)
-    RECIPE_STRUGGLE_STEPS = #RECIPE_TEXT_SMALL >= 20 and math.fmod(#RECIPE_TEXT_SMALL - 20, 15) == 0
-end
-
-
-
 -- High Scores
 
 function Unlock_all_cocktails() -- Should be removed in final game + any references
@@ -213,6 +224,29 @@ end
 
 
 -- Recipe drawing.
+
+function Prepare_recipe_for_success_draw(cocktail_idx, recipe_steps, win_sticker)
+    local num_steps <const> = #recipe_steps
+
+    DISPLAY_RECIPE.cocktail = COCKTAILS[cocktail_idx]
+    DISPLAY_RECIPE.text_steps = Recipe_steps_to_text(recipe_steps, true)
+    DISPLAY_RECIPE.num_text_steps = num_steps
+    DISPLAY_RECIPE.win_sticker = win_sticker
+
+    -- Determine rating text.
+    if num_steps > DISPLAY_RECIPE.cocktail.step_ratings[3] then
+        DISPLAY_RECIPE.rating_text = "Yep ... that was "..tostring(num_steps).." steps."
+    elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[2] then
+        DISPLAY_RECIPE.rating_text = "Well done. Just "..tostring(num_steps).." steps."
+    elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[1] then
+        DISPLAY_RECIPE.rating_text = "Fantastic! In only "..tostring(num_steps).." steps!"
+    else
+        DISPLAY_RECIPE.rating_text = "No way to beat "..tostring(num_steps).." steps!!!"
+    end
+
+    RECIPE_MAX_HEIGHT = Calculate_recipe_size_for_menu_draw()
+end
+
 
 function Calculate_recipe_size_for_success_draw()
     local num_steps <const> = DISPLAY_RECIPE.num_text_steps
@@ -311,13 +345,14 @@ end
 
 
 function Prepare_recipe_for_menu_display(cocktail_idx, recipe_steps)
+    local num_steps <const> = #recipe_steps
+
     DISPLAY_RECIPE.cocktail = COCKTAILS[cocktail_idx]
     DISPLAY_RECIPE.text_steps = recipe_steps
-    DISPLAY_RECIPE.num_text_steps = #recipe_steps
+    DISPLAY_RECIPE.num_text_steps = num_steps
     DISPLAY_RECIPE.win_sticker = ""
 
     -- Determine rating text.
-    local num_steps <const> = DISPLAY_RECIPE.num_text_steps
     if num_steps > DISPLAY_RECIPE.cocktail.step_ratings[3] then
         DISPLAY_RECIPE.rating_text = "This works . . .\nBut it took "..tostring(num_steps).." steps."
     elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[2] then

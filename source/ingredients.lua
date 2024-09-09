@@ -62,9 +62,8 @@ function Ingredient:tick()
 
     if self.is_drop and self:getBoundsRect():intersects(LIQUID_AABB) then
         -- add ingredient to current recipe and update rune count
-        CURRENT_RECIPE[#CURRENT_RECIPE+1] = self.ingredient_type_idx
+        Add_ingredient_to_current_recipe(self.ingredient_type_idx)
         Update_rune_count(INGREDIENT_TYPES[self.ingredient_type_idx].rune_composition)
-        Recipe_update_current()
         GAMEPLAY_STATE.last_shaken_ingredient = self.ingredient_type_idx
         GAMEPLAY_STATE.cauldron_swap_count = 0
 
