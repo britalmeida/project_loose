@@ -1119,13 +1119,7 @@ function Is_potion_good_enough()
 end
 
 function Calculate_goodness()
-    local prev_diff = {}
-    if DIFF_TO_TARGET ~= nil then
-        for k, v in pairs(DIFF_TO_TARGET) do
-            prev_diff[k] = v
-        end
-    end
-
+    local prev_diff = table.deepcopy(DIFF_TO_TARGET)
     local prev_trend = TREND
 
     -- Match expectations with reality.
