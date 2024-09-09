@@ -6,13 +6,6 @@ local animloop <const> = playdate.graphics.animation.loop
 MENU_STATE = {}
 MENU_SCREEN = { gameplay = 0, launch = 1, start = 2, mission = 3, credits = 4, mission_sticker = 5, mission_confirm = 6 }
 
-FROGS_FAVES = {
-    accomplishments = {},
-    recipes = {}, 
-}
-FROGS_FAVES_TEXT = {}
-FROGS_FAVES_STEPS = {}
-
 UI_TEXTURES = {} -- tmp. Had to make it global since needed for timers ... maybe there's a workaround?
 local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the mission selection, others are (half) clipped.
 local global_origin = {0, 0}
@@ -63,6 +56,9 @@ local function add_system_menu_entries_cocktails()
     local menuItem, error = menu:addMenuItem("reset scores", function()
         Reset_high_scores()
     end)
+    local menuItem, error = menu:addMenuItem("test scores", function()
+        Load_test_scores()
+    end)
     local menuItem, error = menu:addMenuItem("unlock all", function()
         Unlock_all_cocktails()
     end)
@@ -74,49 +70,7 @@ function remove_system_menu_entries()
 end
 
 
-
--- High Score
-
-function Reset_high_scores() -- Should be removed in final game
-    local frogs_faves = {
-        accomplishments = {},
-        recipes = {}
-    }
-
-    for a = 1, #COCKTAILS, 1 do
-        frogs_faves.accomplishments[COCKTAILS[a].name] = false
-        frogs_faves.recipes[COCKTAILS[a].name] = {}
-    end
-
-    FROGS_FAVES = frogs_faves
-    playdate.datastore.write(frogs_faves, 'frogs_faves')
-end
-
-
-function Unlock_all_cocktails() -- Should be removed in final game + any references
-    debug_cocktail_unlock = true
-end
-
-
-function Store_high_scores()
-    playdate.datastore.write(FROGS_FAVES, 'frogs_faves')
-end
-
-
-function Load_high_scores()
-    FROGS_FAVES = playdate.datastore.read('frogs_faves')
-    if FROGS_FAVES == nil or next(FROGS_FAVES) == nil then
-        Reset_high_scores()
-    end
-    
-    -- Generate text version of high score recipes
-    for a = 1, #COCKTAILS, 1 do
-        local cocktail_name = COCKTAILS[a].name
-        FROGS_FAVES_STEPS[cocktail_name] = Recipe_to_steps(FROGS_FAVES.recipes[cocktail_name])
-        FROGS_FAVES_TEXT[cocktail_name] = Recipe_steps_to_text(FROGS_FAVES_STEPS[cocktail_name], false)
-    end
-end
-
+-- 
 
 function Sticker_slap()
     -- Set start and timer for stickerslap anim
@@ -475,11 +429,10 @@ function Draw_menu()
 
             local recipe_cocktail_name = COCKTAILS[RECIPE_COCKTAIL].name
             local recipe_text = FROGS_FAVES_TEXT[recipe_cocktail_name]
-            local recipe_steps = FROGS_FAVES_STEPS[recipe_cocktail_name]
 
             local x_hover, y_hover = Small_recipe_hover(TOP_RECIPE_OFFSET)
             if FROGS_FAVES_TEXT[recipe_cocktail_name] ~= nil then
-                Recipe_draw_menu(recipe_x - x_hover, 240 - y_hover + 6, recipe_text, recipe_steps)
+                Recipe_draw_menu(recipe_x - x_hover, 240 - y_hover + 6, recipe_text)
             end
 
             -- Draw animations for getting a sticker

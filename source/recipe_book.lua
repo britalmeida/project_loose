@@ -1,6 +1,12 @@
 local gfx <const> = playdate.graphics
 local gfxi <const> = playdate.graphics.image
 
+FROGS_FAVES = {
+    accomplishments = {},
+    recipes = {},
+}
+FROGS_FAVES_TEXT = {}
+
 RECIPE_TEXT = {}
 RECIPE_MAX_HEIGHT = 0
 
@@ -135,6 +141,77 @@ function Recipe_update_current()
 end
 
 
+
+-- High Scores
+
+function Unlock_all_cocktails() -- Should be removed in final game + any references
+    debug_cocktail_unlock = true
+end
+
+
+function Load_test_scores() -- Should be removed in final game
+    local frogs_faves = {
+        ["accomplishments"] = {
+            ["Dicey Brew"] = true,
+            ["Green Toe"] = true,
+            ["Hodge Podge"] = true,
+            ["Overdose"] = true,
+            ["Silkini"] = true,
+            ["Snailiva"] = true,
+        },
+        ["recipes"] = {
+            ["Dicey Brew"] = { 9, 9, -1, -1, -1, -1, },
+            ["Green Toe"] = { 5, 5, 5, -1, -1, 3, 3, 7, 7, -1, -1, 5, 5, -1, -1, 4, 4, -1, -1, -1, 4, -1, 4, 4, 4, 3, 3, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, 4, 4, 4, -1, -1, 4, 4, 4, -1, -1, -1, 3, 3, -1, -1, -1, 5, 5, -1, -1, -1, -1, -1, 4, -1, -1, -1, 4, 4, 3, 3, -1, -1, -1, 5, -1, -1, -1, 5, -1, 5, -1, 5, 5, 4, 4, 4, -1, -1, -1, 9, 9, -1, -1, 7, 7, -1, -1, 5, -1, -1, -1, 5, 5, -1, -1, -1, },
+            ["Hodge Podge"] = { 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1,},
+            ["Overdose"] = { 1, 3, 3, 3, 3, -1, -1, -1, 3, -1, -1, 9, -1, -1, -1, 3, -1, -1, -1, },
+            ["Silkini"] = { 8, 8, 8, 2, 2, -1, -1, },
+            ["Snailiva"] = { 2, 2, 2, -1, -1, -1, },
+        },
+    }
+
+    FROGS_FAVES = frogs_faves
+    playdate.datastore.write(frogs_faves, 'frogs_faves')
+end
+
+
+function Reset_high_scores() -- Should be removed in final game
+    local frogs_faves = {
+        accomplishments = {},
+        recipes = {}
+    }
+
+    for a = 1, #COCKTAILS, 1 do
+        frogs_faves.accomplishments[COCKTAILS[a].name] = false
+        frogs_faves.recipes[COCKTAILS[a].name] = {}
+    end
+
+    FROGS_FAVES = frogs_faves
+    playdate.datastore.write(frogs_faves, 'frogs_faves')
+end
+
+
+function Store_high_scores()
+    playdate.datastore.write(FROGS_FAVES, 'frogs_faves')
+end
+
+
+function Load_high_scores()
+    FROGS_FAVES = playdate.datastore.read('frogs_faves')
+    if FROGS_FAVES == nil or next(FROGS_FAVES) == nil then
+        Reset_high_scores()
+    end
+
+    -- Generate text version of high score recipes
+    for a = 1, #COCKTAILS, 1 do
+        local cocktail_name = COCKTAILS[a].name
+        recipe_steps = Recipe_to_steps(FROGS_FAVES.recipes[cocktail_name])
+        FROGS_FAVES_TEXT[cocktail_name] = Recipe_steps_to_text(recipe_steps, false)
+    end
+end
+
+
+-- Recipe drawing.
+
 function Calculate_recipe_size_for_success_draw()
     local num_steps <const> = GAME_END_RECIPE.num_text_steps
 
@@ -231,7 +308,7 @@ function Recipe_draw_success()
 end
 
 
-function Recipe_draw_menu(x, y, recipe_text, step_types)
+function Recipe_draw_menu(x, y, recipe_text)
     -- draw scrollable top recipe in menu
     local text_x <const> = 13
     local text_y <const> = 54
