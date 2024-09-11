@@ -594,36 +594,10 @@ local function draw_ui_prompts()
         return
     end
 
-    -- Create bounds for the instructions prompt
-    local bounds = playdate.geometry.rect.new(
-        GAMEPLAY_STATE.instructions_offset_x,
-        GAMEPLAY_STATE.instructions_offset_y - TEXTURES.instructions_prompt.height,
-        TEXTURES.instructions_prompt.width,
-        TEXTURES.instructions_prompt.height
-    )
-    local max_y_offset = 275
-    local min_y_offset = 240
-    local shift_speed = 1.5
-
-    -- If grabbing the prompt, start expanding it for 10 seconds
-    if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos:unpack()) and
-    playdate.buttonIsPressed( playdate.kButtonA ) then
-        GAMEPLAY_STATE.instructions_prompt_expanded = true
-        Restart_timer(GAMEPLAY_TIMERS.instructions_expanded, 10*1000)
-    end
-
-    -- iteratively move the instructions_offset_y
-    if GAMEPLAY_STATE.instructions_prompt_expanded and GAMEPLAY_STATE.instructions_offset_y > min_y_offset then
-        GAMEPLAY_STATE.instructions_offset_y = math.max(GAMEPLAY_STATE.instructions_offset_y - shift_speed, min_y_offset)
-    elseif not GAMEPLAY_STATE.instructions_prompt_expanded and GAMEPLAY_STATE.instructions_offset_y < max_y_offset then
-        GAMEPLAY_STATE.instructions_offset_y = math.min(GAMEPLAY_STATE.instructions_offset_y + shift_speed, max_y_offset)
-    end
-
     gfx.pushContext()
-    TEXTURES.instructions_prompt:draw(GAMEPLAY_STATE.instructions_offset_x, GAMEPLAY_STATE.instructions_offset_y-TEXTURES.instructions_prompt.height, 0)
-    ANIMATIONS.b_prompt:draw(362, 203)
+        TEXTURES.instructions_prompt:draw(GAMEPLAY_STATE.instructions_prompt_pos, 0)
+        ANIMATIONS.b_prompt:draw(362, 203)
     gfx.popContext()
-
 end
 
 
@@ -715,17 +689,16 @@ local function draw_ingredient_place_hint()
         return
     end
 
-    gfx.pushContext()
+    -- Draw hint of where to place the grabbed ingredient above the cauldron.
     if GAMEPLAY_STATE.cursor == CURSORS.hold
-    and GAMEPLAY_STATE.cauldron_ingredient == nil
-    and GAMEPLAY_STATE.held_ingredient ~= 0 
+        and GAMEPLAY_STATE.cauldron_ingredient == nil
+        and GAMEPLAY_STATE.held_ingredient ~= 0
     then
-        local held_ingredient = ANIMATIONS.place_hints[GAMEPLAY_STATE.held_ingredient]
-        local hint_x = MAGIC_TRIANGLE_CENTER_X - (held_ingredient:image().width / 2)
-        local hint_y = MAGIC_TRIANGLE_CENTER_Y - (held_ingredient:image().height / 2)
-        held_ingredient:draw(hint_x, hint_y)
+        gfx.pushContext()
+            ANIMATIONS.place_hints[GAMEPLAY_STATE.held_ingredient]:image():drawCentered(
+                MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y)
+        gfx.popContext()
     end
-    gfx.popContext()
 end
 
 

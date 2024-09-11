@@ -14,8 +14,7 @@ GAMEPLAY_STATE = {
     showing_cocktail = false,
     showing_instructions = false,
     instructions_prompt_expanded = false,
-    instructions_offset_x = -10,
-    instructions_offset_y = 275,
+    instructions_prompt_pos = point.new(0, 0),
     showing_recipe = false,
     cursor = CURSORS.open,  -- State of the cursor (and it's visualization)
     cursor_prev = CURSORS.open, -- previous state to comapare and reset flick animation
@@ -292,8 +291,7 @@ function Reset_gameplay()
     GAMEPLAY_STATE.showing_cocktail = false
     GAMEPLAY_STATE.showing_instructions = false
     GAMEPLAY_STATE.instructions_prompt_expanded = false
-    GAMEPLAY_STATE.instructions_offset_x = -10
-    GAMEPLAY_STATE.instructions_offset_y = 275
+    GAMEPLAY_STATE.instructions_prompt_pos = point.new(-10, 192)
     GAMEPLAY_STATE.showing_recipe = false
     GAMEPLAY_STATE.cursor = CURSORS.open
     GAMEPLAY_STATE.cursor_prev = CURSORS.open
@@ -637,6 +635,7 @@ function Handle_gameplay_input()
             end
             -- All usual interactions on screen
             if playdate.buttonJustPressed( playdate.kButtonA ) then
+                -- Grab ingredients.
                 local picked_up = false
                 GAMEPLAY_STATE.cursor = CURSORS.hold
                 for i, ingredient in pairs(INGREDIENTS) do
@@ -658,15 +657,26 @@ function Handle_gameplay_input()
                         ingredient.state = INGREDIENT_STATE.is_in_air
                     end
                 end
+                -- Grab the frog.
                 FROG:Click_the_frog()
+                -- Grab the instructions prompt.
+                if GAMEPLAY_STATE.held_ingredient == 0 -- Only grab if not already grabbing something else.
+                    and GAMEPLAY_STATE.cursor_pos.x < GAMEPLAY_STATE.instructions_prompt_pos.x + 50 -- Test agaisnt the corner region.
+                    and GAMEPLAY_STATE.cursor_pos.y > GAMEPLAY_STATE.instructions_prompt_pos.y
+                then
+                    GAMEPLAY_STATE.instructions_prompt_expanded = true
+                    Restart_timer(GAMEPLAY_TIMERS.instructions_expanded, 2*1000) -- Auto-hide after 2s.
+                end
             end
             if playdate.buttonJustReleased(playdate.kButtonA) then
+                -- Release ingredients.
                 GAMEPLAY_STATE.cursor = CURSORS.open
                 for i, ingredient in pairs(INGREDIENTS) do
                     if ingredient.state == INGREDIENT_STATE.is_picked_up then
                         ingredient:release()
                     end
                 end
+                -- FIXME @ Julien - this is being callen on press *and* release of A. Also it now has a boolean argument?
                 FROG:Click_the_frog()
             end
         end
@@ -926,6 +936,15 @@ function Tick_gameplay()
     update_liquid()
 
     FROG:animation_tick()
+
+    -- Update UI prompt animation.
+    -- The prompt either expands up until a certain maximum after clicked, or it tucks back down to the rest y position.
+    local expand_speed = 2
+    if GAMEPLAY_STATE.instructions_prompt_expanded then
+        GAMEPLAY_STATE.instructions_prompt_pos.y = math.max(GAMEPLAY_STATE.instructions_prompt_pos.y - expand_speed, 157)
+    else
+        GAMEPLAY_STATE.instructions_prompt_pos.y = math.min(GAMEPLAY_STATE.instructions_prompt_pos.y + expand_speed, 192)
+    end
 end
 
 
