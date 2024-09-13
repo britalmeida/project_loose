@@ -503,27 +503,14 @@ end
 
 
 local function draw_bg_lighting()
-    local flicker_freq <const> = {0.0023, 0.3, 5.2}
-    local flicker_strength <const> = {0.01, 0.002, 0.004}
-    local tick <const> = GAMEPLAY_STATE.game_tick + random()
-    local time <const>  = TWO_PI * (tick - fmod(tick, 8)) / playdate.getFPS()
-
-    local flicker = 0
-    for a = 1, #flicker_freq, 1 do
-        flicker += sin(time * flicker_freq[a]) * flicker_strength[a]
-    end
-    flicker *= (1 - GAMEPLAY_STATE.heat_amount ^ 2)
-
-    local light_strength = (GAMEPLAY_STATE.heat_amount * 0.8 + 0.2 ) + flicker
+    local light_strength = (GAMEPLAY_STATE.heat_amount * 0.8 + 0.2 )
     local glow_center_x = LIQUID_CENTER_X
     local glow_center_y = 240
     local glow_width = 200 + light_strength * 60
     local glow_height = 120 + light_strength * 40
     local glow_blend = max(0.25, light_strength) * 0.8
 
-    gfx.pushContext()
-        draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 6, glow_blend, light_strength * 0.5, gfx.kColorWhite)
-    gfx.popContext()
+    draw_soft_ellipse(glow_center_x, glow_center_y, glow_width, glow_height, 6, glow_blend, light_strength * 0.5, gfx.kColorWhite)
 end
 
 local function draw_game_background()
