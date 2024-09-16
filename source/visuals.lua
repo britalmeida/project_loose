@@ -58,14 +58,6 @@ end
 
 -- Draw passes
 
-local num_anim_frames = 30
-local wiggle_table <const> = table.create(num_anim_frames, 0)
-for a = 1, num_anim_frames, 1 do
-    local freq_var <const> = 0.1
-    local wiggle_freq_avg <const> = 2
-    local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
-    wiggle_table[a] = sin(a/num_anim_frames * wiggle_freq + PI * 0.3)
-end
 local function draw_symbols()
     -- Hide symbols when the recipe is drawing on top for performance.
     if GAMEPLAY_STATE.showing_recipe then
@@ -95,7 +87,10 @@ local function draw_symbols()
                 goto continue
             end
 
-            local wiggle = wiggle_table[GAMEPLAY_STATE.game_tick % num_anim_frames +1]
+            local time_s <const> = playdate.getElapsedTime() -- Time of update shared by all bubbles.
+
+            local wiggle_freq = 2 + (a - 2) * 0.1
+            local wiggle = sin((time_s / 30) * wiggle_freq + PI * 0.3)
 
             local glyph_x = rune_area_x + rune_area_width * 0.5 * (a - 2)
             local glyph_y = rune_area_y - (GAMEPLAY_STATE.rune_count_current[a] - 0.5) * rune_area_height + wiggle
@@ -335,10 +330,9 @@ local function draw_liquid_bubbles_and_drops()
     local sin = sin -- make these local to the function, not just the file, for performance.
     local cos = cos
     local floor = floor
-    local TWO_PI <const> = 6.283185307179586
     local anim_frame_dur_s <const> = 3 * (frame_ms / 1000)
     local time_s <const> = playdate.getElapsedTime() -- Time of update shared by all bubbles.
-    local drop_bob_period = GAMEPLAY_STATE.game_tick / TWO_PI * 0.7
+    local drop_bob_period = time_s * 3.3
 
     -- Despawn ingredient drops if stirring is completed in a cloud of smoke.
     if STIR_FACTOR >= 1.0 then

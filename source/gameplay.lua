@@ -60,9 +60,6 @@ GAMEPLAY_STATE = {
     last_shaken_ingredient = nil,
     cauldron_swap_count = 0,
     asked_frog_count = 0,
-    -- DEPRECATED - this 'tick' is used for progressing animations, but it should be removed
-    -- as it makes animations framerate dependent.
-    game_tick = 0,
 }
 
 -- List of rune change of unstirred drops and their live STIR_FACTOR
@@ -287,7 +284,6 @@ function Reset_gameplay()
 
     GAME_ENDED = false
     CAN_REINFORCE = false
-    GAMEPLAY_STATE.game_tick = 0
     GAMEPLAY_STATE.showing_cocktail = false
     GAMEPLAY_STATE.showing_instructions = false
     GAMEPLAY_STATE.instructions_prompt_expanded = false
@@ -915,9 +911,6 @@ end
 -- Update Loop: logic
 
 function Tick_gameplay()
-    GAMEPLAY_STATE.game_tick += 1
-    local crankTicks = playdate.getCrankTicks(1) --Not really used, but resets the ticks before going back to start menu
-
     -- Update ingredient animations.
     for _, ingredient in ipairs(INGREDIENTS) do
         if ingredient:isVisible() then

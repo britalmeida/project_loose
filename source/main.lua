@@ -17,7 +17,11 @@ import "tutorial_frog"
 
 
 local gfx <const> = playdate.graphics
-frame_ms = 1000 / 30
+
+TARGET_FPS = 30
+frame_ms = 1000 / TARGET_FPS
+playdate.display.setRefreshRate(TARGET_FPS)
+
 
 
 local function initialize()

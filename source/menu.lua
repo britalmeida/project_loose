@@ -140,6 +140,7 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
     global_origin[1], global_origin[2] = new_global_x, new_global_y
 
     Load_high_scores()
+    playdate.getCrankTicks(1) -- Clear the crank input to start measuring difference to last frame.
 end
 
 
