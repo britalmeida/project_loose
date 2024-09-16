@@ -51,6 +51,9 @@ function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
     end
     self:moveTo(self.start_pos:unpack())
     self:setZIndex(Z_DEPTH.ingredients_in_shelve)
+    self:setUpdatesEnabled(false)
+    self:setCollisionsEnabled(false)
+    self:setAlwaysRedraw(true)
 
     self:addSprite()
     self:setVisible(true)
@@ -327,6 +330,8 @@ function IngredientSplash:init()
 
     self:moveTo(LIQUID_CENTER_X+5, LIQUID_CENTER_Y-10) -- default to center the graphic with the liquid center.
     self:setZIndex(Z_DEPTH.ingredient_drop_splash)
+    self:setCollisionsEnabled(false)
+    self:setAlwaysRedraw(true)
 
     self:reset()
 

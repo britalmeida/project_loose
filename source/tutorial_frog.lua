@@ -181,6 +181,9 @@ function Froggo:init()
 
 
     self:setZIndex(Z_DEPTH.frog)
+    self:setUpdatesEnabled(false)
+    self:setCollisionsEnabled(false)
+    self:setAlwaysRedraw(true)
 
     self:addSprite()
     self:setVisible(true)

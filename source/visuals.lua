@@ -795,6 +795,8 @@ function Set_draw_pass(z, drawCallback)
     sprite:setZIndex(z)
     sprite:setIgnoresDrawOffset(true)
     sprite:setUpdatesEnabled(false)
+    sprite:setCollisionsEnabled(false)
+    sprite:setAlwaysRedraw(true)
     sprite.draw = function(s, x, y, w, h)
         drawCallback(x, y, w, h)
     end
