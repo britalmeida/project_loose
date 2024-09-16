@@ -67,6 +67,11 @@ for a = 1, num_anim_frames, 1 do
     wiggle_table[a] = sin(a/num_anim_frames * wiggle_freq + PI * 0.3)
 end
 local function draw_symbols()
+    -- Hide symbols when the recipe is drawing on top for performance.
+    if GAMEPLAY_STATE.showing_recipe then
+        return
+    end
+
     local rune_area_x = MAGIC_TRIANGLE_CENTER_X
     local rune_area_y = MAGIC_TRIANGLE_CENTER_Y - 72
     local rune_area_width = 80
@@ -322,6 +327,11 @@ function Add_visual_ingredient_drop_to_liquid(type_idx)
 end
 
 local function draw_liquid_bubbles_and_drops()
+    -- Hide symbols when the recipe is drawing on top for performance.
+    if GAMEPLAY_STATE.showing_recipe then
+        return
+    end
+
     local sin = sin -- make these local to the function, not just the file, for performance.
     local cos = cos
     local floor = floor

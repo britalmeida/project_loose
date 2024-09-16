@@ -537,7 +537,7 @@ function Win_game()
 
     -- Prepare recipe for display.
     -- Set the scroll range to "some" less than the recipe height so it doesn't fully go offscreen.
-    RECIPE_MAX_SCROLL = Calculate_recipe_size_for_success_draw() - 180
+    RECIPE_MAX_SCROLL = Calculate_recipe_size_for_success_draw() - 205
     RECIPE_SCROLL = 0
 end
 
