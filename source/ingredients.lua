@@ -83,16 +83,9 @@ function Ingredient:tick()
         local r = math.random(1, 3)
         drop_sounds[r]:playAt(0) -- Always play the sound, even if it was already playing.
 
-        -- Show the drop as floating in the liquid.
-        local num_floating_drops = 4
-        for _ = 1, num_floating_drops do
-          for x = 1, NUM_BUBBLES, 1 do
-            if not Bubbles_animation_playing[x] then
-              Bubbles_animation_playing[x] = true
-              Bubbles_types[x] = self.ingredient_type_idx
-              break
-            end
-          end
+        -- Show the drop as floating in the liquid. - 4 times
+        for _ = 1, 4 do
+          Add_visual_ingredient_drop_to_liquid(self.ingredient_type_idx)
         end
     end
     if self.state == INGREDIENT_STATE.is_in_shelf then

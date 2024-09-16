@@ -257,105 +257,171 @@ local function draw_liquid_surface()
     gfx.popContext()
 end
 
-Bubbles_amplitude = {}
-Bubbles_radians = {}
-Bubbles_tick_offset = {}
-Bubbles_animation_playing = {}
-Bubbles_flip = {}
-Bubbles_types = {}
-Bubbles_animation_length = {}
+-- Initialize elements that float in the cauldron liquid.
+-- They can be either visual bubbles representing heat or ingredient drops to a maximum of 10.
 NUM_BUBBLES = 10
+local Bubbles = table.create(NUM_BUBBLES, 0)
 for a = 1, NUM_BUBBLES, 1 do
     local y = 1 - ((a - 1) / (NUM_BUBBLES - 1)) * 2
-    Bubbles_amplitude[a] = sqrt(1 - y * y) * 0.8 + 0.2
-    Bubbles_radians[a] = PHI * (a - 1) -- Golden angle increment
-    Bubbles_tick_offset[a] = floor(PHI * (a - 1) * 50)
-    Bubbles_types[a] = 0
+    Bubbles[a] = {
+        type = 0, -- Negative numbers for different bubble visuals, positive numbers correspond to an ingredient idx type.
+        visible = false, -- If this bubble/ingredient should draw (as in if it exists/is alive, not as in if it's occluded).
+        flip = gfx.kImageUnflipped, -- Mirror bubble and drop graphics for variety.
+        amplitude = sqrt(1 - y * y) * 0.8 + 0.2,
+        angle_rad = PHI * (a - 1), -- Initial angular position of each bubble given by golden angle increment. In radians.
+        anim_offset = floor(PHI * (a - 1) * 50), -- Offset to the animation timing so things don't move in sync.
+        img_table = nil, -- The image or image table to draw for this drop/bubble.
+        img_center_x = 0, -- Offset from the top-left corner to the image center.
+        img_center_y = 0,
+    }
 end
 
-local function draw_liquid_bubbles()
-    local TWO_PI <const> = 6.283185307179586
-
-    gfx.pushContext()
-    do
-        local ellipse_height = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
-        local ellipse_bottom_width = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
-
-        local freq = 0.65
-        local speed_fac = 0.035 -- speed of the waves (0.01 slow 0.1 fast)
-        local offset = GAMEPLAY_STATE.liquid_offset * speed_fac * freq / 2
-
+-- Spawn a (single) ingredient drop floating in the liquid.
+-- There's a limited number of spots for drops/bubbles. A drop will take an empty space if there is
+-- any or replace a heat bubble. If all spots are already taken by ingredient drops, *this new one
+-- won't spawn*. It's too crowded and we opted not to make a physics simulation of a little pyramid
+-- of drops on top of spinning liquid. Shame!
+-- CBB: this makes a linear search twice, unideal but it's only 10 bubbles and only run on shake.
+function Add_visual_ingredient_drop_to_liquid(type_idx)
+    bubble_idx = -1
+    -- Search for an unused bubble.
+    for x = 1, NUM_BUBBLES, 1 do
+        if not Bubbles[x].visible then
+            bubble_idx = x
+            break
+        end
+    end
+    -- If there's no free spots, replace heat bubbles with ingredients
+    if bubble_idx == -1 then
         for x = 1, NUM_BUBBLES, 1 do
-            if not Bubbles_animation_playing[x] and GAMEPLAY_STATE.heat_amount > random() + 0.1 then
-                Bubbles_animation_playing[x] = true
-                Bubbles_flip[x] = random() > 0.5
+            if Bubbles[x].type < 0 then
+                bubble_idx = x
+                break
+            end
+        end
+    end
+    -- If everything is already an ingredient and the player is still adding more, they won't show.
+
+    -- Setup floating ingredient drop.
+    if bubble_idx ~= -1 then
+        Bubbles[bubble_idx].type = type_idx
+        Bubbles[bubble_idx].visible = true
+        Bubbles[bubble_idx].start_time_s = playdate.getElapsedTime()
+        local drop_img = INGREDIENT_TYPES[type_idx].drop
+        Bubbles[bubble_idx].img_table = drop_img
+        Bubbles[bubble_idx].img_center_x = floor(drop_img.width / 2)
+        Bubbles[bubble_idx].img_center_y = floor(drop_img.height / 2)
+    end
+end
+
+local function draw_liquid_bubbles_and_drops()
+    local sin = sin -- make these local to the function, not just the file, for performance.
+    local cos = cos
+    local floor = floor
+    local TWO_PI <const> = 6.283185307179586
+    local anim_frame_dur_s <const> = 3 * (frame_ms / 1000)
+    local time_s <const> = playdate.getElapsedTime() -- Time of update shared by all bubbles.
+    local drop_bob_period = GAMEPLAY_STATE.game_tick / TWO_PI * 0.7
+
+    -- Despawn ingredient drops if stirring is completed in a cloud of smoke.
+    if STIR_FACTOR >= 1.0 then
+        for x = 1, NUM_BUBBLES, 1 do
+            if Bubbles[x].type > 0 then
+                Bubbles[x].visible = false
+                Bubbles[x].type = 0
+            end
+        end
+    end
+
+    -- Spawn liquid bubbles when there is heat.
+    if GAMEPLAY_STATE.heat_amount > 0.1 then
+        for x = 1, NUM_BUBBLES, 1 do
+            -- After a bubble pops, it gets respawned with in the same spot with a mirrored or different visual.
+            -- There is a probability to the spawning according to the heat level so that a bubble has a bit of
+            -- an interval before re-bubbling which is longer and more likely when there is less heat.
+            if not Bubbles[x].visible and GAMEPLAY_STATE.heat_amount > random() + 0.1 then
+                Bubbles[x].visible = true
+                Bubbles[x].start_time_s = time_s
+
+                if random() > 0.5 then
+                    Bubbles[x].flip = gfx.kImageUnflipped
+                else
+                    Bubbles[x].flip = gfx.kImageFlippedX
+                end
+                -- Note: it would be nicer to assign an animloop which would keep track of both the visual
+                -- and the lifetime, but unfortunately those are expensive to create and *copy* the image table :/
                 if random() > 0.9 then
-                    Bubbles_types[x] = -1
+                    Bubbles[x].type = -2 -- Rare bubble visual.
+                    Bubbles[x].img_table = ANIMATIONS.bubble2
+                    Bubbles[x].img_center_x = 12
+                    Bubbles[x].img_center_y = 12
+                else
+                    Bubbles[x].type = -1 -- Regular bubble visual.
+                    Bubbles[x].img_table = ANIMATIONS.bubble
+                    Bubbles[x].img_center_x = 5
+                    Bubbles[x].img_center_y = 12
                 end
             end
         end
-        for x = 1, NUM_BUBBLES, 1 do
-            if not Bubbles_animation_playing[x] then goto continue end
-
-            local bubble_rad = Bubbles_radians[x] + offset
-            local bubble_amp = Bubbles_amplitude[x]
-
-            local bot_offset = 0
-            if sin(bubble_rad) < 0 then
-                local max_amp = 15
-                bot_offset = sin(bubble_rad) * max_amp * Clamp(abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
-            end
-
-            local b_x = bubble_amp * cos(bubble_rad) * ellipse_bottom_width + LIQUID_CENTER_X
-            local b_y = bubble_amp * sin(bubble_rad) * ellipse_height + LIQUID_CENTER_Y - bot_offset
-
-            local bubble_tab = ANIMATIONS.bubble
-            local bub_off_x, bub_off_y = 5, 12
-
-            -- Check if they are bubbles
-            if Bubbles_types[x] < 0 then
-                bubble_tab = ANIMATIONS.bubble2
-                bub_off_x, bub_off_y = 12, 12
-            end
-
-            local anim_length = 0
-            -- Check if they are ingredient drops
-            if Bubbles_types[x] <= 0 then
-                anim_length = bubble_tab:getLength()
-                anim_tick = fmod(Bubbles_tick_offset[x] + GAMEPLAY_STATE.game_tick // 3, anim_length)
-            else
-                -- Hack suggested by Sebastian to ensure the drops will disappear when stirring in completely
-                anim_length = 30
-                anim_tick = STIR_FACTOR * (anim_length -1)
-            end
-
-
-            if Bubbles_types[x] > 0 then
-                -- This is the spot for adding a factor. Might need to split the bubble sinking time from drop sprites.
-                local sink = sin(GAMEPLAY_STATE.game_tick / TWO_PI * 0.7 + Bubbles_tick_offset[x]) * 0.1 + (anim_tick / anim_length)
-                local drop_sprite = INGREDIENT_TYPES[Bubbles_types[x]].drop
-                local offset_y = drop_sprite.height * sink
-                local mask = geo.rect.new(0, 0, drop_sprite.width, drop_sprite.height - offset_y)
-              if Bubbles_flip[x] then
-                drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 6, "flipX", mask)
-              else
-                drop_sprite:draw(b_x - drop_sprite.width/2, b_y - drop_sprite.height/2 + offset_y - 6, 0, mask)
-              end
-            else
-              if Bubbles_flip[x] then
-                  bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y, "flipX")
-              else
-                  bubble_tab[anim_tick + 1]:draw(b_x - bub_off_x, b_y - bub_off_y)
-              end
-            end
-
-            if (anim_tick + 1) == anim_length then
-               Bubbles_animation_playing[x] = false
-               Bubbles_types[x] = 0
-            end
-            ::continue::
-        end
     end
+
+    gfx.pushContext()
+        -- Values for calculating bubble/drop position, shared with liquid and laddle.
+        -- The bubbles travel along an elipse. T
+        local ellipse_height <const>  = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
+        local ellipse_width <const> = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
+
+        local freq <const> = 0.65
+        local max_amp <const> = 15
+        local speed_fac <const> = 0.035 -- speed of the waves (0.01 slow 0.1 fast)
+        -- Get dynamic factors from stirring.
+        local stir_offset <const> = GAMEPLAY_STATE.liquid_offset * speed_fac * freq / 2
+        local speed_squish_amp <const> = Clamp(abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1) * max_amp
+
+        for x = 1, NUM_BUBBLES, 1 do
+            if Bubbles[x].visible then
+
+                -- Calculate bubble/ingredient drop position.
+                local bubble_rad <const> = Bubbles[x].angle_rad + stir_offset
+                local bubble_sin <const> = sin(bubble_rad)
+                local bubble_cos <const> = cos(bubble_rad)
+                local speed_squish_offset = bubble_sin * speed_squish_amp
+                local pos_x = Bubbles[x].amplitude * bubble_cos * ellipse_width + LIQUID_CENTER_X
+                local pos_y = Bubbles[x].amplitude * bubble_sin * ellipse_height + LIQUID_CENTER_Y - speed_squish_offset
+                -- Center sprite on the elipse path (avoid drawCentered as that adds 30% cost and doesn't support mask clipping).
+                pos_x -= Bubbles[x].img_center_x
+                pos_y -= Bubbles[x].img_center_y
+
+                if Bubbles[x].type > 0 then
+                    -- Draw ingredient drop.
+
+                    local bob = sin(drop_bob_period + Bubbles[x].anim_offset) * 0.1
+                    local sink = STIR_FACTOR + 0.1 + bob
+
+                    local drop_sprite = Bubbles[x].img_table
+                    drop_sprite:draw(
+                        pos_x, pos_y - bob * 10, -- Buoy the ingredient y pos by 10px.
+                        Bubbles[x].flip,
+                        0, 0, drop_sprite.width, drop_sprite.height * (1-sink)) -- Clip the bottom of the image.
+                else
+                    -- Draw bubble.
+
+                    -- Advance animation lifetime.
+                    local elapsed_time_s = time_s - Bubbles[x].start_time_s
+                    local lifetime_frame = floor(elapsed_time_s / anim_frame_dur_s)
+                    local anim_length = #Bubbles[x].img_table
+                    local img_frame = (lifetime_frame + Bubbles[x].anim_offset) % anim_length + 1 -- +1 for Lua arrays
+
+                    Bubbles[x].img_table[img_frame]:draw(pos_x, pos_y, Bubbles[x].flip)
+
+                    -- Despawn bubble.
+                    if lifetime_frame == anim_length then
+                        Bubbles[x].visible = false
+                        Bubbles[x].type = 0
+                    end
+                end
+            end
+        end
     gfx.popContext()
 end
 
@@ -841,11 +907,10 @@ function Init_visuals()
     table.insert(DRAW_PASSES, Set_draw_pass(-40, draw_game_background))
     -- -5: shelved ingredients
     table.insert(DRAW_PASSES, Set_draw_pass(-2, draw_bg_lighting))
-    --table.insert(DRAW_PASSES, Set_draw_pass(-1, draw_liquid_glow))
     table.insert(DRAW_PASSES, Set_draw_pass(0, draw_cauldron))
     table.insert(DRAW_PASSES, Set_draw_pass(1, draw_liquid_surface))
     table.insert(DRAW_PASSES, Set_draw_pass(2, draw_stirring_stick_back)) -- draw ladle when on farther side
-    table.insert(DRAW_PASSES, Set_draw_pass(3, draw_liquid_bubbles))
+    table.insert(DRAW_PASSES, Set_draw_pass(3, draw_liquid_bubbles_and_drops))
     -- 3: ingredient drops floating in the liquid
     -- 4: ingredient slotted over cauldron
     table.insert(DRAW_PASSES, Set_draw_pass(5, draw_stirring_bubbles))
