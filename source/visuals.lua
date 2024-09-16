@@ -14,7 +14,6 @@ local min <const> = math.min
 local max <const> = math.max
 local floor <const> = math.floor
 local abs <const> = math.abs
-local fmod <const> = math.fmod
 local random <const> = math.random
 local PI <const> = 3.141592653589793
 local TWO_PI <const> = 6.283185307179586
@@ -59,16 +58,21 @@ end
 
 -- Draw passes
 
+local num_anim_frames = 30
+local wiggle_table <const> = table.create(num_anim_frames, 0)
+for a = 1, num_anim_frames, 1 do
+    local freq_var <const> = 0.1
+    local wiggle_freq_avg <const> = 2
+    local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
+    wiggle_table[a] = sin(a/num_anim_frames * wiggle_freq + PI * 0.3)
+end
 local function draw_symbols()
-    local PI <const> = 3.141592653589793
-
     local rune_area_x = MAGIC_TRIANGLE_CENTER_X
     local rune_area_y = MAGIC_TRIANGLE_CENTER_Y - 72
     local rune_area_width = 80
     local rune_area_height = 60
+    local rune_half_size = 21
 
-    local wiggle_freq_avg = 2
-    local freq_var = 0.1
     local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
     local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
 
@@ -85,31 +89,32 @@ local function draw_symbols()
                 -- Don't draw disabled runes
                 goto continue
             end
-            local wiggle_freq = wiggle_freq_avg + (a - 2) * freq_var
-            local wiggle = sin(GAMEPLAY_STATE.game_tick / 30 * wiggle_freq + PI * 0.3)
+
+            local wiggle = wiggle_table[GAMEPLAY_STATE.game_tick % num_anim_frames +1]
 
             local glyph_x = rune_area_x + rune_area_width * 0.5 * (a - 2)
             local glyph_y = rune_area_y - (GAMEPLAY_STATE.rune_count_current[a] - 0.5) * rune_area_height + wiggle
             local target_y = rune_area_y - (TARGET_COCKTAIL.rune_count[a] - 0.5) * rune_area_height + wiggle
-            local target_topleft_y = target_y - ANIMATIONS.rune_idle[a]:image().height * 0.5
-            local glyph_topleft_x = glyph_x - ANIMATIONS.rune_idle[a]:image().width * 0.5
-            local glyph_topleft_y = glyph_y - ANIMATIONS.rune_idle[a]:image().height * 0.5
+            -- Center rune images on the position.
+            target_y -= rune_half_size
+            glyph_x -= rune_half_size
+            glyph_y -= rune_half_size
 
             -- Rune target shadow and outline
-            ANIMATIONS.rune_target[a]:draw(glyph_topleft_x, target_topleft_y)
-            ANIMATIONS.rune_target_outline[a]:image():drawFaded(glyph_topleft_x, target_topleft_y, target_fade, gfxi.kDitherTypeBayer4x4)
+            ANIMATIONS.rune_target[a]:draw(glyph_x, target_y)
+            ANIMATIONS.rune_target_outline[a]:image():drawFaded(glyph_x, target_y, target_fade, gfxi.kDitherTypeBayer4x4)
 
             -- Rune glyphs. Draw idle, moving or correct
             if should_draw_on_target_anim and DIFF_TO_TARGET.runes_abs[a] < GOAL_TOLERANCE then
-                ANIMATIONS.rune_correct[a]:draw(glyph_topleft_x, glyph_topleft_y)
+                ANIMATIONS.rune_correct[a]:draw(glyph_x, glyph_y)
             -- if the rune is currently moving, draw the blinking outline
             elseif GAMEPLAY_STATE.rune_count_change[a] ~= 0 and
                 GAMEPLAY_STATE.dropped_ingredients ~= 0 and
                 GAMEPLAY_STATE.heat_amount > 0.3 then
-                        ANIMATIONS.rune_active[a]:image():drawFaded(glyph_topleft_x, glyph_topleft_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
-                        ANIMATIONS.rune_active_outline[a]:draw(glyph_topleft_x, glyph_topleft_y)
+                    ANIMATIONS.rune_active[a]:image():drawFaded(glyph_x, glyph_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
+                    ANIMATIONS.rune_active_outline[a]:draw(glyph_x, glyph_y)
             else
-                ANIMATIONS.rune_idle[a]:image():drawFaded(glyph_topleft_x, glyph_topleft_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
+                ANIMATIONS.rune_idle[a]:image():drawFaded(glyph_x, glyph_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
             end
             ::continue::
         end
@@ -132,16 +137,18 @@ local function draw_stirring_stick()
         local ellipse_bottom_width = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
         local ellipse_top_width = ellipse_bottom_width + stick_tilt
 
-        local a_x = cos(t) * ellipse_top_width + LIQUID_CENTER_X
-        local a_y = sin(t) * ellipse_height + LIQUID_CENTER_Y - stick_height
-        local b_x = cos(t) * ellipse_bottom_width + LIQUID_CENTER_X
-        local b_y = sin(t) * ellipse_height + LIQUID_CENTER_Y
+        local sin_t <const> = sin(t)
+        local cos_t <const> = cos(t)
+        local a_x = cos_t * ellipse_top_width + LIQUID_CENTER_X
+        local a_y = sin_t * ellipse_height + LIQUID_CENTER_Y - stick_height
+        local b_x = cos_t * ellipse_bottom_width + LIQUID_CENTER_X
+        local b_y = sin_t * ellipse_height + LIQUID_CENTER_Y
 
         -- Bottom offset is used to make sure that the bottom stick doesn't go out of the water
         local bot_offset = 0
         if t > PI and t < TWO_PI then
             local max_amp = 15
-            bot_offset = sin(t) * max_amp * Clamp(abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
+            bot_offset = sin_t * max_amp * Clamp(abs(GAMEPLAY_STATE.liquid_momentum) / 20, 0, 1)
             local vec_top = vec2d.new(a_x, a_y)
             local vec_bot = vec2d.new(b_x, b_y)
             local vec_dir = vec_bot - vec_top
