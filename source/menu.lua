@@ -139,7 +139,6 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
     -- Reset menu positions if needed
     global_origin[1], global_origin[2] = new_global_x, new_global_y
 
-    Load_high_scores()
     playdate.getCrankTicks(1) -- Clear the crank input to start measuring difference to last frame.
 end
 
@@ -147,7 +146,6 @@ end
 function enter_menu_mission(enter_from_gameplay)
     local prev_menu_state = MENU_STATE.screen
 
-    Load_high_scores()
     add_system_menu_entries_cocktails()
 
     SOUND.bg_loop_gameplay:stop()
@@ -683,4 +681,6 @@ function Init_menus()
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0
     MENU_STATE.first_option_in_view = 0
+
+    Load_high_scores()
 end

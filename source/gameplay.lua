@@ -512,8 +512,10 @@ local function update_accomplishments()
     FROGS_FAVES.accomplishments[TARGET_COCKTAIL.name] = true
     -- Store new best recipe.
     if GAME_END_STICKERS.new_high_score then
-        FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE_FLATLIST
+        FROGS_FAVES.recipes[TARGET_COCKTAIL.name] = CURRENT_RECIPE_STEPS
     end
+    -- Update menu recipe text.
+    FROGS_FAVES_TEXT[TARGET_COCKTAIL.name] = Recipe_steps_to_text(CURRENT_RECIPE_STEPS, false)
     -- Persist the score to the player's Playdate disk.
     Store_high_scores()
 end

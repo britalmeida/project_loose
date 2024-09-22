@@ -3,6 +3,7 @@ local gfxi <const> = playdate.graphics.image
 
 -- High scores. The best recipes the player has made so far.
 FROGS_FAVES = {
+    version = 3,
     accomplishments = {},
     recipes = {},
 }
@@ -164,6 +165,7 @@ end
 
 function Load_test_scores() -- Should be removed in final game
     local frogs_faves = {
+        ["version"] = FROGS_FAVES.version,
         ["accomplishments"] = {
             ["Dicey Brew"] = true,
             ["Green Toe"] = true,
@@ -173,22 +175,23 @@ function Load_test_scores() -- Should be removed in final game
             ["Snailiva"] = true,
         },
         ["recipes"] = {
-            ["Dicey Brew"] = { 9, 9, -1, -1, -1, -1, },
-            ["Green Toe"] = { 5, 5, 5, -1, -1, 3, 3, 7, 7, -1, -1, 5, 5, -1, -1, 4, 4, -1, -1, -1, 4, -1, 4, 4, 4, 3, 3, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, 4, 4, 4, -1, -1, 4, 4, 4, -1, -1, -1, 3, 3, -1, -1, -1, 5, 5, -1, -1, -1, -1, -1, 4, -1, -1, -1, 4, 4, 3, 3, -1, -1, -1, 5, -1, -1, -1, 5, -1, 5, -1, 5, 5, 4, 4, 4, -1, -1, -1, 9, 9, -1, -1, 7, 7, -1, -1, 5, -1, -1, -1, 5, 5, -1, -1, -1, },
-            ["Hodge Podge"] = { 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1, 6, 6, 6, -1, 6, 3, 3, 3, 3, -1, -1, -1, 9, 1, -1, -1, -1, 7, -1, -1, -1, 5, 1, -1, -1, -1, -1, 9, -1, -1, -1,},
-            ["Overdose"] = { 1, 3, 3, 3, 3, -1, -1, -1, 3, -1, -1, 9, -1, -1, -1, 3, -1, -1, -1, },
-            ["Silkini"] = { 8, 8, 8, 2, 2, -1, -1, },
-            ["Snailiva"] = { 2, 2, 2, -1, -1, -1, },
+            ["Dicey Brew"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
+            ["Green Toe"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
+            ["Hodge Podge"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
+            ["Overdose"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
+            ["Silkini"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
+            ["Snailiva"] = { { 8, 3,}, { -1, 5,}, }
         },
     }
 
-    FROGS_FAVES = frogs_faves
     playdate.datastore.write(frogs_faves, 'frogs_faves')
+    Load_high_scores()
 end
 
 
 function Reset_high_scores() -- Should be removed in final game
     local frogs_faves = {
+        version = FROGS_FAVES.version,
         accomplishments = {},
         recipes = {}
     }
@@ -209,15 +212,42 @@ end
 
 
 function Load_high_scores()
-    FROGS_FAVES = playdate.datastore.read('frogs_faves')
-    if FROGS_FAVES == nil or next(FROGS_FAVES) == nil then
+    saved_faves = playdate.datastore.read('frogs_faves')
+    -- No previous save game data, initialize it.
+    if saved_faves == nil
+    or saved_faves.version == nil
+    or saved_faves.version ~= FROGS_FAVES.version then
         Reset_high_scores()
+    else
+        FROGS_FAVES = saved_faves
     end
 
-    -- Generate text version of high score recipes
+    -- Convert the saved format in case it's outdated.
+    -- if saved_faves.version == nil or saved_faves.version ~= 3 then
+    --     -- Update the version.
+    --     saved_faves.version = 3
+
+    --     -- Dicey Brew got renamed at some point.
+    --     if saved_faves.accomplishments["Diceybrew"] ~= nil then
+    --         saved_faves.accomplishments["Dicey Brew"] = saved_faves.accomplishments["Diceybrew"]
+    --         saved_faves.accomplishments["Diceybrew"] = nil
+    --         saved_faves.recipes["Dicey Brew"] = saved_faves.recipes["Diceybrew"]
+    --         saved_faves.recipes["Diceybrew"] = nil
+    --     end
+
+    --     -- Convert recipe steps from flatlist to grouped list.
+    --     for a = 1, #COCKTAILS, 1 do
+    --         local cocktail_name = COCKTAILS[a].name
+    --         saved_faves.recipes[cocktail_name] = Recipe_to_steps(saved_faves.recipes[cocktail_name])
+    --     end
+    -- end
+
+    printTable(FROGS_FAVES)
+
+    -- Generate text version of high score recipes for the cocktail menu.
     for a = 1, #COCKTAILS, 1 do
         local cocktail_name = COCKTAILS[a].name
-        recipe_steps = Recipe_to_steps(FROGS_FAVES.recipes[cocktail_name])
+        recipe_steps = FROGS_FAVES.recipes[cocktail_name]
         FROGS_FAVES_TEXT[cocktail_name] = Recipe_steps_to_text(recipe_steps, false)
     end
 end
