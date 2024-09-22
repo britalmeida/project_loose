@@ -489,7 +489,7 @@ local function update_accomplishments()
         GAME_END_STICKERS.new_high_score = true
         GAME_END_STICKERS.cocktail_learned = true
         win_sticker = "RECIPE\nLEARNED!"
-    elseif #CURRENT_RECIPE_FLATLIST < #FROGS_FAVES.recipes[TARGET_COCKTAIL.name] then
+    elseif #CURRENT_RECIPE_STEPS < #FROGS_FAVES.recipes[TARGET_COCKTAIL.name] then
         -- Recipe done in less steps.
         GAME_END_STICKERS.new_high_score = true
         win_sticker = "RECIPE\nIMPROVED!"
