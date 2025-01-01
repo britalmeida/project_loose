@@ -271,7 +271,7 @@ function Prepare_recipe_for_success_draw(cocktail_idx, recipe_steps, win_sticker
     elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[1] then
         DISPLAY_RECIPE.rating_text = "Fantastic! In only "..tostring(num_steps).." steps!"
     else
-        DISPLAY_RECIPE.rating_text = "No way to beat "..tostring(num_steps).." steps!!!"
+        DISPLAY_RECIPE.rating_text = "Perfected with "..tostring(num_steps).." steps!!!"
     end
 
     RECIPE_MAX_HEIGHT = Calculate_recipe_size_for_menu_draw()
