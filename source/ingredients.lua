@@ -8,14 +8,14 @@ local animloop <const> = playdate.graphics.animation.loop
 
 
 INGREDIENT_TYPES = {
-    { name="Peppermints",   drop_name="peppermint",   rune_composition={  4,  -2,   2  }, x=374,  y= 24, img=gfxi.new('images/ingredients/peppermints'),  drop=gfxi.new('images/ingredients/peppermints_drop'), hold=nil },
-    { name="Perfume",       drop_name="perfume", rune_composition={  6,   0,  -2  }, x=323,  y= 21, img=gfxi.new('images/ingredients/perfume'),      drop=gfxi.new('images/ingredients/perfume_drop'),     hold=nil  },
-    { name="Mushrooms",     drop_name="mushroom",     rune_composition={  0,   4,   3  }, x=269,  y= 20, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfxi.new('images/ingredients/mushrooms_drop'),   hold=nil  },
-    { name="Coffee Beans",  drop_name="coffee bean",  rune_composition={  2,  -4,   4  }, x= 31,  y= 79, img=gfxi.new('images/ingredients/coffee'),       drop=gfxi.new('images/ingredients/coffee_drop'),      hold=nil  },
-    { name="Toenails",      drop_name="toenail",      rune_composition={ -6,   2,  -2  }, x= 18,  y= 21, img=gfxi.new('images/ingredients/toenails'),     drop=gfxi.new('images/ingredients/toenails_drop'),    hold=nil  },
-    { name="Salt",          drop_name="salt",         rune_composition={  1,  -6,  -2  }, x= 64,  y= 21, img=gfxi.new('images/ingredients/salt'),         drop=gfxi.new('images/ingredients/salt_drop'),        hold=nil  },
+    { name="Peppermints",   drop_name="peppermint",   rune_composition={  4,  -2,   2  }, x=375,  y= 28, img=gfxi.new('images/ingredients/peppermints'),  drop=gfxi.new('images/ingredients/peppermints_drop'), hold=nil },
+    { name="Perfume",       drop_name="perfume",      rune_composition={  6,   0,  -2  }, x=330,  y= 31, img=gfxi.new('images/ingredients/perfume'),      drop=gfxi.new('images/ingredients/perfume_drop'),     hold=nil  },
+    { name="Mushrooms",     drop_name="mushroom",     rune_composition={  0,   4,   3  }, x=270,  y= 28, img=gfxi.new('images/ingredients/mushrooms'),    drop=gfxi.new('images/ingredients/mushrooms_drop'),   hold=nil  },
+    { name="Coffee Beans",  drop_name="coffee bean",  rune_composition={  2,  -4,   4  }, x= 33,  y= 80, img=gfxi.new('images/ingredients/coffee'),       drop=gfxi.new('images/ingredients/coffee_drop'),      hold=nil  },
+    { name="Toenails",      drop_name="toenail",      rune_composition={ -6,   2,  -2  }, x= 20,  y= 25, img=gfxi.new('images/ingredients/toenails'),     drop=gfxi.new('images/ingredients/toenails_drop'),    hold=nil  },
+    { name="Salt",          drop_name="salt",         rune_composition={  1,  -6,  -2  }, x= 65,  y= 27, img=gfxi.new('images/ingredients/salt'),         drop=gfxi.new('images/ingredients/salt_drop'),        hold=nil  },
     { name="Garlic",        drop_name="garlic clove", rune_composition={ -2,  -4,   6  }, x=280,  y= 94, img=gfxi.new('images/ingredients/garlic'),       drop=gfxi.new('images/ingredients/garlic_drop'),      hold=gfxi.new('images/ingredients/garlic_held')  },
-    { name="Spiderweb",     drop_name="spider",       rune_composition={ -4,   6,   -1  }, x=365,  y=104, img=gfxi.new('images/ingredients/spiderweb'),    drop=gfxi.new('images/ingredients/spiderweb_drop'),   hold=gfxi.new('images/ingredients/spiderweb_held')  },
+    { name="Spiderweb",     drop_name="spider",       rune_composition={ -4,   6,  -1  }, x=365,  y=104, img=gfxi.new('images/ingredients/spiderweb'),    drop=gfxi.new('images/ingredients/spiderweb_drop'),   hold=gfxi.new('images/ingredients/spiderweb_held')  },
     { name="Snail Shells",  drop_name="snail shell",  rune_composition={  2,   0,  -6  }, x= 20,  y=140, img=gfxi.new('images/ingredients/snailshells'),  drop=gfxi.new('images/ingredients/snailshells_drop'), hold=gfxi.new('images/ingredients/snailshells_held')  },
 }
 
