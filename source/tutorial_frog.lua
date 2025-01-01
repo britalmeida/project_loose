@@ -57,8 +57,8 @@ local stir_tutorials <const> = {
     "11",
 }
 local stir_tips <const> = {
+    "The ingredients were \nalready stirred in.",
     "No need to stir that much.",
-    "The ingredients already sank.",
 }
 local need_more_stir <const> = {
     "I can't tell yet.\nTry stirring!",
