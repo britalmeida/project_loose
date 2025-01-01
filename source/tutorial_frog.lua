@@ -38,7 +38,7 @@ local fire_reminders <const> = {
     "9",
 }
 local fire_tutorials <const> = {
-    "Magical brews need fire\nto reveal their magic.",
+    "Stoke the fire to\n activate the magic.",
     "Blow air onto the\nbottom of the cauldron.",
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
