@@ -22,11 +22,32 @@ SOUND = {
 FROG_SOUND = {
 	speaking 	= sp.new("sound/frog_blabla"),
 	excited 	= sp.new("sound/frog_excited"),
-	headshake 	= sp.new("sound/frog_headshake"),
+	headshake = sp.new("sound/frog_headshake"),
 	facepalm 	= sp.new("sound/frog_facepalm"),
-	tickleface 	= sp.new("sound/frog_excited"),
+	tickleface = sp.new("sound/frog_excited"),
 	urgent 		= sp.new("sound/frog_excited"),
 	eyelick 	= sp.new("sound/frog_eye_lick"),
 	drinking 	= sp.new("sound/frog_excited"),
 	burp 		= sp.new("sound/frog_excited"),
+}
+
+INGREDIENT_SOUND = {
+  ingredient_1A = sp.new("sound/ingredient_sounds/1A"),
+  ingredient_1B = sp.new("sound/ingredient_sounds/1B"),
+  ingredient_1C = sp.new("sound/ingredient_sounds/1C"),
+  ingredient_1D = sp.new("sound/ingredient_sounds/1D"),
+
+  ingredient_2C = sp.new("sound/ingredient_sounds/2C"),
+
+
+  ingredient_4B = sp.new("sound/ingredient_sounds/4B"),
+  ingredient_4C = sp.new("sound/ingredient_sounds/4C"),
+
+  ingredient_6B = sp.new("sound/ingredient_sounds/6B"),
+  ingredient_6C = sp.new("sound/ingredient_sounds/6C"),
+
+  ingredient_7C = sp.new("sound/ingredient_sounds/7C"),
+
+  ingredient_9B = sp.new("sound/ingredient_sounds/9B"),
+  ingredient_9C = sp.new("sound/ingredient_sounds/9C"),
 }

@@ -31,6 +31,8 @@ function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
 
     self.ingredient_type_idx = ingredient_type_idx
     self.start_pos = start_pos
+
+    
     
     self.is_drop = is_drop
 
@@ -43,6 +45,8 @@ function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
     self.is_wiggling = false
 
     self.vel = geo.vector2D.new(0, 0)
+
+    self:init_sfx_assignment()
 
     if self.is_drop then
       self:setImage(INGREDIENT_TYPES[ingredient_type_idx].drop)
@@ -57,6 +61,85 @@ function Ingredient:init(ingredient_type_idx, start_pos, is_drop)
 
     self:addSprite()
     self:setVisible(true)
+end
+
+
+-- A bit of a brute force way of assigning shared sfx after they have been created on load.
+function Ingredient:init_sfx_assignment()
+  if self.ingredient_type_idx == 1 then
+    -- Peppermints
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_1B,
+      put   = INGREDIENT_SOUND.ingredient_1C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  elseif self.ingredient_type_idx == 2 then
+      -- Perfume
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_1B,
+      put   = INGREDIENT_SOUND.ingredient_2C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  elseif self.ingredient_type_idx == 3 then
+    -- Mushrooms
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_1B,
+      put   = INGREDIENT_SOUND.ingredient_1C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  elseif self.ingredient_type_idx == 4 then
+    -- Coffee Beans
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_4B,
+      put   = INGREDIENT_SOUND.ingredient_4C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  elseif self.ingredient_type_idx == 5 then
+    -- Toenails
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_1B,
+      put   = INGREDIENT_SOUND.ingredient_1C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  elseif self.ingredient_type_idx == 6 then
+    -- Salt
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_6B,
+      put   = INGREDIENT_SOUND.ingredient_6C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  elseif self.ingredient_type_idx == 7 then
+    -- Garlic
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_1B,
+      put   = INGREDIENT_SOUND.ingredient_7C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  elseif self.ingredient_type_idx == 8 then
+    -- Spiderweb
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_1B,
+      put   = INGREDIENT_SOUND.ingredient_1C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  elseif self.ingredient_type_idx == 9 then
+    -- Snail Shells
+    self.sound_effects = {
+      shake = INGREDIENT_SOUND.ingredient_1A,
+      take  = INGREDIENT_SOUND.ingredient_9B,
+      put   = INGREDIENT_SOUND.ingredient_9C,
+      fall  = INGREDIENT_SOUND.ingredient_1D,
+    }
+  end
+  
 end
 
 
@@ -121,6 +204,7 @@ function Ingredient:tick()
         if self.can_drop and (SHAKE_VAL > 3 or IS_SIMULATING_SHAKE) then
             self.can_drop = false
             self:trigger_drop()
+            self.sound_effects.shake:play()
         end
     elseif self.state == INGREDIENT_STATE.is_in_air then
         self:fall()
@@ -224,6 +308,7 @@ function Ingredient:try_pickup()
         if INGREDIENT_TYPES[self.ingredient_type_idx].hold then
             self:setImage(INGREDIENT_TYPES[self.ingredient_type_idx].hold)
         end
+        self.sound_effects.take:play()
         return true
     end
     return false
@@ -251,6 +336,7 @@ function Ingredient:release()
         -- Snap over the cauldron.
         self:moveTo(center:unpack())
         self:setZIndex(Z_DEPTH.ingredient_slotted_over_cauldron)
+        self.sound_effects.put:play()
         --start wiggling
         self:start_wiggle()
         self.state = INGREDIENT_STATE.is_over_cauldron
@@ -261,9 +347,13 @@ function Ingredient:release()
         end
     elseif bounds:containsPoint(self.start_pos) then
         -- Snap back to its place on the shelve.
+        self.sound_effects.put:play()
         self:respawn()
+    else
+      -- trigger fall sound
+      self.sound_effects.fall:play()
+      -- Keep falling, see fall().
     end
-    -- Keep falling, see fall().
 end
 
 function Ingredient:drop()
