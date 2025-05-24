@@ -77,8 +77,8 @@ function Ingredient:init_sfx_assignment()
   elseif self.ingredient_type_idx == 2 then
       -- Perfume
     self.sound_effects = {
-      shake = INGREDIENT_SOUND.ingredient_1A,
-      take  = INGREDIENT_SOUND.ingredient_1B,
+      shake = INGREDIENT_SOUND.ingredient_2A,
+      take  = INGREDIENT_SOUND.ingredient_2B,
       put   = INGREDIENT_SOUND.ingredient_2C,
       fall  = INGREDIENT_SOUND.ingredient_1D,
     }
@@ -93,10 +93,10 @@ function Ingredient:init_sfx_assignment()
   elseif self.ingredient_type_idx == 4 then
     -- Coffee Beans
     self.sound_effects = {
-      shake = INGREDIENT_SOUND.ingredient_1A,
+      shake = INGREDIENT_SOUND.ingredient_4A,
       take  = INGREDIENT_SOUND.ingredient_4B,
       put   = INGREDIENT_SOUND.ingredient_4C,
-      fall  = INGREDIENT_SOUND.ingredient_1D,
+      fall  = INGREDIENT_SOUND.ingredient_4D,
     }
   elseif self.ingredient_type_idx == 5 then
     -- Toenails

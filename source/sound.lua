@@ -37,11 +37,14 @@ INGREDIENT_SOUND = {
   ingredient_1C = sp.new("sound/ingredient_sounds/1C"),
   ingredient_1D = sp.new("sound/ingredient_sounds/1D"),
 
+  ingredient_2A = sp.new("sound/ingredient_sounds/2A"),
+  ingredient_2B = sp.new("sound/ingredient_sounds/2B"),
   ingredient_2C = sp.new("sound/ingredient_sounds/2C"),
 
-
+  ingredient_4A = sp.new("sound/ingredient_sounds/4A"),
   ingredient_4B = sp.new("sound/ingredient_sounds/4B"),
   ingredient_4C = sp.new("sound/ingredient_sounds/4C"),
+  ingredient_4D = sp.new("sound/ingredient_sounds/4D"),
 
   ingredient_6B = sp.new("sound/ingredient_sounds/6B"),
   ingredient_6C = sp.new("sound/ingredient_sounds/6C"),
