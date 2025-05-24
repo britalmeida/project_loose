@@ -498,6 +498,7 @@ function Froggo:burptalk_anim_timer_function()
     self:start_animation(FROG.anim_drink)
     self.x_offset = -9
     GAMEPLAY_STATE.showing_recipe = true
+    SOUND.win_recipe_open:play()
 end
 
 
