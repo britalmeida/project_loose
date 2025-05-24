@@ -64,7 +64,7 @@ function Init_sounds()
 
   -- Tweak SFX to prevent clipping on max volume
   FROG_SOUND.excited:setVolume(0.7)
-  FROG_SOUND.blabla:setVolume(0.8)
+  FROG_SOUND.speaking:setVolume(0.8)
   FROG_SOUND.facepalm:setVolume(0.8)
   SOUND.fire_blow:setVolume(0.8)
 end
