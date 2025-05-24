@@ -403,15 +403,7 @@ function Froggo:go_reacting()
 
     -- If the potion was right already, give propper reaction :D
     if self.anim_current == self.anim_eyeball and TUTORIAL_COMPLETED then
-        local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
-
-        self.sound_state = SOUND_STATE.facepalm
-        self:set_frog_sounds()
-
-        self:start_animation(self.anim_facepalm)
-        self.x_offset = -10
-        self.y_offset = 9
-        self:prepare_to_idle(runtime)
+        self:facepalm()
     elseif self.anim_current == self.anim_eyeball and not TUTORIAL_COMPLETED then
         self.sound_state = SOUND_STATE.headshake
         self:set_frog_sounds()
@@ -436,6 +428,19 @@ function Froggo:go_reacting()
         -- return back to idle if no reaction applies
         self:go_idle()
     end
+end
+
+
+function Froggo:facepalm()
+    local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
+
+    self.sound_state = SOUND_STATE.facepalm
+    self:set_frog_sounds()
+
+    self:start_animation(self.anim_facepalm)
+    self.x_offset = -10
+    self.y_offset = 9
+    self:prepare_to_idle(runtime)
 end
 
 
