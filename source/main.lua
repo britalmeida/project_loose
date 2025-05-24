@@ -37,6 +37,7 @@ local function initialize()
     Init_gameplay()
     Init_visuals()
     Init_menus()
+    Init_sounds()
 
     -- Start counting time.
     playdate.resetElapsedTime()

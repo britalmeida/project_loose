@@ -51,3 +51,17 @@ INGREDIENT_SOUND = {
   ingredient_9B = sp.new("sound/ingredient_sounds/9B"),
   ingredient_9C = sp.new("sound/ingredient_sounds/9C"),
 }
+
+
+function Init_sounds()
+  
+  -- Tweaking the music volume to not drown out sounds
+  SOUND.bg_loop_menu:setVolume(0.5)
+  SOUND.bg_loop_gameplay:setVolume(0.5)
+
+  -- Tweak SFX to prevent clipping on max volume
+  FROG_SOUND.excited:setVolume(0.7)
+  FROG_SOUND.blabla:setVolume(0.8)
+  FROG_SOUND.facepalm:setVolume(0.8)
+  SOUND.fire_blow:setVolume(0.8)
+end
