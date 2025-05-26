@@ -85,10 +85,10 @@ function Ingredient:init_sfx_assignment()
   elseif self.ingredient_type_idx == 3 then
     -- Mushrooms
     self.sound_effects = {
-      shake = INGREDIENT_SOUND.ingredient_1A,
-      take  = INGREDIENT_SOUND.ingredient_1B,
-      put   = INGREDIENT_SOUND.ingredient_1C,
-      fall  = INGREDIENT_SOUND.ingredient_1D,
+      shake = INGREDIENT_SOUND.ingredient_3A,
+      take  = INGREDIENT_SOUND.ingredient_3B,
+      put   = INGREDIENT_SOUND.ingredient_3B,
+      fall  = INGREDIENT_SOUND.ingredient_3D,
     }
   elseif self.ingredient_type_idx == 4 then
     -- Coffee Beans
@@ -117,10 +117,10 @@ function Ingredient:init_sfx_assignment()
   elseif self.ingredient_type_idx == 7 then
     -- Garlic
     self.sound_effects = {
-      shake = INGREDIENT_SOUND.ingredient_1A,
-      take  = INGREDIENT_SOUND.ingredient_1B,
+      shake = INGREDIENT_SOUND.ingredient_7A,
+      take  = INGREDIENT_SOUND.ingredient_7B,
       put   = INGREDIENT_SOUND.ingredient_7C,
-      fall  = INGREDIENT_SOUND.ingredient_1D,
+      fall  = INGREDIENT_SOUND.ingredient_7D,
     }
   elseif self.ingredient_type_idx == 8 then
     -- Spiderweb
@@ -128,7 +128,7 @@ function Ingredient:init_sfx_assignment()
       shake = INGREDIENT_SOUND.ingredient_1A,
       take  = INGREDIENT_SOUND.ingredient_1B,
       put   = INGREDIENT_SOUND.ingredient_1C,
-      fall  = INGREDIENT_SOUND.ingredient_1D,
+      fall  = INGREDIENT_SOUND.ingredient_8D,
     }
   elseif self.ingredient_type_idx == 9 then
     -- Snail Shells

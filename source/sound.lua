@@ -41,6 +41,11 @@ INGREDIENT_SOUND = {
   ingredient_2B = sp.new("sound/ingredient_sounds/2B"),
   ingredient_2C = sp.new("sound/ingredient_sounds/2C"),
 
+  ingredient_3A = sp.new("sound/ingredient_sounds/3A"),
+  ingredient_3B = sp.new("sound/ingredient_sounds/3B"),
+  -- 3C is a duplicate
+  ingredient_3D = sp.new("sound/ingredient_sounds/3D"),
+
   ingredient_4A = sp.new("sound/ingredient_sounds/4A"),
   ingredient_4B = sp.new("sound/ingredient_sounds/4B"),
   ingredient_4C = sp.new("sound/ingredient_sounds/4C"),
@@ -49,7 +54,12 @@ INGREDIENT_SOUND = {
   ingredient_6B = sp.new("sound/ingredient_sounds/6B"),
   ingredient_6C = sp.new("sound/ingredient_sounds/6C"),
 
+  ingredient_7A = sp.new("sound/ingredient_sounds/7A"),
+  ingredient_7B = sp.new("sound/ingredient_sounds/7B"),
   ingredient_7C = sp.new("sound/ingredient_sounds/7C"),
+  ingredient_7D = sp.new("sound/ingredient_sounds/7D"),
+
+  ingredient_8D = sp.new("sound/ingredient_sounds/8D"),
 
   ingredient_9B = sp.new("sound/ingredient_sounds/9B"),
   ingredient_9C = sp.new("sound/ingredient_sounds/9C"),
