@@ -79,7 +79,7 @@ function Ingredient:init_sfx_assignment()
     self.sound_effects = {
       shake = INGREDIENT_SOUND.ingredient_2A,
       take  = INGREDIENT_SOUND.ingredient_2B,
-      put   = INGREDIENT_SOUND.ingredient_2C,
+      put   = INGREDIENT_SOUND.ingredient_2B,
       fall  = INGREDIENT_SOUND.ingredient_1D,
     }
   elseif self.ingredient_type_idx == 3 then

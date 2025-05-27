@@ -39,7 +39,6 @@ INGREDIENT_SOUND = {
 
   ingredient_2A = sp.new("sound/ingredient_sounds/2A"),
   ingredient_2B = sp.new("sound/ingredient_sounds/2B"),
-  ingredient_2C = sp.new("sound/ingredient_sounds/2C"),
 
   ingredient_3A = sp.new("sound/ingredient_sounds/3A"),
   ingredient_3B = sp.new("sound/ingredient_sounds/3B"),
