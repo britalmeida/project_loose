@@ -61,8 +61,10 @@ INGREDIENT_SOUND = {
 
   ingredient_8D = sp.new("sound/ingredient_sounds/8D"),
 
+  ingredient_9A = sp.new("sound/ingredient_sounds/9A"),
   ingredient_9B = sp.new("sound/ingredient_sounds/9B"),
   ingredient_9C = sp.new("sound/ingredient_sounds/9C"),
+  ingredient_9D = sp.new("sound/ingredient_sounds/9D"),
 }
 
 

@@ -133,10 +133,10 @@ function Ingredient:init_sfx_assignment()
   elseif self.ingredient_type_idx == 9 then
     -- Snail Shells
     self.sound_effects = {
-      shake = INGREDIENT_SOUND.ingredient_1A,
+      shake = INGREDIENT_SOUND.ingredient_9A,
       take  = INGREDIENT_SOUND.ingredient_9B,
       put   = INGREDIENT_SOUND.ingredient_9C,
-      fall  = INGREDIENT_SOUND.ingredient_1D,
+      fall  = INGREDIENT_SOUND.ingredient_9D,
     }
   end
   
