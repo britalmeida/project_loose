@@ -416,6 +416,9 @@ function Update_rune_count(drop_rune_count)
     local rune_change = {0, 0, 0}
 
     GAMEPLAY_STATE.dropped_ingredients += 1
+    if STRUGGLE_PROGRESS.too_much_shaking_tracking == 1 then
+        FROG:check_ignored_advice("too much drops")
+    end
 
     if GAMEPLAY_STATE.cauldron_ingredient ~= GAMEPLAY_STATE.last_shaken_ingredient
     and GAMEPLAY_STATE.dropped_ingredients > 1 then
@@ -906,6 +909,10 @@ function check_crank_to_stir()
 
     -- Play stirring sound when the ladle is moving.
     if math.abs(STIR_SPEED) > 3 then
+        if GAMEPLAY_STATE.dropped_ingredients == 0
+        and STRUGGLE_PROGRESS.too_much_stir_repeated > 0 then
+            FROG:check_ignored_advice("too much stirring")
+        end
         if not SOUND.stir_sound:isPlaying() then
             SOUND.stir_sound:play()
 
