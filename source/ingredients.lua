@@ -80,7 +80,7 @@ function Ingredient:init_sfx_assignment()
       shake = INGREDIENT_SOUND.ingredient_2A,
       take  = INGREDIENT_SOUND.ingredient_2B,
       put   = INGREDIENT_SOUND.ingredient_2B,
-      fall  = INGREDIENT_SOUND.ingredient_1D,
+      fall  = INGREDIENT_SOUND.ingredient_2D,
     }
   elseif self.ingredient_type_idx == 3 then
     -- Mushrooms
@@ -101,18 +101,18 @@ function Ingredient:init_sfx_assignment()
   elseif self.ingredient_type_idx == 5 then
     -- Toenails
     self.sound_effects = {
-      shake = INGREDIENT_SOUND.ingredient_1A,
-      take  = INGREDIENT_SOUND.ingredient_1B,
-      put   = INGREDIENT_SOUND.ingredient_1C,
-      fall  = INGREDIENT_SOUND.ingredient_1D,
+      shake = INGREDIENT_SOUND.ingredient_5A,
+      take  = INGREDIENT_SOUND.ingredient_5B,
+      put   = INGREDIENT_SOUND.ingredient_5B,
+      fall  = INGREDIENT_SOUND.ingredient_5D,
     }
   elseif self.ingredient_type_idx == 6 then
     -- Salt
     self.sound_effects = {
-      shake = INGREDIENT_SOUND.ingredient_1A,
+      shake = INGREDIENT_SOUND.ingredient_6A,
       take  = INGREDIENT_SOUND.ingredient_6B,
       put   = INGREDIENT_SOUND.ingredient_6C,
-      fall  = INGREDIENT_SOUND.ingredient_1D,
+      fall  = INGREDIENT_SOUND.ingredient_6D,
     }
   elseif self.ingredient_type_idx == 7 then
     -- Garlic
@@ -125,9 +125,9 @@ function Ingredient:init_sfx_assignment()
   elseif self.ingredient_type_idx == 8 then
     -- Spiderweb
     self.sound_effects = {
-      shake = INGREDIENT_SOUND.ingredient_1A,
-      take  = INGREDIENT_SOUND.ingredient_1B,
-      put   = INGREDIENT_SOUND.ingredient_1C,
+      shake = INGREDIENT_SOUND.ingredient_8A,
+      take  = INGREDIENT_SOUND.ingredient_8B,
+      put   = INGREDIENT_SOUND.ingredient_8C,
       fall  = INGREDIENT_SOUND.ingredient_8D,
     }
   elseif self.ingredient_type_idx == 9 then
