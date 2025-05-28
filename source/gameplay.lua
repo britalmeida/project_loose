@@ -202,6 +202,7 @@ GAMEPLAY_TIMERS = {
         end),
     too_much_fire_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.too_much_fire = false
+        GAMEPLAY_TIMERS.too_much_fire_timeout:pause()
         end),
     too_little_fire_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.too_little_fire = false
