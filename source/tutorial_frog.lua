@@ -432,6 +432,10 @@ end
 
 
 function Froggo:facepalm()
+    print("FACEPALM")
+
+    self.state = ACTION_STATE.reacting
+
     local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
 
     self.sound_state = SOUND_STATE.facepalm
@@ -440,6 +444,7 @@ function Froggo:facepalm()
     self:start_animation(self.anim_facepalm)
     self.x_offset = -10
     self.y_offset = 9
+
     self:prepare_to_idle(runtime)
 end
 
