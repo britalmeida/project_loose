@@ -647,10 +647,10 @@ local function draw_cauldron_front()
     local splish_duration <const> = ANIMATIONS.splish.right.delay * ANIMATIONS.splish.right.endFrame - 33
     local splish_left_paused <const> = GAMEPLAY_TIMERS.splish_left.paused
     local splish_right_paused <const> = GAMEPLAY_TIMERS.splish_right.paused
-    if STIR_SPEED > min_stir_speed and splish_left_detected and splish_left_paused then
+    if math.abs(STIR_SPEED) > min_stir_speed and splish_left_detected and splish_left_paused then
         Restart_timer(GAMEPLAY_TIMERS.splish_left, splish_duration)
         ANIMATIONS.splish.left.frame = 1
-    elseif STIR_SPEED > min_stir_speed and splish_right_detected and splish_right_paused then
+    elseif math.abs(STIR_SPEED) > min_stir_speed and splish_right_detected and splish_right_paused then
         Restart_timer(GAMEPLAY_TIMERS.splish_right, splish_duration)
         ANIMATIONS.splish.right.frame = 1
     end
