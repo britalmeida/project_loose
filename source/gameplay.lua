@@ -141,7 +141,7 @@ RECIPE_STRUGGLE_STEPS = nil
 local min_drops_without_stirring <const> = 6
 local min_mixed_drops_without_stirring <const> = 10
 local excess_stirring_factor <const> = 0.005
-local struggle_reminder_timout <const> = 7*1000
+local struggle_reminder_timout <const> = 13*1000
 
 
 -- Frog entity.
@@ -171,6 +171,27 @@ GAMEPLAY_TIMERS = {
         -- Check if the potion is still good. If yes, start eyeball lick anim
         CHECK_IF_DELICIOUS = true
         FROG:Lick_eyeballs()
+        end),
+    frog_give_hint_fire = playdate.timer.new(100, function()
+        PLAYER_STRUGGLES.too_much_fire = true
+        -- Trigger frog speech
+        local not_automated = false
+        FROG:Ask_the_frog(not_automated)
+        FROG:flash_b_prompt(6*1000)
+        end),
+    frog_give_hint_stir = playdate.timer.new(100, function()
+        PLAYER_STRUGGLES.too_much_stir = true
+        -- Trigger frog speech
+        local not_automated = false
+        FROG:Ask_the_frog(not_automated)
+        FROG:flash_b_prompt(6*1000)
+        end),
+    frog_give_hint_drop = playdate.timer.new(100, function()
+        PLAYER_STRUGGLES.too_much_shaking = true
+        -- Trigger frog speech
+        local not_automated = false
+        FROG:Ask_the_frog(not_automated)
+        FROG:flash_b_prompt(6*1000)
         end),
     frog_go_urgent = playdate.timer.new(100, function()
         FROG:start_animation(FROG.anim_urgent)
@@ -1304,10 +1325,12 @@ end
 function Check_too_much_fire_struggle()
     -- 1. Heat doesn't fall under a high threshold for a certain amount of time
     -- 2. Flame is kept over a very high threshold for a prolonged period of time
-    if GAMEPLAY_STATE.heat_amount > 0.9 and GAMEPLAY_TIMERS.too_much_fire_timeout.paused then
-        STRUGGLE_PROGRESS.too_much_fire_tracking += 0.003
+    if GAMEPLAY_STATE.flame_amount > 0.80 and GAMEPLAY_TIMERS.too_much_fire_timeout.paused then
+        STRUGGLE_PROGRESS.too_much_fire_tracking += 0.006
+
     else
         STRUGGLE_PROGRESS.too_much_fire_tracking -= 0.001
+
     end
 
     STRUGGLE_PROGRESS.too_much_fire_tracking = Clamp(STRUGGLE_PROGRESS.too_much_fire_tracking, 0, 1)
@@ -1319,6 +1342,8 @@ function Check_too_much_fire_struggle()
         STRUGGLE_PROGRESS.too_much_fire_tracking = 0
         -- timer to stop struggle dialogue
         Restart_timer(GAMEPLAY_TIMERS.too_much_fire_timeout, struggle_reminder_timout)
+    elseif STRUGGLE_PROGRESS.too_much_fire_tracking >= 0.3 then
+        FROG:check_ignored_advice("too much fire")
     end
     --print("Too much fire tracker: " .. STRUGGLE_PROGRESS.too_much_fire_tracking)
     --print(GAMEPLAY_STATE.fire_stoke_count)

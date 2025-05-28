@@ -449,6 +449,39 @@ function Froggo:facepalm()
 end
 
 
+function Froggo:check_ignored_advice(situation)
+    local facepalm_duration = self.anim_facepalm.delay * self.anim_facepalm.endFrame
+    local target_timer
+
+    if self.state == ACTION_STATE.reacting then
+        -- Avoid spamming this logic each frame
+        return
+    end
+    if situation == "too much fire"
+    and self.last_spoken_sentence_pool == sayings.struggle.fire[2] then
+        target_timer = GAMEPLAY_TIMERS.frog_give_hint_fire
+        STRUGGLE_PROGRESS.too_much_fire_tracking = 0
+    elseif situation == "too much stirring"
+    and self.last_spoken_sentence_pool == sayings.struggle.stir[2] then
+        target_timer = GAMEPLAY_TIMERS.frog_give_hint_stir
+        STRUGGLE_PROGRESS.too_much_stir_tracking = 0
+    elseif situation == "too much drops" 
+    and self.last_spoken_sentence_pool == sayings.struggle.drop[2] then
+        target_timer = GAMEPLAY_TIMERS.frog_give_hint_drop
+        STRUGGLE_PROGRESS.too_much_shaking_tracking = 0
+    else
+        print("No advice was ignored")
+        return
+    end
+    
+    print("Advice was ignored. Bemoan player and instruct them again")
+    -- After the facepalm is over, this timer triggers the same advice from the frog again
+    Restart_timer(target_timer, facepalm_duration)
+    self:facepalm()
+end
+
+
+
 function Froggo:froggo_tickleface(is_reacting_to_flick)
     self.state = ACTION_STATE.alarmed
     self.sound_state = SOUND_STATE.tickleface
