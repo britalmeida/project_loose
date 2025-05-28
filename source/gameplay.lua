@@ -1221,9 +1221,9 @@ function Check_player_struggle()
     -- Either in too much wihtout stirring, with otu without mixed ingredients, or never shaking in single drops
     if GAMEPLAY_STATE.dropped_ingredients >= min_mixed_drops_without_stirring
     or (GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring
-    and GAMEPLAY_STATE.mixed_ingredients == false)
+        and GAMEPLAY_STATE.mixed_ingredients == false)
     or (GAMEPLAY_STATE.multi_drop_sequence >= 4 
-    and GAMEPLAY_STATE.dropped_ingredients >= 2) then
+        and GAMEPLAY_STATE.dropped_ingredients >= 2) then
         Check_too_much_shaking_struggle()
     end
 
