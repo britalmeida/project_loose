@@ -438,6 +438,8 @@ function Froggo:facepalm()
 
     local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
 
+    self:stop_speech_bubble()
+
     self.sound_state = SOUND_STATE.facepalm
     self:set_frog_sounds()
 
