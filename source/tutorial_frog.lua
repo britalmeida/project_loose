@@ -934,7 +934,7 @@ function Froggo:set_frog_sounds()
         -- FROG_SOUND.tickleface:play()
     elseif self.sound_state == SOUND_STATE.urgent then
         self:stop_sounds()
-        -- FROG_SOUND.urgent:play()
+        FROG_SOUND.urgent:play()
     elseif self.sound_state == SOUND_STATE.drinking then
         self:stop_sounds()
         -- FROG_SOUND.drinking:play()
