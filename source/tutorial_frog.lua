@@ -135,12 +135,12 @@ local sayings <const> = {
 
 SPEECH_BUBBLE_ANIM_IMGS = {
     -- The order of these need to match the string number used in the sentence categories.
-    { gfxit.new("images/speech/animation-lesslove"),   8 }, -- "1"
-    { gfxit.new("images/speech/animation-morelove"),   8 }, -- "2"
-    { gfxit.new("images/speech/animation-lessdoom"),   8 }, -- "3"
-    { gfxit.new("images/speech/animation-moredoom"),   8 }, -- "4"
-    { gfxit.new("images/speech/animation-lessweed"),   8 }, -- "5"
-    { gfxit.new("images/speech/animation-moreweed"),   8 }, -- "6"
+    { gfxit.new("images/speech/animation-lesslove"),   12 }, -- "1"
+    { gfxit.new("images/speech/animation-morelove"),   12 }, -- "2"
+    { gfxit.new("images/speech/animation-lessdoom"),   12 }, -- "3"
+    { gfxit.new("images/speech/animation-moredoom"),   12 }, -- "4"
+    { gfxit.new("images/speech/animation-lessweed"),   12 }, -- "5"
+    { gfxit.new("images/speech/animation-moreweed"),   12 }, -- "6"
     { gfxit.new("images/speech/animation-moredark"),   8 }, -- "7"
     { gfxit.new("images/speech/animation-morebright"), 8 }, -- "8"
     { gfxit.new("images/speech/animation-morefire"),   5 }, -- "9"
