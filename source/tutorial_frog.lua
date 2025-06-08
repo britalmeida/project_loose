@@ -867,6 +867,10 @@ function Froggo:pop_speech_bubble()
     ANIMATIONS.dialog_bubble_anim_pop.frame = 1
     ANIMATIONS.dialog_bubble_oneline_pop.frame = 1
     ANIMATIONS.dialog_bubble_twoline_pop.frame = 1
+    -- Play random bubble pop sound
+    local pop_sounds = {SOUND.bubble_pop_01, SOUND.bubble_pop_02, SOUND.bubble_pop_03}
+    local r = math.random(1, 3)
+    pop_sounds[r]:play()
 end
 
 
