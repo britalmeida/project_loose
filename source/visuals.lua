@@ -452,6 +452,12 @@ function draw_stirring_bubbles()
         ANIMATIONS.stirring_bubble.puff:draw(0, 0)
         gfx.popContext()
 
+        -- Play correct sounds
+        SOUND.cauldron_bubble_big:stop()
+        if not SOUND.cauldron_bubble_pop:isPlaying() then
+            SOUND.cauldron_bubble_pop:play()
+        end
+
         -- End animation once it reaches the end frame
         if ANIMATIONS.stirring_bubble.puff.frame == ANIMATIONS.stirring_bubble.puff.endFrame then
             GAMEPLAY_STATE.stirring_complete = false
@@ -465,10 +471,19 @@ function draw_stirring_bubbles()
         gfx.pushContext()
         ANIMATIONS.stirring_bubble.small:draw(125, 154)
         gfx.popContext()
+        -- Play correct sounds
+        if not SOUND.cauldron_bubble_small:isPlaying() then
+            SOUND.cauldron_bubble_small:play(0)
+        end
     elseif STIR_FACTOR < 0.99 and ingredients_being_stirred then
         gfx.pushContext()
         ANIMATIONS.stirring_bubble.big:draw(125, 154)
         gfx.popContext()
+        -- Play correct sounds
+        SOUND.cauldron_bubble_small:stop()
+        if not SOUND.cauldron_bubble_big:isPlaying() then
+            SOUND.cauldron_bubble_big:play(0)
+        end
         -- Restart puff anim in case it is triggered next
     end
 end
