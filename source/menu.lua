@@ -78,6 +78,7 @@ function Sticker_slap()
     -- At the end of the glitter anim timer, the menu state is switched to mission
     local duration = UI_TEXTURES.stickerslap.delay * UI_TEXTURES.stickerslap.endFrame
     Restart_timer(GAMEPLAY_TIMERS.sticker_slap, duration)
+    SOUND.sticker_slap:play()
     UI_TEXTURES.stickerslap.frame = 1
 end
 

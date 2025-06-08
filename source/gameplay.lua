@@ -239,6 +239,7 @@ GAMEPLAY_TIMERS = {
         end),
     sticker_slap = playdate.timer.new(100, function ()
         Restart_timer(GAMEPLAY_TIMERS.sticker_glitter, UI_TEXTURES.sticker_glitter.delay * UI_TEXTURES.sticker_glitter.endFrame)
+        SOUND.sparkles:play()
     end),
     sticker_glitter = playdate.timer.new(100, function ()
         MENU_STATE.screen = MENU_SCREEN.mission
