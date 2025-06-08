@@ -472,6 +472,7 @@ function draw_stirring_bubbles()
         ANIMATIONS.stirring_bubble.small:draw(125, 154)
         gfx.popContext()
         -- Play correct sounds
+        SOUND.cauldron_bubble_big:stop()
         if not SOUND.cauldron_bubble_small:isPlaying() then
             SOUND.cauldron_bubble_small:play(0)
         end
