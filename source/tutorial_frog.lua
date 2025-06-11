@@ -537,7 +537,7 @@ end
 
 
 function Froggo:burptalk_anim_timer_function()
-    self.sound_state = SOUND_STATE.drinking
+    self.sound_state = SOUND_STATE.silent
     self:set_frog_sounds()
     self:stop_speech_bubble()
     self:start_animation(FROG.anim_drink)
@@ -939,12 +939,9 @@ function Froggo:set_frog_sounds()
     elseif self.sound_state == SOUND_STATE.urgent then
         self:stop_sounds()
         FROG_SOUND.urgent:play()
-    elseif self.sound_state == SOUND_STATE.drinking then
-        self:stop_sounds()
-        -- FROG_SOUND.drinking:play()
     elseif self.sound_state == SOUND_STATE.burp then
         self:stop_sounds()
-        -- FROG_SOUND.burp:play()
+        FROG_SOUND.burp:play()
     end
 end
 

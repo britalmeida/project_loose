@@ -582,6 +582,8 @@ function Handle_gameplay_input()
                 GAMEPLAY_TIMERS.burp_anim:pause()
                 -- trim time off burptalk_anim timer to trigger its function
                 GAMEPLAY_TIMERS.burptalk_anim.duration -= 10*1000
+                -- Stop burp sounds
+                FROG:stop_sounds()
             end
         else
             -- Handle recipe scrolling.
