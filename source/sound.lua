@@ -86,7 +86,7 @@ INGREDIENT_SOUND = {
 function Init_sounds()
   
   -- Tweaking the music volume to not drown out sounds
-  SOUND.bg_loop_menu:setVolume(0.5)
+  SOUND.bg_loop_menu:setVolume(0.4)
   SOUND.bg_loop_gameplay:setVolume(0.5)
 
   -- Tweak SFX to prevent clipping on max volume
