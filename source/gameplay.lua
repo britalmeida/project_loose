@@ -554,6 +554,9 @@ end
 function Win_game()
     GAME_ENDED = true
 
+    -- start recipe scrolling sound for win recipe screen
+    SOUND.paper_scrolling:play(0)
+
     STIR_SPEED = 0 -- Stop liquid and stirring sounds.
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
@@ -593,12 +596,25 @@ function Handle_gameplay_input()
             -- Handle recipe scrolling.
             local crankTicks = playdate.getCrankTicks(100)
             RECIPE_SCROLL += -crankTicks
+            local crank_change = crankTicks
             if playdate.buttonIsPressed( playdate.kButtonUp ) then
                 RECIPE_SCROLL += 4
+                crank_change += 4
             elseif playdate.buttonIsPressed( playdate.kButtonDown ) then
                 RECIPE_SCROLL -= 4
+                crank_change -= 4
             end
             RECIPE_SCROLL = Clamp(RECIPE_SCROLL, -RECIPE_MAX_SCROLL, 0)
+
+            -- Here the scroll sound volume should be adjusted
+            local crank_sound_factor = math.abs(crank_change) * 0.05
+            crank_sound_factor = math.min(crank_sound_factor, 1.0)
+            if RECIPE_SCROLL == -RECIPE_MAX_SCROLL or RECIPE_SCROLL == 0 then
+                crank_sound_factor = 0.0
+            end
+            crank_sound_factor *= 2
+            crank_sound_factor = math.min(crank_sound_factor, 1.0)
+            SOUND.paper_scrolling:setVolume(crank_sound_factor)
 
             -- Back transition back to menus
             if playdate.buttonJustReleased( playdate.kButtonB ) or

@@ -134,6 +134,7 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
     remove_system_menu_entries()
     Stop_gameplay()
 
+    SOUND.paper_scrolling:stop()
     SOUND.bg_loop_gameplay:stop()
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
@@ -158,6 +159,12 @@ function enter_menu_mission(enter_from_gameplay)
     if not SOUND.bg_loop_menu:isPlaying() then
         SOUND.bg_loop_menu:play(0)
     end
+
+    -- Start recipe scrolling sound but on silent
+    if not SOUND.paper_scrolling:isPlaying() then
+        SOUND.paper_scrolling:play(0)
+    end
+    SOUND.paper_scrolling:setVolume(0.0)
 
     -- Locking/Unlocking cocktails
     if FROGS_FAVES.accomplishments[COCKTAILS[1].name] then
@@ -206,6 +213,9 @@ end
 function Enter_gameplay()
     MENU_STATE.screen = MENU_SCREEN.gameplay
 
+
+    -- Start recipe scrolling sound but on silent
+    SOUND.paper_scrolling:stop()
     SOUND.bg_loop_menu:stop()
     if not SOUND.bg_loop_gameplay:isPlaying() then
         SOUND.bg_loop_gameplay:play(0)
@@ -395,7 +405,7 @@ function Draw_menu()
             -- draw top recipe
             local recipe_popup_speed = 3
             local recipe_hide_speed = 0.2
-            local recipe_scroll_speed = 1
+            local recipe_scroll_speed = 0.6
             local recipe_min_height = 44
             local recipe_max_height = RECIPE_MAX_HEIGHT
 
@@ -416,6 +426,8 @@ function Draw_menu()
                     elseif playdate.buttonIsPressed(playdate.kButtonDown) then
                         crank_change += button_speed
                     end
+            
+
                     if math.abs(crank_change) > 0.01 and TOP_RECIPE_OFFSET >= recipe_min_height then
                         TOP_RECIPE_OFFSET += crank_change * recipe_scroll_speed
                         if TOP_RECIPE_OFFSET > recipe_max_height then
@@ -424,6 +436,14 @@ function Draw_menu()
                             TOP_RECIPE_OFFSET = recipe_min_height
                         end
                     end
+
+                    -- Here the scroll sound volume should be adjusted
+                    local crank_sound_factor = math.abs(crank_change) * 0.05
+                    crank_sound_factor = math.min(crank_sound_factor, 1.0)
+                    if TOP_RECIPE_OFFSET == recipe_max_height or TOP_RECIPE_OFFSET == recipe_min_height then
+                        crank_sound_factor = 0.0
+                    end
+                    SOUND.paper_scrolling:setVolume(crank_sound_factor)
                 end
 
             else

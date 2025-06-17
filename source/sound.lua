@@ -26,6 +26,7 @@ SOUND = {
   sticker_slap = sp.new("sound/sticker_slap"),
   sparkles_served = sp.new("sound/sparkles_served"),
   sparkles_mastered = sp.new("sound/sparkles"),
+  paper_scrolling = sp.new("sound/paper_scrolling"),
 }
 
 FROG_SOUND = {
