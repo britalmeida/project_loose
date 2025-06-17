@@ -237,9 +237,13 @@ GAMEPLAY_TIMERS = {
     too_much_stir_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.too_much_stir = false
         end),
-    sticker_slap = playdate.timer.new(100, function ()
+    sparkles_served = playdate.timer.new(100, function ()
         Restart_timer(GAMEPLAY_TIMERS.sticker_glitter, UI_TEXTURES.sticker_glitter.delay * UI_TEXTURES.sticker_glitter.endFrame)
-        SOUND.sparkles:play()
+        SOUND.sparkles_served:play()
+    end),
+    sparkles_mastered = playdate.timer.new(100, function ()
+        Restart_timer(GAMEPLAY_TIMERS.sticker_glitter, UI_TEXTURES.sticker_glitter.delay * UI_TEXTURES.sticker_glitter.endFrame)
+        SOUND.sparkles_mastered:play()
     end),
     sticker_glitter = playdate.timer.new(100, function ()
         MENU_STATE.screen = MENU_SCREEN.mission

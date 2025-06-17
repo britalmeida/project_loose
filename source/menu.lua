@@ -72,14 +72,19 @@ end
 
 -- 
 
-function Sticker_slap()
+function Sticker_slap(got_mastered_sticker)
     -- Set start and timer for stickerslap anim
     -- Once that timer ends, the glitter anim timer is triggered
     -- At the end of the glitter anim timer, the menu state is switched to mission
     local duration = UI_TEXTURES.stickerslap.delay * UI_TEXTURES.stickerslap.endFrame
-    Restart_timer(GAMEPLAY_TIMERS.sticker_slap, duration)
     SOUND.sticker_slap:play()
     UI_TEXTURES.stickerslap.frame = 1
+
+    if got_mastered_sticker then
+        Restart_timer(GAMEPLAY_TIMERS.sparkles_mastered, duration)
+    else
+        Restart_timer(GAMEPLAY_TIMERS.sparkles_served, duration)
+    end
 end
 
 
@@ -180,7 +185,9 @@ function enter_menu_mission(enter_from_gameplay)
     -- Needed to lock inputs during animation
     if enter_from_gameplay and (GAME_END_STICKERS.cocktail_learned or GAME_END_STICKERS.new_mastered) then
         MENU_STATE.screen = MENU_SCREEN.mission_sticker
-        Sticker_slap()
+
+        local mastered_sticker = GAME_END_STICKERS.new_mastered
+        Sticker_slap(mastered_sticker)
     else
         MENU_STATE.screen = MENU_SCREEN.mission
     end
@@ -469,7 +476,8 @@ function Draw_menu()
                 UI_TEXTURES.sticker_glitter:draw(glitter_x - (UI_TEXTURES.sticker_glitter:image().width/2), glitter_y - (UI_TEXTURES.sticker_glitter:image().height/2))
             end
             -- Draw hand anim if the associated timer is running (I removed last 100ms to avoid sometimes repeating the first frame)
-            if GAMEPLAY_TIMERS.sticker_slap.timeLeft > 100 and not GAMEPLAY_TIMERS.sticker_slap.paused then
+            if (GAMEPLAY_TIMERS.sparkles_served.timeLeft > 100 and not GAMEPLAY_TIMERS.sparkles_served.paused)
+                or (GAMEPLAY_TIMERS.sparkles_mastered.timeLeft > 100 and not GAMEPLAY_TIMERS.sparkles_mastered.paused) then
                 UI_TEXTURES.stickerslap:draw(hand_x, hand_y)
             end
 

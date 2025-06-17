@@ -24,7 +24,8 @@ SOUND = {
   into_main_menu = sp.new("sound/into_main_menu_slide"),
   win_recipe_open = sp.new("sound/recipe_writing"),
   sticker_slap = sp.new("sound/sticker_slap"),
-  sparkles = sp.new("sound/sparkles"),
+  sparkles_served = sp.new("sound/sparkles_served"),
+  sparkles_mastered = sp.new("sound/sparkles"),
 }
 
 FROG_SOUND = {
