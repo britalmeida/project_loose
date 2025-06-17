@@ -1205,7 +1205,7 @@ function Check_player_learnings()
         print('Learned how to fire.')
     end
 
-    if math.abs(STIR_SPEED) > 7.5
+    if math.abs(STIR_SPEED) > 6.6 -- The almost the exact value of using the keyboard shortcuts
     and GAMEPLAY_STATE.dropped_ingredients > 0
     and not PLAYER_LEARNED.how_to_stir then
         PLAYER_LEARNED.how_to_stir = true
