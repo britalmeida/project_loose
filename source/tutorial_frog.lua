@@ -23,6 +23,7 @@ local SOUND_STATE <const> = {
     eyelick     = 7,
     drinking    = 8,
     burp        = 9,
+    fire        = 10,
 }
 
 -- Froggo content machine
@@ -367,7 +368,7 @@ end
 
 function Froggo:fire_reaction()
     self.state = ACTION_STATE.alarmed
-    self.sound_state = SOUND_STATE.silent
+    self.sound_state = SOUND_STATE.fire
     self:set_frog_sounds()
     self:start_animation(self.anim_frogfire)
     self:prepare_to_idle()
@@ -942,6 +943,9 @@ function Froggo:set_frog_sounds()
     elseif self.sound_state == SOUND_STATE.burp then
         self:stop_sounds()
         FROG_SOUND.burp:play()
+    elseif self.sound_state == SOUND_STATE.fire then
+        self:stop_sounds()
+        FROG_SOUND.fire:play()
     end
 end
 

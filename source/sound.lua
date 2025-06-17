@@ -36,6 +36,7 @@ FROG_SOUND = {
 	urgent 		= sp.new("sound/frog_urgent"),
 	eyelick 	= sp.new("sound/frog_eye_lick"),
 	burp 		= sp.new("sound/frog_burp"),
+  fire 		= sp.new("sound/frog_fire"),
 }
 
 INGREDIENT_SOUND = {
