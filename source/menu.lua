@@ -443,7 +443,9 @@ function Draw_menu()
                     if TOP_RECIPE_OFFSET == recipe_max_height or TOP_RECIPE_OFFSET == recipe_min_height then
                         crank_sound_factor = 0.0
                     end
-                    SOUND.paper_scrolling:setVolume(crank_sound_factor)
+                    if selected_cocktail_done then
+                        SOUND.paper_scrolling:setVolume(crank_sound_factor)
+                    end
                 end
 
             else
