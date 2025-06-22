@@ -107,5 +107,4 @@ function Init_sounds()
   SOUND.folding_close:setVolume(0.7)
   SOUND.into_cocktail_menu:setVolume(0.7)
   SOUND.into_main_menu:setVolume(0.7)
-  SOUND.paper_scrolling:setVolume(0.5)
 end

@@ -438,7 +438,9 @@ function Draw_menu()
                     end
 
                     -- Here the scroll sound volume should be adjusted
-                    local crank_sound_factor = math.abs(crank_change) * 0.05
+                    local normalize_factor = 0.05
+                    local volume_factor = 0.5
+                    local crank_sound_factor = math.abs(crank_change) * normalize_factor * volume_factor
                     crank_sound_factor = math.min(crank_sound_factor, 1.0)
                     if TOP_RECIPE_OFFSET == recipe_max_height or TOP_RECIPE_OFFSET == recipe_min_height then
                         crank_sound_factor = 0.0
