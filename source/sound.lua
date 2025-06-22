@@ -103,7 +103,7 @@ function Init_sounds()
   SOUND.bubble_pop_01:setVolume(0.7)
   SOUND.bubble_pop_02:setVolume(0.7)
   SOUND.bubble_pop_03:setVolume(0.7)
-  SOUND.folding_close:setVolume(0.7)
+  SOUND.folding_close:setVolume(0.6)
   SOUND.into_cocktail_menu:setVolume(0.7)
   SOUND.into_main_menu:setVolume(0.7)
 end
