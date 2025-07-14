@@ -128,7 +128,7 @@ local function draw_stirring_stick()
     do
         local t = STIR_POSITION
 
-        -- Calculate 2 elipses:
+        -- Calculate 2 ellipses:
         -- 'a': for the path of the top point of the stick,
         -- 'b': for the bottom point
         local stick_width, stick_height, stick_tilt = 10, 60, 45
@@ -192,7 +192,7 @@ end
 
 
 local function draw_stirring_stick_back()
-    -- Draw the laddle only if it's on the farther side of the cauldron
+    -- Draw the ladle only if it's on the farther side of the cauldron
     if STIR_POSITION >= PI and STIR_POSITION < TWO_PI then
         draw_stirring_stick()
     end
@@ -200,7 +200,7 @@ end
 
 
 local function draw_stirring_stick_front()
-    -- Draw the laddle only if it's on the front side of the cauldron
+    -- Draw the ladle only if it's on the front side of the cauldron
     if STIR_POSITION >= 0 and STIR_POSITION < PI then
         draw_stirring_stick()
     end
@@ -377,8 +377,8 @@ local function draw_liquid_bubbles_and_drops()
     end
 
     gfx.pushContext()
-        -- Values for calculating bubble/drop position, shared with liquid and laddle.
-        -- The bubbles travel along an elipse. T
+        -- Values for calculating bubble/drop position, shared with liquid and ladle.
+        -- The bubbles travel along an ellipse. T
         local ellipse_height <const>  = LIQUID_HEIGHT - 5 -- Lil' bit less than the actual liquid height.
         local ellipse_width <const> = LIQUID_WIDTH - 10 -- Lil' bit less than liquid
 
@@ -399,7 +399,7 @@ local function draw_liquid_bubbles_and_drops()
                 local speed_squish_offset = bubble_sin * speed_squish_amp
                 local pos_x = Bubbles[x].amplitude * bubble_cos * ellipse_width + LIQUID_CENTER_X
                 local pos_y = Bubbles[x].amplitude * bubble_sin * ellipse_height + LIQUID_CENTER_Y - speed_squish_offset
-                -- Center sprite on the elipse path (avoid drawCentered as that adds 30% cost and doesn't support mask clipping).
+                -- Center sprite on the ellipse path (avoid drawCentered as that adds 30% cost and doesn't support mask clipping).
                 pos_x -= Bubbles[x].img_center_x
                 pos_y -= Bubbles[x].img_center_y
 
@@ -490,7 +490,7 @@ function draw_stirring_bubbles()
 end
 
 
-local function draw_overlayed_instructions()
+local function draw_overlaid_instructions()
     if GAMEPLAY_STATE.showing_cocktail then
         gfx.pushContext()
             COCKTAILS[TARGET_COCKTAIL.type_idx].img:draw(0, 0)
@@ -510,7 +510,7 @@ local function draw_overlayed_instructions()
     end
 end
 
-local function draw_overlayed_recipe()
+local function draw_overlaid_recipe()
     if GAMEPLAY_STATE.showing_recipe then
         Recipe_draw_success()
     end
@@ -771,7 +771,7 @@ local function draw_ingredient_grab_cursor()
 
         -- Save cursor state for to compare next frame
         GAMEPLAY_STATE.cursor_prev = GAMEPLAY_STATE.cursor
-            
+
     gfx.popContext()
 end
 
@@ -954,9 +954,9 @@ function Init_visuals()
     -- 24: grabbed ingredients
     table.insert(DRAW_PASSES, Set_draw_pass(27, draw_ingredient_grab_cursor))
     table.insert(DRAW_PASSES, Set_draw_pass(25, draw_dialog_bubble))
-    -- depth 30+: overlayed modal instructions
-    table.insert(DRAW_PASSES, Set_draw_pass(30, draw_overlayed_instructions))
-    table.insert(DRAW_PASSES, Set_draw_pass(35, draw_overlayed_recipe))
+    -- depth 30+: overlaid modal instructions
+    table.insert(DRAW_PASSES, Set_draw_pass(30, draw_overlaid_instructions))
+    table.insert(DRAW_PASSES, Set_draw_pass(35, draw_overlaid_recipe))
     -- Development
     --table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug))
     table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug_fps))
@@ -965,7 +965,7 @@ end
 Z_DEPTH = {
     frog = 10,
     ingredients_in_shelve = -5,
-    indredient_drops = 3,
+    ingredient_drops = 3,
     ingredient_slotted_over_cauldron = 4,
     ingredient_drop_splash = 6,
     grabbed_ingredient = 26

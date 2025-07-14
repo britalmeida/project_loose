@@ -128,7 +128,7 @@ local sayings <const> = {
         drop = { drop_tutorials, drop_tips},
         stir = { stir_tutorials, stir_tips},
     },
-    hint = { -- hook these up poperly everywhere
+    hint = { -- hook these up properly everywhere
         recipe = recipe_struggle,
         cocktail = cocktail_struggle,
     }
@@ -222,7 +222,7 @@ function Froggo:start_animation(anim_loop)
     self.x_offset = 0
     self.y_offset = 0
     self.anim_current = anim_loop
-    self.anim_current.frame = 1  -- Restart the animation from the beggining
+    self.anim_current.frame = 1  -- Restart the animation from the beginning
 end
 
 
@@ -273,7 +273,7 @@ function Froggo:Click_the_frog(is_reacting_to_flick)
     if is_reacting_to_flick == nil then
         is_reacting_to_flick = false
     end
-    -- Make it a bit smaller, so we don't accedentially click on the frog
+    -- Make it a bit smaller, so we don't accidentally click on the frog.
     bounds:inset(15, 15)
     if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos) and self.state == ACTION_STATE.idle then
         self:froggo_tickleface(is_reacting_to_flick)
@@ -402,7 +402,7 @@ end
 
 function Froggo:go_reacting()
 
-    -- If the potion was right already, give propper reaction :D
+    -- If the potion was right already, give proper reaction :D
     if self.anim_current == self.anim_eyeball and TUTORIAL_COMPLETED then
         self:facepalm()
     elseif self.anim_current == self.anim_eyeball and not TUTORIAL_COMPLETED then
@@ -630,7 +630,7 @@ function Froggo:think(automated)
 
         local idx = self.tutorial_state
 
-        -- Loop throught the sentences for this tutorial step.
+        -- Loop through the sentences for this tutorial step.
         self:select_next_sentence(sayings.tutorial[idx])
 
     else
@@ -668,7 +668,7 @@ function Froggo:think(automated)
             self:select_next_sentence(sayings.struggle.stir[2])
 
         -- Normal help loop:
-        -- Some lines will not be picked if the frog speaks autoamtically with a talk reminder
+        -- Some lines will not be picked if the frog speaks automatically with a talk reminder
         elseif GAMEPLAY_STATE.heat_amount < 0.2 then
             -- Reminder to keep the heat up whenever it goes low.
             self:select_next_sentence(sayings.help.fire)
@@ -860,7 +860,7 @@ end
 
 -- Stops speech bubbles and sets variables for the popping animation to start.
 function Froggo:pop_speech_bubble()
-    -- replace speech bubble with the corresponiding pop animation
+    -- replace speech bubble with the corresponding pop animation
     local bubble_type = get_speech_bubble_type()
     Froggo:stop_speech_bubble()
     -- Set active bubble animation and reset pop animations
@@ -924,7 +924,7 @@ function Froggo:set_frog_sounds()
         self:stop_sounds()
         FROG_SOUND.eyelick:play(0)
 
-    -- All other sounds aare just played once if the state matches
+    -- All other sounds are just played once if the state matches
     elseif self.sound_state == SOUND_STATE.excited then
         self:stop_sounds()
         FROG_SOUND.excited:play()

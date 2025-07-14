@@ -7,17 +7,17 @@ DIR = { need_more_of = 1, need_less_of = 2 }
 CURSORS = { open = 1, hold = 2, flick_hold = 3, flick = 4}
 SPEECH_BUBBLES = { none = 1, small = 2, big = 3, animation = 4}
 
-local frog_speech_interval_duration <const> = 25*1000 -- Time waiting to speek up again while automated
+local frog_speech_interval_duration <const> = 25*1000 -- Time waiting to speak up again while automated
 
 GAMEPLAY_STATE = {
-    -- User modal interation
+    -- User modal interaction
     showing_cocktail = false,
     showing_instructions = false,
     instructions_prompt_expanded = false,
     instructions_prompt_pos = point.new(0, 0),
     showing_recipe = false,
     cursor = CURSORS.open,  -- State of the cursor (and it's visualization)
-    cursor_prev = CURSORS.open, -- previous state to comapare and reset flick animation
+    cursor_prev = CURSORS.open, -- previous state to compare and reset flick animation
     cursor_pos = point.new(200, 120),
     -- Fire!
     flame_amount = 0.0,
@@ -35,7 +35,7 @@ GAMEPLAY_STATE = {
     rune_count_unstirred = {0, 0, 0}, -- Previous rune count positions before stirring drops in
     rune_count_change = {0, 0, 0}, -- Pure change of runes via current ingredient drops
     rune_count_current = {0, 0, 0}, -- Currently stirred positions of rune count. Eventually becomes rune_count
-    held_ingredient = 0, -- index of currently helf ingredient
+    held_ingredient = 0, -- index of currently held ingredient
     dropped_ingredients = 0, -- how many ingredients have been dropped now, before stirred in
     multi_drop_sequence = 0, -- how many times in a row multiple drops have been stirred in
     counting_stirs = false,
@@ -63,7 +63,7 @@ GAMEPLAY_STATE = {
 }
 
 -- List of rune change of unstirred drops and their live STIR_FACTOR
--- Used to calulate the rune positions while stirring
+-- Used to calculate the rune positions while stirring.
 CURRENT_DROPS = {{
     {0, 0, 0},  -- rune change per new drop
     1           -- It's own stir factor
@@ -141,7 +141,7 @@ RECIPE_STRUGGLE_STEPS = nil
 local min_drops_without_stirring <const> = 6
 local min_mixed_drops_without_stirring <const> = 10
 local excess_stirring_factor <const> = 0.005
-local struggle_reminder_timout <const> = 13*1000
+local struggle_reminder_timeout <const> = 13*1000
 
 
 -- Frog entity.
@@ -209,10 +209,10 @@ GAMEPLAY_TIMERS = {
     burptalk_anim = playdate.timer.new(100, function()
         FROG:burptalk_anim_timer_function()
         end),
-    -- Timout values and timers fore stopping struggle dialogue
+    -- Timeout values and timers fore stopping struggle dialogue
     tutorial_timeout = playdate.timer.new(100, function ()
         -- special timer that starts after tutorial is complete.
-        -- Only once done, struggles can be triggerd
+        -- Only once done, struggles can be triggered.
         TUTORIAL_COMPLETED = true
       end),
     cocktail_struggle_timeout = playdate.timer.new(100, function ()
@@ -619,7 +619,7 @@ function Handle_gameplay_input()
             -- Back transition back to menus
             if playdate.buttonJustReleased( playdate.kButtonB ) or
             playdate.buttonJustReleased( playdate.kButtonA ) then
-                -- A few ticks timer so it doesn't overap with the mission menu controlls
+                -- A few ticks timer so it doesn't overlap with the mission menu controls.
                 playdate.timer.new(5, function ()
                     enter_menu_mission(true)
                     remove_system_menu_entries()
@@ -673,7 +673,7 @@ function Handle_gameplay_input()
                 FROG:go_idle()
                 FROG:Click_the_frog(can_pop_speech_bubble)
             end
-            
+
         else
             -- Reset flick hold if it was previously used
             if GAMEPLAY_STATE.cursor == CURSORS.flick_hold then
@@ -917,7 +917,7 @@ function check_crank_to_stir()
     or not GAMEPLAY_STATE.counting_stirs then
         STIR_REVOLUTION = 0
         STIR_COUNT = 0
-        -- Reset to check again if there's an ingredent in the cauldron only once stirring starts again
+        -- Reset to check again if there's an ingredient in the cauldron only once stirring starts again.
         GAMEPLAY_STATE.counting_stirs = false
     else
         if delta_stir > 0.5 then
@@ -1198,13 +1198,13 @@ function Calculate_goodness()
     if math.abs(TREND - prev_trend) == 2
     and not RECIPE_STRUGGLE_STEPS then
         FROG:Notify_the_frog()
-        -- Stop potentual blinking from eyeball lick
+        -- Stop potential blinking from eyeball lick
         ANIMATIONS.b_prompt.frame = 1
         ANIMATIONS.b_prompt.paused = true
     elseif math.abs(diff_change_overall) > 0.01
     and not RECIPE_STRUGGLE_STEPS then
         FROG:Notify_the_frog()
-        -- Stop potentual blinking from eyeball lick
+        -- Stop potential blinking from eyeball lick
         ANIMATIONS.b_prompt.frame = 1
         ANIMATIONS.b_prompt.paused = true
     elseif CHECK_IF_DELICIOUS then
@@ -1270,11 +1270,11 @@ function Check_player_struggle()
     end
 
     -- Too much shaking
-    -- Either in too much wihtout stirring, with otu without mixed ingredients, or never shaking in single drops
+    -- Either in too much without stirring, with otu without mixed ingredients, or never shaking in single drops
     if GAMEPLAY_STATE.dropped_ingredients >= min_mixed_drops_without_stirring
     or (GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring
         and GAMEPLAY_STATE.mixed_ingredients == false)
-    or (GAMEPLAY_STATE.multi_drop_sequence >= 4 
+    or (GAMEPLAY_STATE.multi_drop_sequence >= 4
         and GAMEPLAY_STATE.dropped_ingredients >= 2) then
         Check_too_much_shaking_struggle()
     end
@@ -1289,7 +1289,7 @@ function Check_player_struggle()
         Check_too_much_stirring_struggle()
     end
 
-    -- No check for "No Stirring needed". There's already frequent remidners in place
+    -- No check for "No Stirring needed". There's already frequent reminders in place.
 
     -- Cocktail struggle (Pointing towards cocktail artwork or clues)
     -- If you used too many different ingredients
@@ -1304,7 +1304,7 @@ function Check_player_struggle()
             GAMEPLAY_STATE.used_ingredients_table[k] = false
         end
         -- Timeout to stop cocktail hint dialogue
-        Restart_timer(GAMEPLAY_TIMERS.cocktail_struggle_timeout, struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.cocktail_struggle_timeout, struggle_reminder_timeout)
         FROG:wants_to_talk()
     end
 
@@ -1345,7 +1345,7 @@ function Check_no_fire_struggle()
         print("Fire is never used or player forgot how!")
         PLAYER_STRUGGLES.no_fire = true
         FROG:wants_to_talk()
-        Restart_timer(GAMEPLAY_TIMERS.no_fire_timeout, struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.no_fire_timeout, struggle_reminder_timeout)
         STRUGGLE_PROGRESS.no_fire_tracking = 0
     end
     --print("No fire tracking: " .. STRUGGLE_PROGRESS.no_fire_tracking)
@@ -1371,7 +1371,7 @@ function Check_too_much_fire_struggle()
         FROG:wants_to_talk()
         STRUGGLE_PROGRESS.too_much_fire_tracking = 0
         -- timer to stop struggle dialogue
-        Restart_timer(GAMEPLAY_TIMERS.too_much_fire_timeout, struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.too_much_fire_timeout, struggle_reminder_timeout)
     elseif STRUGGLE_PROGRESS.too_much_fire_tracking >= 0.3 then
         FROG:check_ignored_advice("too much fire")
     end
@@ -1404,7 +1404,7 @@ function Check_too_little_fire_struggle()
         -- reset counting
         GAMEPLAY_STATE.fire_stoke_count = 0
         -- timer to stop struggle dialogue
-        Restart_timer(GAMEPLAY_TIMERS.too_little_fire_timeout, struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.too_little_fire_timeout, struggle_reminder_timeout)
     end
     --print(GAMEPLAY_STATE.fire_stoke_count)
 end
@@ -1417,7 +1417,7 @@ function Check_no_shaking_struggle()
         PLAYER_STRUGGLES.no_shake = true
         Shorten_talk_reminder()
         FROG:wants_to_talk()
-        Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timeout)
         GAMEPLAY_STATE.cauldron_swap_count = 0
     -- Check it there's too much stirring without a dropped ingredient
     elseif not PLAYER_STRUGGLES.no_shake then
@@ -1430,7 +1430,7 @@ function Check_no_shaking_struggle()
                 PLAYER_STRUGGLES.no_shake = true
                 Shorten_talk_reminder()
                 FROG:wants_to_talk()
-                Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
+                Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timeout)
                 STRUGGLE_PROGRESS.no_shake_tracking = 0
             end
         elseif GAMEPLAY_STATE.dropped_ingredients > 0 then
@@ -1453,7 +1453,7 @@ function Check_too_much_shaking_struggle()
         PLAYER_STRUGGLES.too_much_shaking = true
         Shorten_talk_reminder()
         FROG:wants_to_talk()
-        Restart_timer(GAMEPLAY_TIMERS.too_much_shaking_timeout, struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.too_much_shaking_timeout, struggle_reminder_timeout)
         -- Increasing the tracking variable will make sure the frog won't retrigger the dialogue,
         -- unless the player addressed the issue
         STRUGGLE_PROGRESS.too_much_shaking_tracking = 1
@@ -1498,7 +1498,7 @@ function Check_too_much_stirring_struggle()
         PLAYER_STRUGGLES.too_much_stir = true
         Shorten_talk_reminder()
         FROG:wants_to_talk()
-        Restart_timer(GAMEPLAY_TIMERS.too_much_stir_timeout, struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.too_much_stir_timeout, struggle_reminder_timeout)
         STRUGGLE_PROGRESS.too_much_stir_tracking = 0
         STRUGGLE_PROGRESS.too_much_stir_repeated += 1
     elseif STRUGGLE_PROGRESS.too_much_stir_repeated >=3 then
@@ -1506,7 +1506,7 @@ function Check_too_much_stirring_struggle()
         PLAYER_STRUGGLES.no_shake = true
         Shorten_talk_reminder()
         FROG:wants_to_talk()
-        Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timout)
+        Restart_timer(GAMEPLAY_TIMERS.no_shake_timeout, struggle_reminder_timeout)
         STRUGGLE_PROGRESS.too_much_stir_tracking = 0
         STRUGGLE_PROGRESS.too_much_stir_repeated = 0
     end
