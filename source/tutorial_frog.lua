@@ -266,20 +266,20 @@ function Froggo:Ask_for_cocktail()
     self:croak()
 end
 
--- Will trigger tickleface reaction of the frog if it is clicked on.
--- Takes an extra argument for cases where the bubble pop flicking is used (shortens the animation)
-function Froggo:Click_the_frog(is_reacting_to_flick)
+-- Will trigger tickleface reaction if it is clicked on, or trigger the cocktail drinking.
+function Froggo:Click_the_frog()
     local bounds = self:getBoundsRect()
-    if is_reacting_to_flick == nil then
-        is_reacting_to_flick = false
-    end
     -- Make it a bit smaller, so we don't accidentally click on the frog.
     bounds:inset(15, 15)
     if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos) and self.state == ACTION_STATE.idle then
-        self:froggo_tickleface(is_reacting_to_flick)
+        self:froggo_tickleface(false)
     end
 end
 
+-- Trigger startled animation (shorter than on player grab).
+function Froggo:React_to_bubble_pop()
+    self:froggo_tickleface(true)
+end
 
 function Froggo:Notify_the_frog()
     -- notify the frog when significant change happened
@@ -490,14 +490,13 @@ function Froggo:froggo_tickleface(is_reacting_to_flick)
     self.sound_state = SOUND_STATE.tickleface
     self:set_frog_sounds()
     self:start_animation(self.anim_tickleface)
-    -- If the animation is triggered by a flick, skip the first 3 frames
+    -- If the animation is triggered by a bubble pop flick, skip the first 3 frames.
+    local anim_time_skipped = 0
     if is_reacting_to_flick then
-        local three_frames_skipped = 7.5 * frame_ms
-        self.anim_current.frame = 4
-        self:prepare_to_idle(2.9*1000 - three_frames_skipped)
-    else
-        self:prepare_to_idle(2.9*1000)
+        anim_time_skipped = 3 * 2.5 * frame_ms
+        self.anim_current.frame = 3
     end
+    self:prepare_to_idle(2.9*1000 - anim_time_skipped)
 end
 
 
@@ -858,20 +857,29 @@ function Froggo:start_speech_bubble()
     end
 end
 
+
 -- Stops speech bubbles and sets variables for the popping animation to start.
 function Froggo:pop_speech_bubble()
-    -- replace speech bubble with the corresponding pop animation
-    local bubble_type = get_speech_bubble_type()
-    Froggo:stop_speech_bubble()
-    -- Set active bubble animation and reset pop animations
-    SPEECH_BUBBLE_POP = bubble_type
-    ANIMATIONS.dialog_bubble_anim_pop.frame = 1
-    ANIMATIONS.dialog_bubble_oneline_pop.frame = 1
-    ANIMATIONS.dialog_bubble_twoline_pop.frame = 1
-    -- Play random bubble pop sound
+    -- There should be a bubble to pop.
+    assert(SPEECH_BUBBLE_ANIM or SPEECH_BUBBLE_TEXT)
+
+    -- Select active bubble animation and reset it to start from the beginning.
+    if SPEECH_BUBBLE_ANIM then
+        SPEECH_BUBBLE_POP = ANIMATIONS.dialog_bubble_anim_pop
+    elseif #SPEECH_BUBBLE_TEXT == 1 then
+        SPEECH_BUBBLE_POP = ANIMATIONS.dialog_bubble_oneline_pop
+    elseif #SPEECH_BUBBLE_TEXT > 1 then
+        SPEECH_BUBBLE_POP = ANIMATIONS.dialog_bubble_twoline_pop
+    end
+    SPEECH_BUBBLE_POP.frame = 1
+
+    -- Play random bubble pop sound.
     local pop_sounds = {SOUND.bubble_pop_01, SOUND.bubble_pop_02, SOUND.bubble_pop_03}
     local r = math.random(1, 3)
     pop_sounds[r]:play()
+
+    -- Remove the text/animation speech bubble.
+    Froggo:stop_speech_bubble()
 end
 
 

@@ -36,6 +36,31 @@ MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y = 158, 124
 MAGIC_TRIANGLE_SIZE = 100
 CAULDRON_SLOT_X, CAULDRON_SLOT_Y = MAGIC_TRIANGLE_CENTER_X, MAGIC_TRIANGLE_CENTER_Y
 
+-- The frog speech bubbles are full screen images and hit tested.
+-- Ideally they would be cropped to size and positioned.
+-- There was an organic expansion of types of bubbles without refactor, so the code CBB.
+SPEECH_BUBBLE_AABB = {
+    geo.rect.new(127, 65, 240, 70), -- small
+    geo.rect.new(116, 56, 260, 90), -- big
+    geo.rect.new(254, 60, 90, 70) -- anim
+}
+
+function get_speech_bubble_bounds()
+    -- No speech bubble being shown.
+    if SPEECH_BUBBLE_ANIM == nil and SPEECH_BUBBLE_TEXT == nil then
+        return nil
+    end
+
+    -- Select active bubble animation and reset it to start from the beginning.
+    if SPEECH_BUBBLE_ANIM then
+        return SPEECH_BUBBLE_AABB[3]
+    elseif #SPEECH_BUBBLE_TEXT == 1 then
+        return SPEECH_BUBBLE_AABB[1]
+    elseif #SPEECH_BUBBLE_TEXT > 1 then
+        return SPEECH_BUBBLE_AABB[2]
+    end
+end
+
 
 -- Draw utilities
 
@@ -566,26 +591,17 @@ local function draw_dialog_bubble()
         gfx.popContext()
 
     elseif SPEECH_BUBBLE_POP then
-        local pop_animation
-        local anim_offset_x = 0
-        local anim_offset_y = 0
         -- Draw pop animation
         gfx.pushContext()
-            if SPEECH_BUBBLE_POP == SPEECH_BUBBLES.small then
-                pop_animation = ANIMATIONS.dialog_bubble_oneline_pop
-                anim_offset_x = 13
-                anim_offset_y = 5
-            elseif SPEECH_BUBBLE_POP == SPEECH_BUBBLES.big then
-                pop_animation = ANIMATIONS.dialog_bubble_twoline_pop
-            elseif SPEECH_BUBBLE_POP == SPEECH_BUBBLES.animation then
-                pop_animation = ANIMATIONS.dialog_bubble_anim_pop
-            end
-            pop_animation:image():draw(anim_offset_x, anim_offset_y)
-            -- Stop drawing when done
-            if pop_animation.frame == pop_animation.endFrame then
-                SPEECH_BUBBLE_POP = nil
-            end
+            SPEECH_BUBBLE_POP:image():draw(0, 0)
         gfx.popContext()
+
+        -- Stop drawing when done
+        -- FIXME: there shouldn't be logic changes on draw, but at this point we want to be done with refactoring code.
+        -- There is no strong reason to fix this thing and not all the timer code, so leave it be.
+        if SPEECH_BUBBLE_POP.frame == SPEECH_BUBBLE_POP.endFrame then
+            SPEECH_BUBBLE_POP = nil
+        end
     elseif THOUGHT_BUBBLE_ANIM then
         -- Animated thought bubble when frog wants to say something
         gfx.pushContext()
@@ -719,13 +735,20 @@ local function draw_debug()
         gfx.fillRoundRect(x + border, y + height - meter - border, width - border * 2, meter, 3)
     gfx.popContext()
 
-    -- Cauldron hit zone
+    -- Hit zones
     gfx.pushContext()
         gfx.setColor(gfx.kColorWhite)
         gfx.setLineWidth(2)
-        gfx.drawRect(LIQUID_AABB)
-    gfx.popContext()
 
+        -- Cauldron (ingredient drops).
+        gfx.drawRect(LIQUID_AABB)
+
+        -- Speech bubbles (cursor flick pop).
+        for _, rect in pairs(SPEECH_BUBBLE_AABB) do
+            gfx.drawRect(rect)
+        end
+        gfx.drawRect(FROG:getBoundsRect())
+    gfx.popContext()
 end
 
 
@@ -751,26 +774,22 @@ local function draw_ingredient_grab_cursor()
             TEXTURES.cursor_hold:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
         elseif GAMEPLAY_STATE.cursor == CURSORS.open then
             TEXTURES.cursor:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
-        elseif GAMEPLAY_STATE.cursor == CURSORS.flick_hold then
+        elseif GAMEPLAY_STATE.cursor == CURSORS.flick_hover or GAMEPLAY_STATE.cursor == CURSORS.flick_hold then
             TEXTURES.cursor_flick_hold:drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
         elseif GAMEPLAY_STATE.cursor == CURSORS.flick then
             ANIMATIONS.cursor_flick:image():drawCentered(GAMEPLAY_STATE.cursor_pos:unpack())
         end
 
-        -- Reset flick animation if it just started
-        if GAMEPLAY_STATE.cursor == CURSORS.flick
-        and GAMEPLAY_STATE.cursor_prev ~= CURSORS.flick then
-            ANIMATIONS.cursor_flick.frame = 1
+        if GAMEPLAY_STATE.cursor == CURSORS.flick then
+            -- Reset flick animation if it just started.
+            if GAMEPLAY_STATE.cursor_prev ~= CURSORS.flick then
+                ANIMATIONS.cursor_flick.frame = 1
+            end
+            -- Switch to regular open hand once flick anim is done.
+            if ANIMATIONS.cursor_flick.frame == ANIMATIONS.cursor_flick.endFrame then
+                GAMEPLAY_STATE.cursor = CURSORS.open
+            end
         end
-
-        -- Switch to regular open hand once flick anim is done
-        if GAMEPLAY_STATE.cursor == CURSORS.flick
-        and ANIMATIONS.cursor_flick.frame == ANIMATIONS.cursor_flick.endFrame then
-            GAMEPLAY_STATE.cursor = CURSORS.open
-        end
-
-        -- Save cursor state for to compare next frame
-        GAMEPLAY_STATE.cursor_prev = GAMEPLAY_STATE.cursor
 
     gfx.popContext()
 end
