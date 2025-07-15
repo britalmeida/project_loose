@@ -607,13 +607,11 @@ function Handle_gameplay_input()
             RECIPE_SCROLL = Clamp(RECIPE_SCROLL, -RECIPE_MAX_SCROLL, 0)
 
             -- Here the scroll sound volume should be adjusted
-            local crank_sound_factor = math.abs(crank_change) * 0.05
+            local crank_sound_factor = math.abs(crank_change) * 0.1
             crank_sound_factor = math.min(crank_sound_factor, 1.0)
             if RECIPE_SCROLL == -RECIPE_MAX_SCROLL or RECIPE_SCROLL == 0 then
                 crank_sound_factor = 0.0
             end
-            crank_sound_factor *= 2
-            crank_sound_factor = math.min(crank_sound_factor, 1.0)
             SOUND.paper_scrolling:setVolume(crank_sound_factor)
 
             -- Back transition back to menus
