@@ -1153,7 +1153,7 @@ function Is_potion_good_enough()
 end
 
 function Calculate_goodness()
-    local prev_diff = table.deepcopy(DIFF_TO_TARGET)
+    local prev_ingredients_abs = DIFF_TO_TARGET.ingredients_abs
     local prev_trend = TREND
 
     -- Match expectations with reality.
@@ -1168,9 +1168,8 @@ function Calculate_goodness()
     DIFF_TO_TARGET.ingredients_abs = DIFF_TO_TARGET.runes_abs[1] + DIFF_TO_TARGET.runes_abs[2] + DIFF_TO_TARGET.runes_abs[3]
 
     -- calculate state change
-    local diff_change_runes = DIFF_TO_TARGET.ingredients_abs - prev_diff.ingredients_abs
-    local diff_change_overall = diff_change_runes
-    local rune_trend = -Sign(diff_change_runes)
+    local diff_change_overall = DIFF_TO_TARGET.ingredients_abs - prev_ingredients_abs
+    local rune_trend = -Sign(diff_change_overall)
 
     local new_trend = rune_trend
     if new_trend ~= 0 then
