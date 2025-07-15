@@ -272,7 +272,12 @@ function Froggo:Click_the_frog()
     -- Make it a bit smaller, so we don't accidentally click on the frog.
     bounds:inset(15, 15)
     if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos) and self.state == ACTION_STATE.idle then
-        self:froggo_tickleface(false)
+        if Is_potion_good_enough() then
+            local automated = false
+            self:Ask_the_frog(automated)
+        else
+            self:froggo_tickleface(false)
+        end
     end
 end
 
