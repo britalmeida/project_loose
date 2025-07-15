@@ -504,7 +504,7 @@ function Draw_menu()
                     glitter_x = focused_sticker_served.x
                     glitter_y = focused_sticker_served.y
                 end
-                UI_TEXTURES.sticker_glitter:drawCentered(glitter_x, glitter_y)
+                UI_TEXTURES.sticker_glitter:image():drawCentered(glitter_x, glitter_y)
             end
             -- Draw hand anim if the associated timer is running (I removed last 100ms to avoid sometimes repeating the first frame)
             if (MENU_TIMERS.sparkles_served.timeLeft > 100 and not MENU_TIMERS.sparkles_served.paused)
