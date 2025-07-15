@@ -236,21 +236,6 @@ GAMEPLAY_TIMERS = {
     too_much_stir_timeout = playdate.timer.new(100, function ()
         PLAYER_STRUGGLES.too_much_stir = false
         end),
-    sparkles_served = playdate.timer.new(100, function ()
-        Restart_timer(GAMEPLAY_TIMERS.sticker_glitter, UI_TEXTURES.sticker_glitter.delay * UI_TEXTURES.sticker_glitter.endFrame)
-        SOUND.sparkles_served:play()
-    end),
-    sparkles_mastered = playdate.timer.new(100, function ()
-        Restart_timer(GAMEPLAY_TIMERS.sticker_glitter, UI_TEXTURES.sticker_glitter.delay * UI_TEXTURES.sticker_glitter.endFrame)
-        SOUND.sparkles_mastered:play()
-    end),
-    sticker_glitter = playdate.timer.new(100, function ()
-        MENU_STATE.screen = MENU_SCREEN.mission
-    end),
-    selection_finger = playdate.timer.new(100, function ()
-        Set_target_potion(MENU_STATE.focused_option + 1)
-        Enter_gameplay()
-    end),
     splish_left = playdate.timer.new(100, function ()
         GAMEPLAY_TIMERS.splish_left:pause()
     end),
