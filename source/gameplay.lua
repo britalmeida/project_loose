@@ -286,7 +286,17 @@ end
 function Stop_gameplay()
     -- Done on every game over/win to stop ongoing sounds and events.
     -- Not a complete tear down of resources.
+
+    for k in pairs(GAMEPLAY_TIMERS) do
+        GAMEPLAY_TIMERS[k]:pause()
+    end
+
     FROG:stop_sounds()
+    SOUND.cauldron_bubble_big:stop()
+    SOUND.cauldron_bubble_small:stop()
+    SOUND.stir_sound:stop()
+    SOUND.fire_blow:stop()
+    SOUND.fire_burn:stop()
 end
 
 
@@ -538,9 +548,6 @@ end
 function Win_game()
     GAME_ENDED = true
 
-    -- start recipe scrolling sound for win recipe screen
-    SOUND.paper_scrolling:play(0)
-
     STIR_SPEED = 0 -- Stop liquid and stirring sounds.
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
@@ -554,6 +561,9 @@ function Win_game()
     -- Set the scroll range to "some" less than the recipe height so it doesn't fully go offscreen.
     RECIPE_MAX_SCROLL = Calculate_recipe_size_for_success_draw() - 205
     RECIPE_SCROLL = 0
+
+    -- Start recipe scrolling sound for win recipe screen.
+    SOUND.paper_scrolling:play(0)
 end
 
 
@@ -603,9 +613,7 @@ function Handle_gameplay_input()
             playdate.buttonJustReleased( playdate.kButtonA ) then
                 -- A few ticks timer so it doesn't overlap with the mission menu controls.
                 playdate.timer.new(5, function ()
-                    enter_menu_mission(true)
-                    remove_system_menu_entries()
-                    Stop_gameplay()
+                    Enter_menu_mission()
                 end)
             end
         end

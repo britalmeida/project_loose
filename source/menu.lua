@@ -59,6 +59,7 @@ local function add_system_menu_entries_gameplay()
     -- Add custom entries to system menu.
 
     local menuItem, error = menu:addMenuItem("restart", function()
+        Stop_gameplay()
         Reset_gameplay()
     end)
     local menuItem, error = menu:addMenuItem("main menu", function()
@@ -157,9 +158,10 @@ function Enter_menu_start(new_global_x, new_global_y, side_scroll_reset)
 end
 
 
-function enter_menu_mission(enter_from_gameplay)
+function Enter_menu_mission()
     local prev_menu_state = MENU_STATE.screen
 
+    Stop_gameplay()
     add_system_menu_entries_cocktails()
 
     SOUND.bg_loop_gameplay:stop()
@@ -232,8 +234,6 @@ end
 function Enter_gameplay()
     MENU_STATE.screen = MENU_SCREEN.gameplay
 
-
-    -- Start recipe scrolling sound but on silent
     SOUND.paper_scrolling:stop()
     SOUND.bg_loop_menu:stop()
     if not SOUND.bg_loop_gameplay:isPlaying() then
@@ -577,7 +577,7 @@ function Handle_menu_input()
         if playdate.buttonJustReleased( playdate.kButtonRight ) or
             playdate.buttonJustReleased( playdate.kButtonA ) then
             SOUND.menu_confirm:play()
-            enter_menu_mission(false)
+            Enter_menu_mission()
         end
 
         -- Calculate scrolling
