@@ -265,19 +265,9 @@ end
 
 -- Draw & Update
 
-local music_tick = 0
-local side_scroll_direction = 1
-local side_scroll_speed = 40
-local credits_return = false
-
 function Draw_menu()
 
-    -- Timing to the music for credits animation
-    music_tick += 1
-    local music_speed = 9.1
-
     if MENU_STATE.screen == MENU_SCREEN.gameplay then
-        music_tick = 0
         return
 
     -- In menus. The gameplay is inactive.
@@ -289,7 +279,6 @@ function Draw_menu()
 
     -- Draw combined menus
     else
-        local fmod = math.fmod
         gfx.pushContext()
 
             -- Fullscreen bg fill
@@ -426,7 +415,6 @@ function Draw_menu()
                     elseif playdate.buttonIsPressed(playdate.kButtonDown) then
                         crank_change += button_speed
                     end
-            
 
                     if math.abs(crank_change) > 0.01 and TOP_RECIPE_OFFSET >= recipe_min_height then
                         TOP_RECIPE_OFFSET += crank_change * recipe_scroll_speed
