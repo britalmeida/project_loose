@@ -1169,18 +1169,13 @@ function Calculate_goodness()
         TREND = new_trend
     end
 
-    if math.abs(TREND - prev_trend) == 2
-    and not RECIPE_STRUGGLE_STEPS then
-        FROG:Notify_the_frog()
-        -- Stop potential blinking from eyeball lick
-        ANIMATIONS.b_prompt.frame = 1
-        ANIMATIONS.b_prompt.paused = true
-    elseif math.abs(diff_change_overall) > 0.01
-    and not RECIPE_STRUGGLE_STEPS then
-        FROG:Notify_the_frog()
-        -- Stop potential blinking from eyeball lick
-        ANIMATIONS.b_prompt.frame = 1
-        ANIMATIONS.b_prompt.paused = true
+    if not RECIPE_STRUGGLE_STEPS then
+        if math.abs(TREND - prev_trend) == 2 or math.abs(diff_change_overall) > 0.01 then
+            FROG:Notify_the_frog()
+            -- Stop potential blinking from eyeball lick
+            ANIMATIONS.b_prompt.frame = 1
+            ANIMATIONS.b_prompt.paused = true
+        end
     elseif CHECK_IF_DELICIOUS then
         FROG:Lick_eyeballs()
     end
@@ -1188,8 +1183,8 @@ end
 
 
 function Check_player_learnings()
-    if GAMEPLAY_STATE.flame_amount > 0.3
-    and not PLAYER_LEARNED.how_to_fire
+    if not PLAYER_LEARNED.how_to_fire
+    and GAMEPLAY_STATE.flame_amount > 0.3
     and GAMEPLAY_STATE.last_shaken_ingredient ~= nil then
         PLAYER_LEARNED.how_to_fire = true
         if TARGET_COCKTAIL.type_idx < 5 then
@@ -1199,9 +1194,10 @@ function Check_player_learnings()
         print('Learned how to fire.')
     end
 
-    if math.abs(STIR_SPEED) > 6.6 -- The almost the exact value of using the keyboard shortcuts
+    if not PLAYER_LEARNED.how_to_stir
     and GAMEPLAY_STATE.dropped_ingredients > 0
-    and not PLAYER_LEARNED.how_to_stir then
+    and math.abs(STIR_SPEED) > 6.6 -- The almost the exact value of using the keyboard shortcuts
+    then
         PLAYER_LEARNED.how_to_stir = true
         if TARGET_COCKTAIL.type_idx < 5 then
             FROG:flash_b_prompt()
