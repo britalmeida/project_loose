@@ -638,15 +638,19 @@ local function draw_cauldron()
 end
 
 local buildupflame_counter = 0
+-- Constants for splish animation.
+local splish_detect_area <const> = 0.4 -- In radians, about 23 degrees.
+local splish_detect_top_right_angle <const> = PI/2 - splish_detect_area
+local splish_detect_top_left_angle <const> = PI/2 + splish_detect_area
+local splish_detect_bot_left_angle <const> = PI*1.5 - splish_detect_area
+local splish_detect_bot_right_angle <const> = PI*1.5 + splish_detect_area
 
 local function draw_cauldron_front()
-    -- Draw cauldron foreground image
     gfx.pushContext()
+        -- Draw cauldron foreground image
         TEXTURES.cauldron_front:draw(54, 128)
-    gfx.popContext()
 
-    -- Draw flame animation
-    gfx.pushContext()
+        -- Draw flame animation
         if GAMEPLAY_STATE.flame_amount > 0.8 then
             buildupflame_counter += 1
             if buildupflame_counter < 5 then
@@ -669,30 +673,31 @@ local function draw_cauldron_front()
         elseif GAMEPLAY_STATE.heat_amount > 0.08 then
             ANIMATIONS.flame.ember:draw(10, 0)
         end
-    gfx.popContext()
 
-    -- Draw splish animations
-    local splish_detect_area <const> = 0.4
-    local min_stir_speed <const> = 35
-    local splish_right_detected <const> = STIR_POSITION > PI/2 - splish_detect_area and STIR_POSITION < PI/2 + splish_detect_area
-    local splish_left_detected <const> = STIR_POSITION > PI*1.5 - splish_detect_area and STIR_POSITION < PI*1.5 + splish_detect_area
-    local splish_duration <const> = ANIMATIONS.splish.right.delay * ANIMATIONS.splish.right.endFrame - 33
-    local splish_left_paused <const> = GAMEPLAY_TIMERS.splish_left.paused
-    local splish_right_paused <const> = GAMEPLAY_TIMERS.splish_right.paused
-    if math.abs(STIR_SPEED) > min_stir_speed and splish_left_detected and splish_left_paused then
-        Restart_timer(GAMEPLAY_TIMERS.splish_left, splish_duration)
-        ANIMATIONS.splish.left.frame = 1
-    elseif math.abs(STIR_SPEED) > min_stir_speed and splish_right_detected and splish_right_paused then
-        Restart_timer(GAMEPLAY_TIMERS.splish_right, splish_duration)
-        ANIMATIONS.splish.right.frame = 1
-    end
-    gfx.pushContext()
-    if not splish_left_paused then
-        ANIMATIONS.splish.left:draw(27, 122)
-    end
-    if not splish_right_paused then
-        ANIMATIONS.splish.right:draw(220, 130)
-    end
+        -- Draw splish animations
+        local splish_left_paused <const> = GAMEPLAY_TIMERS.splish_left.paused
+        local splish_right_paused <const> = GAMEPLAY_TIMERS.splish_right.paused
+        -- Restart splish animations when stirring with a certain speed if they were previously paused.
+        local min_stir_speed <const> = 35
+        if math.abs(STIR_SPEED) > min_stir_speed then
+            -- Start a splish when the ladle is at a certain angle range at the top or bottom of the cauldron.
+            local splish_right_detected <const> = STIR_POSITION > splish_detect_top_right_angle and STIR_POSITION < splish_detect_top_left_angle
+            local splish_left_detected <const> = STIR_POSITION > splish_detect_bot_left_angle and STIR_POSITION < splish_detect_bot_right_angle
+            local splish_duration <const> = ANIMATIONS.splish.right.delay * ANIMATIONS.splish.right.endFrame - 33
+            if splish_left_detected and splish_left_paused then
+                Restart_timer(GAMEPLAY_TIMERS.splish_left, splish_duration)
+                ANIMATIONS.splish.left.frame = 1
+            elseif splish_right_detected and splish_right_paused then
+                Restart_timer(GAMEPLAY_TIMERS.splish_right, splish_duration)
+                ANIMATIONS.splish.right.frame = 1
+            end
+        end
+        if not splish_left_paused then
+            ANIMATIONS.splish.left:draw(27, 122)
+        end
+        if not splish_right_paused then
+            ANIMATIONS.splish.right:draw(220, 130)
+        end
     gfx.popContext()
 end
 
