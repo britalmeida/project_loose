@@ -35,11 +35,11 @@ local win_hint <const> = "Just don't mess it up now!"
 local almost_win_hint <const> = "Just needs a little stir."
 local fire_reminders <const> = {
     "Keep it warm to see \nthe magic.",
-    "Fire is good, glow is good.",
+    "Fire is good,\nmagic glow is good.",
     "9",
 }
 local fire_tutorials <const> = {
-    "Stoke the fire to\n activate the magic.",
+    "Stoke the fire to\nreveal the magic runes.",
     "Blow air onto the\nbottom of the cauldron.",
     "10",
     "For realz, blow air\non the mic.\nTryyyy it!",
@@ -53,39 +53,51 @@ local fire_tips_b <const> = {
     "Really get the fire started!",
 }
 local stir_tutorials <const> = {
-    "Always stir to see\nwhat ingredients do.",
+    "Stir in ingredients!\nSee that tasty magic blending?",
     "Use the crank to stir.",
     "11",
 }
 local stir_tips <const> = {
-    "The ingredients were \nalready stirred in.",
+    "The ingredients were\nalready stirred in.",
     "No need to stir that much.",
 }
 local need_more_stir <const> = {
     "I can't tell yet.\nTry stirring!",
-    "The ingredients need\nto be fully stirred in!",
+    "I can see solid pieces.\nNot very well mixed is it?",
     "11",
 }
 local need_more_love <const> = {
-    "That brew needs more heart!", "2",
+    "That brew needs more heart!",
+    "2",
+    "Moar lovely things!",
 }
 local need_less_love <const> = {
-    "Can you weaken\nthat love a bit?", "1",
+    "Can you weaken that love\na bit?",
+    "1",
+    "So much love, bleh!",
 }
 local need_more_doom <const> = {
-    "Missing doom and gloom.", "4",
+    "Missing doom and gloom.",
+    "4",
+    "Missing a little more\npoisonous spice!"
 }
 local need_less_doom <const> = {
-    "Too grim ...\nEvil repellent may work?",  "3",
+    "Too grim ...\nEvil repellent may work?",
+    "3",
+    "Looking gloomy\nSprinkle some nice things?"
 }
 local need_more_weed <const> = {
-    "Could use some veggies.",  "6",
+    "Could use some veggies.",
+    "6",
 }
 local need_less_weed <const> = {
-    "Could be less vegetarian?", "5",
+    "Too much leaf in it.\nWhat do plants not like?",
+    "5",
+    "What a salad."
 }
 local positive_reinforcement <const> = {
     "That's the good stuff!\nShake in more.",
+    "Getting there!",
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",
@@ -103,9 +115,9 @@ local drop_tips <const> = {
     "11",
 }
 local recipe_struggle <const> = {
-    "Look above the cauldron\nfor guidance.",
-    "Consider how the ingredients\nmatch the magical symbols.",
-    "Ingredients may raise one \nmagic and lower another.",
+    "Magic runes above the cauldron\nshow the target.",
+    "Each ingredient affects\nthe great magical forces of\nLOVE, DEATH and VEGGIES.",
+    "Ingredients may raise one\nmagic and lower another.",
     "Some ingredients are potent.\nOthers are subtle.",
 }
 local cocktail_struggle <const> = {
