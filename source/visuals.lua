@@ -983,7 +983,7 @@ function Init_visuals()
     table.insert(DRAW_PASSES, Set_draw_pass(35, draw_overlaid_recipe))
     -- Development
     --table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug))
-    table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug_fps))
+    --table.insert(DRAW_PASSES, Set_draw_pass(50, draw_debug_fps))
 end
 
 Z_DEPTH = {

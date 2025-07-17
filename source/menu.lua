@@ -518,10 +518,10 @@ function Draw_menu()
             end
 
             -- FPS debugging
-            gfx.pushContext()
-            gfx.setColor(gfx.kColorWhite)
-            playdate.drawFPS(200,0)
-            gfx.popContext()
+            --gfx.pushContext()
+                --gfx.setColor(gfx.kColorWhite)
+                --playdate.drawFPS(200,0)
+            --gfx.popContext()
 
         gfx.popContext()
     end
