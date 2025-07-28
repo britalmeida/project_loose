@@ -1138,11 +1138,7 @@ function Are_ingredients_good_enough()
 end
 
 function Is_potion_good_enough()
-    if Are_ingredients_good_enough() and GAMEPLAY_STATE.dropped_ingredients == 0 then
-        return true
-    else
-        return false
-    end
+    return Are_ingredients_good_enough() and GAMEPLAY_STATE.dropped_ingredients == 0
 end
 
 function Calculate_goodness()

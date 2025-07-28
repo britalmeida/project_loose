@@ -420,14 +420,16 @@ end
 function Froggo:go_reacting()
 
     -- If the potion was right already, give proper reaction :D
-    if self.anim_current == self.anim_eyeball and TUTORIAL_COMPLETED then
-        self:facepalm()
-    elseif self.anim_current == self.anim_eyeball and not TUTORIAL_COMPLETED then
-        self.sound_state = SOUND_STATE.headshake
-        self:set_frog_sounds()
+    if self.anim_current == self.anim_eyeball then
+        if TUTORIAL_COMPLETED then
+            self:facepalm()
+        else
+            self.sound_state = SOUND_STATE.headshake
+            self:set_frog_sounds()
 
-        self:start_animation(self.anim_headshake)
-        self:prepare_to_idle()
+            self:start_animation(self.anim_headshake)
+            self:prepare_to_idle()
+        end
 
     -- Otherwise react to ingredient direction
     elseif TREND > 0 and TUTORIAL_COMPLETED then
@@ -450,8 +452,6 @@ end
 
 
 function Froggo:facepalm()
-    print("FACEPALM")
-
     self.state = ACTION_STATE.reacting
 
     local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
@@ -525,7 +525,6 @@ function Froggo:go_drinking()
 
     local burp_runtime = self.anim_burp.delay * self.anim_burp.endFrame
     local burptalk_runtime = (self.anim_burptalk.delay * self.anim_burptalk.endFrame) * 4
-    local runtime = 0
 
     self.state = ACTION_STATE.drinking
     self.sound_state = SOUND_STATE.burp
@@ -708,8 +707,6 @@ function Froggo:think(automated)
     end
 end
 
-
-local stir_offset = 1
 
 function Froggo:give_stirring_direction()
 
