@@ -309,36 +309,20 @@ function Froggo:Notify_of_deliciousness_change()
     end
 
     if self.state == ACTION_STATE.idle then
-
-        self.state = ACTION_STATE.reacting
-
         -- If the potion was right already, give proper reaction :D
         if self.anim_current == self.anim_eyeball then
             if TUTORIAL_COMPLETED then
                 self:facepalm()
             else
-                self.sound_state = SOUND_STATE.headshake
-                self:set_frog_sounds()
-
-                self:start_animation(self.anim_headshake)
-                self:prepare_to_idle()
+                self:do_headshake()
             end
         -- Otherwise react to ingredient direction
         elseif TREND > 0 and TUTORIAL_COMPLETED then
-            self.sound_state = SOUND_STATE.excited
-            self:set_frog_sounds()
-
-            self:start_animation(self.anim_happy)
-            self:prepare_to_idle()
+            self:do_happy_look()
         elseif TREND < 0 and TUTORIAL_COMPLETED then
-            self.sound_state = SOUND_STATE.headshake
-            self:set_frog_sounds()
-
-            self:start_animation(self.anim_headshake)
-            self:prepare_to_idle()
+            self:do_headshake()
         else
             -- No reaction applies.
-            self.state = ACTION_STATE.idle
         end
     end
 end
@@ -352,8 +336,7 @@ function Froggo:Check_if_delicious()
         if Are_ingredients_good_enough() then -- the runes are on target.
             if (GAMEPLAY_STATE.dropped_ingredients == 0 or not Do_floating_ingredients_affect_goodness()) then
                 self.state = ACTION_STATE.reacting
-                self.sound_state = SOUND_STATE.eyelick
-                self:set_frog_sounds()
+                self:start_sound(SOUND_STATE.eyelick)
                 self:flash_b_prompt(self.anim_eyeball.duration)
                 self:start_animation(self.anim_eyeball)
                 self.x_offset = -11
@@ -383,9 +366,8 @@ function Froggo:wants_to_talk()
         local duration = (self.anim_urgent_start.delay * self.anim_urgent_start.endFrame) - 50
 
         self:stop_speech_bubble()
-        
-        self.sound_state = SOUND_STATE.urgent
-        self:set_frog_sounds()
+
+        self:start_sound(SOUND_STATE.urgent)
 
         -- Sequence of animation transitions, ending with going idle
         self:start_animation(self.anim_urgent_start)
@@ -418,8 +400,7 @@ end
 
 function Froggo:fire_reaction()
     self.state = ACTION_STATE.alarmed
-    self.sound_state = SOUND_STATE.fire
-    self:set_frog_sounds()
+    self:start_sound(SOUND_STATE.fire)
     self:start_animation(self.anim_frogfire)
     self:prepare_to_idle()
 end
@@ -439,28 +420,37 @@ end
 
 
 function Froggo:go_idle()
-
     self.state = ACTION_STATE.idle
-    self.sound_state = SOUND_STATE.silent
-    self:set_frog_sounds()
+    self:start_sound(SOUND_STATE.silent)
     self:start_animation(self.anim_idle)
 end
 
+function Froggo:do_happy_look()
+    self.state = ACTION_STATE.reacting
+    self:start_sound(SOUND_STATE.excited)
+
+    self:start_animation(self.anim_happy)
+    self:prepare_to_idle() -- Use default duration, the happy nod is very short and should repeat.
+end
+
+function Froggo:do_headshake()
+    self.state = ACTION_STATE.reacting
+    self:start_sound(SOUND_STATE.headshake)
+
+    self:start_animation(self.anim_headshake)
+    local runtime = self.anim_headshake.delay * self.anim_headshake.endFrame
+    self:prepare_to_idle(runtime)
+end
 
 function Froggo:facepalm()
     self.state = ACTION_STATE.reacting
-
-    local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
-
-    self:stop_speech_bubble()
-
-    self.sound_state = SOUND_STATE.facepalm
-    self:set_frog_sounds()
+    self:start_sound(SOUND_STATE.facepalm)
 
     self:start_animation(self.anim_facepalm)
     self.x_offset = -10
     self.y_offset = 9
 
+    local runtime = self.anim_facepalm.delay * self.anim_facepalm.endFrame
     self:prepare_to_idle(runtime)
 end
 
@@ -500,8 +490,7 @@ end
 
 function Froggo:froggo_tickleface(is_reacting_to_flick)
     self.state = ACTION_STATE.alarmed
-    self.sound_state = SOUND_STATE.tickleface
-    self:set_frog_sounds()
+    self:start_sound(SOUND_STATE.tickleface)
     self:start_animation(self.anim_tickleface)
     -- If the animation is triggered by a bubble pop flick, skip the first 3 frames.
     local anim_time_skipped = 0
@@ -523,8 +512,7 @@ function Froggo:go_drinking()
     local burptalk_runtime = (self.anim_burptalk.delay * self.anim_burptalk.endFrame) * 4
 
     self.state = ACTION_STATE.drinking
-    self.sound_state = SOUND_STATE.burp
-    self:set_frog_sounds()
+    self:start_sound(SOUND_STATE.burp)
     self:start_animation(self.anim_burp)
     self.x_offset = -9
 
@@ -540,8 +528,7 @@ end
 -- These are functions that the timers execute. 
 -- ToDo: It would be better to have the timers cleaned up and tied to the states?
 function Froggo:burp_anim_timer_function()
-    self.sound_state = SOUND_STATE.speaking
-    self:set_frog_sounds()
+    self:start_sound(SOUND_STATE.speaking)
     self:start_animation(FROG.anim_burptalk)
     self.x_offset = -9
     self:start_speech_bubble()
@@ -549,8 +536,7 @@ end
 
 
 function Froggo:burptalk_anim_timer_function()
-    self.sound_state = SOUND_STATE.silent
-    self:set_frog_sounds()
+    self:start_sound(SOUND_STATE.silent)
     self:stop_speech_bubble()
     self:start_animation(FROG.anim_drink)
     self.x_offset = -9
@@ -570,8 +556,7 @@ function Froggo:croak()
         -- Speak!
         self.state = ACTION_STATE.speaking
 
-        self.sound_state = SOUND_STATE.speaking
-        self:set_frog_sounds()
+        self:start_sound(SOUND_STATE.speaking)
 
         self:start_animation(self.anim_blabla)
 
@@ -926,7 +911,8 @@ end
 
 
 -- Start and stop frog sounds depending on the Froggo.sound_state
-function Froggo:set_frog_sounds()
+function Froggo:start_sound(sound_state)
+    self.sound_state = sound_state
     if self.sound_state == SOUND_STATE.silent then
         self:stop_sounds()
     
@@ -939,27 +925,24 @@ function Froggo:set_frog_sounds()
         FROG_SOUND.eyelick:play(0)
 
     -- All other sounds are just played once if the state matches
-    elseif self.sound_state == SOUND_STATE.excited then
+    else
         self:stop_sounds()
-        FROG_SOUND.excited:play()
-    elseif self.sound_state == SOUND_STATE.headshake then
-        self:stop_sounds()
-        FROG_SOUND.headshake:play()
-    elseif self.sound_state == SOUND_STATE.facepalm then
-        self:stop_sounds()
-        FROG_SOUND.facepalm:play()
-    elseif self.sound_state == SOUND_STATE.tickleface then
-        self:stop_sounds()
-        FROG_SOUND.tickleface:play()
-    elseif self.sound_state == SOUND_STATE.urgent then
-        self:stop_sounds()
-        FROG_SOUND.urgent:play()
-    elseif self.sound_state == SOUND_STATE.burp then
-        self:stop_sounds()
-        FROG_SOUND.burp:play()
-    elseif self.sound_state == SOUND_STATE.fire then
-        self:stop_sounds()
-        FROG_SOUND.fire:play()
+
+        if self.sound_state == SOUND_STATE.excited then
+            FROG_SOUND.excited:play()
+        elseif self.sound_state == SOUND_STATE.headshake then
+            FROG_SOUND.headshake:play()
+        elseif self.sound_state == SOUND_STATE.facepalm then
+            FROG_SOUND.facepalm:play()
+        elseif self.sound_state == SOUND_STATE.tickleface then
+            FROG_SOUND.tickleface:play()
+        elseif self.sound_state == SOUND_STATE.urgent then
+            FROG_SOUND.urgent:play()
+        elseif self.sound_state == SOUND_STATE.burp then
+            FROG_SOUND.burp:play()
+        elseif self.sound_state == SOUND_STATE.fire then
+            FROG_SOUND.fire:play()
+        end
     end
 end
 
