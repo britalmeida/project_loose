@@ -345,6 +345,7 @@ function Ingredient:release()
           Check_tutorial_completion()
           print("learned how to release")
         end
+        FROG:Notify_of_new_ingredient_slotted()
     elseif bounds:containsPoint(self.start_pos) then
         -- Snap back to its place on the shelve.
         self.sound_effects.put:play()

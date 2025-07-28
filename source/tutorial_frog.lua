@@ -185,6 +185,7 @@ function Froggo:init()
     self.anim_blabla        = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-blabla'), true)
     self.anim_tickleface    = animloop.new(2.5 * frame_ms, gfxit.new('images/frog/animation-tickleface'), false)
     self.anim_eyeball       = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
+    self.anim_disbelief     = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-disbelief'), false)
     self.anim_frogfire      = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-frogfire'), true)
     self.anim_facepalm      = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-facepalm'), true)
     self.anim_urgent        = animloop.new(3.75 * frame_ms, gfxit.new('images/frog/animation-urgent'), true)
@@ -300,6 +301,13 @@ function Froggo:React_to_bubble_pop()
     self:froggo_tickleface(true)
 end
 
+function Froggo:Notify_of_new_ingredient_slotted()
+    -- Show fear that the cocktail will be ruined.
+    if self.anim_current == self.anim_eyeball then
+        self:froggo_tickleface(false)
+    end
+end
+
 function Froggo:Notify_of_deliciousness_change()
     -- Triggered when there is a significant change with the ingredient trends.
 
@@ -330,26 +338,28 @@ end
 function Froggo:Check_if_delicious()
     -- Frog only reacts to the potion being correct after finishing what he was doing before.
     if self.state == ACTION_STATE.idle then
-        -- lick eyeballs if:
-        -- - The potion is confirmed to be good
-        -- - The potion was good already, some new ingredients were thrown in but it should still be the same
-        if Are_ingredients_good_enough() then -- the runes are on target.
-            if (GAMEPLAY_STATE.dropped_ingredients == 0 or not Do_floating_ingredients_affect_goodness()) then
+        -- lick eyeballs if the game can be won (ingredients on target and no unmixed floating ingredients)
+        if Are_ingredients_good_enough() then
+            if GAMEPLAY_STATE.dropped_ingredients == 0 then
                 self.state = ACTION_STATE.reacting
                 self:start_sound(SOUND_STATE.eyelick)
-                self:flash_b_prompt(self.anim_eyeball.duration)
                 self:start_animation(self.anim_eyeball)
                 self.x_offset = -11
                 self:start_thought_bubble()
+                ANIMATIONS.b_prompt.frame = 1
+                ANIMATIONS.b_prompt.paused = false
             end
         end
     elseif self.state == ACTION_STATE.reacting and self.anim_current == self.anim_eyeball then
         -- Stop licking eyeballs if the potion stopped being correct.
-        if not Are_ingredients_good_enough() then
+        -- Or if there are new floating ingredients that need to be stirred before finishing.
+        if not Are_ingredients_good_enough() or GAMEPLAY_STATE.dropped_ingredients ~= 0 then
             ANIMATIONS.b_prompt.paused = true
             ANIMATIONS.b_prompt.frame = 1
             self:stop_thought_bubble()
-            self:go_idle()
+            self:start_animation(self.anim_disbelief)
+            self:prepare_to_idle(self.anim_disbelief.delay * self.anim_disbelief.endFrame)
+            self:start_sound(SOUND_STATE.silent)
         end
     end
 end
