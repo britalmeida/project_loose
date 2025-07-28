@@ -663,7 +663,7 @@ function Froggo:think(automated)
             self:select_sentence(sayings.hint.recipe, struggle_lvl)
         elseif PLAYER_STRUGGLES.cocktail_struggle and struggles_unread then
             print("Giving hint towards cocktail artwork")
-            self:select_sentence(sayings.hint.cocktail, 1)
+            self:select_next_sentence(sayings.hint.cocktail)
         elseif PLAYER_STRUGGLES.no_fire and struggles_unread then
             print("Reminding fire tutorial.")
             self:select_next_sentence(sayings.struggle.fire[1])
@@ -758,8 +758,6 @@ end
 
 function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
     print("Frog says: idx "..sentence_cycle_idx.." TUT: "..self.tutorial_state)
-    local struggle_tip = false
-    local recipe_hint = false
     local any_ingredient_direction = false
     local ingredient_rune_idx = 0
     local ingredient_rune_direction = 0
@@ -778,34 +776,39 @@ function Froggo:select_sentence(sentence_pool, sentence_cycle_idx)
             end
         end
     end
-    -- Check if any struggle hint is used
-    for mechanic in pairs(sayings.struggle) do
-        for severity in pairs(sayings.struggle[mechanic]) do
-            if sayings.struggle[mechanic][severity] == sentence_pool then
-                struggle_tip = true
-            end
-        end
-    end
-    for type in pairs(sayings.hint) do
-        if sayings.hint[type] == sentence_pool then
-            recipe_hint = true
-        end
-    end
+
     -- Check if player is still in the same frog hint dialogue.
     -- Eventually this triggers a hint message
-    if self.last_spoken_sentence_pool == sentence_pool
-    and sentence_pool == sayings.help.fire then
-        STRUGGLE_PROGRESS.fire_struggle_asked += 1
-    elseif self.last_spoken_sentence_pool == sentence_pool
-    and any_ingredient_direction then
-        STRUGGLE_PROGRESS.ingredient_struggle_asked += 1
-    -- Check if they already went through struggle/tips
-    elseif self.last_spoken_sentence_pool == sentence_pool and
-    struggle_tip then
-        STRUGGLE_PROGRESS.struggle_hint_asked += 1
-    elseif self.last_spoken_sentence_pool == sentence_pool and
-    recipe_hint then
-        STRUGGLE_PROGRESS.recipe_hint_asked += 1
+    if self.last_spoken_sentence_pool == sentence_pool then
+
+        -- Check if any struggle hint is used
+        local struggle_tip = false
+        for mechanic in pairs(sayings.struggle) do
+            for severity in pairs(sayings.struggle[mechanic]) do
+                if sayings.struggle[mechanic][severity] == sentence_pool then
+                    struggle_tip = true
+                    break
+                end
+            end
+        end
+        local recipe_hint = false
+        for type in pairs(sayings.hint) do
+            if sayings.hint[type] == sentence_pool then
+                recipe_hint = true
+                break
+            end
+        end
+
+        if sentence_pool == sayings.help.fire then
+            STRUGGLE_PROGRESS.fire_struggle_asked += 1
+        elseif any_ingredient_direction then
+            STRUGGLE_PROGRESS.ingredient_struggle_asked += 1
+        -- Check if they already went through struggle/tips
+        elseif struggle_tip then
+            STRUGGLE_PROGRESS.struggle_hint_asked += 1
+        elseif recipe_hint then
+            STRUGGLE_PROGRESS.recipe_hint_asked += 1
+        end
     else
         STRUGGLE_PROGRESS.fire_struggle_asked = 0
         STRUGGLE_PROGRESS.ingredient_struggle_asked = 0
