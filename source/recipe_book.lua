@@ -212,37 +212,36 @@ end
 
 
 function Load_high_scores()
+
+    -- Get the scores from the playdate's save system.
     saved_faves = playdate.datastore.read('frogs_faves')
+
     -- No previous save game data, initialize it.
-    if saved_faves == nil
-    or saved_faves.version == nil
-    or saved_faves.version ~= FROGS_FAVES.version then
+    if saved_faves == nil then
         Reset_high_scores()
     else
         FROGS_FAVES = saved_faves
     end
 
     -- Convert the saved format in case it's outdated.
-    -- if saved_faves.version == nil or saved_faves.version ~= 3 then
-    --     -- Update the version.
-    --     saved_faves.version = 3
+    if saved_faves.version == nil or saved_faves.version ~= 3 then
+        -- Update the version.
+        saved_faves.version = 3
 
-    --     -- Dicey Brew got renamed at some point.
-    --     if saved_faves.accomplishments["Diceybrew"] ~= nil then
-    --         saved_faves.accomplishments["Dicey Brew"] = saved_faves.accomplishments["Diceybrew"]
-    --         saved_faves.accomplishments["Diceybrew"] = nil
-    --         saved_faves.recipes["Dicey Brew"] = saved_faves.recipes["Diceybrew"]
-    --         saved_faves.recipes["Diceybrew"] = nil
-    --     end
+        -- Dicey Brew got renamed at some point.
+        if saved_faves.accomplishments["Diceybrew"] ~= nil then
+            saved_faves.accomplishments["Dicey Brew"] = saved_faves.accomplishments["Diceybrew"]
+            saved_faves.accomplishments["Diceybrew"] = nil
+            saved_faves.recipes["Dicey Brew"] = saved_faves.recipes["Diceybrew"]
+            saved_faves.recipes["Diceybrew"] = nil
+        end
 
-    --     -- Convert recipe steps from flatlist to grouped list.
-    --     for a = 1, #COCKTAILS, 1 do
-    --         local cocktail_name = COCKTAILS[a].name
-    --         saved_faves.recipes[cocktail_name] = Recipe_to_steps(saved_faves.recipes[cocktail_name])
-    --     end
-    -- end
-
-    printTable(FROGS_FAVES)
+        -- Convert recipe steps from flatlist to grouped list.
+        for a = 1, #COCKTAILS, 1 do
+            local cocktail_name = COCKTAILS[a].name
+            saved_faves.recipes[cocktail_name] = Recipe_to_steps(saved_faves.recipes[cocktail_name])
+        end
+    end
 
     -- Generate text version of high score recipes for the cocktail menu.
     for a = 1, #COCKTAILS, 1 do
