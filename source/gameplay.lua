@@ -1218,7 +1218,11 @@ end
 function Check_player_struggle()
 
     -- Only once tutorial is complete
-    if not TUTORIAL_COMPLETED and not Are_ingredients_good_enough() then
+    if not TUTORIAL_COMPLETED then
+        return
+    end
+    -- If the cocktail is good, don't interrupt the eyelicking animation to give gameplay tips (e.g. fire being out).
+    if Are_ingredients_good_enough() then
         return
     end
 
