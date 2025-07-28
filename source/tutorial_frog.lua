@@ -405,9 +405,6 @@ function Froggo:prepare_to_idle(delay)
     -- Stop thought bubbles and go idle after delay is passed
     self:stop_thought_bubble()
     Restart_timer(GAMEPLAY_TIMERS.frog_go_idle, delay)
-
-    -- Make sure that eyelick animation restarts if needed
-    CHECK_IF_DELICIOUS = false
 end
 
 
@@ -570,15 +567,16 @@ end
 
 function Froggo:croak()
 
-    -- Speak!
-    self.state = ACTION_STATE.speaking
-    self.sound_state = SOUND_STATE.speaking
-    self:set_frog_sounds()
-
     if GAME_ENDED then
         -- The potion is correct!
         self:go_drinking()
     else
+        -- Speak!
+        self.state = ACTION_STATE.speaking
+
+        self.sound_state = SOUND_STATE.speaking
+        self:set_frog_sounds()
+
         self:start_animation(self.anim_blabla)
 
         local dialog_display_time = self:start_speech_bubble()
