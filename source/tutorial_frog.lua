@@ -284,7 +284,9 @@ function Froggo:Click_the_frog()
     -- Make it a bit smaller, so we don't accidentally click on the frog.
     bounds:inset(15, 15)
     if bounds:containsPoint(GAMEPLAY_STATE.cursor_pos) and self.state == ACTION_STATE.idle then
-        if Is_potion_good_enough() then
+        if Is_potion_good_enough() and self.anim_current == self.anim_eyeball then
+            -- Trigger cocktail drinking same as if pressing B
+            -- if the game can be finished and the frog is animating.
             local automated = false
             self:Ask_the_frog(automated)
         else
@@ -311,29 +313,30 @@ function Froggo:Notify_the_frog()
     end
 end
 
-function Froggo:Lick_eyeballs()
+function Froggo:Check_if_delicious()
+    -- Frog only reacts to the potion being correct after finishing what he was doing before.
     if self.state == ACTION_STATE.idle then
-        -- Check if the rune count is still within the goal
-        local rune_count_unchanged = true
-        for i in pairs(GAMEPLAY_STATE.rune_count) do
-            local distance_from_goal = math.abs(GAMEPLAY_STATE.rune_count[i] - GAMEPLAY_STATE.rune_count_unstirred[i])
-            if distance_from_goal > GOAL_TOLERANCE then
-                rune_count_unchanged = false
-            end
-        end
-
         -- lick eyeballs if:
         -- - The potion is confirmed to be good
         -- - The potion was good already, some new ingredients were thrown in but it should still be the same
-        if (Is_potion_good_enough() and CHECK_IF_DELICIOUS) or
-        (Are_ingredients_good_enough() and CHECK_IF_DELICIOUS and rune_count_unchanged) then
-            self.sound_state = SOUND_STATE.eyelick
-            self:set_frog_sounds()
-            self:flash_b_prompt(60*1000)
-            self:start_animation(self.anim_eyeball)
-            self.x_offset = -11
-            self:start_thought_bubble()
-            CHECK_IF_DELICIOUS = false
+        if Are_ingredients_good_enough() then -- the runes are on target.
+            if (GAMEPLAY_STATE.dropped_ingredients == 0 or not Do_floating_ingredients_affect_goodness()) then
+                self.state = ACTION_STATE.reacting
+                self.sound_state = SOUND_STATE.eyelick
+                self:set_frog_sounds()
+                self:flash_b_prompt(self.anim_eyeball.duration)
+                self:start_animation(self.anim_eyeball)
+                self.x_offset = -11
+                self:start_thought_bubble()
+            end
+        end
+    elseif self.state == ACTION_STATE.reacting and self.anim_current == self.anim_eyeball then
+        -- Stop licking eyeballs if the potion stopped being correct.
+        if not Are_ingredients_good_enough() then
+            ANIMATIONS.b_prompt.paused = true
+            ANIMATIONS.b_prompt.frame = 1
+            self:stop_thought_bubble()
+            self:go_idle()
         end
     end
 end

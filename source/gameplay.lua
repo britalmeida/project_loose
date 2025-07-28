@@ -92,8 +92,6 @@ TREND = 0
 -- If a positive reinforcement can be triggered
 CAN_REINFORCE = false
 PREV_RUNE_COUNT = {0, 0, 0}
--- fog will check again if win conditions are correct
-CHECK_IF_DELICIOUS = false
 
 PLAYER_LEARNED = {
     how_to_grab = false,
@@ -163,13 +161,9 @@ GAMEPLAY_TIMERS = {
         end),
     speech_timer = playdate.timer.new(100, function()
         FROG:stop_speech_bubble()
-        CHECK_IF_DELICIOUS = true
         end),
     frog_go_idle = playdate.timer.new(100, function()
         FROG:go_idle()
-        -- Check if the potion is still good. If yes, start eyeball lick anim
-        CHECK_IF_DELICIOUS = true
-        FROG:Lick_eyeballs()
         end),
     frog_give_hint_fire = playdate.timer.new(100, function()
         PLAYER_STRUGGLES.too_much_fire = true
@@ -1088,7 +1082,6 @@ function update_liquid()
             table.shallowcopy(GAMEPLAY_STATE.rune_count),
             1
         }}
-        CHECK_IF_DELICIOUS = true
         if not GAMEPLAY_STATE.stirring_complete and GAMEPLAY_STATE.counting_stirs then
             GAMEPLAY_STATE.stirring_complete = true
             GAMEPLAY_STATE.puff_anim_started = false
@@ -1126,6 +1119,18 @@ end
 
 -- Game target goal checks
 
+function Do_floating_ingredients_affect_goodness()
+    -- Check if the rune count is still within the goal
+    for i in pairs(GAMEPLAY_STATE.rune_count) do
+        if TARGET_COCKTAIL.rune_count[i] ~= 0 then
+            local distance_from_goal = math.abs(GAMEPLAY_STATE.rune_count[i] - GAMEPLAY_STATE.rune_count_unstirred[i])
+            if distance_from_goal > GOAL_TOLERANCE then
+                return true
+            end
+        end
+    end
+    return false
+end
 
 function Are_ingredients_good_enough()
     for i=1, NUM_RUNES do
@@ -1168,13 +1173,10 @@ function Calculate_goodness()
     if not RECIPE_STRUGGLE_STEPS then
         if math.abs(TREND - prev_trend) == 2 or math.abs(diff_change_overall) > 0.01 then
             FROG:Notify_the_frog()
-            -- Stop potential blinking from eyeball lick
-            ANIMATIONS.b_prompt.frame = 1
-            ANIMATIONS.b_prompt.paused = true
         end
-    elseif CHECK_IF_DELICIOUS then
-        FROG:Lick_eyeballs()
     end
+
+    FROG:Check_if_delicious()
 end
 
 
