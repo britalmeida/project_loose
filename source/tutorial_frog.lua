@@ -300,16 +300,46 @@ function Froggo:React_to_bubble_pop()
     self:froggo_tickleface(true)
 end
 
-function Froggo:Notify_the_frog()
-    -- notify the frog when significant change happened
+function Froggo:Notify_of_deliciousness_change()
+    -- Triggered when there is a significant change with the ingredient trends.
 
     -- Save the trend of the latest ingredient drop, just in case the frog is occupied
     if TREND > 0 then
         CAN_REINFORCE = true
     end
+
     if self.state == ACTION_STATE.idle then
-            -- React to a state change
-            self:froggo_react()
+
+        self.state = ACTION_STATE.reacting
+
+        -- If the potion was right already, give proper reaction :D
+        if self.anim_current == self.anim_eyeball then
+            if TUTORIAL_COMPLETED then
+                self:facepalm()
+            else
+                self.sound_state = SOUND_STATE.headshake
+                self:set_frog_sounds()
+
+                self:start_animation(self.anim_headshake)
+                self:prepare_to_idle()
+            end
+        -- Otherwise react to ingredient direction
+        elseif TREND > 0 and TUTORIAL_COMPLETED then
+            self.sound_state = SOUND_STATE.excited
+            self:set_frog_sounds()
+
+            self:start_animation(self.anim_happy)
+            self:prepare_to_idle()
+        elseif TREND < 0 and TUTORIAL_COMPLETED then
+            self.sound_state = SOUND_STATE.headshake
+            self:set_frog_sounds()
+
+            self:start_animation(self.anim_headshake)
+            self:prepare_to_idle()
+        else
+            -- No reaction applies.
+            self.state = ACTION_STATE.idle
+        end
     end
 end
 
@@ -414,40 +444,6 @@ function Froggo:go_idle()
     self.sound_state = SOUND_STATE.silent
     self:set_frog_sounds()
     self:start_animation(self.anim_idle)
-end
-
-
-function Froggo:go_reacting()
-
-    -- If the potion was right already, give proper reaction :D
-    if self.anim_current == self.anim_eyeball then
-        if TUTORIAL_COMPLETED then
-            self:facepalm()
-        else
-            self.sound_state = SOUND_STATE.headshake
-            self:set_frog_sounds()
-
-            self:start_animation(self.anim_headshake)
-            self:prepare_to_idle()
-        end
-
-    -- Otherwise react to ingredient direction
-    elseif TREND > 0 and TUTORIAL_COMPLETED then
-        self.sound_state = SOUND_STATE.excited
-        self:set_frog_sounds()
-
-        self:start_animation(self.anim_happy)
-        self:prepare_to_idle()
-    elseif TREND < 0 and TUTORIAL_COMPLETED then
-        self.sound_state = SOUND_STATE.headshake
-        self:set_frog_sounds()
-
-        self:start_animation(self.anim_headshake)
-        self:prepare_to_idle()
-    else
-        -- return back to idle if no reaction applies
-        self:go_idle()
-    end
 end
 
 
@@ -585,14 +581,6 @@ function Froggo:croak()
         self:prepare_to_idle(dialog_display_time)
     end
 end
-
-
-function Froggo:froggo_react()
-    self.state = ACTION_STATE.reacting
-
-    self:go_reacting()
-end
-
 
 
 -- Sentences and Speech Bubble

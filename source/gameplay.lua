@@ -1172,7 +1172,7 @@ function Calculate_goodness()
 
     if not RECIPE_STRUGGLE_STEPS then
         if math.abs(TREND - prev_trend) == 2 or math.abs(diff_change_overall) > 0.01 then
-            FROG:Notify_the_frog()
+            FROG:Notify_of_deliciousness_change()
         end
     end
 
