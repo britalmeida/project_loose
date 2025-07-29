@@ -714,8 +714,8 @@ function Init_menus()
     UI_TEXTURES.sticker_glitter = animloop.new(3.33 * frame_ms, gfxit.new("images/fx/sticker_glitter_reveal"), true)
 
     -- Star sticker graphics
-    UI_TEXTURES.mastered_sticker = gfxi.new('images/cocktails/sticker_star')
     UI_TEXTURES.mastered_sticker_anim = animloop.new(4 * frame_ms, gfxit.new("images/cocktails/sticker_star"), true)
+    UI_TEXTURES.mastered_sticker = UI_TEXTURES.mastered_sticker_anim:image()
 
     MENU_STATE.screen = MENU_SCREEN.start
     MENU_STATE.focused_option = 0

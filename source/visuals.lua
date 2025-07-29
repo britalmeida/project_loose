@@ -889,7 +889,7 @@ function Init_visuals()
     TEXTURES.cursor = gfxi.new("images/cursor/open_hand")
     TEXTURES.cursor_hold = gfxi.new("images/cursor/closed_hand")
     TEXTURES.cursor_flick_hold = gfxi.new("images/cursor/finger_snip_held")
-    ANIMATIONS.cursor_flick = animloop.new(4 * frame_ms, gfxit.new("images/cursor/animation-finger-snip-table-1"), true)
+    ANIMATIONS.cursor_flick = animloop.new(4 * frame_ms, gfxit.new("images/cursor/animation_finger_snip"), true)
     ANIMATIONS.place_hints = {
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_peppermints_blink"), true), -- peppermints
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_perfume_blink"), true), -- perfume

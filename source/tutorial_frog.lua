@@ -107,7 +107,7 @@ local grab_tutorials <const> = {
 local drop_tutorials <const> = {
     "Place an ingredient over\nthe cauldron and shake!",
     "Shake, shake. Shake it off!!",
-    "13",
+    "8",
 }
 local drop_tips <const> = {
     "Seems a bit excessive?\nMind how much you drop in.",
@@ -122,6 +122,7 @@ local recipe_struggle <const> = {
 }
 local cocktail_struggle <const> = {
     "Use [ to check what\nthe cocktail looks like?",
+    "7",
 }
 
 local sayings <const> = {
@@ -148,19 +149,17 @@ local sayings <const> = {
 
 SPEECH_BUBBLE_ANIM_IMGS = {
     -- The order of these need to match the string number used in the sentence categories.
-    { gfxit.new("images/speech/animation-lesslove"),   12 }, -- "1"
-    { gfxit.new("images/speech/animation-morelove"),   12 }, -- "2"
-    { gfxit.new("images/speech/animation-lessdoom"),   12 }, -- "3"
-    { gfxit.new("images/speech/animation-moredoom"),   12 }, -- "4"
-    { gfxit.new("images/speech/animation-lessweed"),   12 }, -- "5"
-    { gfxit.new("images/speech/animation-moreweed"),   12 }, -- "6"
-    { gfxit.new("images/speech/animation-moredark"),   8 }, -- "7"
-    { gfxit.new("images/speech/animation-morebright"), 8 }, -- "8"
-    { gfxit.new("images/speech/animation-morefire"),   5 }, -- "9"
-    { gfxit.new("images/speech/animation-blow"),       5 }, -- "10"
-    { gfxit.new("images/speech/animation-crankcw"),    5 }, -- "11"
-    { gfxit.new("images/speech/animation-crankccw"),   5 }, -- "12"
-    { gfxit.new("images/speech/animation-shake"),      7 }, -- "13"
+    { gfxit.new("images/speech/animation-lesslove"),      12 }, --  "1"
+    { gfxit.new("images/speech/animation-morelove"),      12 }, --  "2"
+    { gfxit.new("images/speech/animation-lessdoom"),      12 }, --  "3"
+    { gfxit.new("images/speech/animation-moredoom"),      12 }, --  "4"
+    { gfxit.new("images/speech/animation-lessweed"),      12 }, --  "5"
+    { gfxit.new("images/speech/animation-moreweed"),      12 }, --  "6"
+    { gfxit.new("images/speech/animation-checkcocktail"),  7 }, --  "7"
+    { gfxit.new("images/speech/animation-shake"),          7 }, --  "8"
+    { gfxit.new("images/speech/animation-morefire"),       5 }, --  "9"
+    { gfxit.new("images/speech/animation-blow"),           5 }, -- "10"
+    { gfxit.new("images/speech/animation-crankcw"),        5 }, -- "11"
 }
 
 
