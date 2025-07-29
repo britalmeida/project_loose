@@ -346,6 +346,14 @@ function Reset_gameplay()
         1
     }}
 
+    -- Make all draw passes visible and ready for update.
+    for _, pass in ipairs(PASSES_HIDDEN_ON_DRINK) do
+        pass:add()
+    end
+    for _, pass in ipairs(PASSES_HIDDEN_ON_RECIPE) do
+        pass:add()
+    end
+
     -- Reset active timers
     for k in pairs(GAMEPLAY_TIMERS) do
         GAMEPLAY_TIMERS[k]:reset()
@@ -540,7 +548,13 @@ end
 
 
 function Win_game()
+    -- The cocktail has been successfully done. Stop processing input. Transition to frog drinking.
     GAME_ENDED = true
+
+    -- Remove some draw passes from being drawn and updated.
+    for _, pass in ipairs(PASSES_HIDDEN_ON_DRINK) do
+        pass:remove()
+    end
 
     STIR_SPEED = 0 -- Stop liquid and stirring sounds.
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
@@ -560,6 +574,17 @@ function Win_game()
     SOUND.paper_scrolling:play(0)
 end
 
+function Show_win_recipe()
+    -- Frog is done drinking, show scrollable recipe on top of gameplay background.
+
+    -- Remove some draw passes from being drawn and updated.
+    for _, pass in ipairs(PASSES_HIDDEN_ON_RECIPE) do
+        pass:remove()
+    end
+
+    GAMEPLAY_STATE.showing_recipe = true
+    SOUND.win_recipe_open:play()
+end
 
 
 -- Update Loop: input

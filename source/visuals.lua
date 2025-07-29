@@ -84,11 +84,6 @@ end
 -- Draw passes
 
 local function draw_symbols()
-    -- Hide symbols when the recipe is drawing on top for performance.
-    if GAMEPLAY_STATE.showing_recipe then
-        return
-    end
-
     local rune_area_x = MAGIC_TRIANGLE_CENTER_X
     local rune_area_y = MAGIC_TRIANGLE_CENTER_Y - 72
     local rune_area_width = 80
@@ -347,11 +342,6 @@ function Add_visual_ingredient_drop_to_liquid(type_idx)
 end
 
 local function draw_liquid_bubbles_and_drops()
-    -- Hide symbols when the recipe is drawing on top for performance.
-    if GAMEPLAY_STATE.showing_recipe then
-        return
-    end
-
     local sin = sin -- make these local to the function, not just the file, for performance.
     local cos = cos
     local floor = floor
@@ -819,9 +809,16 @@ local function draw_ingredient_place_hint()
 end
 
 
--- Set a draw pass on Z depth
 
-function Set_draw_pass(z, drawCallback)
+-- Load resources and initialize draw passes
+DRAW_PASSES = table.create(24, 0) -- Pre-size the array with enough size for all the draw passes.
+PASSES_HIDDEN_ON_DRINK  = table.create(12, 0)
+PASSES_HIDDEN_ON_RECIPE = table.create(12, 0)
+local HIDE <const> = { never = 0, on_drink = 1, on_recipe = 2 }
+
+
+-- Configure a draw pass on Z depth
+function Set_draw_pass(z, drawCallback, hide_type)
     local sprite = gfx.sprite.new()
     sprite:setSize(playdate.display.getSize())
     sprite:setCenter(0, 0)
@@ -834,13 +831,21 @@ function Set_draw_pass(z, drawCallback)
     sprite.draw = function(s, x, y, w, h)
         drawCallback(x, y, w, h)
     end
-    sprite:add()
+
+    -- Keep track of sprites to enable/disable later.
+    if hide_type == HIDE.on_drink then
+        table.insert(PASSES_HIDDEN_ON_DRINK, sprite)
+    elseif hide_type == HIDE.on_recipe then
+        table.insert(PASSES_HIDDEN_ON_RECIPE, sprite)
+    else
+        -- Add sprites that are always visible to the list to be drawn and updated.
+        -- Note: these passes don't update when on menus.
+        sprite:add()
+    end
+
     return sprite
 end
 
-
--- Load resources and initialize draw passes
-DRAW_PASSES = {}
 
 function Init_visuals()
 
@@ -959,24 +964,24 @@ function Init_visuals()
 
     table.insert(DRAW_PASSES, Set_draw_pass(-40, draw_game_background))
     -- -5: shelved ingredients
-    table.insert(DRAW_PASSES, Set_draw_pass(-2, draw_bg_lighting))
-    table.insert(DRAW_PASSES, Set_draw_pass(0, draw_cauldron))
-    table.insert(DRAW_PASSES, Set_draw_pass(1, draw_liquid_surface))
-    table.insert(DRAW_PASSES, Set_draw_pass(2, draw_stirring_stick_back)) -- draw ladle when on farther side
-    table.insert(DRAW_PASSES, Set_draw_pass(3, draw_liquid_bubbles_and_drops))
+    table.insert(DRAW_PASSES, Set_draw_pass(-2, draw_bg_lighting, HIDE.on_recipe))
+    table.insert(DRAW_PASSES, Set_draw_pass(0, draw_cauldron, HIDE.on_recipe))
+    table.insert(DRAW_PASSES, Set_draw_pass(1, draw_liquid_surface, HIDE.on_recipe))
+    table.insert(DRAW_PASSES, Set_draw_pass(2, draw_stirring_stick_back, HIDE.on_recipe)) -- draw ladle when on farther side
+    table.insert(DRAW_PASSES, Set_draw_pass(3, draw_liquid_bubbles_and_drops, HIDE.on_recipe))
     -- 3: ingredient drops floating in the liquid
     -- 4: ingredient slotted over cauldron
-    table.insert(DRAW_PASSES, Set_draw_pass(5, draw_stirring_bubbles))
+    table.insert(DRAW_PASSES, Set_draw_pass(5, draw_stirring_bubbles, HIDE.on_recipe))
     -- 6: ingredient drop splash
-    table.insert(DRAW_PASSES, Set_draw_pass(7, draw_symbols))
-    table.insert(DRAW_PASSES, Set_draw_pass(8, draw_stirring_stick_front)) -- draw ladle when on front side
+    table.insert(DRAW_PASSES, Set_draw_pass(7, draw_symbols, HIDE.on_recipe))
+    table.insert(DRAW_PASSES, Set_draw_pass(8, draw_stirring_stick_front, HIDE.on_recipe)) -- draw ladle when on front side
     table.insert(DRAW_PASSES, Set_draw_pass(9, draw_cauldron_front))
     -- 10: frog
     -- depth 20+: UI
-    table.insert(DRAW_PASSES, Set_draw_pass(21, draw_ui_prompts))
-    table.insert(DRAW_PASSES, Set_draw_pass(23, draw_ingredient_place_hint))
+    table.insert(DRAW_PASSES, Set_draw_pass(21, draw_ui_prompts, HIDE.on_drink))
+    table.insert(DRAW_PASSES, Set_draw_pass(23, draw_ingredient_place_hint, HIDE.on_drink))
     -- 24: grabbed ingredients
-    table.insert(DRAW_PASSES, Set_draw_pass(27, draw_ingredient_grab_cursor))
+    table.insert(DRAW_PASSES, Set_draw_pass(27, draw_ingredient_grab_cursor, HIDE.on_drink))
     table.insert(DRAW_PASSES, Set_draw_pass(25, draw_dialog_bubble))
     -- depth 30+: overlaid modal instructions
     table.insert(DRAW_PASSES, Set_draw_pass(30, draw_overlaid_instructions))

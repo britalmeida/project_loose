@@ -35,8 +35,8 @@ end
 local NUM_VISIBLE_MISSIONS = 2 -- Number of cocktails fully visible in the mission selection, others are (half) clipped.
 local global_origin = {0, 0}
 local music_speed = 1.13  -- Extra factor to synch to music
-local cocktail_anims = {}
-local cocktail_anims_locked = {}
+local cocktail_anims = table.create(#COCKTAILS, 0)
+local cocktail_anims_locked = table.create(#COCKTAILS, 0)
 local focused_sticker_served = { x = 0, y = 0 }
 local focused_sticker_mastered = { x = 0, y = 0 }
 

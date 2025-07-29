@@ -19,8 +19,8 @@ INGREDIENT_TYPES = {
     { name="Snail Shells",  drop_name="snail shell",  rune_composition={  2,   0,  -6  }, x= 20,  y=140, img=gfxi.new('images/ingredients/snailshells'),  drop=gfxi.new('images/ingredients/snailshells_drop'), hold=gfxi.new('images/ingredients/snailshells_held')  },
 }
 
-INGREDIENTS = {}
-DROPS = {}
+INGREDIENTS = table.create(#INGREDIENT_TYPES, 0)
+DROPS =  table.create(12, 0)
 
 INGREDIENT_STATE = { is_in_shelf = 0, is_picked_up = 2, is_in_air = 3, is_over_cauldron = 4 }
 
@@ -401,9 +401,9 @@ function Reset_ingredients()
   for _, ingredient in ipairs(INGREDIENTS) do
     ingredient:remove()
   end
-  INGREDIENTS = {}
 
   -- Recreate the shelve ingredients.
+  INGREDIENTS = table.create(#INGREDIENT_TYPES, 0)
   for a=1, #INGREDIENT_TYPES, 1 do
     table.insert(INGREDIENTS, Ingredient(a, geo.point.new(INGREDIENT_TYPES[a].x, INGREDIENT_TYPES[a].y), false))
   end
