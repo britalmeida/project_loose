@@ -93,12 +93,14 @@ local function draw_symbols()
     local lower_glow_start = -0.8 -- It takes a bit of heat for glow to start
     local upper_glow_end = 2 -- It takes a lot of  time for glow to decay
 
-    local should_draw_on_target_anim = GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.heat_amount > 0.3
+    local should_draw_on_target_runes = GAMEPLAY_STATE.dropped_ingredients == 0 and GAMEPLAY_STATE.heat_amount > 0.3
+    local should_draw_moving_runes    = GAMEPLAY_STATE.dropped_ingredients ~= 0 and GAMEPLAY_STATE.heat_amount > 0.3
     local heat_response = min(sqrt(max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
-    local glow_strength = (lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response)
-    glow_strength = Clamp(glow_strength, 0, 1) * 0.75
-    local glyph_fade = Clamp(glow_strength, 0.2, 0.6)
+    local glow_strength = Clamp((lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response), 0, 1) * 0.75
+    local glyph_fade  = Clamp(glow_strength, 0.2, 0.6)
     local target_fade = Clamp(glow_strength, 0.0, 0.5)
+
+    local time_s <const> = playdate.getElapsedTime() -- Time of update shared by all runes.
 
     gfx.pushContext()
         for a = 1, NUM_RUNES do
@@ -106,8 +108,6 @@ local function draw_symbols()
                 -- Don't draw disabled runes
                 goto continue
             end
-
-            local time_s <const> = playdate.getElapsedTime() -- Time of update shared by all bubbles.
 
             local wiggle_freq = 2 + (a - 2) * 0.1
             local wiggle = sin((time_s / 30) * wiggle_freq + PI * 0.3)
@@ -120,21 +120,18 @@ local function draw_symbols()
             glyph_x -= rune_half_size
             glyph_y -= rune_half_size
 
-            -- Rune target shadow and outline
-            ANIMATIONS.rune_target[a]:draw(glyph_x, target_y)
+            -- Draw rune target.
             ANIMATIONS.rune_target_outline[a]:image():drawFaded(glyph_x, target_y, target_fade, gfxi.kDitherTypeBayer4x4)
 
             -- Rune glyphs. Draw idle, moving or correct
-            if should_draw_on_target_anim and DIFF_TO_TARGET.runes_abs[a] < GOAL_TOLERANCE then
+            if should_draw_on_target_runes and DIFF_TO_TARGET.runes_abs[a] < GOAL_TOLERANCE then
                 ANIMATIONS.rune_correct[a]:draw(glyph_x, glyph_y)
-            -- if the rune is currently moving, draw the blinking outline
-            elseif GAMEPLAY_STATE.rune_count_change[a] ~= 0 and
-                GAMEPLAY_STATE.dropped_ingredients ~= 0 and
-                GAMEPLAY_STATE.heat_amount > 0.3 then
-                    ANIMATIONS.rune_active[a]:image():drawFaded(glyph_x, glyph_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
-                    ANIMATIONS.rune_active_outline[a]:draw(glyph_x, glyph_y)
             else
                 ANIMATIONS.rune_idle[a]:image():drawFaded(glyph_x, glyph_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
+                -- if the rune is currently moving, draw the blinking outline
+                if should_draw_moving_runes and GAMEPLAY_STATE.rune_count_change[a] ~= 0 then
+                    ANIMATIONS.rune_active_outline[a]:draw(glyph_x, glyph_y)
+                end
             end
             ::continue::
         end
@@ -910,10 +907,6 @@ function Init_visuals()
         animloop.new(16 * frame_ms, gfxit.new("images/runes/love_idle"), true),
         animloop.new(16 * frame_ms, gfxit.new("images/runes/doom_idle"), true),
         animloop.new(16 * frame_ms, gfxit.new("images/runes/weeds_idle"), true),}
-    ANIMATIONS.rune_active = {
-        animloop.new(8 * frame_ms, gfxit.new("images/runes/love_idle"), true),
-        animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_idle"), true),
-        animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_idle"), true),}
     ANIMATIONS.rune_active_outline = {
         animloop.new(8 * frame_ms, gfxit.new("images/runes/love_active_white_line"), true),
         animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_active_white_line"), true),
@@ -923,10 +916,6 @@ function Init_visuals()
         animloop.new(8 * frame_ms, gfxit.new("images/runes/love_correct"), true),
         animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_correct"), true),
         animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_correct"), true)}
-    ANIMATIONS.rune_target = {
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/love_goal"), true),
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/doom_goal"), true),
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/weeds_goal"), true)}
     ANIMATIONS.rune_target_outline = {
         animloop.new(16 * frame_ms, gfxit.new("images/runes/love_goal_white_line"), true),
         animloop.new(16 * frame_ms, gfxit.new("images/runes/doom_goal_white_line"), true),
