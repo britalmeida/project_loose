@@ -299,12 +299,6 @@ function Froggo:React_to_bubble_pop()
     self:froggo_tickleface(true)
 end
 
-function Froggo:Notify_of_new_ingredient_slotted()
-    -- Show fear that the cocktail will be ruined.
-    if self.anim_current == self.anim_eyeball then
-        self:froggo_tickleface(false)
-    end
-end
 
 function Froggo:Notify_of_deliciousness_change()
     -- Triggered when there is a significant change with the ingredient trends.
