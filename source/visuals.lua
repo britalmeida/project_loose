@@ -97,8 +97,12 @@ local function draw_symbols()
     local should_draw_moving_runes    = GAMEPLAY_STATE.dropped_ingredients ~= 0 and GAMEPLAY_STATE.heat_amount > 0.3
     local heat_response = min(sqrt(max(GAMEPLAY_STATE.heat_amount * 1.2, 0)), 1)
     local glow_strength = Clamp((lower_glow_start * (1 - heat_response)) + (upper_glow_end * heat_response), 0, 1) * 0.75
+    -- Glow strength will be [0, 0.75]. The glyph and target will draw with a matching intensity. Clamped to their respective min&max.
+    -- The dithered graphics are baked in Init_visuals() in steps. Remember to update nrs in both places.
     local glyph_fade  = Clamp(glow_strength, 0.2, 0.6)
     local target_fade = Clamp(glow_strength, 0.0, 0.5)
+    local glyph_fade_idx = math.floor(glyph_fade * 10 + 0.5) - 1 -- round to 0.1 steps. match it to the bake array idx
+    local target_fade_idx = math.floor(target_fade * 10 + 0.5) - 0 -- and Thou shall never forget that lua arrays start at 1
 
     local time_s <const> = playdate.getElapsedTime() -- Time of update shared by all runes.
 
@@ -121,13 +125,15 @@ local function draw_symbols()
             glyph_y -= rune_half_size
 
             -- Draw rune target.
-            ANIMATIONS.rune_target_outline[a]:image():drawFaded(glyph_x, target_y, target_fade, gfxi.kDitherTypeBayer4x4)
+            if target_fade > 0.05 then -- skip drawing of a fully faded target.
+                ANIMATIONS.rune_target_outline[a][target_fade_idx]:draw(glyph_x, target_y)
+            end
 
             -- Rune glyphs. Draw idle, moving or correct
             if should_draw_on_target_runes and DIFF_TO_TARGET.runes_abs[a] < GOAL_TOLERANCE then
                 ANIMATIONS.rune_correct[a]:draw(glyph_x, glyph_y)
             else
-                ANIMATIONS.rune_idle[a]:image():drawFaded(glyph_x, glyph_y, glyph_fade, gfxi.kDitherTypeBayer4x4)
+                ANIMATIONS.rune_idle[a][glyph_fade_idx]:draw(glyph_x, glyph_y)
                 -- if the rune is currently moving, draw the blinking outline
                 if should_draw_moving_runes and GAMEPLAY_STATE.rune_count_change[a] ~= 0 then
                     ANIMATIONS.rune_active_outline[a]:draw(glyph_x, glyph_y)
@@ -904,9 +910,10 @@ function Init_visuals()
         animloop.new(15 * frame_ms, gfxit.new("images/cursor/animation_snailshells_blink"), true), -- snailshells
     }
     ANIMATIONS.rune_idle = {
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/love_idle"), true),
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/doom_idle"), true),
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/weeds_idle"), true),}
+        gfxit.new("images/runes/love_idle"),
+        gfxit.new("images/runes/doom_idle"),
+        gfxit.new("images/runes/weeds_idle"),
+    }
     ANIMATIONS.rune_active_outline = {
         animloop.new(8 * frame_ms, gfxit.new("images/runes/love_active_white_line"), true),
         animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_active_white_line"), true),
@@ -915,12 +922,50 @@ function Init_visuals()
     ANIMATIONS.rune_correct = {
         animloop.new(8 * frame_ms, gfxit.new("images/runes/love_correct"), true),
         animloop.new(8 * frame_ms, gfxit.new("images/runes/doom_correct"), true),
-        animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_correct"), true)}
-    ANIMATIONS.rune_target_outline = {
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/love_goal_white_line"), true),
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/doom_goal_white_line"), true),
-        animloop.new(16 * frame_ms, gfxit.new("images/runes/weeds_goal_white_line"), true),
+        animloop.new(8 * frame_ms, gfxit.new("images/runes/weeds_correct"), true)
     }
+    ANIMATIONS.rune_target_outline = {
+        gfxit.new("images/runes/love_goal_white_line"),
+        gfxit.new("images/runes/doom_goal_white_line"),
+        gfxit.new("images/runes/weeds_goal_white_line"),
+    }
+    -- Create dithered versions for the runes once instead of at runtime for performance.
+    for i = 1, NUM_RUNES, 1 do
+        -- Bake Glyph fades in steps from 0.2-0.6 (nrs from draw_symbols()).
+        local anim_table = ANIMATIONS.rune_idle[i] -- Original full opacity graphic.
+        img_w, img_h = anim_table[1]:getSize()
+        local num_frames = anim_table:getLength()
+        local num_dither_steps = 5
+        ANIMATIONS.rune_idle[i] = table.create(num_dither_steps, 0) -- Create an array for the different opacities.
+        for j = 1, num_dither_steps, 1 do
+            dithered_anim_table = gfxit.new(num_frames) -- Space for the dithered images.
+            dither_factor = 0.2+(j-1)*0.1 -- start at 0.2, increments of 0.1
+            for k = 1, num_frames, 1 do
+                dithered_anim_table[k] = gfxi.new(img_w, img_h) -- Draw each faded frame.
+                gfx.pushContext(dithered_anim_table[k])
+                    anim_table[k]:drawFaded(0,0, dither_factor, gfxi.kDitherTypeBayer4x4)
+                gfx.popContext()
+            end
+            ANIMATIONS.rune_idle[i][j] = animloop.new(8 * frame_ms, dithered_anim_table, true)
+        end
+        -- Bake Target fades in steps from 0.0-0.5 (nrs from draw_symbols()).
+        anim_table = ANIMATIONS.rune_target_outline[i]
+        img_w, img_h = anim_table[1]:getSize()
+        num_frames = anim_table:getLength()
+        num_dither_steps = 5
+        ANIMATIONS.rune_target_outline[i] = table.create(num_dither_steps, 0)
+        for j = 1, num_dither_steps, 1 do
+            dithered_anim_table = gfxit.new(num_frames)
+            dither_factor = 0.1+(j-1)*0.1 -- Skip baking the 0.0 fully black images, start at 0.1, steps of 0.1
+            for k = 1, num_frames, 1 do
+                dithered_anim_table[k] = gfxi.new(img_w, img_h)
+                gfx.pushContext(dithered_anim_table[k])
+                    anim_table[k]:drawFaded(0,0, dither_factor, gfxi.kDitherTypeBayer4x4)
+                gfx.popContext()
+            end
+            ANIMATIONS.rune_target_outline[i][j] = animloop.new(8 * frame_ms, dithered_anim_table, true)
+        end
+    end
     -- Load fx
     -- Load animation images and initialize animation loop timers.
     ANIMATIONS.bubble = gfxit.new("images/fx/bubble")
