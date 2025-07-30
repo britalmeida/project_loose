@@ -184,7 +184,6 @@ function Froggo:init()
     self.anim_blabla        = animloop.new(8 * frame_ms, gfxit.new('images/frog/animation-blabla'), true)
     self.anim_tickleface    = animloop.new(2.5 * frame_ms, gfxit.new('images/frog/animation-tickleface'), false)
     self.anim_eyeball       = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-eyeball'), true)
-    self.anim_disbelief     = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-disbelief'), false)
     self.anim_frogfire      = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-frogfire'), true)
     self.anim_facepalm      = animloop.new(4 * frame_ms, gfxit.new('images/frog/animation-facepalm'), true)
     self.anim_urgent        = animloop.new(3.75 * frame_ms, gfxit.new('images/frog/animation-urgent'), true)
@@ -316,15 +315,8 @@ function Froggo:Notify_of_deliciousness_change()
     end
 
     if self.state == ACTION_STATE.idle then
-        -- If the potion was right already, give proper reaction :D
-        if self.anim_current == self.anim_eyeball then
-            if TUTORIAL_COMPLETED then
-                self:facepalm()
-            else
-                self:do_headshake()
-            end
-        -- Otherwise react to ingredient direction
-        elseif TREND > 0 and TUTORIAL_COMPLETED then
+        -- React to ingredient direction
+        if TREND > 0 and TUTORIAL_COMPLETED then
             self:do_happy_look()
         elseif TREND < 0 and TUTORIAL_COMPLETED then
             self:do_headshake()
@@ -356,9 +348,11 @@ function Froggo:Check_if_delicious()
             ANIMATIONS.b_prompt.paused = true
             ANIMATIONS.b_prompt.frame = 1
             self:stop_thought_bubble()
-            self:start_animation(self.anim_disbelief)
-            self:prepare_to_idle(self.anim_disbelief.delay * self.anim_disbelief.endFrame)
-            self:start_sound(SOUND_STATE.silent)
+            if TUTORIAL_COMPLETED then
+                self:facepalm()
+            else
+                self:do_headshake()
+            end
         end
     end
 end
