@@ -260,7 +260,7 @@ function Prepare_recipe_for_success_draw(cocktail_idx, recipe_steps, win_sticker
 
     -- Determine rating text.
     if num_steps > DISPLAY_RECIPE.cocktail.step_ratings[3] then
-        DISPLAY_RECIPE.rating_text = "Yep ... that was "..tostring(num_steps).." steps."
+        DISPLAY_RECIPE.rating_text = "Oh gee ... that was "..tostring(num_steps).." steps."
     elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[2] then
         DISPLAY_RECIPE.rating_text = "Well done. Just "..tostring(num_steps).." steps."
     elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[1] then
