@@ -1206,9 +1206,20 @@ end
 
 
 function Check_player_learnings()
+    -- Players may accidentally trigger the microphone without learning about fire.
+    -- To minimize this, the learning checks for a decent amount of fire and also
+    -- that ingredients were ever shaken into the cauldron. This is because the
+    -- tutorial order is grab&shake first, fire after, so chances are better if
+    -- fire is not considered learned until after the moment it would get explained.
+    -- However, it's also possible experienced players trigger the fire first, then
+    -- they add ingredients. By this time, the flames would not be very high, so heat
+    -- is also checked. flame_amount is triggered by mic and decayed fast. heat is
+    -- the slower decaying glow and visual flames. So, if there's good flames, by
+    -- the time an ingredient is shaken in, consider it learned.
     if not PLAYER_LEARNED.how_to_fire
-    and GAMEPLAY_STATE.flame_amount > 0.3
-    and GAMEPLAY_STATE.last_shaken_ingredient ~= nil then
+    and GAMEPLAY_STATE.last_shaken_ingredient ~= nil
+    and (GAMEPLAY_STATE.flame_amount > 0.3 or GAMEPLAY_STATE.heat_amount > 0.4)
+    then
         PLAYER_LEARNED.how_to_fire = true
         if TARGET_COCKTAIL.type_idx < 5 then
             FROG:flash_b_prompt()
