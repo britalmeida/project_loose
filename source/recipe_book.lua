@@ -158,16 +158,11 @@ end
 
 -- High Scores
 
-function Unlock_all_cocktails() -- Should be removed in final game + any references
-    debug_cocktail_unlock = true
-end
-
-
 function Load_test_scores() -- Should be removed in final game
     local frogs_faves = {
-        ["version"] = FROGS_FAVES.version,
+        ["version"] = 3,
         ["accomplishments"] = {
-            ["Dicey Brew"] = true,
+            ["Dicey Brew"] = false,
             ["Green Toe"] = true,
             ["Hodge Podge"] = true,
             ["Overdose"] = true,
@@ -175,15 +170,14 @@ function Load_test_scores() -- Should be removed in final game
             ["Snailiva"] = true,
         },
         ["recipes"] = {
-            ["Dicey Brew"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
-            ["Green Toe"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
-            ["Hodge Podge"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
-            ["Overdose"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
-            ["Silkini"] = { { 8, 3,}, { -1, 5,}, {2, 2,}, {-1, 4,}, },
-            ["Snailiva"] = { { 8, 3,}, { -1, 5,}, }
+            ["Dicey Brew"] = { },
+            ["Green Toe"] = { {5,2},{-1,3},{5,1},{-1,3},{7,1},{-1,3},{3,1},{-1,3},{3,1},{7,1},{-1,3},{6,1},{-1,3},{5,1},{-1,3},{8,1},{-1,3},{7,1},{-1,3},{5,1},{-1,3} },
+            ["Hodge Podge"] = { {6,2},{-1,3},{6,3},{-1,4},{1,1},{-1,3},{1,1},{-1,3},{8,1},{-1,4},{8,1},{-1,4},{4,1},{-1,3},{7,1},{-1,3},{5,1},{-1,4},{2,1},{-1,3},{1,1},{-1,3},{8,1},{-1,3},{2,1},{-1,3},{9,1},{-1,4},{4,1},{-1,5},{5,1},{-1,5},{6,1},{-1,4},{3,1},{-1,5},{7,1},{-1,5},{1,1},{-1,4},{8,1},{-1,4},{2,1},{-1,4},{7,1},{-1,5},{9,1},{-1,5},{9,1},{4,1},{-1,5},{5,1},{-1,5},{8,1},{-1,5},{7,1},{-1,4},{8,1},{-1,4},{2,1},{-1,3},{3,1},{-1,4},{6,2},{-1,4},{3,1},{-1,4},{9,1},{-1,4},{7,1},{-1,3},{8,1},{-1,4} },
+            ["Overdose"] = { {8,2},{-1,3},{3,3},{-1,3},{7,1},{-1,2},{2,2},{-1,3},{8,1},{-1,3},{7,1},{-1,3},{5,1},{-1,3},{5,1},{-1,3},{2,1},{-1,3},{7,1},{-1,4},{3,1},{-1,4},{6,1},{-1,3},{8,1},{-1,3},{1,1},{-1,3},{5,1},{-1,4},{9,1},{-1,3},{4,1},{-1,3},{8,1},{-1,3},{2,1},{-1,3},{7,1},{-1,3},{5,1},{-1,4},{5,1},{-1,4},{2,1},{-1,3},{3,1},{-1,3} },
+            ["Silkini"] = { {8,4},{2,2},{-1,3} },
+            ["Snailiva"] = { {2,1},{-1,3},{2,1},{-1,4},{2,1},{-1,4} }
         },
     }
-
     playdate.datastore.write(frogs_faves, 'frogs_faves')
     Load_high_scores()
 end
@@ -195,14 +189,13 @@ function Reset_high_scores() -- Should be removed in final game
         accomplishments = {},
         recipes = {}
     }
-
     for a = 1, #COCKTAILS, 1 do
         frogs_faves.accomplishments[COCKTAILS[a].name] = false
         frogs_faves.recipes[COCKTAILS[a].name] = {}
     end
 
-    FROGS_FAVES = frogs_faves
     playdate.datastore.write(frogs_faves, 'frogs_faves')
+    Load_high_scores()
 end
 
 
@@ -249,6 +242,9 @@ function Load_high_scores()
         recipe_steps = FROGS_FAVES.recipes[cocktail_name]
         FROGS_FAVES_TEXT[cocktail_name] = Recipe_steps_to_text(recipe_steps, false)
     end
+
+    -- Update menu state of what is unlocked.
+    Update_menu_accomplishments()
 end
 
 

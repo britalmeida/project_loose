@@ -81,9 +81,6 @@ local function add_system_menu_entries_cocktails()
     local menuItem, error = menu:addMenuItem("test scores", function()
         Load_test_scores()
     end)
-    local menuItem, error = menu:addMenuItem("unlock all", function()
-        Unlock_all_cocktails()
-    end)
 end
 
 
@@ -109,6 +106,20 @@ function Sticker_slap(got_mastered_sticker)
     end
 end
 
+function Update_menu_accomplishments()
+    -- Locking/Unlocking cocktails
+    if FROGS_FAVES.accomplishments[COCKTAILS[1].name] then
+        INTRO_COMPLETED = true
+    end
+    if FROGS_FAVES.accomplishments[COCKTAILS[2].name] and
+    FROGS_FAVES.accomplishments[COCKTAILS[3].name] then
+        EASY_COMPLETED = true
+    end
+    if FROGS_FAVES.accomplishments[COCKTAILS[4].name] and
+    FROGS_FAVES.accomplishments[COCKTAILS[5].name] then
+        DICEY_UNLOCKED = true
+    end
+end
 
 
 -- Menu State Transitions
@@ -175,19 +186,6 @@ function Enter_menu_mission()
     end
     SOUND.paper_scrolling:setVolume(0.0)
 
-    -- Locking/Unlocking cocktails
-    if FROGS_FAVES.accomplishments[COCKTAILS[1].name] then
-        INTRO_COMPLETED = true
-    end
-    if FROGS_FAVES.accomplishments[COCKTAILS[2].name] and
-    FROGS_FAVES.accomplishments[COCKTAILS[3].name] then
-        EASY_COMPLETED = true
-    end
-    if FROGS_FAVES.accomplishments[COCKTAILS[4].name] and
-    FROGS_FAVES.accomplishments[COCKTAILS[5].name] then
-        DICEY_UNLOCKED = true
-    end
-
     -- Side scroll amount if coming directly from gameplay or from start menu
     if prev_menu_state == MENU_SCREEN.gameplay then
         SIDE_SCROLL_X = 50
@@ -196,6 +194,8 @@ function Enter_menu_mission()
     end
     -- Reset menu positions if needed
     global_origin[1], global_origin[2] = 0, 0
+
+    Update_menu_accomplishments()
 
     -- First do sticker animation or directly enter mission selection state
     -- Needed to lock inputs during animation
@@ -326,12 +326,6 @@ function Draw_menu()
 
 
             -- Draw cocktail selection
-
-            if debug_cocktail_unlock then
-                INTRO_COMPLETED = true
-                EASY_COMPLETED = true
-                DICEY_UNLOCKED = true
-            end
 
             -- Draw cocktails
             gfx.setImageDrawMode(gfx.kDrawModeCopy)
