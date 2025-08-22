@@ -570,6 +570,9 @@ function Init_visuals()
     TEXTURES.cauldron = gfxi.new("images/cauldron")
     TEXTURES.dialog_bubble = gfxi.new("images/dialog_bubble")
     TEXTURES.instructions = gfxi.new("images/instructions")
+    if playdate.isSimulator then
+        TEXTURES.instructions = gfxi.new("images/instructions_sim")
+    end
 
     TEXTURES.rune_images = {gfxi.new("images/passion"), gfxi.new("images/doom"), gfxi.new("images/weeds")}
 
