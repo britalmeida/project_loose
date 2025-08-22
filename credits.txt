@@ -1,8 +1,8 @@
-Falk David		Programming
-Francesco Siddi		Sound
-Ines Almeida		Programming
-Julien Kaspar		UI, Testing & Art
+Falk David			Programming
+Francesco Siddi		Sound & Music
+Inês Almeida		Programming
+Julien Kaspar		UI, Testing, Programming & Art
 Sebastian Parborg	Programming
 Sergey Sharybin		Frogramming & Art
 Simon Thommes		Programming
-Vivien Lulkowski	Art & Animation
+Vivien Lulkowski	Art & Animation, Soun & Fonts
