@@ -18,6 +18,10 @@ We've ended up with a totally new version and (maybe) learned something about fe
 ### Source Files
 This git branch has the [full game source files](https://github.com/britalmeida/project_loose/tree/main).
 
+### License
+The game source bundle is available under CC BY 4.0.  
+The code is available under the MIT license.  
+We are more than happy that our source bundle is tinkered with for learning and used as a base for new games. Check the [LICENSE file](LICENSE).
 
 ## Jam Version
 If you're curious, you can see the [game as it was for the game jam](https://github.com/britalmeida/project_loose/releases/tag/improved_jam) with the source files on the [jam branch](https://github.com/britalmeida/project_loose/tree/jam_version).  
