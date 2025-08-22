@@ -5,4 +5,4 @@ Julien Kaspar		UI, Testing, Programming & Art
 Sebastian Parborg	Programming
 Sergey Sharybin		Frogramming & Art
 Simon Thommes		Programming
-Vivien Lulkowski	Art & Animation, Soun & Fonts
+Vivien Lulkowski	Art & Animation, Sound & Fonts
