@@ -333,7 +333,6 @@ function Reset_gameplay()
     end
     GAMEPLAY_STATE.used_ingredients = 0
     GAMEPLAY_STATE.dropped_ingredients = 0
-    GAMEPLAY_STATE.multi_drop_sequence = 0
     GAMEPLAY_STATE.counting_stirs = false
     GAMEPLAY_STATE.stirring_complete = false
     GAMEPLAY_STATE.puff_anim_started = false
@@ -1095,11 +1094,6 @@ function update_liquid()
         table.shallowcopy(GAMEPLAY_STATE.rune_count, GAMEPLAY_STATE.rune_count_unstirred)
         GAMEPLAY_STATE.rune_count_change = {0, 0, 0}
         -- 
-        if GAMEPLAY_STATE.dropped_ingredients > 1 then
-            GAMEPLAY_STATE.multi_drop_sequence += 1
-        else
-            GAMEPLAY_STATE.multi_drop_sequence = 0
-        end
         GAMEPLAY_STATE.dropped_ingredients = 0
         GAMEPLAY_STATE.mixed_ingredients = false
         -- Even though there are no drops in the cauldron, the first is always the current rune count
@@ -1273,12 +1267,15 @@ function Check_player_struggle()
     end
 
     -- Too much shaking
-    -- Either in too much without stirring, with otu without mixed ingredients, or never shaking in single drops
-    if GAMEPLAY_STATE.dropped_ingredients >= min_mixed_drops_without_stirring
-    or (GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring
+    -- Either in too much without stirring, without mixed ingredients, or never shaking in single drops
+    local too_many_mixed_ingredients = GAMEPLAY_STATE.dropped_ingredients >= min_mixed_drops_without_stirring
+    local too_many_same_ingredients = (
+        GAMEPLAY_STATE.dropped_ingredients >= min_drops_without_stirring
         and GAMEPLAY_STATE.mixed_ingredients == false)
-    or (GAMEPLAY_STATE.multi_drop_sequence >= 4
-        and GAMEPLAY_STATE.dropped_ingredients >= 2) then
+    if (
+        too_many_mixed_ingredients
+        or too_many_same_ingredients
+    ) then
         Check_too_much_shaking_struggle()
     end
 
