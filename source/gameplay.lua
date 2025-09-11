@@ -291,6 +291,9 @@ function Stop_gameplay()
     SOUND.stir_sound:stop()
     SOUND.fire_blow:stop()
     SOUND.fire_burn:stop()
+
+    -- Stop the microphone out of gameplay so it does not drain battery with the LED on.
+    playdate.sound.micinput.stopListening()
 end
 
 
@@ -404,6 +407,8 @@ function Reset_gameplay()
 
     STIR_FACTOR = 1.5 -- sink and despawn all drops. Overshooting it a bit to ensure they definitely despawn. Cbb
 
+    -- Microphone needs manual enabling and we use it only during gameplay.
+    playdate.sound.micinput.startListening()
 
     -- Reset time delta
     playdate.resetElapsedTime()
@@ -550,6 +555,9 @@ function Win_game()
     -- The cocktail has been successfully done. Stop processing input. Transition to frog drinking.
     GAME_ENDED = true
 
+    -- Stop the microphone out of gameplay so it does not drain battery with the LED on.
+    playdate.sound.micinput.stopListening()
+
     -- Remove some draw passes from being drawn and updated.
     for _, pass in ipairs(PASSES_HIDDEN_ON_DRINK) do
         pass:remove()
@@ -572,6 +580,7 @@ function Win_game()
     -- Start recipe scrolling sound for win recipe screen.
     SOUND.paper_scrolling:play(0)
 end
+
 
 function Show_win_recipe()
     -- Frog is done drinking, show scrollable recipe on top of gameplay background.

@@ -29,9 +29,6 @@ local function initialize()
     -- Make it different, every time!
     math.randomseed(playdate.getSecondsSinceEpoch())
 
-    -- Microphone is off by default, needs manual enabling.
-    playdate.sound.micinput.startListening()
-
     -- Init all the things!
     Init_gameplay()
     Init_visuals()
@@ -49,9 +46,11 @@ Enter_loading_screen()
 
 
 function playdate.deviceDidUnlock()
-    -- Seems like the playdate disables the mic when locked.
-    -- So we need to turn it on again when we resume the game
-    playdate.sound.micinput.startListening()
+    -- Seems like the playdate disables the mic when locked,
+    -- so we need to turn it on again when we resume the gameplay..
+    if MENU_STATE.screen == MENU_SCREEN.gameplay then
+        playdate.sound.micinput.startListening()
+    end
 end
 
 
