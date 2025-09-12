@@ -53,8 +53,8 @@ local fire_tips_b <const> = {
     "Really get the fire started!",
 }
 local stir_tutorials <const> = {
-    "Stir in ingredients!\nSee that tasty magic blending?",
-    "Use the crank to stir.",
+    "Fully stir in ingredients\nto see their effect!",
+    "Crank to stir the brew!",
     "11",
 }
 local stir_tips <const> = {
@@ -62,42 +62,45 @@ local stir_tips <const> = {
     "No need to stir that much.",
 }
 local need_more_stir <const> = {
-    "I can't tell yet.\nTry stirring!",
-    "I can see solid pieces.\nNot very well mixed is it?",
+    "I can't tell yet.\nStir a bit more!",
+    "Stuff still floats on top.\n Keep stirring!",
     "11",
 }
 local need_more_love <const> = {
     "That brew needs more heart!",
     "2",
-    "Moar lovely things!",
+    "Lacking lovely things!",
 }
 local need_less_love <const> = {
     "Can you weaken that love\na bit?",
     "1",
-    "So much love, bleh!",
+    "Too much love, bleh!",
+    "Some poison could fix this.",
 }
 local need_more_doom <const> = {
-    "Missing doom and gloom.",
+    "Missing some doom and gloom.",
     "4",
-    "Missing a little more\npoisonous spice!"
+    "Could use more nightmare material.",
+    "Add some deadlier notes!"
 }
 local need_less_doom <const> = {
     "Too grim ...\nEvil repellent may work?",
     "3",
-    "Looking gloomy\nSprinkle some nice things?"
+    "Looking gloomy\nSprinkle some nice things?",
 }
 local need_more_weed <const> = {
     "Could use some veggies.",
     "6",
+    "Lacking some greens!",
 }
 local need_less_weed <const> = {
-    "Too much leaf in it.\nWhat do plants not like?",
+    "Too many veggies for this brew.",
     "5",
-    "What a salad."
+    "Too much leaf in it.\nWhat do plants not like?",
 }
 local positive_reinforcement <const> = {
     "That's the good stuff!\nShake in more.",
-    "Getting there!",
+    "More of that could work!",
 }
 local grab_tutorials <const> = {
     "Try grabbing an ingredient.",
@@ -116,9 +119,10 @@ local drop_tips <const> = {
 }
 local recipe_struggle <const> = {
     "Magic runes above the cauldron\nshow the target.",
-    "Each ingredient affects\nthe great magical forces of\nLOVE, DEATH and VEGGIES.",
+    "Ingredients affect at least two runes.",
     "Ingredients may raise one\nmagic and lower another.",
     "Some ingredients are potent.\nOthers are subtle.",
+    "LOVE, DEATH and VEGGIES.\nBalance them for any good brew!",
 }
 local cocktail_struggle <const> = {
     "Use [ to check what\nthe cocktail looks like?",

@@ -260,13 +260,13 @@ function Prepare_recipe_for_success_draw(cocktail_idx, recipe_steps, win_sticker
 
     -- Determine rating text.
     if num_steps > DISPLAY_RECIPE.cocktail.step_ratings[3] then
-        DISPLAY_RECIPE.rating_text = "Oh gee ... that was "..tostring(num_steps).." steps."
+        DISPLAY_RECIPE.rating_text = "Yikes! "..tostring(num_steps).." steps total?!"
     elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[2] then
-        DISPLAY_RECIPE.rating_text = "Well done. Just "..tostring(num_steps).." steps."
+        DISPLAY_RECIPE.rating_text = "Not too bad! "..tostring(num_steps).." steps."
     elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[1] then
-        DISPLAY_RECIPE.rating_text = "Fantastic! In only "..tostring(num_steps).." steps!"
+        DISPLAY_RECIPE.rating_text = "Fantastic! Only "..tostring(num_steps).." steps!"
     else
-        DISPLAY_RECIPE.rating_text = "Perfected with "..tostring(num_steps).." steps!!!"
+        DISPLAY_RECIPE.rating_text = "Perfect! Just "..tostring(num_steps).." steps!"
     end
 
     RECIPE_MAX_HEIGHT = Calculate_recipe_size_for_menu_draw()
@@ -340,7 +340,7 @@ function Recipe_draw_success()
             -- Sticker: "Recipe Done" / "Recipe Improved".
             gfx.drawTextAligned(DISPLAY_RECIPE.win_sticker, recipe_x + 66, scroll_offset + 124, kTextAlignment.center)
             -- Starting the recipe.
-            gfx.drawText("So the recipe goes\nlike this?", text_x, scroll_offset + 180)
+            gfx.drawText("So my recipe goes\nlike this?", text_x, scroll_offset + 180)
         end
 
         -- Draw recipe steps paper background.
@@ -379,13 +379,13 @@ function Prepare_recipe_for_menu_display(cocktail_idx, recipe_steps)
 
     -- Determine rating text.
     if num_steps > DISPLAY_RECIPE.cocktail.step_ratings[3] then
-        DISPLAY_RECIPE.rating_text = "This works . . .\nBut it took "..tostring(num_steps).." steps."
+        DISPLAY_RECIPE.rating_text = "Far from optimal!\n Got it with "..tostring(num_steps).." steps."
     elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[2] then
-        DISPLAY_RECIPE.rating_text = "Not too bad!\nIn "..tostring(num_steps).." steps."
+        DISPLAY_RECIPE.rating_text = "Could be simpler.\nTook me "..tostring(num_steps).." steps."
     elseif num_steps > DISPLAY_RECIPE.cocktail.step_ratings[1] then
-        DISPLAY_RECIPE.rating_text = "Fantastic!\nIn only "..tostring(num_steps).." steps."
+        DISPLAY_RECIPE.rating_text = "Almost perfected.\nGot it down to "..tostring(num_steps).." steps:"
     else
-        DISPLAY_RECIPE.rating_text = "Mastered!!!\nIn "..tostring(num_steps).." simple steps."
+        DISPLAY_RECIPE.rating_text = "Mastered!!!\nJust "..tostring(num_steps).." simple steps:"
     end
 
     RECIPE_MAX_HEIGHT = Calculate_recipe_size_for_menu_draw()
