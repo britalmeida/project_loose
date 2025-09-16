@@ -42,7 +42,7 @@ local fire_tutorials <const> = {
     "Stoke the fire to\nreveal the magic runes.",
     "Blow air onto the\nbottom of the cauldron.",
     "10",
-    "For realz, blow air\non the mic.\nTryyyy it!",
+    "For real!! Blow air\non the mic.\nTryyyy it!",
 }
 local fire_tips_a <const> = {
     "No need to stoke\nthe fire this often.",
@@ -59,7 +59,7 @@ local stir_tutorials <const> = {
 }
 local stir_tips <const> = {
     "The ingredients were\nalready stirred in.",
-    "No need to stir that much.",
+    "No need to stir THAT much.",
 }
 local need_more_stir <const> = {
     "I can't tell yet.\nStir a bit more!",
@@ -86,7 +86,7 @@ local need_more_doom <const> = {
 local need_less_doom <const> = {
     "Too grim ...\nEvil repellent may work?",
     "3",
-    "Looking gloomy\nSprinkle some nice things?",
+    "Looks gloomy.\nSprinkle in some nicer stuff?",
 }
 local need_more_weed <const> = {
     "Could use some veggies.",
@@ -114,17 +114,18 @@ local drop_tutorials <const> = {
 }
 local drop_tips <const> = {
     "Seems a bit excessive?\nMind how much you drop in.",
-    "Remember to stir it in too.",
+    "Stir in just one at a time\nto observe the effect?",
     "11",
 }
 local recipe_struggle <const> = {
-    "Magic runes above the cauldron\nshow the target.",
-    "Ingredients affect at least two runes.",
+    "Magic runes above the cauldron\nneed careful balancing.",
     "Ingredients may raise one\nmagic and lower another.",
+    "All ingredients affect at least two runes.",
     "Some ingredients are potent.\nOthers are subtle.",
     "LOVE, DEATH and VEGGIES.\nBalance them for any good brew!",
 }
 local cocktail_struggle <const> = {
+    "Seems tricky to get the runes\ninto their targets..",
     "Use [ to check what\nthe cocktail looks like?",
     "7",
 }
