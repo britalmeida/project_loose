@@ -1324,15 +1324,16 @@ function Check_player_struggle()
     -- The steps where the frog speaks up and gives a hint (20th step and then every 15 steps).
     RECIPE_STRUGGLE_STEPS = num_steps >= 20 and math.fmod(num_steps - 20, 15) == 0
 
-    if not PLAYER_STRUGGLES.recipe_struggle and
-    (RECIPE_STRUGGLE_STEPS == true or STRUGGLE_PROGRESS.ingredient_struggle_asked >= 4) then
-        PLAYER_STRUGGLES.recipe_struggle = true
-        Shorten_talk_reminder()
-        Next_recipe_struggle_tip()
-        print("Giving gameplay hint Nr. " .. STRUGGLE_PROGRESS.recipe_struggle_lvl)
-        -- Only when not cycling through dialogue, use the urgent reaction of the frog
-        if RECIPE_STRUGGLE_STEPS == true then
-            FROG:wants_to_talk()
+    if RECIPE_STRUGGLE_STEPS == true or STRUGGLE_PROGRESS.ingredient_struggle_asked >= 4 then
+        if not PLAYER_STRUGGLES.recipe_struggle then
+            PLAYER_STRUGGLES.recipe_struggle = true
+            Shorten_talk_reminder()
+            Next_recipe_struggle_tip()
+            print("Giving gameplay hint Nr. " .. STRUGGLE_PROGRESS.recipe_struggle_lvl)
+            -- Only when not cycling through dialogue, use the urgent reaction of the frog
+            if RECIPE_STRUGGLE_STEPS == true then
+                FROG:wants_to_talk()
+            end
         end
     -- Reset so the struggle can be detected and triggered again
     elseif not RECIPE_STRUGGLE_STEPS then
