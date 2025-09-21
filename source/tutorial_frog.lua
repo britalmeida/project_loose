@@ -120,7 +120,7 @@ local drop_tips <const> = {
 local recipe_struggle <const> = {
     "Magic runes above the cauldron\nneed careful balancing.",
     "Ingredients may raise one\nmagic and lower another.",
-    "All ingredients affect at least two runes.",
+    "All ingredients affect\nat least two runes.",
     "Some ingredients are potent.\nOthers are subtle.",
     "LOVE, DEATH and VEGGIES.\nBalance them for any good brew!",
 }
