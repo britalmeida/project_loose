@@ -392,7 +392,8 @@ function Reset_gameplay()
     PLAYER_STRUGGLES.recipe_struggle = false
     PLAYER_STRUGGLES.cocktail_struggle = false
 
-    STRUGGLE_PROGRESS.recipe_struggle_lvl = 0
+    -- This is skipped to continue cycling through tips from cocktail to cocktail
+    -- STRUGGLE_PROGRESS.recipe_struggle_lvl = 0
     STRUGGLE_PROGRESS.fire_struggle_asked = 0
     STRUGGLE_PROGRESS.ingredient_struggle_asked = 0
     STRUGGLE_PROGRESS.struggle_hint_asked = 0
