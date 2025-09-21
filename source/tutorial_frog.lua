@@ -35,11 +35,12 @@ local win_hint <const> = "Just don't mess it up now!"
 local almost_win_hint <const> = "Just needs a little stir."
 local fire_reminders <const> = {
     "Keep it warm to see \nthe magic.",
+    "Can't see the magic\nrunes without fire!",
     "Fire is good,\nmagic glow is good.",
     "9",
 }
 local fire_tutorials <const> = {
-    "Stoke the fire to\nreveal the magic runes.",
+    "Stoke the fire with\nyour breath!",
     "Blow air onto the\nbottom of the cauldron.",
     "10",
     "For real!! Blow air\non the mic.\nTryyyy it!",
@@ -63,7 +64,8 @@ local stir_tips <const> = {
 }
 local need_more_stir <const> = {
     "I can't tell yet.\nStir a bit more!",
-    "Stuff still floats on top.\n Keep stirring!",
+    "The smoke POOF shows\nwhen you stirred enough.",
+    "Stuff still floats on top.\nKeep stirring!",
     "11",
 }
 local need_more_love <const> = {
@@ -72,7 +74,7 @@ local need_more_love <const> = {
     "Lacking lovely things!",
 }
 local need_less_love <const> = {
-    "Can you weaken that love\na bit?",
+    "Can you weaken that\nlove a bit?",
     "1",
     "Too much love, bleh!",
     "Some poison could fix this.",
@@ -80,21 +82,21 @@ local need_less_love <const> = {
 local need_more_doom <const> = {
     "Missing some doom and gloom.",
     "4",
-    "Could use more nightmare material.",
+    "Could use more\nnightmare fuel.",
     "Add some deadlier notes!"
 }
 local need_less_doom <const> = {
     "Too grim ...\nEvil repellent may work?",
     "3",
-    "Looks gloomy.\nSprinkle in some nicer stuff?",
+    "Looks gloomy.\nAdd in some nicer stuff?",
 }
 local need_more_weed <const> = {
     "Could use some veggies.",
     "6",
-    "Lacking some greens!",
+    "Lacking some vegetables!",
 }
 local need_less_weed <const> = {
-    "Too many veggies for this brew.",
+    "Too many veggies for\nthis brew.",
     "5",
     "Too much leaf in it.\nWhat do plants not like?",
 }
@@ -108,24 +110,25 @@ local grab_tutorials <const> = {
     "Let it go over the cauldron.",
 }
 local drop_tutorials <const> = {
-    "Place an ingredient over\nthe cauldron and shake!",
+    "Shake once you have the\ningredient on the cauldron!",
     "Shake, shake. Shake it off!!",
     "8",
 }
 local drop_tips <const> = {
     "Seems a bit excessive?\nMind how much you drop in.",
-    "Stir in just one at a time\nto observe the effect?",
+    "Maybe add one at a time\n to observe the effect?",
     "11",
 }
 local recipe_struggle <const> = {
     "Magic runes above the cauldron\nneed careful balancing.",
+    "Shake just once to add\nin only very little?",
+    "Try every ingredient\nto see their effects.",
     "Ingredients may raise one\nmagic and lower another.",
     "All ingredients affect\nat least two runes.",
     "Some ingredients are potent.\nOthers are subtle.",
     "LOVE, DEATH and VEGGIES.\nBalance them for any good brew!",
 }
 local cocktail_struggle <const> = {
-    "Seems tricky to get the runes\ninto their targets..",
     "Use [ to check what\nthe cocktail looks like?",
     "7",
 }
