@@ -76,14 +76,12 @@ local need_more_love <const> = {
 local need_less_love <const> = {
     "Can you weaken that\nlove a bit?",
     "1",
-    "Too much love, bleh!",
-    "Some poison could fix this.",
+    "Too much love, bleh!"
 }
 local need_more_doom <const> = {
     "Missing some doom and gloom.",
     "4",
-    "Could use more\nnightmare fuel.",
-    "Add some deadlier notes!"
+    "Could use more\nnightmare fuel."
 }
 local need_less_doom <const> = {
     "Too grim ...\nEvil repellent may work?",
