@@ -2,10 +2,9 @@
 
 ![Game art showing Froggo and title](promo/website_header.png?raw=true)
 
-Froggotten Recipes is a smol [Playdate](https://play.date) game made by a group of friends for a game jam ([PlayJam5](https://itch.io/jam/playjam-5)).
+Froggotten Recipes is a smol [Playdate](https://play.date) game made by a group of friends for a game jam.
 
- Theme was: You Forgot Something
-
+ The jam was (PlayJam5(https://itch.io/jam/playjam-5)) and the theme was: 'You Forgot Something'.
 
 We took an extra weekend after the jam to develop it a 'lil further which was - of course - a total trap.  
 We've ended up with a totally new version and (maybe) learned something about feature creep.
@@ -13,7 +12,11 @@ We've ended up with a totally new version and (maybe) learned something about fe
 
 
 ## Full Game Version
-**To play the totally new version** with new mechanics, art, soundfx, sleep, and an equally grumpy frog, see the [new itch.io page](https://iralmeida.itch.io/froggotten-recipes) (and who knows maybe the playdate catalog one day!).  
+**To play the totally new version** with new mechanics, art, soundfx, sleep, and an equally grumpy frog, see the [new itch.io page](https://iralmeida.itch.io/froggotten-recipes) or 🥁...
+
+**play it right from [Playdate's Catalog](https://play.date/games/froggotten-recipes/)!**  
+We're happy to have our game published on 8th Dec 2025 🐸🎉
+
 
 ### Source Files
 This git branch has the [full game source files](https://github.com/britalmeida/project_loose/tree/main).
